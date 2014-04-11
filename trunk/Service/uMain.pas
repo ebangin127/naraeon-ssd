@@ -141,9 +141,6 @@ begin
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceBeforeInstall(Sender: TService);
-var
-  OldSvc: String;
-  NewSvc: String;
 begin
   KillAllSvc();
   DeletePrevSvc;
@@ -151,7 +148,6 @@ end;
 
 procedure TNaraeonSSDToolsDiag.ServiceBeforeUnInstall(Sender: TService);
 var
-  OldSvc: String;
   NewSvc: String;
 begin
   NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
@@ -403,8 +399,6 @@ end;
 function DeleteServiceNST(strServiceName: string): String;
 var
   hSCManager,hSCService: SC_Handle;
-  lpServiceConfig: LPQUERY_SERVICE_CONFIGW;
-  nSize, nBytesNeeded: DWord;
 begin
   Result := '';
   hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
@@ -473,7 +467,6 @@ var
   SHandle:   THandle;
   Next:      Boolean;
   hProcess: THandle;
-  i: Integer;
 begin
   Result := True;
 
