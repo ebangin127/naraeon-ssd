@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899-12-30 00:00:00.000.798,=D:\내 작업들\SSDOptimizer\Source\uAlert.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.079,=D:\내 작업들\SSDOptimizer\Source\Service\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.835,D:\내 작업들\SSDOptimizer\Source\uAlert.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.605,=D:\내 작업들\SSDOptimizer\Source\uAlert.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.308,C:\Users\Mingyu\Documents\RAD Studio\Projects\Unit1.pas=D:\내 작업들\SSDOptimizer\Source\Service\uMain.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.502,=D:\내 작업들\SSDOptimizer\Source\HddInfo\hddInfo.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.138,=D:\내 작업들\SSDOptimizer\Source\Service\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.811,=C:\Users\Mingyu\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.651,D:\내 작업들\SSDOptimizer\Source\uAlert.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.527,=D:\내 작업들\SSDOptimizer\Source\EasySMART\uEasySMART.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.083,=D:\내 작업들\SSDOptimizer\Source\HddInfo\WbemScripting_TLB.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.558,D:\내 작업들\SSDOptimizer\Source\uLogSystem.pas=D:\내 작업들\SSDOptimizer\Source\Service\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.848,C:\Users\Mingyu\Documents\RAD Studio\Projects\Project1.dproj=D:\내 작업들\SSDOptimizer\Source\Service\NSTDiagSvc.dproj</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.002,D:\내 작업들\SSDOptimizer\Source\Service\uDiagThread.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.129,=D:\내 작업들\SSDOptimizer\Source\uAlert.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.308,C:\Users\Mingyu\Documents\RAD Studio\Projects\Unit1.dfm=D:\내 작업들\SSDOptimizer\Source\Service\uMain.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.953,D:\내 작업들\SSDOptimizer\Source\Service\uDiagThread.pas=D:\내 작업들\SSDOptimizer\Source\Service\Unit1.pas</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="..\..\Source"/>
+    <File Path="..\EasySMART"/>
+    <File Path="..\EasySMART\uEasySMART.pas"/>
+    <File Path="..\HddInfo"/>
+    <File Path="..\HddInfo\hddInfo.pas"/>
+    <File Path="..\HddInfo\WbemScripting_TLB.pas"/>
+    <File Path="..\uAlert.pas"/>
+    <File Path="..\uAlert.dfm"/>
+    <File Path="..\uLogSystem.pas"/>
+    <File Path="uMain.pas"/>
+    <File Path="uMain.dfm"/>
+  </ProjectSortOrder>
+</BorlandProject>

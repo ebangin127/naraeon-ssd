@@ -1,0 +1,205 @@
+<body>
+
+<p><b><font size=4 color=navy> THDDInfo</font></b>
+
+<hr color=blue>
+
+<p><b>THDDInfo</b> - nonvisual Delphi component
+provided low level information about IDE, ATAPI and SCSI devices<br>
+Version: 2.3 (2008 December 26)<br>
+
+<p>Supports Win9x, WinNT and Vista platforms, provided information about IDE, ATAPI and SCSI devices.
+
+<p>Provided information: 
+
+<ul>
+ <li>device type 
+ <li>Model sting 
+ <li>Firmware revision
+ <li>Serial number
+</ul> 
+For IDE drives also: 
+<ul>
+ <li>drive geometry (cylinders, heads, sectors per track) 
+ <li>LBA sectors count
+ <li>drive size (nonformatted)
+ <li>controller buffer size
+</ul>
+
+<hr>
+
+<b><font size=4 color=navy>Description</font></b>
+
+<p><b><font size=4>Properties:</font></b>
+
+<p><b>property</b> HDDType : TDriveType; - Device type (Fixed, Removable, CD-Rom, Unknown, Tape, Optical disk, Array device). 
+<p>TDriveType = (dtFixed, dtRemovable, dtCDROM, dtUnknown, dtTape, dtOptical, dtArray);
+
+<p><b>property</b> Serial : string; - Serial number. 
+
+<p><b>property</b> Revision : string; - Firmware revision. 
+
+<p><b>property</b> Model : string; - Model string. 
+
+<p><b>property</b> CylsTotal : word; - Cylinders (IDE only). 
+
+<p><b>property</b> HeadTotal : word; - Heads (IDE only). 
+
+<p><b>property</b> BPT : word; - Bytes per track (IDE only). 
+
+<p><b>property</b> BPS : word; - Bytes per sector (IDE only). 
+
+<p><b>property</b> SPT : word; - Sectors per track (IDE only). 
+
+<p><b>property</b> BufSize : DWord; - Controller buffer size (IDE only). 
+
+<p><b>property</b> ECC : Word; - ECC code (IDE only). 
+
+<p><b>property</b> LBASectors: dword; - LBA sectors count (IDE only). 
+
+<p><b>property</b> Size : int64; - Nonformatted disk size (IDE only). 
+
+<p><b>property</b> Vendor : TVendor; - Vendor data (IDE only). 
+<p>TVendor = array[0..2] of word;
+
+<p><b>property</b> isIDE: boolean; - Specifies whether specified device is IDE device.
+
+
+<p><b>property</b> ScsiInfo   : TScsiInfo; - Holds information about Scsi device.
+<p>TScsiInfo = <b>record</b><br>
+  &nbsp;PathId, - Indicates the number of the bus the device is located on.<br> 
+  &nbsp;TargetId, - Indicates the number of the device on the bus. <br> 
+  &nbsp;Lun : byte; - Indicates the logical unit number of the logical unit on the target device.<br> 
+  &nbsp;DeviceClaimed : boolean; - When true, indicates that the device has been claimed by a class driver. <br> 
+  &nbsp;HDDType : TDriveType; - Indicates device type;<br> 
+  &nbsp;Data : string; - Contains device info (as a rule the name and first several bytes of firmware revision).<br> 
+ <b>end;</b>
+
+
+<p><b>property</b> ScsiPort   : integer; - Specifies Scsi port number to get information.
+
+<p><b>propert</b>y ScsiBus    : integer; - Specifies Scsi bus number to get information (should be from 0 to ScsiBusCount-1).
+
+<p><b>property</b> ScsiDevice   : integer; - Specifies Scsi device number to get information (should  be from 0 to ScsiDevCount-1). 
+
+<p><b>property</b> ScsiBusCount : word; - Contains number of buses for specified Scsi port.
+
+<p><b>property</b> ScsiDevCount : word; - Contains number of devices for specified Scsi bus.
+
+<p><b>property</b> isNT : boolean; - Specifies whether OS is WinNT.
+
+<p><b><font size=4>Published properties:</font></b>
+
+<p><b>property</b> Drive : TDrive; - Specifies drive to get information about. On change, calls GetInfo procedure. 
+
+<p>TDrive = (dPrimaryMaster, dPrimarySlave, dSecondaryMaster, dSecondarySlave, dTertiaryMaster,
+dTertiarySlave, dQuaternaryMaster, dQuaternarySlave);
+
+<p><b>property</b> DeviceName : string; - Specifies device name (for gimByName retrieving information method). 
+
+<p><b>property</b> Method : TGetInfoMethod; - Specifies retrieving information method. 
+
+<p>TGetInfoMethod = (gimAuto, gimNT, gimScsi, gim9x, gimByName, gimASPI, gimZeroRights, gimWMI);
+
+<ul type=disc>
+ <li>
+     gimAuto: determine OS, for Win9x proceed with gim9x, for WinNT with gimScsi, for Vista with gimZeroRights.
+ <li>
+     gimNT: use DeviceIoControl and PhysicalDrive
+     device to get information (WinNT platform only). Requires admin rights.
+     <p><b>Important:</b> gimNT method deal with logical numbering of physical drives regardless of IDE interface, 
+     i.e. dPrimaryMaster corresponds to PhysicalDrive0, dPrimarySlave to PhysicalDrive1 etc. For instance if you system has 
+     one drive connected as Secondary Master, set Drive property to dPrimaryMaster to get info about this drive. 
+     <p>gimNT method useful when you need to obtain information about first (second, etc.) drive in system and don't want
+     to puzzle over IDE device numbering. If you need to obtain information about specific IDE port use gimScsi instead.<p>
+ <li>
+     gimScsi: use Scsi miniport driver (WinNT platform
+     only). Do not require admin rights.
+ <li>
+     gim9x: use direct port access (Win9x platform only).
+ <li> 
+     gimByName: use DeviceIoControl to send SCSIOP_INQUIRY command to the device (WinNT platform only). Requires admin rights. Support IDE, SCSI and ATAPI devices. You can use device name (e.g. &quot;PhisicalDrive0&quot;, &quot;Tape1&quot;, &quot;CDROM3&quot;) or logical disc name (e.g. &quot;C:&quot;).
+ <li> 
+     gimASPI : use ASPI API to get info about devices. ASPI is native for Win9x. On WinNT it is possible to use wnaspi32.dll delivered with  Nero. 
+ <li> 
+     gimZeroRights : use DeviceIoControl to send IOCTL_STORAGE_QUERY_PROPERTY to the device (WinNT and Vista only). Not requires admin rights.
+ <li> 
+     gimWMI : use WMI to get drive information.
+</ul>
+
+<p><b>property</b> CanonicalScsiAddressing : boolean; - For gimASPI. If true, HDDInfo uses predefined addresses for IDE devices ((0,0,0) - for Primary Master, (0,1,0) - for Primary Slave, (1,0,0) - for Secondary Master and so on.). If false, HDDInfo will treat Drive property as the number of found device (dPrimaryMaster - first found device, dPrimarySlave - second and so on).
+
+<p><b><font size=4>Procedures:</font></b> 
+
+<p><b>procedure</b> GetInfo; - retrieves information about drive, specified by Drive property. On error
+raises exception. 
+
+
+<hr>
+
+<b><font size=4 color=navy>How to use</font></b>
+
+<p>Simply
+set Drive or DeviceName property to desirable value. Also you can use GetInfo procedure. Use
+try-except block to catch exceptions. See demo. 
+<p>To scan Scsi bus:
+<ol>
+<li>Set ScsiPort to desirable value. THDDInfo inquires Scsi port and sets ScsiBusCount.
+<li>Set ScsiBus to value from 0 to ScsiBusCount-1. THDDInfo inquire Scsi bus and sets ScsiDevCount
+<li>Set ScsiDevice to value from 0 to ScsiDevCount-1. THDDInfo inquires Scsi bus and returns information about device in ScisiInfo property.
+</ol>
+<p>Note: ScsiPort=0 and ScsiPort=1 correspond to IDE Primary and IDE Secondary controllers.
+<hr>
+
+<b><font size=4 color=navy>History</font></b>
+
+<ul type=disc>
+ <li>Version 2.3: Added support for Delphi 2009.
+ <li>Version 2.2: Added gimZeroRights and gimWMI methods for Vista support.
+ <li>Version 2.1: Added ASPI support (new get info method gimASPI). Many thanks to Bill Mudd (mcmudd@earthlink.net).
+ <li>Version 2.0: Added Scsi bus scan features. gimScsi now returns info about ATAPI devices. gimAuto behavior changed (due to Vassilis Papanikolaou (billy@ee.auth.gr) bug report), see note about gimNT. Some minor bugs fixed. 
+ <li>Version 1.22: D5 compatibility added (thanks to Marcelo Castro abusemg-jan@yahoo.com.br) 
+ <li>Version 1.21: Some bugs removed.
+ <li>Version 1.2: Added new method gimByName (NT only), provided info about IDE, SCSI and ATAPI devices
+ <li>Version 1.1: Added ATAPI support for Win9x procedure 
+ <li>
+     Version 1.0: First working version 
+</ul>
+
+<hr size=2 width="100%" align=center>
+<b><font size=4 color=navy>Author</font></b> 
+
+
+<p>Artem V. Parlyuk, e-mail:artsoft@nm.ru, http://artsoft.nm.ru  
+<p>Partially based on Lynn McGuire C++ source (diskid32.cpp)
+<p>CallRing0 function based on Andrey Jdanov (rivitna@mailru.com) asm source (Ring0.asm)
+ 
+<hr size=2 width="100%" align=center>
+<b><font size=4 color=navy>License and disclaimer agreement</font></b> 
+
+<p><b>IMPORTANT - READ CAREFULLY</b>
+
+<p>This license and disclaimer statement constitutes a legal agreement (&quot;License Agreement&quot;) between you (either as an individual or a single entity) and Artem Parlyuk (the &quot;Author&quot;), for this software product in this particular case THDDInfo Delphi component (&quot;Software&quot;), including any software, media, and accompanying on-line or printed documentation. 
+
+<p><b>BY DOWNLOADING, INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE, YOU AGREE TO BE BOUND BY ALL OF THE TERMS AND CONDITIONS OF THIS LICENSE AND DISCLAIMER AGREEMENT.</b> If you do not agree with the terms and conditions of this agreement, you must promptly cease all use of the software and destroy all copies of this software and all of its component parts in your possession or under your control. 
+
+<p>This Software is owned by Author and is protected by copyright law and international copyright treaty. 
+
+<p>This Software is freeware. You are granted the permission to use Software in your own applications for private purposes. 
+You are granted the permission to use Software in your own applications for commercial purposes, provided your software contains the copyright notice &quot;THDDInfo Delphi component Copyright (c) by Artem Parlyuk&quot; and link to the Author site (http://artsoft.nm.ru) and Author e-mail (mailto:artsoft@nm.ru). 
+
+<p>You can freely distribute copies of the main archive as long as no alterations are made to the contents and no charge is raised except a reasonable fee for distributing costs. You may not remove copyright notices from copies of the Software. You may not claim this Software as written by anyone but Author, Artem Parlyuk. 
+
+<p>The author has taken all possible care to ensure the software is error-free,
+however the author disavows any potential liability arising from any use of the
+software. This software is provided "as is" and without any warranties expressed or implied, including, but not limited to, implied warranties of fitness for a particular purpose, and non-infringement. You expressly acknowledge and agree that use of the Software is at your sole risk. 
+
+<p>In no event shall the author be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use this software or documentation, even if the author has been advised of the possibility of such damages. 
+
+<p>Any feedback given to the Author will be treated as non-confidential. The Author may use any feedback free of charge without limitation. 
+
+</font>
+
+</body>
+
+</html>

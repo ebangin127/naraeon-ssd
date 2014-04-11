@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899-12-30 00:00:00.000.756,D:\내 작업들\SSDTools\Incubator\DirtyMaker\uTrimThread.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.402,D:\내 작업들\SSDTools\Incubator\DirtyMaker\Extern\btypes.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.404,D:\내 작업들\SSDTools\Incubator\DirtyMaker\Extern\sha1.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.923,=D:\내 작업들\SSDTools\Incubator\DirtyMaker\uTrimThread.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.903,D:\내 작업들\SSDTools\Incubator\DirtyMaker\uAutoTrimThread.pas=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.898,=D:\내 작업들\SSDTools\Incubator\DirtyMaker\uAutoTrimThread.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.403,D:\내 작업들\SSDTools\Incubator\DirtyMaker\Extern\hash.pas=</Transaction>
+  </Transactions>
+</BorlandProject>

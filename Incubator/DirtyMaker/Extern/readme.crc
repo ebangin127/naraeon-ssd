@@ -1,0 +1,121 @@
+The basic routines in this archive can be compiled with most current
+Pascal (TP 5/5.5/6, BP 7, VP 2.1, FPC 1.0/2.0/2.2/2.4/2.6) and Delphi
+versions (tested with V1 up to V7/9/10/12/17).
+
+--------------------------------------------------------------------------------
+Last changes (Jan. 2013)
+* Pure Pascal versions included in the main archive
+* some D17(XE3) and 64-bit adjustments
+
+--------------------------------------------------------------------------------
+Since Feb. 2006 there is a new Hash/HMAC architecture: Hash descriptor
+records allow a simple and uniform HMAC implementation for all hash
+algorithms; the key derivation functions can use all supported hash
+algorithms. A separate short introduction (intro.txt) gives some more
+information about the Hash/HMAC units and procedures.
+
+Since May 2008 the cryptographic hash and HMAC routines support messages
+with arbitrary bit lengths.
+
+--------------------------------------------------------------------------------
+The basic routines were slightly improved in the previous versions, but
+optimizing seems to be black magic. The cycles/times are heavily dependent
+on CPU, cache, compiler, code position, etc. For example: if the SHA256
+loop is unrolled, the calculation slows down for about 40% on one machine
+(1.8GHz P4, D6, Win98), but is about 15% faster on another (AMD 2600+, D5,
+Win98). In the archive sha256unroll.zip you can find some snippets related
+to SHA256 loop unrolling.
+
+With the test program T_SpeedA and the high resolution timer from hrtimer
+you can measure the CPU cycles per byte (Cyc/B) and the processing rate in
+MB/s (note that the CPU frequency is determined dynamically). Here are the
+values for Delphi/FPC on Win98 with Pentium 4 / 1.7 GHz using a blocksize
+of 50000 bytes (Std: standard routines with BASM, PP: Pure Pascal with
+inline for D17 and FPC2.2.4 -O3, D17 on Win7/64 Core i3-2350M):
+
++------------+--------+--------+--------+-------+--------+-----------+
+|            | D3/Std | D3/Std | D6/Std | D6/PP | FPC/PP | D17-64/PP |
+|       Name |   MB/s |  Cyc/B |  Cyc/B | Cyc/B |  Cyc/B |     Cyc/B |
++------------+--------+--------+--------+-------+--------+-----------+
+|      CRC16 | 200.09 |    8.5 |    8.5 |  33.3 |   44.1 |      14.7 |
+|      CRC24 | 180.23 |    9.4 |    9.4 |  30.0 |   35.1 |      14.2 |
+|      CRC32 | 277.77 |    6.1 |    6.1 |  17.9 |   24.6 |      14.2 |
+|     FCRC32 | 394.62 |    4.3 |    4.4 |  19.4 |   18.5 |       5.6 |
+|    Adler32 | 382.98 |    4.4 |    4.8 |   4.7 |    8.1 |       2.0 |
+|      CRC64 |  93.76 |   18.1 |   18.3 |  93.3 |   59.3 |      28.3 |
+|    eDonkey | 209.50 |    8.1 |    8.1 |   8.1 |   19.6 |       8.2 |
+|        MD4 | 208.99 |    8.1 |    8.1 |   8.1 |   20.1 |       8.2 |
+|        MD5 | 151.21 |   11.2 |   11.2 |  11.2 |   11.1 |      10.5 |
+|     RMD160 |  53.12 |   31.9 |   31.8 |  31.9 |   99.6 |      27.9 |
+|       SHA1 |  50.60 |   33.5 |   35.4 |  36.1 |   52.4 |      18.6 |
+|     SHA224 |  28.62 |   59.2 |   55.5 |  52.6 |   62.2 |      34.9 |
+|     SHA256 |  28.69 |   59.1 |   57.0 |  52.7 |   62.9 |      34.6 |
+|     SHA384 |   9.79 |  173.1 |  206.0 | 206.4 |  194.9 |      25.3 |
+|     SHA512 |   9.79 |  173.1 |  205.7 | 206.2 |  194.7 |      25.3 |
+| SHA512/224 |   9.75 |  173.8 |  205.7 | 206.2 |  195.2 |      25.3 |
+| SHA512/256 |   9.79 |  173.1 |  206.2 | 206.3 |  195.3 |      25.3 |
+|  Whirlpool |  17.15 |   98.8 |  129.7 | 129.9 |   98.5 |      58.4 |
+|  Keccak224 |  14.71 |  115.3 |      - | 113.2 |  120.9 |      22.5 |
+|  Keccak256 |  14.01 |  121.0 |      - | 118.9 |  127.0 |      23.7 |
+|  Keccak384 |  10.92 |  155.3 |      - | 152.9 |  158.3 |      31.0 |
+|  Keccak512 |   7.68 |  220.8 |      - | 216.3 |  220.2 |      44.7 |
++------------+--------+--------+--------+-------+--------+-----------+
+
+MD4, eDonkey/eMule: For files/messages with a multiple of 9728000 bytes
+the eDonkey and eMule hashes are different; the ed2k unit always
+calculates both digests. The demo programs and the FAR plugin display both
+values if they are different.
+
+Units SHA5_224 and SHA5_256: In March 2012 NIST released the new Secure
+Hash Standard FIPS 180-4. It defines (among others) two additional secure
+hash algorithms SHA-512/224 and SHA-512/256. These are designed like
+SHA384, using the compression function of SHA512 but different IVs. NIST
+quote: SHA-512/224 and SHA-512/256 may be more efficient alternatives to
+SHA-224 and SHA-256, respectively, on platforms that are optimized for
+64-bit operations. (C.f. the D17-64 column in the table). My Pascal
+implementations use the standard SHA512 and are now fully integrated in
+CRC/Hash package; symbols for the new algorithms are defined in the
+general hash unit, specific hash und HMAC units are available.
+
+Int64 support for SHA384/512:  Unfortunately there are conflicting
+processor specific results: on a P4 / 1.8GHz the speed decreases to 83% of
+the longint speed (Cyc/B increase from 174 to 209). For a Celeron 500MHz
+the speed increases more than 30%, the Cyc/B decrease from 146 (longint)
+to 111 (Int64). In the source Int64 is default for D4+ and FPC
+(conditional define UseInt64 in SHA512.PAS)
+
+BASM16 table alignment: Because some BASM16 implementations use 32 bit
+access to 32 bit tables, these tables should be dword aligned for optimal
+speed. But the 16 bit compilers support byte or word alignment only!
+Therefore the defines from the align.inc include file allow to generate
+dummy words, which align the tables to 32 bit boundaries. This feature is
+implemented for CRC24 ... CRC64; if more than one of these units are used,
+it may be necessary to iterate the alignment procedure.
+
+Pure Pascal versions: The source archive contains pure Pascal versions of
+the basic routines without BASM (formerly published in a separate
+archive). The main purpose is to supply sources for more portable code
+(e.g. for Linux/ARM); consequently the code layout is for FPC with int64
+and without asm, but it can be compiled with Delphi 4+. Pure Pascal
+routines are invoked if the symbol PurePascal is defined: {$define
+PurePascal}, forced for BIT64. For 32-bit systems the PP CRC routines are
+significantly slower than the standard sources (see table), but the Hash
+function speeds are not so uniform. The pure Pascal routines are 64-bit
+compatible (tested with D17 and FPC 2.6.0 on Win64). Special thanks goes
+to Nicola Lugato who asked for the pure Pascal units and tested the first
+versions on his ARM/Linux machine.
+
+RocksoftTM Model CRC Algorithm: The crcmodel unit is a Pascal
+implementation of Ross William's parameterized model CRC algorithm
+described in A Painless Guide to CRC Error Detection Algorithms. Most of
+the usual CRC algorithms with polynomials up to degree 32 can be modeled
+by this unit. The crcm_cat unit has predefined parameter records for more
+than 50 CRC algorithms, most of them adapted from Greg Cook's Catalogue of
+Parameterised CRC Algorithms, more references are listed in the unit
+header. The GUI demo programs tcrc16/tcr32 interactively calculate and
+display the results from all crcm_cat CRC16/CRC32 algorithms for hex and
+string input, SRP16 searches CRC16 Rocksoft parameters for given data.
+
+W.Ehrhardt, Jan. 2013
+http://wolfgang-ehrhardt.de
+
