@@ -1,0 +1,8 @@
+__history
+*.identcache
+Win32
+*.exe
+*.ipch
+/Incubator/NSTools5/Source/Naraeon SSD Tools 5/Debug
+*.local
+/관련 자료
