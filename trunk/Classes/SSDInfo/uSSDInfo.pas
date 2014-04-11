@@ -102,7 +102,7 @@ const
   SimulationModel = 'PLEXTOR PX-128M5Pro';
   SimulationFirmware = '1.05';
 
-  CurrentVersion = '4.5.4';
+  CurrentVersion = '4.6.0';
 
 implementation
 

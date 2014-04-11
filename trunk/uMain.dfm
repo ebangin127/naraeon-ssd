@@ -1932,7 +1932,7 @@ object fMain: TfMain
     Interval = 500
     OnTimer = tErrorChkTimer
     Left = 551
-    Top = 296
+    Top = 312
   end
   object tGetSSDs: TTimer
     Enabled = False
