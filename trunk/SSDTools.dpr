@@ -53,7 +53,7 @@ var
 begin
   Application.Initialize;
   Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
-  if (ParamStr(1) <> '') and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  if (ParamStr(1) <> '') and (ParamStr(1) <> '/SimulMode') and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
   begin
     MainLoaded := false;
     MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened2');
@@ -138,8 +138,13 @@ begin
     ReleaseMutex(MutexAppear);
     CloseHandle(MutexAppear);
   end
-  else
+  else 
   begin
+    if ParamStr(1) = '/SimulMode' then
+    begin
+      SimulationMode := true;
+    end;
+    
     MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened1');
 
     if GetSystemDefaultLangID = 1042 then

@@ -97,8 +97,10 @@ type
     procedure CollectAllSmartData; reintroduce;
   end;
 
+var
+  SimulationMode: Boolean = false;
+
 const
-  SimulationMode = false;
   SimulationModel = 'PLEXTOR PX-128M5Pro';
   SimulationFirmware = '1.05';
 

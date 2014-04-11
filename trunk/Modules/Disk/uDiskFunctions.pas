@@ -433,7 +433,7 @@ begin
       else
       begin
         if (InputBuf.BusType <> BusTypeSata) and (InputBuf.BusType <> BusTypeSCSI) and (InputBuf.BusType <> BusTypeAta) then Result := 0
-        else Result := Byte(InputBuf.CommandQueueing or (InputBuf.BusType = BusTypeSata)) + 1;
+        else Result := Byte((InputBuf.CommandQueueing and (InputBuf.BusType = BusTypeSCSI)) or (InputBuf.BusType = BusTypeSata)) + 1;
       end;
     finally
       CloseHandle(hdrive);
