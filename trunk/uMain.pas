@@ -1253,6 +1253,7 @@ var
   CurrDrvPartitions: TDriveLetters;
   CurrPartition: Integer;
   NewLen: Integer;
+  isDriveAccessible: Boolean;
 
   GetSSDResult: TSSDListResult;
   DrvName: String;
@@ -1296,7 +1297,7 @@ begin
         if AllDrv[CurrDrv] = SSDLabel1[CurrExistAtApp].Hint then
           CurrAvail := true;
 
-      if GetLastError = 0 then
+      if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
       begin
         try
           if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := ATAModel

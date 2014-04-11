@@ -201,6 +201,21 @@ type
     RawPropertiesLength: DWORD;
     RawDeviceProperties: PChar;
   end;
+
+  STORAGE_ADAPTOR_DESCRIPTOR = packed record
+    Version: DWORD;
+    Size: DWORD;
+    MaximumTransferLength: DWORD;
+    MaximumPhysicalPages: DWORD;
+    AlignmentMask: DWORD;
+    AdaptorUsesPio: Boolean;
+    AdaptorScansDown: Boolean;
+    CommandQueueing: Boolean;
+    AccelatedTransfer: Boolean;
+    BusType: STORAGE_BUS_TYPE;
+    BusMajorVersion: WORD;
+    BusMinorVersion: WORD;
+  end;
   //---NCQ---//
 
 //디스크 - 파티션 간 관계 얻어오기
@@ -213,6 +228,7 @@ function GetFixedDrivesFunction: TDriveLetters;
 function SetMaxAddress(DeviceName: String; MaxLBA: UInt64): Boolean;
 function ReadSector(DeviceName: String; MaxLBA: UInt64; KSize: Integer): Integer;
 function GetNCQStatus(DeviceName: String): Byte;
+function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
 
 //Fixed HDD, USB Mass Storage 정보 얻어오기
 function GetSSDList: TSSDListResult;
@@ -395,43 +411,56 @@ var
   Query: STORAGE_PROPERTY_QUERY;
   dwBytesReturned: DWORD;
   Buffer: array [0..1023] of Byte;
-  sdd: STORAGE_DEVICE_DESCRIPTOR absolute Buffer;
-  OldMode: UINT;
+  InputBuf: STORAGE_ADAPTOR_DESCRIPTOR absolute Buffer;
 begin
   Result := 0;
 
-  OldMode := SetErrorMode(SEM_FAILCRITICALERRORS);
-  try
-    hdrive := CreateFile(PChar(DeviceName), 0, FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
-      OPEN_EXISTING, 0, 0);
-    if hdrive <> INVALID_HANDLE_VALUE then
-    begin
-      try
-        dwBytesReturned := 0;
-        FillChar(Query, SizeOf(Query), 0);
-        FillChar(Buffer, SizeOf(Buffer), 0);
-        sdd.Size := SizeOf(Buffer);
-        Query.PropertyId := Cardinal(StorageDeviceProperty);
-        Query.QueryType := Cardinal(PropertyStandardQuery);
-        if DeviceIoControl(hdrive, IOCTL_STORAGE_QUERY_PROPERTY, @Query, SizeOf(Query), @Buffer, SizeOf(Buffer), dwBytesReturned, nil) = false then
-        begin
-          exit;
-        end
-        else
-        begin
-          if (sdd.BusType <> BusTypeSata) and (sdd.BusType <> BusTypeSCSI) and (sdd.BusType <> BusTypeAta) then Result := 0
-          else Result := Byte(sdd.CommandQueueing) + 1;
-        end;
-      finally
-        CloseHandle(hdrive);
+  hdrive := CreateFile(PChar(DeviceName), 0, FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
+    OPEN_EXISTING, 0, 0);
+  if hdrive <> INVALID_HANDLE_VALUE then
+  begin
+    try
+      dwBytesReturned := 0;
+      FillChar(Query, SizeOf(Query), 0);
+      FillChar(Buffer, SizeOf(Buffer), 0);
+      InputBuf.Size := SizeOf(Buffer);
+      Query.PropertyId := Cardinal(StorageAdapterProperty);
+      Query.QueryType := Cardinal(PropertyStandardQuery);
+      if DeviceIoControl(hdrive, IOCTL_STORAGE_QUERY_PROPERTY, @Query, SizeOf(Query), @Buffer, SizeOf(Buffer), dwBytesReturned, nil) = false then
+      begin
+        exit;
+      end
+      else
+      begin
+        if (InputBuf.BusType <> BusTypeSata) and (InputBuf.BusType <> BusTypeSCSI) and (InputBuf.BusType <> BusTypeAta) then Result := 0
+        else Result := Byte(InputBuf.CommandQueueing or (InputBuf.BusType = BusTypeSata)) + 1;
       end;
+    finally
+      CloseHandle(hdrive);
     end;
-  finally
-    SetErrorMode(OldMode);
   end;
-
 end;
 
+
+function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
+var
+  hdrive: THandle;
+  dwBytesReturned: DWORD;
+begin
+  Result := false;
+
+  if Handle <> 0 then hdrive := Handle
+  else hdrive := CreateFile(PChar(DeviceName), 0, FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
+
+  if hdrive <> INVALID_HANDLE_VALUE then
+  begin
+    try
+      Result := DeviceIoControl(hdrive, IOCTL_STORAGE_CHECK_VERIFY, nil, 0, nil, 0, dwBytesReturned, nil);
+    finally
+      if Handle = 0 then CloseHandle(hdrive);
+    end;
+  end;
+end;
 
 function GetMotherDrive(const VolumeToGet: String): VOLUME_DISK_EXTENTS;
 var
