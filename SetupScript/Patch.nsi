@@ -69,6 +69,17 @@ Section "MainSection" SEC01
   File "..\Exe\SSDTools.exe"
   File "..\Exe\NSTDiagSvc_New.exe"
 
+  SetShellVarContext all
+  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Parted Magic).lnk"
+  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(GParted).lnk"
+  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall.lnk"
+  Delete "$DESKTOP\Naraeon SSD Tools.lnk"
+  Delete "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk"
+
+  CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
+  CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
+  CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
+
   Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
   ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd
