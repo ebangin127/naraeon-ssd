@@ -101,8 +101,8 @@ var
   SimulationMode: Boolean = false;
 
 const
-  SimulationModel = 'PLEXTOR PX-128M5Pro';
-  SimulationFirmware = '1.05';
+  SimulationModel = 'SanDisk SD6SB1M128G1022I';
+  SimulationFirmware = 'X231600';
 
   CurrentVersion = '4.6.0';
 

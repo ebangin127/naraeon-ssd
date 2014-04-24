@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899-12-30 00:00:00.000.003,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uSMARTFunctions.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.673,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uSMARTFunctions.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.696,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uTrimCommand.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.540,=C:\Users\진아\Desktop\내 작업들\trunk\Classes\SSDInfo\uSSDInfo.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.553,=C:\Users\진아\Desktop\내 작업들\trunk\Classes\SSDInfo\uSSDVersion.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.003,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uSMARTFunctions.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.520,C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uSMARTFunctions.pas=</Transaction>
-    <Transaction>1899-12-30 00:00:00.000.673,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Disk\uSMARTFunctions.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.060,=C:\Users\진아\Desktop\내 작업들\trunk\Classes\LogSystem\uLogSystem.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.108,C:\Users\진아\Desktop\내 작업들\trunk\Service\NSTDiagSvc.dproj=C:\Users\진아\Desktop\내 작업들\trunk\Service\NSTDiagSvc_New.dproj</Transaction>
     <Transaction>1899-12-30 00:00:00.000.207,=C:\Users\진아\Desktop\내 작업들\trunk\Modules\Windows\uRegFunctions.pas</Transaction>
