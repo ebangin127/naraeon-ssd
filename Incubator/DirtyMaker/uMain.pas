@@ -618,7 +618,7 @@ procedure TfMain.FillBuffer(Buffer: PTRandomBuffer; RandomnessInString: String; 
 var
   ArrNumAnd3: Integer;
   ArrNum, BitNum, Randomness: Integer;
-  RandomInt: Random4int;
+  RandomInt: TRandom4int;
 begin
   Randomness := Round(CacheSize * (StrToInt(RandomnessInString) / 100));
   for ArrNum := 0 to (MaxBufSize - 1) do

@@ -30,17 +30,15 @@ const
   LOWER_MASK = $7fffffff; { least significant r bits }
 
 type
-  Random4int = record
+  TRandom4int = record
     case Integer of
       0:
         (RandomInt: Integer;);
       1:
         (RandomChar: Array[0..3] of Byte;);
-end;
+  end;
 
-type
   TMersenne = class
-
     function genrand_int32(): Cardinal;
     function genrand_int31(): Integer;
 
@@ -60,7 +58,7 @@ type
     private
       mt: Array[0..N-1] of Cardinal; { the array for the state vector  }
       mti: Integer; { mti==N+1 means mt[N] is not initialized }
-end;
+  end;
 
 implementation
 
