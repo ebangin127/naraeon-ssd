@@ -161,13 +161,6 @@ type
   end;
   //---Trim Command--//
 
-  //---Firmware--//
-  FirmCheck = record
-    FirmExists: Boolean;
-    FirmPath: String;
-  end;
-  //---Firmware--//
-
   TSSDListResult = record
     ResultList: TStringList;
     WMIEnabled: Boolean;
@@ -237,11 +230,12 @@ function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
 function GetSSDList: TSSDListResult;
 
 //용량 계산
-function GetTBStr(DivUnit, MB: Double;  NumAfterPoint: Integer): String;
+function GetTBStr(DivUnit, MB: Double; NumAfterPoint: Integer): String;
 
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
-  IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16) or ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14)
+  IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16)
+                            or ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14)
                             or ($040B shl 2) or (METHOD_BUFFERED);
   IOCTL_ATA_PASS_THROUGH_DIRECT = $4D030;
   IOCTL_SCSI_PASS_THROUGH      =  $0004D004;
@@ -420,6 +414,9 @@ var
   OleCtx: IBindCtx;
   OleMoniker: IMoniker;
   ATAList, SCSIList: TStringList;
+
+  CurrDrv: Integer;
+  hdrive: THandle;
 begin
   wsFileObj := 'winmgmts:\\localhost\root\cimv2';
   ATAList := TStringList.Create;
@@ -437,7 +434,8 @@ begin
 
     while OleEnum.Next(1, OleDrives, iValue) = 0 do
     begin
-      if (not VarIsNull(OleDrives.DeviceID <> '')) and (OleDrives.MediaLoaded) and (not VarIsNull(OleDrives.MediaType))then
+      if (not VarIsNull(OleDrives.DeviceID <> '')) and (OleDrives.MediaLoaded)
+          and (not VarIsNull(OleDrives.MediaType))then
       begin
         if Pos('hard', Lowercase(OleDrives.MediaType)) >= 0 then
           if OleDrives.InterfaceType = 'IDE' then
@@ -459,14 +457,39 @@ begin
       result.WMIEnabled := false;
     end;
   end;
+
   for i := 0 to ATAList.Count - 1 do
     ATAList[i] := ExtractDeviceNum(ATAList[i]);
   for i := 0 to SCSIList.Count - 1 do
     SCSIList[i] := ExtractDeviceNum(SCSIList[i]);
+
   result.ResultList := TStringList.Create;
-  result.ResultList.AddStrings(ATAList);
-  result.ResultList.Add('/');
-  result.ResultList.AddStrings(SCSIList);
+
+  if (ATAList.Count > 0) or
+      (SCSIList.Count > 0) then
+  begin
+    result.ResultList.AddStrings(ATAList);
+    result.ResultList.Add('/');
+    result.ResultList.AddStrings(SCSIList);
+  end
+  else
+  begin
+    for CurrDrv := 0 to 99 do
+    begin
+      hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)),
+                           GENERIC_READ or GENERIC_WRITE,
+                           FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
+                           OPEN_EXISTING, 0, 0);
+
+      if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
+      begin
+        result.ResultList.Add(IntToStr(CurrDrv));
+      end;
+
+      CloseHandle(hdrive);
+    end;
+  end;
+
   FreeAndNil(ATAList);
   FreeAndNil(SCSIList);
 end;

@@ -30,7 +30,10 @@ uses
   uVersion in 'Classes\Version\uVersion.pas',
   uDownloadPath in 'Classes\DownloadPath\uDownloadPath.pas',
   uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas',
-  uATALowOps in 'Classes\ATALowOps\uATALowOps.pas';
+  uATALowOps in 'Classes\ATALowOps\uATALowOps.pas',
+  uFirmware in 'ModulesForUI\Firmware\uFirmware.pas',
+  uUSBDrive in 'ModulesForUI\USBDrive\uUSBDrive.pas',
+  uRefresh in 'ModulesForUI\Refresh\uRefresh.pas';
 
 {$R *.res}
 var

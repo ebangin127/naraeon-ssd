@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SSDTools.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -151,6 +151,9 @@
         <DCCReference Include="Classes\DownloadPath\uDownloadPath.pas"/>
         <DCCReference Include="Modules\Windows\uPlugAndPlay.pas"/>
         <DCCReference Include="Classes\ATALowOps\uATALowOps.pas"/>
+        <DCCReference Include="ModulesForUI\Firmware\uFirmware.pas"/>
+        <DCCReference Include="ModulesForUI\USBDrive\uUSBDrive.pas"/>
+        <DCCReference Include="ModulesForUI\Refresh\uRefresh.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

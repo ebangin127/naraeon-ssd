@@ -19,6 +19,7 @@ object fMain: TfMain
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object iBG: TImage
@@ -1912,39 +1913,26 @@ object fMain: TfMain
     Enabled = False
     Interval = 60000
     OnTimer = tRefreshTimer
-    Left = 503
-    Top = 311
-  end
-  object tFirst: TTimer
-    Enabled = False
-    Interval = 1
-    OnTimer = tFirstTimer
-    Left = 439
-    Top = 368
-  end
-  object tErrFileProcess: TTimer
-    Interval = 10
-    OnTimer = tErrFileProcessTimer
-    Left = 439
-    Top = 320
+    Left = 495
+    Top = 319
   end
   object tErrorChk: TTimer
     Interval = 500
     OnTimer = tErrorChkTimer
-    Left = 551
-    Top = 312
+    Left = 495
+    Top = 368
   end
   object tGetSSDs: TTimer
     Enabled = False
     OnTimer = tGetSSDsTimer
-    Left = 543
-    Top = 367
+    Left = 447
+    Top = 319
   end
   object tListLeave: TTimer
     Enabled = False
     Interval = 200
     OnTimer = tListLeaveTimer
-    Left = 508
+    Left = 444
     Top = 370
   end
 end
