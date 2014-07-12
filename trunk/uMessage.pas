@@ -58,7 +58,7 @@ begin
   for i := 2 to 3 do
   begin
     TempSSDInfo.ATAorSCSI := DetermineModel;
-    TempSSDInfo.SetDeviceName('\\.\PhysicalDrive' + InttoStr(i));
+    TempSSDInfo.SetDeviceName(i);
     TempSSDInfo.CollectAllSmartData;
     if Logger[i] <> ExtractSMART(TempSSDInfo.SMARTData, 9) then
     begin

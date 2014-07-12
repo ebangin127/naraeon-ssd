@@ -25,7 +25,7 @@ const
     CapReadError: Array[0..1] of String = ('읽기 에러 : ', 'Read Errors: ');
     CapRepSect: Array[0..1] of String = ('치환된 섹터 (중요) : ', 'Reallocated Sectors (Important) : ');
     CapAlign: Array[0..1] of String = ('파티션 배열 (중요) : ', 'Partition Align (Important) : ');
-    CapNotSafe: Array[0..1] of String = ('상태 : ', 'Status : ');
+    CapStatus: Array[0..1] of String = ('상태 : ', 'Status : ');
     CapUnknown: Array[0..1] of String = ('알 수 없음', 'Unknown');
     ConnState: Array[0..3] of String = ('SATA 1.5Gb/s (', 'SATA 3.0Gb/s (', 'SATA 6.0Gb/s (', 'USB');
     CapSupportNCQ: Array[0..1] of String = ('AHCI 사용', 'AHCI Working');

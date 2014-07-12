@@ -2,8 +2,7 @@ unit uPartitionFunctions;
 
 interface
 
-uses Windows, Math, SysUtils,
-      uLanguageSettings;
+uses Windows, Math, SysUtils;
 
 type
   //---GetNTFSVolumeData---//
@@ -63,7 +62,6 @@ function GetDiskSize(const DiskNumber: String): TLargeInteger;
 //파티션 용량 받아오는 함수
 function GetPartitionLength(DriveLetter: String): Int64;
 function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
-function GetVolumeLabel(DriveName: String): string;
 function GetFirstSector(const DriveLetter: String): Int64;
 
 implementation
@@ -160,21 +158,6 @@ begin
       result.ErrorCode := GetLastError;
     CloseHandle(hdrive);
   end;
-end;
-
-function GetVolumeLabel(DriveName: String): string;
-var
-  NotUsed:     DWORD;
-  VolumeFlags: DWORD;
-  VolumeSerialNumber: DWORD;
-  Buf: array [0..MAX_PATH] of Char;
-begin
-    GetVolumeInformation(PChar(DriveName), Buf, SizeOf(Buf), @VolumeSerialNumber, NotUsed, VolumeFlags, nil, 0);
-
-    if Buf[0] <> #0 then
-      Result := DriveName + ' (' + Buf + ' - ' + IntToStr(DiskSize(Pos(DriveName[1], VolumeNames)) div 1024 div 1024) + 'MB)'
-    else
-      Result := DriveName + ' (' + CapRemvDisk[CurrLang] + ' - ' + IntToStr(DiskSize(Pos(DriveName[1], VolumeNames)) div 1024 div 1024) + 'MB)';
 end;
 
 function GetDiskSize(const DiskNumber: String): TLargeInteger;

@@ -29,7 +29,8 @@ uses
   uUpdateThread in 'Classes\Threads\uUpdateThread.pas',
   uVersion in 'Classes\Version\uVersion.pas',
   uDownloadPath in 'Classes\DownloadPath\uDownloadPath.pas',
-  uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas';
+  uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas',
+  uATALowOps in 'Classes\ATALowOps\uATALowOps.pas';
 
 {$R *.res}
 var
@@ -99,13 +100,13 @@ begin
             begin
               TempSSDInfo.ATAorSCSI := DetermineModel;
             end;
-            TempSSDInfo.SetDeviceName('PhysicalDrive' + AllDrv[CurrDrv]);
+            TempSSDInfo.SetDeviceName(StrToInt(AllDrv[CurrDrv]));
           finally
             if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
             begin
               if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = ATAModel) then
               begin
-                Drives := GetPartitionList(ExtractDrvNum(TempSSDInfo.DeviceName));
+                Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
                 SetLength(NeedTrimPartition, Length(NeedTrimPartition) + Length(Drives.Letters));
                 for CurrPartition := 1 to Length(Drives.Letters) do
                 begin

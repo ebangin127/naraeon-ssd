@@ -150,6 +150,7 @@
         <DCCReference Include="Classes\Version\uVersion.pas"/>
         <DCCReference Include="Classes\DownloadPath\uDownloadPath.pas"/>
         <DCCReference Include="Modules\Windows\uPlugAndPlay.pas"/>
+        <DCCReference Include="Classes\ATALowOps\uATALowOps.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

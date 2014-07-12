@@ -3,7 +3,7 @@ unit uSSDInfo;
 interface
 
 uses Windows, Classes, Math, Dialogs, SysUtils,
-      uDiskFunctions, uSSDVersion, uSMARTFunctions, uStrFunctions;
+      uATALowOps, uDiskFunctions, uSSDVersion, uSMARTFunctions, uStrFunctions;
 
 const
   NullModel = 0;
@@ -40,16 +40,12 @@ type
     SMARTData: SENDCMDOUTPARAMS;
     LBASize: Integer;
 
-    procedure SetDeviceName(Harddisk: string); virtual;
-    procedure CollectAllSmartData; virtual;
+    procedure SetDeviceName(DeviceNum: Integer); virtual;
+    procedure LLBufferToInfo(Buffer: TLLBuffer);
+    procedure CollectAllSMARTData; virtual;
+
     //1. 창조자와 파괴자
     constructor Create;
-    protected
-      procedure GetInfoATA;
-      procedure GetInfoSCSI;
-
-      function GetSmartDataATA: SENDCMDOUTPARAMS;
-      function GetSmartDataSCSI: SENDCMDOUTPARAMS;
   end;
 
 const
@@ -93,8 +89,8 @@ type
 
     //1. 창조자와 파괴자
     constructor Create;
-    procedure SetDeviceName(Harddisk: string); reintroduce;
-    procedure CollectAllSmartData; reintroduce;
+    procedure SetDeviceName(DeviceNum: Integer); reintroduce;
+    procedure CollectAllSMARTData; reintroduce;
   end;
 
 var
@@ -118,17 +114,21 @@ begin
   USBMode := false;
 end;
 
-procedure TSSDInfo.SetDeviceName(Harddisk: string);
+procedure TSSDInfo.SetDeviceName(DeviceNum: Integer);
+var
+  DeviceHandle: THandle;
 begin
-  DeviceName := '\\.\' + Harddisk;
+  DeviceName := '\\.\PhysicalDrive' + IntToStr(DeviceNum);
   Model := '';
   Firmware := '';
   Serial := '';
 
-  GetInfoATA;
+  DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
+
+  LLBufferToInfo(TATALowOps.GetInfoATA(DeviceHandle));
   if Trim(Model) = '' then
   begin
-    GetInfoSCSI;
+    LLBufferToInfo(TATALowOps.GetInfoSCSI(DeviceHandle));
     ATAorSCSI := SCSIModel;
   end
   else
@@ -136,231 +136,68 @@ begin
     ATAorSCSI := ATAModel;
   end;
 
-  NCQSupport := GetNCQStatus(DeviceName);
+  NCQSupport := TATALowOps.
+                  GetNCQStatus(DeviceHandle);
 
   if SimulationMode then
   begin
     Model := SimulationModel;
     Firmware := SimulationFirmware;
   end;
+
+  CloseHandle(DeviceHandle);
 end;
 
-procedure TSSDInfo.CollectAllSmartData;
-begin
-  if ATAorSCSI = ATAModel then SMARTData := GetSmartDataATA;
-  if (ATAorSCSI = SCSIModel) or (isValidSMART(SMARTData) = false) then SMARTData := GetSmartDataSCSI;
-end;
-
-procedure TSSDInfo.GetInfoATA;
+procedure TSSDInfo.LLBufferToInfo(Buffer: TLLBuffer);
 var
-  ICBuffer: ATA_PTH_BUFFER;
-  hdrive: THandle;
-  bResult: Boolean;
-  BytesRead: Cardinal;
   CurrBuf: Integer;
 begin
-  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
+  for CurrBuf := ModelStart to ModelEnd do
+    Model := Model + Chr(Buffer[CurrBuf * 2 + 1]) +
+                     Chr(Buffer[CurrBuf * 2]);
+  Model := Trim(Model);
 
-  hdrive := CreateFile(PChar(DeviceName), GENERIC_READ or GENERIC_WRITE,
-                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
+  for CurrBuf := FirmStart to FirmEnd do
+    Firmware := Firmware + Chr(Buffer[CurrBuf * 2 + 1]) +
+                           Chr(Buffer[CurrBuf * 2]);
+  Firmware := Trim(Firmware);
 
-  If GetLastError = 0 Then
+  for CurrBuf := SerialStart to SerialEnd do
+    Serial := Serial + Chr(Buffer[CurrBuf * 2 + 1]) +
+                       Chr(Buffer[CurrBuf * 2]);
+  Serial := Trim(Serial);
+
+  SATASpeed := Buffer[SataNegStart * 2 + 1] +
+               Buffer[SataNegStart * 2];
+
+  SATASpeed := SATASpeed shr 1 and 3;
+
+  LBASize := 512;
+
+  UserSize := 0;
+  for CurrBuf := UserSizeStart to UserSizeEnd do
   begin
-    ICBuffer.PTH.Length := SizeOf(ICBuffer.PTH);
-    ICBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
-    ICBuffer.PTH.DataTransferLength := 512;
-    ICBuffer.PTH.TimeOutValue := 2;
-    ICBuffer.PTH.DataBufferOffset := PChar(@ICBuffer.Buffer) - PChar(@ICBuffer.PTH) + 20;
-
-    ICBuffer.PTH.CurrentTaskFile[6] := $EC;
-
-    bResult := DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH, @ICBuffer, SizeOf(ICBuffer), @ICBuffer, SizeOf(ICBuffer), BytesRead, nil);
-    if bResult and (GetLastError = 0) then
-    begin
-      for CurrBuf := ModelStart to ModelEnd do
-        Model := Model + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                         Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Model := Trim(Model);
-
-      for CurrBuf := FirmStart to FirmEnd do
-        Firmware := Firmware + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                               Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Firmware := Trim(Firmware);
-
-      for CurrBuf := SerialStart to SerialEnd do
-        Serial := Serial + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                           Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Serial := Trim(Serial);
-
-      SATASpeed := ICBuffer.Buffer[SataNegStart * 2 + 1] +
-                    ICBuffer.Buffer[SataNegStart * 2];
-
-      SATASpeed := SATASpeed shr 1 and 3;
-
-      LBASize := ReadSector(DeviceName, 0, 4096);
-
-      UserSize := 0;
-      for CurrBuf := UserSizeStart to UserSizeEnd do
-      begin
-        UserSize := UserSize + ICBuffer.Buffer[CurrBuf * 2] shl (((CurrBuf - UserSizeStart) * 2) * 8);
-        UserSize := UserSize + ICBuffer.Buffer[CurrBuf * 2 + 1]  shl ((((CurrBuf - UserSizeStart) * 2) + 1) * 8);
-      end;
-    end;
-    CloseHandle(hdrive);
+    UserSize := UserSize + Buffer[CurrBuf * 2] shl
+                (((CurrBuf - UserSizeStart) * 2) * 8);
+    UserSize := UserSize + Buffer[CurrBuf * 2 + 1]  shl
+                ((((CurrBuf - UserSizeStart) * 2) + 1) * 8);
   end;
 end;
 
-procedure TSSDInfo.GetInfoSCSI;
+procedure TSSDInfo.CollectAllSMARTData;
 var
-  hdrive: Cardinal;
-  dwBytesReturned: DWORD;
-  Status: Longbool;
-  ICBuffer: SCSI_PTH_BUFFER;
-  CurrBuf: Integer;
+  DeviceNum: Integer;
+  DeviceHandle: THandle;
 begin
-  fillchar(ICBuffer, SizeOf(ICBuffer), #0);
-	ICBuffer.spt.Length     := sizeof(SCSI_PASS_THROUGH);
-  ICBuffer.spt.TargetId   := 1;
-  ICBuffer.spt.CdbLength  := 12;
-	ICBuffer.spt.SenseInfoLength := 24;
-	ICBuffer.spt.DataIn  := 1;
-	ICBuffer.spt.DataTransferLength := 512;
-	ICBuffer.spt.TimeOutValue := 2;
-	ICBuffer.spt.DataBufferOffset := pansichar(@ICBuffer.Buffer)-pansichar(@ICBuffer);
-	ICBuffer.spt.SenseInfoOffset  := pansichar(@ICBuffer.SenseBuf)-pansichar(@ICBuffer);
-  ICBuffer.spt.Cdb[0] := $A1;
-  ICBuffer.spt.Cdb[1] := $8;
-  ICBuffer.spt.Cdb[2] := $E;
-  ICBuffer.spt.Cdb[4] := $1;
-	ICBuffer.spt.Cdb[9] := $EC;
+  DeviceNum := StrToInt(ExtractDeviceNum(DeviceName));
+  DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
 
-  hdrive := CreateFile(PChar(DeviceName), GENERIC_READ or GENERIC_WRITE,
-                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
+  if ATAorSCSI = ATAModel then
+    SMARTData := TATALowOps.GetSMARTATA(DeviceHandle, DeviceNum);
+  if (ATAorSCSI = SCSIModel) or (isValidSMART(SMARTData) = false) then
+    SMARTData := TATALowOps.GetSMARTSCSI(DeviceHandle);
 
-  If GetLastError = 0 Then
-  begin
-    Status := DeviceIoControl(hdrive, IOCTL_SCSI_PASS_THROUGH, @ICBuffer, SizeOf(ICBuffer), @ICBuffer, SizeOf(ICBuffer), dwBytesReturned, nil);
-    if status and (GetLastError = 0) and (ICBuffer.SenseBuf[0] = 0) then
-    begin
-      for CurrBuf := ModelStart to ModelEnd do
-        Model := Model + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                         Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Model := Trim(Model);
-
-      for CurrBuf := FirmStart to FirmEnd do
-        Firmware := Firmware + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                               Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Firmware := Trim(Firmware);
-
-      for CurrBuf := SerialStart to SerialEnd do
-        Serial := Serial + Chr(ICBuffer.Buffer[CurrBuf * 2 + 1]) +
-                           Chr(ICBuffer.Buffer[CurrBuf * 2]);
-      Serial := Trim(Serial);
-
-      for CurrBuf := LBAStart to LBAEnd do
-        LBASize := LBASize + ICBuffer.Buffer[CurrBuf * 2 + 1] +
-                             ICBuffer.Buffer[CurrBuf * 2];
-
-        SATASpeed := ICBuffer.Buffer[SataNegStart * 2 + 1] +
-                      ICBuffer.Buffer[SataNegStart * 2];
-
-        SATASpeed := SATASpeed shr 1 and 3;
-
-      LBASize := 0;
-      UserSize := 0;
-      for CurrBuf := UserSizeStart to UserSizeEnd do
-      begin
-        UserSize := UserSize + ICBuffer.Buffer[CurrBuf * 2] shl (((CurrBuf - UserSizeStart) * 2) * 8);
-        UserSize := UserSize + ICBuffer.Buffer[CurrBuf * 2 + 1]  shl ((((CurrBuf - UserSizeStart) * 2) + 1) * 8);
-      end;
-    end;
-    CloseHandle(hdrive);
-  end;
-end;
-
-function TSSDInfo.GetSmartDataATA: SENDCMDOUTPARAMS;
-var
-  hdrive: Cardinal;
-  dwBytesReturned: DWORD;
-  opar: SENDCMDOUTPARAMS;
-  opar2: SENDCMDOUTPARAMS;
-  Status: Longbool;
-  ipar2: SENDCMDINPARAMS;
-begin
-  ipar2.cBufferSize := 512;
-  ipar2.bDriveNumber := StrToInt(ExtractDrvNum(DeviceName));
-  ipar2.irDriveRegs.bFeaturesReg := SMART_READ_ATTRIBUTE_VALUES;
-  ipar2.irDriveRegs.bSectorCountReg := 1;
-  ipar2.irDriveRegs.bSectorNumberReg := 1;
-  ipar2.irDriveRegs.bCylLowReg := SMART_CYL_LOW;
-  ipar2.irDriveRegs.bCylHighReg := SMART_CYL_HI;
-  ipar2.irDriveRegs.bDriveHeadReg := ((StrToInt(ExtractDrvNum(DeviceName)) and 1) shl 4) or $a0;
-  ipar2.irDriveRegs.bCommandReg := SMART_CMD;
-
-  fillchar(opar, SizeOf(opar), #0);
-
-  hdrive := CreateFile(PChar(DeviceName), GENERIC_READ or GENERIC_WRITE,
-                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-
-  If GetLastError = 0 Then
-  begin
-    Status := DeviceIoControl(hdrive, SMART_RCV_DRIVE_DATA, @ipar2, SizeOf(SENDCMDINPARAMS), @opar, SizeOf(SENDCMDOUTPARAMS), dwBytesReturned, nil);
-    if (status = false) or (getLastError <> 0) then
-      result := opar2;
-    CloseHandle(hdrive);
-  end;
-  Result := opar;
-end;
-
-function TSSDInfo.GetSmartDataSCSI: SENDCMDOUTPARAMS;
-var
-  hdrive: Cardinal;
-  dwBytesReturned: DWORD;
-  opar: SENDCMDOUTPARAMS;
-  opar2: SENDCMDOUTPARAMS;
-  Status: Longbool;
-  ipar: SCSI_PTH_BUFFER;
-  CurrBuf: Integer;
-begin
-  fillchar(ipar, SizeOf(ipar), #0);
-  fillchar(opar, SizeOf(opar), #0);
-  fillchar(opar2, SizeOf(opar2), #0);
-	ipar.spt.Length     := sizeof(SCSI_PASS_THROUGH);
-  ipar.spt.TargetId   := 1;
-  ipar.spt.CdbLength  := 12;
-	ipar.spt.SenseInfoLength := 24;
-	ipar.spt.DataIn  := 1;
-	ipar.spt.DataTransferLength := 512;
-	ipar.spt.TimeOutValue := 2;
-	ipar.spt.DataBufferOffset := pansichar(@ipar.Buffer)-pansichar(@ipar);
-	ipar.spt.SenseInfoOffset  := pansichar(@ipar.SenseBuf)-pansichar(@ipar);
-  ipar.spt.Cdb[0] := $A1;
-  ipar.spt.Cdb[1] := $8;
-  ipar.spt.Cdb[2] := $E;
-	ipar.spt.Cdb[3] := $D0;
-  ipar.spt.Cdb[4] := $1;
-  ipar.spt.Cdb[5] := $0;
-  ipar.spt.Cdb[6] := $4F;
-  ipar.spt.Cdb[7] := $C2;
-  ipar.spt.Cdb[8] := $0;
-	ipar.spt.Cdb[9] := $B0;
-
-  fillchar(opar, SizeOf(opar), #0);
-
-  hdrive := CreateFile(PChar(DeviceName), GENERIC_READ or GENERIC_WRITE,
-                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-
-  If GetLastError = 0 Then
-  begin
-    Status := DeviceIoControl(hdrive, IOCTL_SCSI_PASS_THROUGH, @ipar, SizeOf(ipar), @ipar, SizeOf(ipar), dwBytesReturned, nil);
-    if status = false then
-      result := opar2;
-    CloseHandle(hdrive);
-  end;
-
-  for CurrBuf := 0 to 511 do
-    opar.bBuffer[CurrBuf] := ipar.Buffer[CurrBuf];
-  Result := opar;
+  CloseHandle(DeviceHandle);
 end;
 
 constructor TSSDInfo_NST.Create;
@@ -369,9 +206,9 @@ begin
   S10085 := false;
 end;
 
-procedure TSSDInfo_NST.SetDeviceName(Harddisk: string);
+procedure TSSDInfo_NST.SetDeviceName(DeviceNum: Integer);
 begin
-  inherited SetDeviceName(Harddisk);
+  inherited SetDeviceName(DeviceNum);
 
   SSDSupport.SupportHostWrite := HSUPPORT_NONE;
   SSDSupport.SupportFirmUp := false;
@@ -428,7 +265,7 @@ end;
 
 procedure TSSDInfo_NST.CollectAllSmartData;
 begin
-  inherited CollectAllSmartData;
+  inherited CollectAllSMARTData;
 
   if  ((Pos('SAMSUNG', UpperCase(Model)) > 0) and (Pos('SSD', UpperCase(Model)) > 0)) then HostWrites := round(ExtractSMART(SMARTData, 'F1') / 1024 / 2048 * 10 * 1.56)
   else if (Pos('MXSSD', Model) > 0) and (Pos('MMY', Model) > 0) then HostWrites := 0
