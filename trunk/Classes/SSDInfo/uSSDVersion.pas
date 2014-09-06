@@ -39,10 +39,11 @@ const
 
   LastNinja = 1.01;
 
-  LastSS = 03;
+  LastM500 = 5;
 
 function IsLiteONNewVer(Model, Revision: String): Byte;
 function IsPlextorNewVer(Model, Revision: String): Byte;
+function IsCrucialNewVer(Model, Revision: String): Byte;
 function NewFirmCaption(Model, Revision: String): String;
 function NewFirmSub(Model, Revision: String): String;
 
@@ -127,6 +128,19 @@ begin
     result := NOT_MINE;
 end;
 
+function IsCrucialNewVer(Model, Revision: String): Byte;
+begin
+  if  (Pos('Crucial', Model) > 0) and
+      (Pos('M500', Model) > 0) then
+  begin
+    result := NEW_VERSION;
+    if (StrToInt(Copy(Revision, 3, 2)) < LastM500)then
+      result := OLD_VERSION;
+  end
+  else
+    result := NOT_MINE;
+end;
+
 function NewFirmSub(Model, Revision: String): String;
 begin
   Result := Copy(Revision, 1, 3);
@@ -182,9 +196,10 @@ begin
     ((Model[Pos('512M3', Model) + 5] <>'P') and
     (Model[Pos('512M3', Model) + 5] <>'S')) then
       Result := FloatToStr(Last512M3)
-  else if Pos('SAMSUNG', Model) > 0  then
-    if LastSS < 10 then Result := Copy(Revision, 1, 3) + '0' + IntToStr(LastSS) + Copy(Revision, 6, 3)
-  else Result := Copy(Revision, 1, 3) + IntToStr(LastSS) + Copy(Revision, 6, 3);
+
+  else if (Pos('Crucial', Model) > 0) and
+          (Pos('M500', Model) > 0) then
+    Result := 'MU' + Format('%.2d', [LastM500]);
 end;
 
 function NewFirmCaption(Model, Revision: String): String;

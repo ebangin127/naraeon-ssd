@@ -675,7 +675,8 @@ begin
       gFirmware.Visible := true;
     end;
     if (IsPlextorNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) or
-        (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) then
+        (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) or
+        (IsCrucialNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) then
     begin
         lFirmware.Font.Color := clRed;
         lFirmware.Font.Style := [fsBold];
@@ -684,7 +685,8 @@ begin
         begin
           lNewFirm.Font.Color := clRed;
           lNewFirm.Font.Style := [fsBold];
-          if Pos(CapCurrFirm[CurrLang], lNewFirm.Caption) = 0 then lNewFirm.Caption := lNewFirm.Caption + ' ' + CapCurrFirm[CurrLang];
+          if Pos(CapCurrFirm[CurrLang], lNewFirm.Caption) = 0 then
+            lNewFirm.Caption := lNewFirm.Caption + ' ' + CapCurrFirm[CurrLang];
         end;
         AlertCreate(Self, AlrtNoUpdate[CurrLang]);
     end;

@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{73281663-701B-413A-A1FD-78A9FA509574}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SSDTools.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Service\NSTDiagSvc_New.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SSDTools">
+        <MSBuild Projects="SSDTools.dproj"/>
+    </Target>
+    <Target Name="SSDTools:Clean">
+        <MSBuild Projects="SSDTools.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SSDTools:Make">
+        <MSBuild Projects="SSDTools.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NSTDiagSvc_New">
+        <MSBuild Projects="Service\NSTDiagSvc_New.dproj"/>
+    </Target>
+    <Target Name="NSTDiagSvc_New:Clean">
+        <MSBuild Projects="Service\NSTDiagSvc_New.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NSTDiagSvc_New:Make">
+        <MSBuild Projects="Service\NSTDiagSvc_New.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SSDTools;NSTDiagSvc_New"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SSDTools:Clean;NSTDiagSvc_New:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SSDTools:Make;NSTDiagSvc_New:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

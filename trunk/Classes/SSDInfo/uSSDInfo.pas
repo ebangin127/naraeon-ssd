@@ -22,17 +22,33 @@ const
 type
   TSSDInfo = class
     //기본 정보들
+    /// <remarks>모델명</remarks>
     Model: String;
+    /// <remarks>펌웨어 버전</remarks>
     Firmware: String;
+    /// <remarks>시리얼 번호</remarks>
     Serial: String;
+    /// <remarks>물리 주소 (ex: \\.\PhysicalDrive0)</remarks>
     DeviceName: String;
     UserSize: UInt64;
 
     //SATA 정보
+    /// <remarks>
+    ///   <para>SATA 속도 (0~4)</para>
+    ///   <para>Unknown / SATA 1.5Gbps / SATA 3Gbps / SATA 6Gbps / USB</para>
+    /// </remarks>
     SATASpeed: Byte;
+    /// <remarks>
+    ///   <para>NCQ 지원 여부 (0~2)</para>
+    ///   <para>Unknown / 지원 / 미지원</para>
+    /// </remarks>
     NCQSupport: Byte;
 
     //연결 수단
+    /// <remarks>
+    ///   <para>ATA인가 SCSI인가 (0~3)</para>
+    ///   <para>Null / ATA / SCSI / 자동 감지</para>
+    /// </remarks>
     ATAorSCSI: Byte;
     USBMode: Boolean;
 
@@ -75,10 +91,16 @@ type
 
   TSSDInfo_NST = class(TSSDInfo)
     //표시될 정보들
+    /// <remarks>
+    ///   <para>S10085 False: 기본 64MB 단위</para>
+    ///   <para>S10085 True: 기본 128MB 단위</para>
+    /// </remarks>
     HostWrites: UInt64;
     EraseError: UInt64;
     ReplacedSectors: UInt64;
     RepSectorAlert: Boolean;
+    /// <remarks>호스트 쓰기(T) / 낸드 쓰기(F)</remarks>
+    IsHostWrite: Boolean; // 호스트 쓰기/낸드 쓰기
 
     //지원 수준
     SupportedDevice: Byte;
@@ -87,7 +109,7 @@ type
     //128MB 용량 단위 적용 여부
     S10085: Boolean;
 
-    //1. 창조자와 파괴자
+    //창조자와 파괴자
     constructor Create;
     procedure SetDeviceName(DeviceNum: Integer); reintroduce;
     procedure CollectAllSMARTData; reintroduce;
@@ -100,7 +122,7 @@ const
   SimulationModel = 'SanDisk SD6SB1M128G1022I';
   SimulationFirmware = 'X231600';
 
-  CurrentVersion = '4.6.0';
+  CurrentVersion = '4.7.0';
 
 implementation
 
@@ -213,10 +235,15 @@ begin
   SSDSupport.SupportHostWrite := HSUPPORT_NONE;
   SSDSupport.SupportFirmUp := false;
 
-  if ((Pos('LITEONIT', UpperCase(Model)) > 0) and (Pos('S100', UpperCase(Model)) > 0) and (StrToInt(Copy(Firmware, 3, 2)) < 83)) or
-     (((Pos('MXSSD', UpperCase(Model)) > 0) and (Pos('MMY', UpperCase(Model)) > 0))) or
+  if ((Pos('LITEONIT', UpperCase(Model)) > 0) and
+      (Pos('S100', UpperCase(Model)) > 0) and
+      (StrToInt(Copy(Firmware, 3, 2)) < 83)) or
+     (((Pos('MXSSD', UpperCase(Model)) > 0) and
+       (Pos('MMY', UpperCase(Model)) > 0))) or
       ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
-      ((Pos('THNSNF', UpperCase(Model)) > 0) or (Pos('THNSNH', UpperCase(Model)) > 0) or (Pos('THNSNJ', UpperCase(Model)) > 0))) then
+      ((Pos('THNSNF', UpperCase(Model)) > 0) or
+       (Pos('THNSNH', UpperCase(Model)) > 0) or
+       (Pos('THNSNJ', UpperCase(Model)) > 0))) then
   begin
     SSDSupport.SupportHostWrite := HSUPPORT_NONE;
   end
@@ -231,33 +258,47 @@ begin
   end;
 
   if (IsPlextorNewVer(Model, Firmware) <> NOT_MINE) or
-      (IsLiteONNewVer(Model, Firmware) <> NOT_MINE) then
+      (IsLiteONNewVer(Model, Firmware) <> NOT_MINE) or
+      (IsCrucialNewVer(Model, Firmware) <> NOT_MINE) then
   begin
     SSDSupport.SupportFirmUp := true;
   end;
 
   if ((Pos('S100', Model) > 0) and (Pos('85', Firmware) > 0)) or
-      ((IsPlextorNewVer(Model, Firmware) = NEW_VERSION) and (Pos('M3', UpperCase(Model)) > 0)) then S10085 := true
+      ((IsPlextorNewVer(Model, Firmware) = NEW_VERSION) and
+       (Pos('M3', UpperCase(Model)) > 0)) then S10085 := true
   else S10085 := false;
 
   if (IsPlextorNewVer(Model, Firmware) <> NOT_MINE) or
       (IsLiteONNewVer(Model, Firmware) <> NOT_MINE) or
       (Pos('MXSSD', UpperCase(Model)) > 0) or
       ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
-       ((Pos('THNSNF', UpperCase(Model)) > 0) or (Pos('THNSNH', UpperCase(Model)) > 0) or (Pos('THNSNJ', UpperCase(Model)) > 0))) or
-      ((Pos('SANDISK', UpperCase(Model)) > 0) and (Pos('SD6SB1', UpperCase(Model)) > 0)) or
-      ((Pos('ST', UpperCase(Model)) > 0) and (Pos('HM000', UpperCase(Model)) > 0)) then
+       ((Pos('THNSNF', UpperCase(Model)) > 0) or
+        (Pos('THNSNH', UpperCase(Model)) > 0) or
+        (Pos('THNSNJ', UpperCase(Model)) > 0))) or
+      ((Pos('SANDISK', UpperCase(Model)) > 0) and
+       (Pos('SD6SB1', UpperCase(Model)) > 0)) or
+      ((Pos('ST', UpperCase(Model)) > 0) and
+       (Pos('HM000', UpperCase(Model)) > 0)) or
+      ((Pos('CRUCIAL', UpperCase(Model)) > 0) and
+       ((Pos('M500', UpperCase(Model)) > 0) or
+        (Pos('M550', UpperCase(Model)) > 0) or
+        (Pos('MX100', UpperCase(Model)) > 0)))
+      then
     SupportedDevice := SUPPORT_FULL
   else if
-      ((Model = 'OCZ-VERTEX3') or (Model = 'OCZ-AGILITY3') or (Model = 'OCZ-VERTEX3 MI')) or
+      ((Model = 'OCZ-VERTEX3') or (Model = 'OCZ-AGILITY3') or
+       (Model = 'OCZ-VERTEX3 MI')) or
       ((Pos('C400', Model) > 0) and (Pos('MT', Model) > 0)) or
       ((Pos('M4', Model) > 0) and (Pos('CT', Model) > 0)) or
       ((Model = 'SSD 128GB') or (Model = 'SSD 64GB')) or
       (Pos('SHYSF', Model) > 0) or (Pos('Patriot Pyro', Model) > 0) or
       ((Pos('SuperSSpeed', Model) > 0) and (Pos('Hyper', Model) > 0)) or
       ((Pos('MNM', Model) > 0) and (Pos('HFS', Model) > 0)) or
-      ((Pos('SAMSUNG', UpperCase(Model)) > 0) and (Pos('SSD', UpperCase(Model)) > 0)) or
-      ((Pos('TOSHIBA', UpperCase(Model)) > 0) and (Pos('THNSNS', UpperCase(Model)) > 0)) then
+      ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
+       (Pos('SSD', UpperCase(Model)) > 0)) or
+      ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
+       (Pos('THNSNS', UpperCase(Model)) > 0)) then
     SupportedDevice := SUPPORT_SEMI
   else
     SupportedDevice := SUPPORT_NONE;
@@ -267,39 +308,83 @@ procedure TSSDInfo_NST.CollectAllSmartData;
 begin
   inherited CollectAllSMARTData;
 
-  if  ((Pos('SAMSUNG', UpperCase(Model)) > 0) and (Pos('SSD', UpperCase(Model)) > 0)) then HostWrites := round(ExtractSMART(SMARTData, 'F1') / 1024 / 2048 * 10 * 1.56)
-  else if (Pos('MXSSD', Model) > 0) and (Pos('MMY', Model) > 0) then HostWrites := 0
-  else if (Pos('MXSSD', Model) > 0) and (Pos('JT', Model) > 0) then HostWrites := round(ExtractSMART(SMARTData, 'F1') / 2)
-  else if (Pos('MXSSD', Model) > 0) or ((Pos('OCZ', Model) > 0) and (Pos('VERTEX3', Model) > 0)) or
-          ((Pos('OCZ', Model) > 0) and (Pos('AGILITY3', Model) > 0)) or ((Model = 'SSD 128GB') or (Model = 'SSD 64GB')) or
+  IsHostWrite := false;
+  if  ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
+        (Pos('SSD', UpperCase(Model)) > 0)) or
+      ((Pos('CRUCIAL', UpperCase(Model)) > 0) and
+       ((Pos('M500', UpperCase(Model)) > 0) or
+        (Pos('M550', UpperCase(Model)) > 0) or
+        (Pos('MX100', UpperCase(Model)) > 0))) then
+  begin
+    HostWrites :=
+      round(ExtractSMART(SMARTData, 'F1') / 1024 / 2048 * 10 * 1.56);
+    IsHostWrite := true;
+  end
+  else if (Pos('MXSSD', Model) > 0) and (Pos('MMY', Model) > 0) then
+    HostWrites := 0
+  else if (Pos('MXSSD', Model) > 0) and (Pos('JT', Model) > 0) then
+  begin
+    HostWrites := round(ExtractSMART(SMARTData, 'F1') / 2);
+    IsHostWrite := true;
+  end
+  else if (Pos('MXSSD', Model) > 0) or ((Pos('OCZ', Model) > 0) and
+          (Pos('VERTEX3', Model) > 0)) or
+          ((Pos('OCZ', Model) > 0) and (Pos('AGILITY3', Model) > 0)) or
+          ((Model = 'SSD 128GB') or (Model = 'SSD 64GB')) or
           (Pos('SHYSF', Model) > 0) or (Pos('Patriot Pyro', Model) > 0) or
           ((Pos('SuperSSpeed', Model) > 0) and (Pos('Hyper', Model) > 0)) or
           ((Pos('MNM', Model) > 0) and (Pos('HFS', Model) > 0)) or
-          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and (Pos('THNSNS', UpperCase(Model)) > 0)) or
-          ((Pos('SANDISK', UpperCase(Model)) > 0) and (Pos('SD6SB1', UpperCase(Model)) > 0)) or
-          ((Pos('ST', Model) > 0) and (Pos('HM000', Model) > 0)) then HostWrites := ExtractSMART(SMARTData, 'F1') * 16  // 1GB 표준단위
-  else if (Pos('Ninja-', Model) > 0) or (Pos('M5P', Model) > 0) or (Pos('M5M', Model) > 0) or
-          (S10085) then HostWrites := (ExtractSMART(SMARTData, 177) * 2)
-  else if (Pos('M4', Model) > 0) and (Pos('CT', Model) > 0) then HostWrites := 0
-  else HostWrites := ExtractSMART(SMARTData, 177);
+          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
+           (Pos('THNSNS', UpperCase(Model)) > 0)) or
+          ((Pos('SANDISK', UpperCase(Model)) > 0) and
+           (Pos('SD6SB1', UpperCase(Model)) > 0)) or
+          ((Pos('ST', Model) > 0) and (Pos('HM000', Model) > 0)) then
+  begin
+    HostWrites := ExtractSMART(SMARTData, 'F1') * 16;  // 1GB 표준단위
+    IsHostWrite := true;
+  end
+  else if (Pos('Ninja-', Model) > 0) or (Pos('M5P', Model) > 0)
+            or (Pos('M5M', Model) > 0) or
+          (S10085) then
+    HostWrites := (ExtractSMART(SMARTData, 177) * 2)
+  else if (Pos('M4', Model) > 0) and (Pos('CT', Model) > 0) then
+    HostWrites := 0
+  else
+    HostWrites := ExtractSMART(SMARTData, 177);
 
-  if ((Pos('SAMSUNG', UpperCase(Model)) > 0) and (Pos('SSD', UpperCase(Model)) > 0)) then EraseError := ExtractSMART(SMARTData, 'B6')
+  if ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
+      (Pos('SSD', UpperCase(Model)) > 0)) then
+    EraseError := ExtractSMART(SMARTData, 'B6')
   else if ((Pos('MX', Model) > 0) and (Pos('MMY', Model) > 0)) or
-          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and (Pos('THNSNF', UpperCase(Model)) > 0)) then EraseError := ExtractSMART(SMARTData, 1)
-  else if (Pos('MXSSD', Model) > 0) or ((Pos('OCZ', Model) > 0) and (Pos('VERTEX3', Model) > 0)) or
-          ((Pos('OCZ', Model) > 0) and (Pos('AGILITY3', Model) > 0)) or ((Model = 'SSD 128GB') or (Model = 'SSD 64GB')) or
+          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
+           (Pos('THNSNF', UpperCase(Model)) > 0)) then
+    EraseError := ExtractSMART(SMARTData, 1)
+  else if (Pos('MXSSD', Model) > 0) or ((Pos('OCZ', Model) > 0) and
+          (Pos('VERTEX3', Model) > 0)) or
+          ((Pos('OCZ', Model) > 0) and
+          (Pos('AGILITY3', Model) > 0)) or ((Model = 'SSD 128GB')
+                                            or (Model = 'SSD 64GB')) or
           (Pos('SHYSF', Model) > 0) or (Pos('Patriot Pyro', Model) > 0) or
           ((Pos('SuperSSpeed', Model) > 0) and (Pos('Hyper', Model) > 0)) or
           ((Pos('MNM', Model) > 0) and (Pos('HFS', Model) > 0)) or
-          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and (Pos('THNSNS', UpperCase(Model)) > 0)) then EraseError := ExtractSMART(SMARTData, 'AC')
+          ((Pos('TOSHIBA', UpperCase(Model)) > 0) and
+            (Pos('THNSNS', UpperCase(Model)) > 0)) then
+    EraseError := ExtractSMART(SMARTData, 'AC')
   else if ((Pos('C400', Model) > 0) and (Pos('MT', Model) > 0)) or
-          ((Pos('M4', Model) > 0) and (Pos('CT', Model) > 0)) then EraseError := ExtractSMART(SMARTData, 'AC')
-  else EraseError := ExtractSMART(SMARTData, 182);
+          ((Pos('M4', Model) > 0) and (Pos('CT', Model) > 0)) or
+      ((Pos('CRUCIAL', UpperCase(Model)) > 0) and
+       ((Pos('M500', UpperCase(Model)) > 0) or
+        (Pos('M550', UpperCase(Model)) > 0) or
+        (Pos('MX100', UpperCase(Model)) > 0))) then
+    EraseError := ExtractSMART(SMARTData, 'AC')
+  else
+    EraseError := ExtractSMART(SMARTData, 182);
   
   ReplacedSectors := ExtractSMART(SMARTData, 5);
   if (Pos('LITEONIT', UpperCase(Model)) > 0) or
       (Pos('PLEXTOR', UpperCase(Model)) > 0) or
-      (Pos('NINJA-', UpperCase(Model)) > 0) then RepSectorAlert := ReplacedSectors >= RepSectorThreshold_PLEXTOR
+      (Pos('NINJA-', UpperCase(Model)) > 0) then
+    RepSectorAlert := ReplacedSectors >= RepSectorThreshold_PLEXTOR
   else RepSectorAlert := ReplacedSectors >= RepSectorThreshold;
 end;
 

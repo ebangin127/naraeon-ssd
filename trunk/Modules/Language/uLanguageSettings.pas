@@ -197,7 +197,7 @@ const
     AlrtNoSupport: Array[0..1] of String = ('나래온 툴 지원 SSD가 검출되지 않았습니다.', 'There is no supported SSD.');
     AlrtNoUSB: Array[0..1] of String = ('USB 저장장치를 연결해주세요.', 'Please connect a USB Flash Drive');
     AlrtNoUpdate: Array[0..1] of String = ('이미 최신 버전입니다.', 'Already your SSD has the latest firmware.');
-    AlrtNoFirmSupport: Array[0..1] of String = ('해당 SSD의 펌웨어 업데이트를 지원하지 않습니다.', 'This SSD cannot be updated by Naraeon SSD Tools.');
+    AlrtNoFirmSupport: Array[0..1] of String = ('해당 SSD의 펌웨어 업데이트는 지원하지 않습니다.', 'This SSD cannot be updated by Naraeon SSD Tools.');
     AlrtNoCheck: Array[0..1] of String = ('USB 자료 손실 동의 체크박스에 체크해 주세요.', 'Read and Check the caution.');
     AlrtAutoCopy: Array[0..1] of String = ('- 이 내용은 자동으로 복사됩니다 -', '- This message has copied -');
 

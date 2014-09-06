@@ -47,7 +47,7 @@ function GetServiceExecutablePath(strServiceName: string): String;
 function DeleteServiceNST(strServiceName: string): String;
 function KillAllSvc(): Boolean;
 function KillSelf(): Boolean;
-function KillProcess(const ProcName: String; KillMine: Boolean): Boolean;
+function KillProcess(const ProcName: String; Suicide: Boolean): Boolean;
 
 var
   NaraeonSSDToolsDiag: TNaraeonSSDToolsDiag;
@@ -237,7 +237,7 @@ begin
         for CurrDrive := 0 to DriveCount - 1 do
         begin
           SSDInfo.ATAorSCSI := DetermineModel;
-          SSDInfo.SetDeviceName('PhysicalDrive' + DriveList[CurrDrive]);
+          SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
           SSDInfo.CollectAllSmartData;
           HostWrites := SSDInfo.HostWrites;
           if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
@@ -251,7 +251,7 @@ begin
           SaveLog := TStringList.Create;
           for CurrDrive := 0 to DriveCount - 1 do
           begin
-            SSDInfo.SetDeviceName('PhysicalDrive' + DriveList[CurrDrive]);
+            SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
             SSDInfo.CollectAllSmartData;
             ReplacedSectors := SSDInfo.ReplacedSectors;
             DriveSectInfoList[CurrDrive].ReadBothFiles(UIntToStr(ReplacedSectors));
@@ -313,22 +313,36 @@ begin
   for CurrDrv := 0 to 99 do
   begin
     DriveList[CurrDrv] := '';
-    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)), GENERIC_READ or GENERIC_WRITE,
-                                FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
+    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)),
+                                GENERIC_READ or GENERIC_WRITE,
+                                FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
+                                OPEN_EXISTING, 0, 0);
     if GetLastError = 0 then
     begin
       try
         TempSSDInfo.ATAorSCSI := DetermineModel;
-        TempSSDInfo.SetDeviceName('PhysicalDrive' + IntToStr(CurrDrv));
+        TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
       finally
         if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
         begin
           TempSSDInfo.CollectAllSmartData;
           if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
           begin
-            DriveWritInfoList[DriveCount] := TNSTLog.Create(AppPath, TempSSDInfo.Serial, UIntToStr(TempSSDInfo.HostWrites), false, TempSSDInfo.S10085);
+            DriveWritInfoList[DriveCount] := TNSTLog.Create(AppPath,
+                                                            TempSSDInfo.Serial,
+                                                            UIntToStr(
+                                                            TempSSDInfo.
+                                                              HostWrites),
+                                                            false,
+                                                            TempSSDInfo.S10085);
           end;
-          DriveSectInfoList[DriveCount] := TNSTLog.Create(AppPath, TempSSDInfo.Serial + 'RSLog', UIntToStr(TempSSDInfo.ReplacedSectors), true, false);
+          DriveSectInfoList[DriveCount] := TNSTLog.Create(AppPath,
+                                                          TempSSDInfo.Serial
+                                                            + 'RSLog',
+                                                          UIntToStr(
+                                                            TempSSDInfo.
+                                                              ReplacedSectors),
+                                                          true, false);
           DriveList[DriveCount] := IntToStr(CurrDrv);
           DriveCount := DriveCount + 1;
         end;
@@ -349,9 +363,11 @@ begin
   TempSSDInfo := TSSDInfo_NST.Create;
   for CurrDrv := 0 to DriveCount - 1 do
   begin
-    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + DriveList[CurrDrv]), GENERIC_READ or GENERIC_WRITE,
-                                FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-    TempSSDInfo.SetDeviceName('PhysicalDrive' + DriveList[CurrDrv]);
+    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + DriveList[CurrDrv]),
+                                GENERIC_READ or GENERIC_WRITE,
+                                FILE_SHARE_READ or FILE_SHARE_WRITE,
+                                nil, OPEN_EXISTING, 0, 0);
+    TempSSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrv]));
     if GetLastError = 0 then
     begin
       if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
@@ -373,7 +389,8 @@ begin
   Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
   try
     Reg.RootKey := HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NareonSSDToolsDiag', false) then
+    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NareonSSDToolsDiag',
+                    false) then
     begin
       Reg.CloseKey;
       Reg.RootKey := HKEY_LOCAL_MACHINE;
@@ -383,7 +400,8 @@ begin
     end;
     Reg.CloseKey;
     Reg.RootKey := HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NaraeonSSDToolsDiag', false) then
+    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NaraeonSSDToolsDiag',
+                    false) then
     begin
       Reg.CloseKey;
       Reg.RootKey := HKEY_LOCAL_MACHINE;
@@ -404,7 +422,8 @@ begin
   hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
   if (hSCManager > 0) then
   begin
-    hSCService := OpenService(hSCManager, PChar(strServiceName), SERVICE_QUERY_CONFIG);
+    hSCService := OpenService(hSCManager, PChar(strServiceName),
+                              SERVICE_QUERY_CONFIG);
     if (hSCService > 0) then
     begin
       DeleteService(hSCService);
@@ -423,7 +442,8 @@ begin
   hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
   if (hSCManager > 0) then
   begin
-    hSCService := OpenService(hSCManager, PChar(strServiceName), SERVICE_QUERY_CONFIG);
+    hSCService := OpenService(hSCManager, PChar(strServiceName),
+                              SERVICE_QUERY_CONFIG);
     if (hSCService > 0) then
     begin
       QueryServiceConfig(hSCService, nil, 0, nSize);
@@ -461,11 +481,11 @@ begin
   CloseHandle(hProcess);
 end;
 
-function KillProcess(const ProcName: String; KillMine: Boolean): Boolean;
+function KillProcess(const ProcName: String; Suicide: Boolean): Boolean;
 var
   Process32: TProcessEntry32;
-  SHandle:   THandle;
-  Next:      Boolean;
+  SHandle: THandle;
+  Next: Boolean;
   hProcess: THandle;
 begin
   Result := True;
@@ -478,11 +498,13 @@ begin
     repeat
       Next := Process32Next(SHandle, Process32);
       if ((AnsiCompareText(Process32.szExeFile, Trim(ProcName)) = 0) and
-          ((GetCurrentProcessId() <> Process32.th32ProcessID) or (KillMine))) then
+          ((GetCurrentProcessId() <> Process32.th32ProcessID) or
+            (Suicide))) then
       begin
         if Process32.th32ProcessID <> 0 then
         begin
-          hProcess := OpenProcess(PROCESS_TERMINATE, True, Process32.th32ProcessID);
+          hProcess := OpenProcess(PROCESS_TERMINATE, True,
+                                  Process32.th32ProcessID);
           if hProcess <> 0 then begin
             if not TerminateProcess(hProcess, 0) then Result := False;
           end

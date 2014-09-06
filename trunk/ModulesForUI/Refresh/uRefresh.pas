@@ -122,11 +122,16 @@ begin
           l1Month.Visible := true;
         end;
 
-        //Case 1 : 플렉스터/라이트온
+        //Case 1 : 호스트 쓰기 지원
         if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
         begin
+          if SSDInfo.IsHostWrite then
+            lHost.Caption := CapHostWrite[CurrLang]
+          else
+            lHost.Caption := CapNandWrite[CurrLang];
+
           lHost.Caption :=
-            CapNandWrite[CurrLang]
+            lHost.Caption
             + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
         end
         //Case 2 : C400/M4의 경우
