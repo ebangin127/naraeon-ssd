@@ -309,15 +309,20 @@ begin
   inherited CollectAllSMARTData;
 
   IsHostWrite := false;
-  if  ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
-        (Pos('SSD', UpperCase(Model)) > 0)) or
-      ((Pos('CRUCIAL', UpperCase(Model)) > 0) and
-       ((Pos('M500', UpperCase(Model)) > 0) or
-        (Pos('M550', UpperCase(Model)) > 0) or
-        (Pos('MX100', UpperCase(Model)) > 0))) then
+  if ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
+      (Pos('SSD', UpperCase(Model)) > 0)) then
   begin
     HostWrites :=
       round(ExtractSMART(SMARTData, 'F1') / 1024 / 2048 * 10 * 1.56);
+    IsHostWrite := true;
+  end
+  else if ((Pos('CRUCIAL', UpperCase(Model)) > 0) and
+           ((Pos('M500', UpperCase(Model)) > 0) or
+            (Pos('M550', UpperCase(Model)) > 0) or
+            (Pos('MX100', UpperCase(Model)) > 0))) then
+  begin
+    HostWrites :=
+      round(ExtractSMART(SMARTData, 'F6') / 1024 / 2048 * 10 * 1.56);
     IsHostWrite := true;
   end
   else if (Pos('MXSSD', Model) > 0) and (Pos('MMY', Model) > 0) then
