@@ -25,13 +25,9 @@ const
   Last256M3P = 1.06;
   Last512M3P = 1.06;
 
-  Last128M5P = 1.06;
-  Last256M5P = 1.06;
-  Last512M5P = 1.06;
-
-  Last128M5M = 1.04;
-  Last256M5M = 1.04;
-  Last512M5M = 1.04;
+  Last128M5P = 1.07;
+  Last256M5P = 1.07;
+  Last512M5P = 1.07;
 
   Last64M5S = 1.05;
   Last128M5S = 1.05;
@@ -95,13 +91,6 @@ begin
           (StrToFloat(Revision) < Last256M5P)) or
         ((Pos('512M5P', Model) > 0) and
           (StrToFloat(Revision) < Last512M5P)) or
-
-        ((Pos('128M5M', Model) > 0) and
-          (StrToFloat(Revision) < Last128M5M)) or
-        ((Pos('256M5M', Model) > 0) and
-          (StrToFloat(Revision) < Last256M5M)) or
-        ((Pos('512M5M', Model) > 0) and
-          (StrToFloat(Revision) < Last512M5M)) or
 
         ((Pos('64M5S', Model) > 0) and
           (StrToFloat(Revision) < Last64M5S)) or
@@ -173,13 +162,6 @@ begin
     Result := FloatToStr(Last256M5P)
   else if Pos('512M5P', Model) > 0 then
     Result := FloatToStr(Last512M5P)
-
-  else if Pos('128M5M', Model) > 0 then
-    Result := FloatToStr(Last128M5M)
-  else if Pos('256M5M', Model) > 0 then
-    Result := FloatToStr(Last256M5M)
-  else if Pos('512M5M', Model) > 0 then
-    Result := FloatToStr(Last512M5M)
 
   else if Pos('Ninja', Model) > 0 then
     Result := FloatToStr(LastNinja)

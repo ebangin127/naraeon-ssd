@@ -119,8 +119,8 @@ var
   SimulationMode: Boolean = false;
 
 const
-  SimulationModel = 'SanDisk SD6SB1M128G1022I';
-  SimulationFirmware = 'X231600';
+  SimulationModel = 'TOSHIBA THNSNJ128GCST';
+  SimulationFirmware = 'JTRA10102';
 
   CurrentVersion = '4.7.0';
 
@@ -349,8 +349,7 @@ begin
     IsHostWrite := true;
   end
   else if (Pos('Ninja-', Model) > 0) or (Pos('M5P', Model) > 0)
-            or (Pos('M5M', Model) > 0) or
-          (S10085) then
+          or (S10085) then
     HostWrites := (ExtractSMART(SMARTData, 177) * 2)
   else if (Pos('M4', Model) > 0) and (Pos('CT', Model) > 0) then
     HostWrites := 0

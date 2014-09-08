@@ -12,7 +12,7 @@ object fMain: TfMain
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   Scaled = False
   OnClick = FormClick
   OnClose = FormClose
