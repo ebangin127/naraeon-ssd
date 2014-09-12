@@ -119,8 +119,8 @@ var
   SimulationMode: Boolean = false;
 
 const
-  SimulationModel = 'TOSHIBA THNSNJ128GCST';
-  SimulationFirmware = 'JTRA10102';
+  SimulationModel = 'SanDisk SD6SB1M128G1022I';
+  SimulationFirmware = 'X230';
 
   CurrentVersion = '4.7.0';
 

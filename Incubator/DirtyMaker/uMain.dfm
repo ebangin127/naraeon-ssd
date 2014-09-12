@@ -2,7 +2,7 @@ object fMain: TfMain
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
-  Caption = #45208#47000#50728' '#45908#54000' '#53580#49828#53944' 5.0.2'
+  Caption = #45208#47000#50728' '#45908#54000' '#53580#49828#53944' 5.0.3'
   ClientHeight = 350
   ClientWidth = 300
   Color = clBtnFace
@@ -19,14 +19,14 @@ object fMain: TfMain
   object lCurrFile: TLabel
     Left = 9
     Top = 302
-    Width = 57
+    Width = 61
     Height = 13
     Caption = #54788#51116' '#54028#51068' : '
   end
   object lCurrSpd: TLabel
     Left = 9
     Top = 324
-    Width = 32
+    Width = 34
     Height = 13
     Caption = #49549#46020' : '
   end
@@ -95,7 +95,7 @@ object fMain: TfMain
       object Label3: TLabel
         Left = 12
         Top = 61
-        Width = 57
+        Width = 61
         Height = 13
         Caption = #45224#44600' '#50857#47049' : '
       end
@@ -109,21 +109,21 @@ object fMain: TfMain
       object Label2: TLabel
         Left = 12
         Top = 36
-        Width = 57
+        Width = 61
         Height = 13
         Caption = #45224#51008' '#50857#47049' : '
       end
       object Label5: TLabel
         Left = 12
         Top = 88
-        Width = 68
+        Width = 73
         Height = 13
         Caption = #52292#50864#44592' '#45800#50948' : '
       end
       object lRand: TLabel
         Left = 12
         Top = 116
-        Width = 43
+        Width = 46
         Height = 13
         Caption = #47004#45924#47456' : '
       end
@@ -137,14 +137,14 @@ object fMain: TfMain
       object Label6: TLabel
         Left = 170
         Top = 142
-        Width = 93
+        Width = 99
         Height = 13
         Caption = #54924' (-1'#51008' '#47924#54620' '#48152#48373')'
       end
       object Label1: TLabel
         Left = 12
         Top = 12
-        Width = 90
+        Width = 97
         Height = 13
         Caption = #51201#50857#54624' '#46300#46972#51060#48652' : '
       end
@@ -261,7 +261,7 @@ object fMain: TfMain
       object Label8: TLabel
         Left = 12
         Top = 12
-        Width = 82
+        Width = 88
         Height = 13
         Caption = #49549#46020' '#44592#47197' '#45800#50948' : '
       end

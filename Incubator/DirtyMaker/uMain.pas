@@ -202,7 +202,7 @@ begin
       CurrTime := 1;
     end;
   end
-  else RemainTimes := 0;
+  else RemainTimes := 1;
   // 탈출 가능 부분 종료
 
   // 파일 선택 부분
