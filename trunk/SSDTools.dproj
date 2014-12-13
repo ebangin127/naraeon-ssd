@@ -128,7 +128,6 @@
         </DCCReference>
         <DCCReference Include="uBrowser.pas">
             <Form>fBrowser</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Modules\Disk\uDiskFunctions.pas"/>
         <DCCReference Include="Modules\Disk\uPartitionFunctions.pas"/>
@@ -144,7 +143,7 @@
         <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>
         <DCCReference Include="Classes\SSDInfo\uSSDInfo.pas"/>
-        <DCCReference Include="Classes\SSDInfo\uSSDVersion.pas"/>
+        <DCCReference Include="Classes\SSDInfo\uSSDSupport.pas"/>
         <DCCReference Include="Classes\Threads\uTrimThread.pas"/>
         <DCCReference Include="Classes\Threads\uUpdateThread.pas"/>
         <DCCReference Include="Classes\Version\uVersion.pas"/>

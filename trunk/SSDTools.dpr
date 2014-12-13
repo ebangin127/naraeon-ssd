@@ -8,6 +8,7 @@ uses
   SysUtils,
   Classes,
   Dialogs,
+  ClipBrd,
   uMessage in 'uMessage.pas' {fMessage},
   uBrowser in 'uBrowser.pas' {fBrowser},
   uDiskFunctions in 'Modules\Disk\uDiskFunctions.pas',
@@ -24,7 +25,7 @@ uses
   uLogSystem in 'Classes\LogSystem\uLogSystem.pas',
   uOptimizer in 'Classes\Optimizer\uOptimizer.pas',
   uSSDInfo in 'Classes\SSDInfo\uSSDInfo.pas',
-  uSSDVersion in 'Classes\SSDInfo\uSSDVersion.pas',
+  uSSDSupport in 'Classes\SSDInfo\uSSDSupport.pas',
   uTrimThread in 'Classes\Threads\uTrimThread.pas',
   uUpdateThread in 'Classes\Threads\uUpdateThread.pas',
   uVersion in 'Classes\Version\uVersion.pas',
@@ -54,10 +55,16 @@ var
   CurrDrv: Integer;
   hdrive: THandle;
 
+  //진단용 변수
+  DiagMode: Boolean;
+  DiagFile: TStringList;
+
 begin
   Application.Initialize;
   Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
-  if (ParamStr(1) <> '') and (ParamStr(1) <> '/SimulMode') and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  if (ParamStr(1) <> '')
+      and (UpperCase(ParamStr(1)) <> '/SIMULMODE')
+      and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
   begin
     MainLoaded := false;
     MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened2');
@@ -88,63 +95,118 @@ begin
 
     ATAorSCSI := false;
     Completed := false;
+    DiagMode := (UpperCase(ParamStr(1)) = '/DIAG');
+    if DiagMode then
+    begin
+      DiagFile := TStringList.Create;
+      DiagFile.Add('DiagStart, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
+      if RobustMode then
+        DiagFile.Add('Mode, Direct')
+      else
+        DiagFile.Add('Mode, WMI');
+    end;
+
     for CurrDrv := 0 to AllDrv.Count - 1 do
     begin
       if (AllDrv[CurrDrv] <> '/') and (AllDrv[CurrDrv] <> '') then
       begin
-        hdrive := CreateFile(PChar('\\.\PhysicalDrive' + AllDrv[CurrDrv]), GENERIC_READ or GENERIC_WRITE,
-                                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-        if GetLastError = 0 then
+        if DiagMode then
+          DiagFile.Add('Probe, ' +
+                        '\\.\PhysicalDrive' + AllDrv[CurrDrv] + ', ');
+        hdrive := CreateFile(PChar('\\.\PhysicalDrive' + AllDrv[CurrDrv]),
+                                    GENERIC_READ or GENERIC_WRITE,
+                                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
+                                    OPEN_EXISTING, 0, 0);
+        if GetLastError <> 0 then
         begin
-          try
-            if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := ATAModel
-            else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := SCSIModel;
-            if RobustMode then
-            begin
-              TempSSDInfo.ATAorSCSI := DetermineModel;
-            end;
-            TempSSDInfo.SetDeviceName(StrToInt(AllDrv[CurrDrv]));
-          finally
-            if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
-            begin
-              if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = ATAModel) then
-              begin
-                Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
-                SetLength(NeedTrimPartition, Length(NeedTrimPartition) + Length(Drives.Letters));
-                for CurrPartition := 1 to Length(Drives.Letters) do
-                begin
-                  NeedTrimPartition[CurrDrvNum] := Drives.Letters[CurrPartition] + ':';
-                  CurrDrvNum := CurrDrvNum + 1;
-                end;
-                Completed := true;
-              end;
+          Continue;
+        end;
+
+        try
+        begin
+          if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := ATAModel
+          else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := SCSIModel;
+          if RobustMode then
+          begin
+            TempSSDInfo.ATAorSCSI := DetermineModel;
+          end;
+          TempSSDInfo.SetDeviceName(StrToInt(AllDrv[CurrDrv]));
+        end;
+        finally
+        begin
+          if DiagMode then
+          begin
+            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                          + TempSSDInfo.Model + ', '
+                                          + TempSSDInfo.Firmware + ', ';
+
+            case TempSSDInfo.SupportedDevice of
+            SUPPORT_FULL:
+              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                            + 'Full';
+            SUPPORT_SEMI:
+              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                            + 'Semi';
+            SUPPORT_NONE:
+              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                            + 'None';
             end;
           end;
+
+          if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+          begin
+            if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = ATAModel) then
+            begin
+              Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
+              SetLength(NeedTrimPartition, Length(NeedTrimPartition) + Length(Drives.Letters));
+              for CurrPartition := 1 to Length(Drives.Letters) do
+              begin
+                NeedTrimPartition[CurrDrvNum] := Drives.Letters[CurrPartition] + ':';
+                CurrDrvNum := CurrDrvNum + 1;
+              end;
+              Completed := true;
+            end;
+          end;
+          end;
         end;
+
         CloseHandle(hdrive);
       end
       else
       begin
         ATAorSCSI := SCSIMode;
       end;
+
       if Completed then Break;
     end;
-    TrimStat := 0;
+
+    if DiagMode then
+    begin
+      DiagFile.Add('DiagEnd, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
+      Clipboard.AsText := DiagFile.Text;
+      MessageBox(0, PChar(DiagContents[CurrLang]), PChar(DiagName[CurrLang]),
+                  MB_OK or MB_IConInformation);
+      FreeAndNil(DiagFile);
+    end;
     FreeAndNil(TempSSDInfo);
 
-    if TrimThread <> Nil then FreeAndNil(TrimThread);
-    TrimThread := TTrimThread.Create(true);
-    TrimThread.Priority := tpLower;
-    TrimThread.Start;
-    while TrimStat < 2 do Sleep(10);
-    Sleep(10);
-    FreeAndNil(TrimThread);
+    if DiagMode = false then
+    begin
+      TrimStat := 0;
+      if TrimThread <> Nil then FreeAndNil(TrimThread);
+      TrimThread := TTrimThread.Create(true);
+      TrimThread.Priority := tpLower;
+      TrimThread.Start;
+      while TrimStat < 2 do Sleep(10);
+      Sleep(10);
+      FreeAndNil(TrimThread);
+    end;
     ReleaseMutex(MutexAppear);
     CloseHandle(MutexAppear);
   end
   else 
   begin
-    if ParamStr(1) = '/SimulMode' then
+    if UpperCase(ParamStr(1)) = '/SIMULMODE' then
     begin
       SimulationMode := true;
     end;
@@ -160,7 +222,8 @@ begin
     if MutexAppear <> 0 then
     begin
       MutexAppear := FindWindow(PChar('TfMain'), PChar(Cap));
-      if (MutexAppear <> 0) and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+      if (MutexAppear <> 0)
+      and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
       begin
         ShowWindow(MutexAppear, SW_RESTORE);
         SetForegroundWindow(MutexAppear);

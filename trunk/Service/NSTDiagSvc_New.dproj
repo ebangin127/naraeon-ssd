@@ -129,7 +129,7 @@
         <DCCReference Include="..\Modules\Etc\uStrFunctions.pas"/>
         <DCCReference Include="..\Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="..\Classes\SSDInfo\uSSDInfo.pas"/>
-        <DCCReference Include="..\Classes\SSDInfo\uSSDVersion.pas"/>
+        <DCCReference Include="..\Classes\SSDInfo\uSSDSupport.pas"/>
         <DCCReference Include="..\Classes\ATALowOps\uATALowOps.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

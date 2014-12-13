@@ -4,8 +4,8 @@ interface
 
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
-  uAlert, uLanguageSettings,
-  uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDVersion, uRegFunctions,
+  uAlert, uLanguageSettings, ShellApi,
+  uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
   uSMARTFunctions, uStrFunctions, uLogSystem;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
@@ -76,7 +76,8 @@ begin
       end;
 
       if (IsPlextorNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) or
-         (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) then
+         (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) or
+         (IsCrucialNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) then
       begin
         lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
         lFirmware.Font.Color := clRed;
@@ -97,7 +98,8 @@ begin
       else
       begin
         AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-        exit(false);
+        ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
+                    PChar('/diag'), nil, SW_SHOW);
       end;
       if ShowSerial = false then
       begin
@@ -134,7 +136,7 @@ begin
             lHost.Caption
             + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
         end
-        //Case 2 : C400/M4의 경우
+        //Case 2 : 호스트 쓰기가 Wear Leveling Count로 제공되는 경우
         else if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_COUNT then
         begin
           lHost.Caption := CapSSDLifeLeft[CurrLang]
@@ -492,7 +494,8 @@ begin
     if lName.Caption = '' then
     begin
       AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-      exit(-1);
+      ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
+                  PChar('/diag'), nil, SW_SHOW);
     end;
     FreeAndNil(AllDrv);
 

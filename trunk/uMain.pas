@@ -8,7 +8,7 @@ uses
   Vcl.StdCtrls, Vcl.CheckLst, WinInet, URLMon, idHttp,
   Vcl.OleCtrls, uRegFunctions, uDiskFunctions, Vcl.ExtCtrls, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, IdComponent, MMSystem, Vcl.Mask, Vcl.ComCtrls,
-  uAlert, uMessage, uSSDVersion, uLogSystem, uSSDInfo, uStrFunctions,
+  uAlert, uMessage, uSSDSupport, uLogSystem, uSSDInfo, uStrFunctions,
   uTrimThread, uLanguageSettings, uTrimCommand, uUpdateThread, uBrowser,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh;
@@ -361,7 +361,8 @@ begin
     if cTrimList.Checked[CurrPartition] then
       PartCount := PartCount + 1;
   lDownload.Caption := CapTrimName[CurrLang];
-  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartCount) + ' ' + CapProg2[CurrLang];
+  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartCount) + ' '
+                        + CapProg2[CurrLang];
   bCancel.Visible := false;
   lSpeed.Visible := true;
 
@@ -428,10 +429,7 @@ begin
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);
-const
-  INTERNET_CONNECTION_OFFLINE = 32;
 var
-  ifConnected: DWORD;
   SetupPath: String;
 
 begin
@@ -470,10 +468,16 @@ begin
   WinDir := GetEnvironmentVariable('windir');
   WinDrive := ExtractFileDrive(WinDir);
 
-  SetupPath := ExtractFilePath(GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\', 'UninstallString'));
-  if DirectoryExists(AppPath + 'Image') = false then CreateDirectory(PChar(AppPath + 'Image'), nil);
-  if DirectoryExists(AppPath + 'Erase') = false then CreateDirectory(PChar(AppPath + 'Erase'), nil);
-  if DirectoryExists(AppPath + 'Unetbootin') = false then CreateDirectory(PChar(AppPath + 'Unetbootin'), nil);
+  SetupPath := ExtractFilePath(
+    GetRegStr('LM',
+      'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
+      'UninstallString'));
+  if DirectoryExists(AppPath + 'Image') = false then
+    CreateDirectory(PChar(AppPath + 'Image'), nil);
+  if DirectoryExists(AppPath + 'Erase') = false then
+    CreateDirectory(PChar(AppPath + 'Erase'), nil);
+  if DirectoryExists(AppPath + 'Unetbootin') = false then
+    CreateDirectory(PChar(AppPath + 'Unetbootin'), nil);
 
   Optimizer := TNSTOptimizer.Create;
   SSDInfo := TSSDInfo_NST.Create;
@@ -484,17 +488,7 @@ begin
   LoadBGImage;
   RefreshDrives(SSDInfo);
 
-  InternetGetConnectedState(@ifConnected, 0);
-  if (ifConnected <> INTERNET_CONNECTION_OFFLINE) and
-      (ifConnected <> 0) then
-  begin
-    UpdateThread := TUpdateThread.Create(True);
-    UpdateThread.Priority := tpLower;
-    UpdateThread.FreeOnTerminate := true;
-    UpdateThread.Start;
-  end;
-
-  ReportMemoryLeaksOnShutdown := true;
+  ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -674,9 +668,7 @@ begin
       ClientHeight := MaximumSize;
       gFirmware.Visible := true;
     end;
-    if (IsPlextorNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) or
-        (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) or
-        (IsCrucialNewVer(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION) then
+    if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then
     begin
         lFirmware.Font.Color := clRed;
         lFirmware.Font.Style := [fsBold];
@@ -944,7 +936,17 @@ begin
 end;
 
 procedure TfMain.WmAfterShow(var Msg: TMessage);
+const
+  INTERNET_CONNECTION_OFFLINE = 32;
+var
+  ifConnected: DWORD;
 begin
+  if lName.Caption = '' then
+  begin
+    close;
+    exit;
+  end;
+
   Top := Top - (MinimumSize div 2);
 
   if Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) = '.err' then
@@ -953,6 +955,17 @@ begin
     MsgboxCreate(Self, ParamStr(1));
     Application.Terminate;
   end;
+
+  InternetGetConnectedState(@ifConnected, 0);
+  if (ifConnected <> INTERNET_CONNECTION_OFFLINE) and
+      (ifConnected <> 0) then
+  begin
+    UpdateThread := TUpdateThread.Create(True);
+    UpdateThread.Priority := tpLower;
+    UpdateThread.FreeOnTerminate := true;
+    UpdateThread.Start;
+  end;
+
   tErrorChkTimer(nil);
 end;
 

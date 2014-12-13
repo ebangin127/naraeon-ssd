@@ -15,7 +15,7 @@ uses
   uStrFunctions in '..\Modules\Etc\uStrFunctions.pas',
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
   uSSDInfo in '..\Classes\SSDInfo\uSSDInfo.pas',
-  uSSDVersion in '..\Classes\SSDInfo\uSSDVersion.pas',
+  uSSDSupport in '..\Classes\SSDInfo\uSSDSupport.pas',
   uATALowOps in '..\Classes\ATALowOps\uATALowOps.pas';
 
 {$R *.RES}

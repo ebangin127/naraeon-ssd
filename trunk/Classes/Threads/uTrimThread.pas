@@ -112,14 +112,17 @@ begin
   end
   else
   begin
-    GetDiskFreeSpace(PChar(DriveLetter + '\'), Nouse[0], GottenLBAPerSector, Nouse[1], Nouse[2]);
-    FATLength := (GetPartitionLength(DriveLetter) div GottenLBAPerSector) - (GottenLBAPerSector * TempResult.BitmapSize.QuadPart);
+    GetDiskFreeSpace(PChar(DriveLetter + '\'), Nouse[0],
+                     GottenLBAPerSector, Nouse[1], Nouse[2]);
+    FATLength := (GetPartitionLength(DriveLetter) div GottenLBAPerSector) -
+                 (GottenLBAPerSector * TempResult.BitmapSize.QuadPart);
     StartLBA := StartLBA + FATLength;
     LBAPerSector := (GottenLBAPerSector * 512) div LBASize;
   end;
 
   AllBlocks := TempResult.BitmapSize;
-  Progress := round(((TempResult.StartingLcn.QuadPart / AllBlocks.QuadPart) + CompletedPartition) / PartCount * 100);
+  Progress := round(((TempResult.StartingLcn.QuadPart / AllBlocks.QuadPart) +
+                     CompletedPartition) / PartCount * 100);
   if MainLoaded then
     Synchronize(ChangeProgressbar);
 
@@ -149,19 +152,23 @@ begin
 
         if (CurrBitBool = 0) and (Status = 0) then
         begin
-          SetupPoint := StartLBA + (((CurrByte * 8) + TempResult.StartingLcn.QuadPart + CurrBit) * LBAPerSector);
+          SetupPoint := StartLBA + (((CurrByte * 8) +
+                                      TempResult.StartingLcn.QuadPart + CurrBit)
+                                      * LBAPerSector);
           LBACount := LBAPerSector;
           Status := 1;
         end
-        else if ((CurrBitBool = 1) and (Status = 1))
-                or ((CurrBitBool = 0) and (Status = 1) and ((LBACount > 65500) or
-                                                            ((CurrByte = LastPart) and (CurrBit = LastBit)))) then
+        else if ((CurrBitBool = 1) and (Status = 1)) or
+                ((CurrBitBool = 0) and (Status = 1) and
+                 ((LBACount > 65500) or
+                  ((CurrByte = LastPart) and (CurrBit = LastBit)))) then
         begin
           if (CurrBitBool = 0) and (Status = 1) then
             LBACount := LBACount + LBAPerSector;
           CurrTrimCount := CurrTrimCount + 1;
           CurrTrimLBAs := CurrTrimLBAs + LBACount;
-          SendTrimCommand('\\.\PhysicalDrive' + MotherDrive, SetupPoint, LBACount);
+          SendTrimCommand('\\.\PhysicalDrive' + MotherDrive,
+                          SetupPoint, LBACount);
           SetupPoint := 0;
           LBACount := 0;
           Status := 0;
@@ -174,9 +181,9 @@ begin
     begin
       if (CurrTrimCount > 10) or (CurrTrimLBAs > 200000) then
       begin
-        SleepTime_LBACount := CurrTrimLBAs shr 14;
+        SleepTime_LBACount := CurrTrimLBAs shr 16;
         if CurrTrimCount > SleepTime_LBACount then
-          Sleep(CurrTrimCount)
+          Sleep(CurrTrimCount shr 2)
         else
           Sleep(SleepTime_LBACount);
         CurrTrimCount := 0;
@@ -197,7 +204,9 @@ begin
                   BytesRead,
                   nil);
       error := GetLastError;
-      Progress := round(((StartingBuffer.StartingLcn.QuadPart / AllBlocks.QuadPart) + CompletedPartition) / PartCount * 100);
+      Progress := round(((StartingBuffer.StartingLcn.QuadPart /
+                          AllBlocks.QuadPart) + CompletedPartition) /
+                          PartCount * 100);
       if MainLoaded then
         Synchronize(ChangeProgressbar);
     end
@@ -216,8 +225,11 @@ procedure TTrimThread.ChangeStage;
 begin
   fMain.pDownload.Position := Progress;
   if CompletedPartition < PartCount then
-    fMain.lProgress.Caption := CapProg1[CurrLang]  + NeedTrimPartition[CompletedPartition] +
-                              ' ' + CapProg2[CurrLang] + ' (' + IntToStr(CompletedPartition + 1) + '/' + IntToStr(PartCount) + ')';
+    fMain.lProgress.Caption := CapProg1[CurrLang] +
+                               NeedTrimPartition[CompletedPartition] +
+                               ' ' + CapProg2[CurrLang] +
+                               ' (' + IntToStr(CompletedPartition + 1) + '/' +
+                               IntToStr(PartCount) + ')';
 end;
 
 procedure TTrimThread.EndTrim;
