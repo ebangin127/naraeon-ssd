@@ -9,12 +9,12 @@ uses
   Classes,
   Dialogs,
   ClipBrd,
+  ShellAPI,
   uMessage in 'uMessage.pas' {fMessage},
   uBrowser in 'uBrowser.pas' {fBrowser},
   uDiskFunctions in 'Modules\Disk\uDiskFunctions.pas',
   uPartitionFunctions in 'Modules\Disk\uPartitionFunctions.pas',
   uSMARTFunctions in 'Modules\Disk\uSMARTFunctions.pas',
-  uTrimCommand in 'Modules\Disk\uTrimCommand.pas',
   uIntFunctions in 'Modules\Etc\uIntFunctions.pas',
   uLanguageSettings in 'Modules\Language\uLanguageSettings.pas',
   uRegFunctions in 'Modules\Windows\uRegFunctions.pas',
@@ -58,6 +58,7 @@ var
   //진단용 변수
   DiagMode: Boolean;
   DiagFile: TStringList;
+  DrvName: String;
 
 begin
   Application.Initialize;
@@ -110,10 +111,16 @@ begin
     begin
       if (AllDrv[CurrDrv] <> '/') and (AllDrv[CurrDrv] <> '') then
       begin
+        if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'U')
+            and (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'H') then
+          DrvName := AllDrv[CurrDrv]
+        else
+          DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
+
         if DiagMode then
           DiagFile.Add('Probe, ' +
-                        '\\.\PhysicalDrive' + AllDrv[CurrDrv] + ', ');
-        hdrive := CreateFile(PChar('\\.\PhysicalDrive' + AllDrv[CurrDrv]),
+                        '\\.\PhysicalDrive' + DrvName + ', ');
+        hdrive := CreateFile(PChar('\\.\PhysicalDrive' + DrvName),
                                     GENERIC_READ or GENERIC_WRITE,
                                     FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
                                     OPEN_EXISTING, 0, 0);
@@ -124,38 +131,19 @@ begin
 
         try
         begin
-          if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := ATAModel
-          else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := SCSIModel;
+          if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
+          else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
           if RobustMode then
           begin
-            TempSSDInfo.ATAorSCSI := DetermineModel;
+            TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
           end;
-          TempSSDInfo.SetDeviceName(StrToInt(AllDrv[CurrDrv]));
+          TempSSDInfo.SetDeviceName(StrToInt(DrvName));
         end;
         finally
         begin
-          if DiagMode then
-          begin
-            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                          + TempSSDInfo.Model + ', '
-                                          + TempSSDInfo.Firmware + ', ';
-
-            case TempSSDInfo.SupportedDevice of
-            SUPPORT_FULL:
-              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                            + 'Full';
-            SUPPORT_SEMI:
-              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                            + 'Semi';
-            SUPPORT_NONE:
-              DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                            + 'None';
-            end;
-          end;
-
           if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
           begin
-            if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = ATAModel) then
+            if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = MODEL_ATA) then
             begin
               Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
               SetLength(NeedTrimPartition, Length(NeedTrimPartition) + Length(Drives.Letters));
@@ -167,6 +155,26 @@ begin
               Completed := true;
             end;
           end;
+          end;
+        end;
+
+
+        if DiagMode then
+        begin
+          DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                        + TempSSDInfo.Model + ', '
+                                        + TempSSDInfo.Firmware + ', ';
+
+          case TempSSDInfo.SupportedDevice of
+          SUPPORT_FULL:
+            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                          + 'Full';
+          SUPPORT_SEMI:
+            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                          + 'Semi';
+          SUPPORT_NONE:
+            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
+                                          + 'None';
           end;
         end;
 

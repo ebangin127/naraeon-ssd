@@ -3,9 +3,12 @@ unit uMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs,
-  Vcl.ExtCtrls, WinInet, Registry, IdHttp, SHFolder, ShellAPI, ShlObj, TlHelp32, WinSvc,
-  uDiskFunctions, uExeFunctions, uLogSystem, uSSDInfo, uLanguageSettings, uRegFunctions;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs,
+  Vcl.ExtCtrls, WinInet, Registry, IdHttp, SHFolder, ShellAPI, ShlObj,
+  TlHelp32, WinSvc,
+  uDiskFunctions, uExeFunctions, uLogSystem, uSSDInfo, uLanguageSettings,
+  uRegFunctions, uSSDSupport;
 
 type
   PDevBroadcastHdr = ^TDevBroadcastHdr;
@@ -38,6 +41,7 @@ type
     procedure RefreshDrives;
     procedure CheckDrives;
     procedure DeletePrevSvc;
+    procedure LoggerCreate(CurrDrv: Integer);
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
@@ -86,7 +90,8 @@ begin
     Reg.RootKey := HKEY_LOCAL_MACHINE;
     if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\' + Name, false) then
     begin
-      Reg.WriteString('Description', 'Naraeon SSD Tools - SSD life alerter service.');
+      Reg.WriteString('Description',
+        'Naraeon SSD Tools - SSD life alerter service.');
       Reg.CloseKey;
     end;
     Reg.RootKey := HKEY_CLASSES_ROOT;
@@ -98,7 +103,10 @@ begin
       Reg.OpenKey('errfile\DefaultIcon', True) ;
       WinDir := GetEnvironmentVariable('windir');
       WinDrive := ExtractFileDrive(WinDir);
-      AppPath := ExtractFilePath(GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\', 'UninstallString'));
+      AppPath :=
+        ExtractFilePath(GetRegStr('LM',
+          'Software\Microsoft\Windows\CurrentVersion\' +
+          'Uninstall\Naraeon SSD Tools\', 'UninstallString'));
       Reg.WriteString('', AppPath + 'Image\warning.ico') ;
       Reg.CloseKey;
       Reg.OpenKey('err' + 'file\shell\open\command', True) ;
@@ -165,7 +173,10 @@ begin
   DriveCount := 0;
   WinDir := GetEnvironmentVariable('windir');
   WinDrive := ExtractFileDrive(WinDir);
-  AppPath := ExtractFilePath(GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\', 'UninstallString'));
+  AppPath :=
+    ExtractFilePath(GetRegStr('LM',
+      'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
+      'UninstallString'));
   OnceSMARTInvestigated := 0;
 end;
 
@@ -219,14 +230,16 @@ begin
       begin
         SaveLog := TStringList.Create;
         for CurrLine := 0 to ErrList.Count - 1 do
-          SaveLog.Add(FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + ' !!!!! ' + ErrList[CurrLine] + ' ' + CapWrongBuf[CurrLang] + ' !!!!! ' +
-                     CapWrongBuf2[CurrLang]);
+          SaveLog.Add(FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) +
+            ' !!!!! ' + ErrList[CurrLine] + ' ' + CapWrongBuf[CurrLang] +
+            ' !!!!! ' + CapWrongBuf2[CurrLang]);
         SaveLog.SaveToFile(DeskPath + '\!!!SSDError!!!.err');
         FreeAndNil(SaveLog);
       end;
     end;
 
-    if (OnceSMARTInvestigated = 0) or (FormatDateTime('HH:mm', Now) = '00:00') then
+    if (OnceSMARTInvestigated = 0) or
+        (FormatDateTime('HH:mm', Now) = '00:00') then
     begin
       OnceSMARTInvestigated := 3600;
       if DriveCount > 0 then
@@ -236,7 +249,7 @@ begin
           RefreshDrives;
         for CurrDrive := 0 to DriveCount - 1 do
         begin
-          SSDInfo.ATAorSCSI := DetermineModel;
+          SSDInfo.ATAorSCSI := MODEL_DETERMINE;
           SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
           SSDInfo.CollectAllSmartData;
           HostWrites := SSDInfo.HostWrites;
@@ -254,17 +267,22 @@ begin
             SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
             SSDInfo.CollectAllSmartData;
             ReplacedSectors := SSDInfo.ReplacedSectors;
-            DriveSectInfoList[CurrDrive].ReadBothFiles(UIntToStr(ReplacedSectors));
+            DriveSectInfoList[CurrDrive].ReadBothFiles(
+              UIntToStr(ReplacedSectors));
 
-            if (SSDInfo.RepSectorAlert) and (DriveSectInfoList[CurrDrive].LastOneGig <> ReplacedSectors) then
+            if (SSDInfo.RepSectorAlert) and
+                (DriveSectInfoList[CurrDrive].LastOneGig <> ReplacedSectors) then
             begin
               CurrDrvPartitions := GetPartitionList(DriveList[CurrDrive]);
               AllReadablePartition := '';
               for CurrPart := 0 to (CurrDrvPartitions.LetterCount - 1) do
                 AllReadablePartition := AllReadablePartition + ' ' +
                                         CurrDrvPartitions.Letters[CurrPart];
-              SaveLog.Add(FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + ' !!!!! ' + AllReadablePartition + ' ' + CapBck[CurrLang] + ' !!!!! ' +
-                                          CapBck2[CurrLang] + '(' + UIntToStr(ReplacedSectors) + CapCount[CurrLang] + ') ' + CapOcc[CurrLang]);
+              SaveLog.Add(
+                FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + ' !!!!! ' +
+                  AllReadablePartition + ' ' + CapBck[CurrLang] + ' !!!!! ' +
+                  CapBck2[CurrLang] + '(' + UIntToStr(ReplacedSectors) +
+                  CapCount[CurrLang] + ') ' + CapOcc[CurrLang]);
               SaveLog.SaveToFile(DeskPath + '\!!!SSDError!!!.err');
               OnceAlertCreated := 10;
             end;
@@ -304,11 +322,9 @@ end;
 
 procedure TNaraeonSSDToolsDiag.RefreshDrives;
 var
-  TempSSDInfo: TSSDInfo_NST;
   CurrDrv: Integer;
   hdrive: Integer;
 begin
-  TempSSDInfo := TSSDInfo_NST.Create;
   DriveCount := 0;
   for CurrDrv := 0 to 99 do
   begin
@@ -317,40 +333,50 @@ begin
                                 GENERIC_READ or GENERIC_WRITE,
                                 FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
                                 OPEN_EXISTING, 0, 0);
-    if GetLastError = 0 then
-    begin
-      try
-        TempSSDInfo.ATAorSCSI := DetermineModel;
-        TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
-      finally
-        if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
-        begin
-          TempSSDInfo.CollectAllSmartData;
-          if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-          begin
-            DriveWritInfoList[DriveCount] := TNSTLog.Create(AppPath,
-                                                            TempSSDInfo.Serial,
-                                                            UIntToStr(
-                                                            TempSSDInfo.
-                                                              HostWrites),
-                                                            false,
-                                                            TempSSDInfo.S10085);
-          end;
-          DriveSectInfoList[DriveCount] := TNSTLog.Create(AppPath,
-                                                          TempSSDInfo.Serial
-                                                            + 'RSLog',
-                                                          UIntToStr(
-                                                            TempSSDInfo.
-                                                              ReplacedSectors),
-                                                          true, false);
-          DriveList[DriveCount] := IntToStr(CurrDrv);
-          DriveCount := DriveCount + 1;
-        end;
-      end;
-    end;
+    LoggerCreate(CurrDrv);
     CloseHandle(hdrive);
   end;
-  FreeAndNil(TempSSDInfo);
+end;
+
+
+procedure TNaraeonSSDToolsDiag.LoggerCreate(CurrDrv: Integer);
+var
+  TempSSDInfo: TSSDInfo_NST;
+begin
+  if GetLastError = 0 then
+  begin
+    try
+      TempSSDInfo := TSSDInfo_NST.Create;
+      TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
+      TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
+
+      if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+      begin
+        TempSSDInfo.CollectAllSmartData;
+        if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
+        begin
+          DriveWritInfoList[DriveCount] := TNSTLog.Create(AppPath,
+                                                          TempSSDInfo.Serial,
+                                                          UIntToStr(
+                                                          TempSSDInfo.
+                                                            HostWrites),
+                                                          false,
+                                                          TempSSDInfo.S10085);
+        end;
+        DriveSectInfoList[DriveCount] := TNSTLog.Create(AppPath,
+                                                        TempSSDInfo.Serial
+                                                          + 'RSLog',
+                                                        UIntToStr(
+                                                          TempSSDInfo.
+                                                            ReplacedSectors),
+                                                        true, false);
+        DriveList[DriveCount] := IntToStr(CurrDrv);
+        DriveCount := DriveCount + 1;
+      end;
+    finally
+      FreeAndNil(TempSSDInfo);
+    end;
+  end;
 end;
 
 procedure TNaraeonSSDToolsDiag.CheckDrives;

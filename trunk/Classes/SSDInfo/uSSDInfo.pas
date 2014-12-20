@@ -5,13 +5,13 @@ interface
 uses Windows, Classes, Math, Dialogs, SysUtils,
       uATALowOps, uDiskFunctions, uSSDSupport, uSMARTFunctions, uStrFunctions;
 
-const
-  NullModel = 0;
-  ATAModel = 1;
-  SCSIModel = 2;
-  DetermineModel = 3;
-
 type
+  TSATASpeed =
+    (SPEED_UNKNOWN, SPEED_SATA150, SPEED_SATA300, SPEED_SATA600, SPEED_USB);
+
+  TStorInterface =
+    (MODEL_NULL, MODEL_ATA, MODEL_SCSI, MODEL_DETERMINE);
+
   TSSDInfo = class
     //기본 정보들
     /// <remarks>모델명</remarks>
@@ -29,7 +29,7 @@ type
     ///   <para>SATA 속도 (0~4)</para>
     ///   <para>Unknown / SATA 1.5Gbps / SATA 3Gbps / SATA 6Gbps / USB</para>
     /// </remarks>
-    SATASpeed: Byte;
+    SATASpeed: TSATASpeed;
     /// <remarks>
     ///   <para>NCQ 지원 여부 (0~2)</para>
     ///   <para>Unknown / 지원 / 미지원</para>
@@ -41,7 +41,7 @@ type
     ///   <para>ATA인가 SCSI인가 (0~3)</para>
     ///   <para>Null / ATA / SCSI / 자동 감지</para>
     /// </remarks>
-    ATAorSCSI: Byte;
+    ATAorSCSI: TStorInterface;
     USBMode: Boolean;
 
     //내부에서만 사용되는 정보들
@@ -73,7 +73,7 @@ const
 
 type
   TSSDSupportStatus = record
-    SupportHostWrite: Integer;
+    SupportHostWrite: THostSupportStatus;
     SupportFirmUp: Boolean;
   end;
 
@@ -87,11 +87,12 @@ type
     EraseError: UInt64;
     ReplacedSectors: UInt64;
     RepSectorAlert: Boolean;
+    EraseErrorAlert: Boolean;
     /// <remarks>호스트 쓰기(T) / 낸드 쓰기(F)</remarks>
     IsHostWrite: Boolean; // 호스트 쓰기/낸드 쓰기
 
     //지원 수준
-    SupportedDevice: Byte;
+    SupportedDevice: TSupportStatus;
     SSDSupport: TSSDSupportStatus;
 
     //128MB 용량 단위 적용 여부
@@ -107,8 +108,8 @@ var
   SimulationMode: Boolean = false;
 
 const
-  SimulationModel = 'SanDisk SD26SB1M128G1022I';
-  SimulationFirmware = 'X230';
+  SimulationModel = 'PLEXTOR PX-128M5Pro';
+  SimulationFirmware = '1.06';
 
   CurrentVersion = '4.7.0';
 
@@ -120,7 +121,7 @@ begin
   Firmware := '';
   Serial := '';
   DeviceName := '';
-  ATAorSCSI := NullModel;
+  ATAorSCSI := MODEL_NULL;
   USBMode := false;
 end;
 
@@ -139,11 +140,11 @@ begin
   if Trim(Model) = '' then
   begin
     LLBufferToInfo(TATALowOps.GetInfoSCSI(DeviceHandle));
-    ATAorSCSI := SCSIModel;
+    ATAorSCSI := MODEL_SCSI;
   end
   else
   begin
-    ATAorSCSI := ATAModel;
+    ATAorSCSI := MODEL_ATA;
   end;
 
   NCQSupport := TATALowOps.GetNCQStatus(DeviceHandle);
@@ -160,6 +161,7 @@ end;
 procedure TSSDInfo.LLBufferToInfo(Buffer: TLLBuffer);
 var
   CurrBuf: Integer;
+  SATASpeedInNum: Integer;
 begin
   for CurrBuf := ModelStart to ModelEnd do
     Model := Model + Chr(Buffer[CurrBuf * 2 + 1]) +
@@ -176,10 +178,12 @@ begin
                        Chr(Buffer[CurrBuf * 2]);
   Serial := Trim(Serial);
 
-  SATASpeed := Buffer[SataNegStart * 2 + 1] +
-               Buffer[SataNegStart * 2];
+  SATASpeedInNum := Buffer[SataNegStart * 2 + 1] +
+                    Buffer[SataNegStart * 2];
 
-  SATASpeed := SATASpeed shr 1 and 3;
+  SATASpeedInNum := SATASpeedInNum shr 1 and 3;
+
+  SATASpeed := TSATASpeed(SATASpeedInNum);
 
   LBASize := 512;
 
@@ -201,9 +205,9 @@ begin
   DeviceNum := StrToInt(ExtractDeviceNum(DeviceName));
   DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
 
-  if ATAorSCSI = ATAModel then
+  if ATAorSCSI = MODEL_ATA then
     SMARTData := TATALowOps.GetSMARTATA(DeviceHandle, DeviceNum);
-  if (ATAorSCSI = SCSIModel) or (isValidSMART(SMARTData) = false) then
+  if (ATAorSCSI = MODEL_SCSI) or (isValidSMART(SMARTData) = false) then
     SMARTData := TATALowOps.GetSMARTSCSI(DeviceHandle);
 
   CloseHandle(DeviceHandle);
@@ -222,21 +226,15 @@ begin
   SSDSupport.SupportHostWrite := HSUPPORT_NONE;
   SSDSupport.SupportFirmUp := false;
 
-  if IsFullySupported(Model, Firmware) <> NOT_MINE then
-    SupportedDevice := SUPPORT_FULL
-  else if IsSemiSupported(Model, Firmware) <> NOT_MINE then
-    SupportedDevice := SUPPORT_SEMI
-  else
+  SupportedDevice := GetSupportStatus(Model, Firmware);
+  if SupportedDevice = SUPPORT_NONE then
   begin
-    SupportedDevice := SUPPORT_NONE;
     exit;
   end;
 
   SSDSupport.SupportHostWrite := GetWriteSupportLevel(Model, Firmware);
 
-  if (IsPlextorNewVer(Model, Firmware) <> NOT_MINE) or
-      (IsLiteONNewVer(Model, Firmware) <> NOT_MINE) or
-      (IsCrucialNewVer(Model, Firmware) <> NOT_MINE) then
+  if IsNewVersion(Model, Firmware) <> NOT_MINE then
   begin
     SSDSupport.SupportFirmUp := true;
   end;
@@ -248,6 +246,7 @@ procedure TSSDInfo_NST.CollectAllSmartData;
 var
   HWResult: THostWrite;
   RSResult: TRepSector;
+  EEResult: TEraseError;
 begin
   inherited CollectAllSMARTData;
 
@@ -262,7 +261,9 @@ begin
   end;
 
   //EraseError
-  EraseError := GetEraseError(Model, Firmware, SMARTData);
+  EEResult := GetEraseError(Model, Firmware, SMARTData);
+  EraseError := EEResult.EraseError;
+  EraseErrorAlert := EEResult.EraseErrorAlert;
 
   //RepSectorAlert
   RSResult := GetRepSector(Model, Firmware, SMARTData);

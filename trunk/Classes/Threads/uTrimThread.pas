@@ -3,7 +3,7 @@ unit uTrimThread;
 interface
 
 uses Classes, SysUtils, uDiskFunctions, Math, Dialogs, Windows,
-      uTrimCommand, uLanguageSettings, uPartitionFunctions;
+      uATALowOps, uLanguageSettings, uPartitionFunctions;
 
 type
   TTrimThread = class(TThread)
@@ -56,7 +56,7 @@ const
   VOLUME_BITMAP_BYTES = 4096;
   VOLUME_BITMAP_SIZE = 2*SizeOf(LARGE_INTEGER)+VOLUME_BITMAP_BYTES;
 var
-  hDevice: THandle;
+  DriveHandle, hPhyDevice: THandle;
   StartingBuffer: STARTING_LCN_INPUT_BUFFER;
   BytesRead: Cardinal;
   CurrPart: Int64;
@@ -71,14 +71,13 @@ var
   LBAPerSector: Cardinal;
   LastPart, LastBit, BitCount: Integer;
   NTFSInfo: NTFS_INFO;
-  MotherDrive: String;
   Nouse: Array[0..2] of Cardinal;
   GottenLBAPerSector: Cardinal;
   FATLength: Integer;
   CurrTrimCount, CurrTrimLBAs: Int64;
   SleepTime_LBACount: Integer;
 begin
-  hDevice := CreateFile(
+  DriveHandle := CreateFile(
               PChar('\\.\' + DriveLetter),
               GENERIC_READ,
               FILE_SHARE_READ or FILE_SHARE_WRITE,
@@ -96,7 +95,7 @@ begin
   StartingBuffer.StartingLcn.QuadPart := 0;
 
   DeviceIOControl(
-              hDevice ,
+              DriveHandle,
               FSCTL_GET_VOLUME_BITMAP,
               @StartingBuffer,
               SizeOf(StartingBuffer),
@@ -117,7 +116,7 @@ begin
     FATLength := (GetPartitionLength(DriveLetter) div GottenLBAPerSector) -
                  (GottenLBAPerSector * TempResult.BitmapSize.QuadPart);
     StartLBA := StartLBA + FATLength;
-    LBAPerSector := (GottenLBAPerSector * 512) div LBASize;
+    LBAPerSector := (GottenLBAPerSector shl 9) div LBASize;
   end;
 
   AllBlocks := TempResult.BitmapSize;
@@ -128,7 +127,9 @@ begin
 
   CurrTrimCount := 0;
   CurrTrimLBAs := 0;
-  MotherDrive := IntToStr(GetMotherDrive(DriveLetter).Extents[0].DiskNumber);
+
+  hPhyDevice :=
+    TATALowOps.CreateHandle(GetMotherDrive(DriveLetter).Extents[0].DiskNumber);
   while (error = 234) or (error = 87) or (error = 0) do
   begin
     if TempResult.BitmapSize.QuadPart >= 32768 then
@@ -139,7 +140,7 @@ begin
     else
     begin
       LastPart := ceil(TempResult.BitmapSize.QuadPart / 8) - 1;
-      LastBit := (TempResult.BitmapSize.QuadPart mod 8) - 1;
+      LastBit := (TempResult.BitmapSize.QuadPart and 7) - 1;
     end;
     for CurrByte := 0 to LastPart do
     begin
@@ -152,7 +153,7 @@ begin
 
         if (CurrBitBool = 0) and (Status = 0) then
         begin
-          SetupPoint := StartLBA + (((CurrByte * 8) +
+          SetupPoint := StartLBA + (((CurrByte shl 3) +
                                       TempResult.StartingLcn.QuadPart + CurrBit)
                                       * LBAPerSector);
           LBACount := LBAPerSector;
@@ -167,8 +168,8 @@ begin
             LBACount := LBACount + LBAPerSector;
           CurrTrimCount := CurrTrimCount + 1;
           CurrTrimLBAs := CurrTrimLBAs + LBACount;
-          SendTrimCommand('\\.\PhysicalDrive' + MotherDrive,
-                          SetupPoint, LBACount);
+          TATALowOps.TrimCommand(hPhyDevice,
+            SetupPoint, LBACount);
           SetupPoint := 0;
           LBACount := 0;
           Status := 0;
@@ -189,13 +190,13 @@ begin
         CurrTrimCount := 0;
         CurrTrimLBAs := 0;
       end;
-      CurrPart := CurrPart + (Length(TempResult.Buffer) * 8);
+      CurrPart := CurrPart + (Length(TempResult.Buffer) shl 3);
       StartingBuffer.StartingLcn.QuadPart := CurrPart;
       SetupPoint := 0;
       LBACount := 0;
       Status := 0;
       DeviceIOControl(
-                  hDevice ,
+                  DriveHandle,
                   FSCTL_GET_VOLUME_BITMAP,
                   @StartingBuffer,
                   SizeOf(StartingBuffer),
@@ -213,7 +214,8 @@ begin
     else
       break;
   end;
-  CloseHandle(hDevice);
+  CloseHandle(hPhyDevice);
+  CloseHandle(DriveHandle);
 end;
 
 procedure TTrimThread.ChangeProgressbar;

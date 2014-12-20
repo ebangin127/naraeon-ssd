@@ -427,10 +427,9 @@ begin
     OleCheck(MkParseDisplayName(OleCtx, PWideChar(wsFileObj), i, OleMoniker));
     OleCheck(OleMoniker.BindToObject(OleCtx, nil, IUnknown, Dispatch));
 
-
-    OleDrivesVar := OleVariant(Dispatch).ExecQuery('Select * from Win32_DiskDrive');
+    OleDrivesVar :=
+      OleVariant(Dispatch).ExecQuery('Select * from Win32_DiskDrive');
     OleEnum := IUnknown(OleDrivesVar._NewEnum) as IEnumVariant;
-
 
     while OleEnum.Next(1, OleDrives, iValue) = 0 do
     begin

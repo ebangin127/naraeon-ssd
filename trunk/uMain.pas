@@ -9,7 +9,7 @@ uses
   Vcl.OleCtrls, uRegFunctions, uDiskFunctions, Vcl.ExtCtrls, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, IdComponent, MMSystem, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uSSDSupport, uLogSystem, uSSDInfo, uStrFunctions,
-  uTrimThread, uLanguageSettings, uTrimCommand, uUpdateThread, uBrowser,
+  uTrimThread, uLanguageSettings, uUpdateThread, uBrowser,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh;
 
@@ -176,11 +176,11 @@ type
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     CurrDrive: String;
-    SSDLabel: Array of TLabel;
+    SSDLabel: Array of TSSDLabel;
 
     //현재 드라이브 관련
     CurrUSBMode: Boolean;
-    CurrATAorSCSIStatus: Byte;
+    CurrATAorSCSIStatus: TStorInterface;
 
     procedure ShowDownloader;
     procedure HideDownloader;
@@ -266,11 +266,8 @@ begin
   InternetGetConnectedState(@ifConnected, 0);
   if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
       (ifConnected = 0) then
-  begin
-    AlertCreate(Self, AlrtNoInternet[CurrLang]);
-  end;
-
-  if (cAgree.Checked = false) and (Sender <> Self)  then
+    AlertCreate(Self, AlrtNoInternet[CurrLang])
+  else if (cAgree.Checked = false) and (Sender <> Self)  then
     AlertCreate(Self, AlrtNoCheck[CurrLang])
   else if (ifConnected <> INTERNET_CONNECTION_OFFLINE) and
           (ifConnected <> 0) then
@@ -810,7 +807,7 @@ begin
     GSSDSel.Visible := false;
     SSDSelLbl.Caption := CapSSDSelOpn[CurrLang];
   end;
-  if CurrDrive <> TLabel(Sender).Hint then
+  if CurrDrive <> TSSDLabel(Sender).DriveName then
   begin
     if gFirmware.Visible = true then iFirmUp.OnClick(nil);
     if gOpt.Visible = true then iOptimize.OnClick(nil);
@@ -818,12 +815,13 @@ begin
     if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
     if (gTrim.Visible) or (gSchedule.Visible) then iTrim.OnClick(nil);
 
-    CurrDrive := TLabel(Sender).Hint;
-    CurrUSBMode := TLabel(Sender).AlignWithMargins;
-    CurrATAorSCSIStatus := TLabel(Sender).HelpContext;
+    CurrDrive := TSSDLabel(Sender).DriveName;
+    CurrUSBMode := TSSDLabel(Sender).USBMode;
+    CurrATAorSCSIStatus := TSSDLabel(Sender).ATAorSCSI;
     tRefreshTimer(Self);
+
     for CurrIndex := 0 to Length(SSDLabel) - 1 do
-      if SSDLabel[CurrIndex].Hint = TLabel(Sender).Hint then
+      if SSDLabel[CurrIndex].DriveName = TSSDLabel(Sender).DriveName then
       begin
         SSDLabel[CurrIndex].Font.Style := [fsBold];
       end
@@ -1226,14 +1224,14 @@ begin
   lAnalytics.Caption := BtAnaly[CurrLang];
   lTrim.Caption := BtTrim[CurrLang];
 
-  lFirmUp.left    := iFirmUp.Left + (iFirmUp.Width div 2) - (lFirmUp.Width div 2);
-  lErase.left     := iErase.Left + (iErase.Width div 2) - (lErase.Width div 2);
+  lFirmUp.left := iFirmUp.Left + (iFirmUp.Width div 2) - (lFirmUp.Width div 2);
+  lErase.left := iErase.Left + (iErase.Width div 2) - (lErase.Width div 2);
   lOptimize.left  := iOptimize.Left + (iOptimize.Width div 2)
                       - (lOptimize.Width div 2);
   lAnalytics.left := iAnalytics.Left + (iAnalytics.Width div 2)
                       - (lAnalytics.Width div 2);
-  lHelp.left      := iHelp.Left + (iHelp.Width div 2) - (lHelp.Width div 2);
-  lTrim.left      := iTrim.Left + (iTrim.Width div 2) - (lTrim.Width div 2);
+  lHelp.left := iHelp.Left + (iHelp.Width div 2) - (lHelp.Width div 2);
+  lTrim.left := iTrim.Left + (iTrim.Width div 2) - (lTrim.Width div 2);
 
   lUpdate.Caption := CapFirm[CurrLang];
   lUSB.Caption := CapSelUSB[CurrLang];

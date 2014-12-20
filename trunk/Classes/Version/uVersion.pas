@@ -10,6 +10,7 @@ type
     FMinorVer: Integer;
     FBuildVer: Integer;
 
+    class operator Equal(a: TVersion; b: TVersion): Boolean;
     class operator NotEqual(a: TVersion; b: TVersion): Boolean;
     class operator GreaterThan(a: TVersion; b: TVersion): Boolean;
     class operator GreaterThanOrEqual(a: TVersion; b: TVersion): Boolean;
@@ -61,36 +62,41 @@ begin
             (a.FBuildVer <> b.FBuildVer);
 end;
 
+class operator TVersion.Equal(a, b: TVersion): Boolean;
+begin
+  result := (a.FMajorVer = b.FMajorVer) and
+            (a.FMinorVer = b.FMinorVer) and
+            (a.FBuildVer = b.FBuildVer);
+end;
+
 class operator TVersion.GreaterThan(a: TVersion; b: TVersion): Boolean;
 begin
   result := (a.FMajorVer > b.FMajorVer) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer > b.FMinorVer)) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer = b.FMinorVer) and
+            ((a.FMajorVer = b.FMajorVer) and
+             (a.FMinorVer > b.FMinorVer)) or
+            ((a.FMajorVer = b.FMajorVer) and
+             (a.FMinorVer = b.FMinorVer) and
              (a.FBuildVer > b.FBuildVer));
 end;
 
 class operator TVersion.GreaterThanOrEqual(a: TVersion; b: TVersion): Boolean;
 begin
-  result := (a.FMajorVer >= b.FMajorVer) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer >= b.FMinorVer)) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer = b.FMinorVer) and
-             (a.FBuildVer >= b.FBuildVer));
+  result := (a > b) or (a = b);
 end;
 
 class operator TVersion.LessThan(a: TVersion; b: TVersion): Boolean;
 begin
   result := (a.FMajorVer < b.FMajorVer) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer < b.FMinorVer)) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer = b.FMinorVer) and
+            ((a.FMajorVer = b.FMajorVer) and
+             (a.FMinorVer < b.FMinorVer)) or
+            ((a.FMajorVer = b.FMajorVer) and
+             (a.FMinorVer = b.FMinorVer) and
              (a.FBuildVer < b.FBuildVer));
 end;
 
 class operator TVersion.LessThanOrEqual(a: TVersion; b: TVersion): Boolean;
 begin
-  result := (a.FMajorVer <= b.FMajorVer) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer <= b.FMinorVer)) or
-            ((a.FMajorVer = b.FMajorVer) and (a.FMinorVer = b.FMinorVer) and
-             (a.FBuildVer <= b.FBuildVer));
+  result := (a < b) or (a = b);
 end;
 
 end.

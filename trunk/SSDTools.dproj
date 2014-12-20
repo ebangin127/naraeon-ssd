@@ -132,7 +132,6 @@
         <DCCReference Include="Modules\Disk\uDiskFunctions.pas"/>
         <DCCReference Include="Modules\Disk\uPartitionFunctions.pas"/>
         <DCCReference Include="Modules\Disk\uSMARTFunctions.pas"/>
-        <DCCReference Include="Modules\Disk\uTrimCommand.pas"/>
         <DCCReference Include="Modules\Etc\uIntFunctions.pas"/>
         <DCCReference Include="Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="Modules\Windows\uRegFunctions.pas"/>
@@ -201,8 +200,8 @@
                     <Source Name="MainSource">SSDTools.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k180.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp180.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment/>

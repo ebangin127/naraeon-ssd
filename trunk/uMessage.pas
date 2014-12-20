@@ -57,7 +57,7 @@ begin
   TempSSDInfo := TSSDInfo_NST.Create;
   for i := 2 to 3 do
   begin
-    TempSSDInfo.ATAorSCSI := DetermineModel;
+    TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
     TempSSDInfo.SetDeviceName(i);
     TempSSDInfo.CollectAllSmartData;
     if Logger[i] <> ExtractSMART(TempSSDInfo.SMARTData, 9) then

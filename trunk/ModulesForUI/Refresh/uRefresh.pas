@@ -10,10 +10,18 @@ uses
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
                       CurrUSBMode: Boolean;
-                      CurrATAorSCSIStatus: Byte;
+                      CurrATAorSCSIStatus: TStorInterface;
                       ShowSerial: Boolean;
                       firstiOptLeft: Integer): Boolean;
 function RefreshDrives(SSDInfo: TSSDInfo_NST): Integer;
+
+type
+  TSSDLabel = class(TLabel)
+  public
+    DriveName: String;
+    USBMode: Boolean;
+    ATAorSCSI: TStorInterface;
+  end;
 
 implementation
 
@@ -21,7 +29,7 @@ uses uMain;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
                       CurrUSBMode: Boolean;
-                      CurrATAorSCSIStatus: Byte;
+                      CurrATAorSCSIStatus: TStorInterface;
                       ShowSerial: Boolean;
                       firstiOptLeft: Integer): Boolean;
 var
@@ -51,13 +59,15 @@ begin
       lFirmware.Caption := CapFirmware[CurrLang] + SSDInfo.Firmware;
 
       lConnState.Caption := CapConnState[CurrLang];
-      if (SSDInfo.SATASpeed = 0) or (SSDInfo.SATASpeed > 3) then
+      if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
+          (SSDInfo.SATASpeed > SPEED_SATA600) then
         lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
       else if CurrUSBMode then
         lConnState.Caption := lConnState.Caption + ConnState[3]
       else
       begin
-        lConnState.Caption := lConnState.Caption + ConnState[SSDInfo.SATASpeed - 1];
+        lConnState.Caption := lConnState.Caption +
+          ConnState[Integer(SSDInfo.SATASpeed) - 1];
         case SSDInfo.NCQSupport of
           0:
           begin
@@ -75,9 +85,7 @@ begin
         lConnState.Caption := lConnState.Caption + ')';
       end;
 
-      if (IsPlextorNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) or
-         (IsLiteONNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) or
-         (IsCrucialNewVer(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION) then
+      if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION then
       begin
         lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
         lFirmware.Font.Color := clRed;
@@ -255,7 +263,7 @@ begin
         lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) + CapCount[CurrLang];
       end;
 
-      if EraseErrors >= EraseErrorThreshold then
+      if SSDInfo.EraseErrorAlert then
       begin
         lPError.Font.Color := clRed;
         lNotsafe.Font.Color := clRed;
@@ -288,7 +296,7 @@ begin
       iTrim.Visible := false;
       iFirmUp.Visible := false;
       lFirmUp.Visible := false;
-      if SSDInfo.ATAorSCSI = ATAModel then
+      if SSDInfo.ATAorSCSI = MODEL_ATA then
       begin
         if Length(CurrDrvPartitions.Letters) <> 0 then
         begin
@@ -376,15 +384,15 @@ begin
         DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
 
       for CurrExistAtApp := 0 to Length(SSDLabel) - 1 do
-        if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].Hint then
+        if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].DriveName then
           CurrAvail := true;
 
-      if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := ATAModel
-      else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := SCSIModel;
+      if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
+      else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
 
       if RobustMode then
       begin
-        TempSSDInfo.ATAorSCSI := DetermineModel;
+        TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
       end;
       TempSSDInfo.SetDeviceName(StrToInt(DrvName));
 
@@ -404,12 +412,12 @@ begin
         SetLength(SSDLabel, Length(SSDLabel) + 1);
         NewLen := Length(SSDLabel);
 
-        SSDLabel[NewLen - 1] := TLabel.Create(GSSDSel);
+        SSDLabel[NewLen - 1] := TSSDLabel.Create(GSSDSel);
         SSDLabel[NewLen - 1].Parent := GSSDSel;
         SSDLabel[NewLen - 1].Font.Name := Font.Name;
         SSDLabel[NewLen - 1].Font.Size := 10;
-        SSDLabel[NewLen - 1].Hint :=  AllDrv[CurrDrv];
-        SSDLabel[NewLen - 1].HelpContext := TempSSDInfo.ATAorSCSI;
+        SSDLabel[NewLen - 1].DriveName :=  AllDrv[CurrDrv];
+        SSDLabel[NewLen - 1].ATAorSCSI := TempSSDInfo.ATAorSCSI;
         SSDLabel[NewLen - 1].Cursor := crHandPoint;
         SSDLabel[NewLen - 1].OnClick := SSDLabelClick;
         SSDLabel[NewLen - 1].OnMouseEnter := SSDSelLblMouseEnter;
@@ -440,11 +448,11 @@ begin
 
         if TempUSBMode then
         begin
-          SSDLabel[NewLen - 1].AlignWithMargins := true;
+          SSDLabel[NewLen - 1].USBMode := true;
         end
         else
         begin
-          SSDLabel[NewLen - 1].AlignWithMargins := false;
+          SSDLabel[NewLen - 1].USBMode := false;
         end;
 
         SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
@@ -472,8 +480,8 @@ begin
         begin
           SSDLabel[NewLen - 1].OnClick(SSDLabel[NewLen - 1]);
           tRefresh.Enabled := true;
-          if ATAorSCSI = ATAMode then CurrATAorSCSIStatus := ATAModel
-          else if ATAorSCSI = SCSIMode then  CurrATAorSCSIStatus := SCSIModel;
+          if ATAorSCSI = ATAMode then CurrATAorSCSIStatus := MODEL_ATA
+          else if ATAorSCSI = SCSIMode then  CurrATAorSCSIStatus := MODEL_SCSI;
         end;
       end;
     end;
@@ -483,9 +491,9 @@ begin
       TempFound := false;
       for CurrDrv := 0 to AllDrv.Count - 1 do
       begin
-        if (SSDLabel[CurrExistAtApp].Hint = AllDrv[CurrDrv]) or
-            (SSDLabel[CurrExistAtApp].Hint + 'U' = AllDrv[CurrDrv]) or
-            (SSDLabel[CurrExistAtApp].Hint + 'H' = AllDrv[CurrDrv]) then
+        if (SSDLabel[CurrExistAtApp].DriveName = AllDrv[CurrDrv]) or
+            (SSDLabel[CurrExistAtApp].DriveName + 'U' = AllDrv[CurrDrv]) or
+            (SSDLabel[CurrExistAtApp].DriveName + 'H' = AllDrv[CurrDrv]) then
           TempFound := true
         else if (CurrDrv = (AllDrv.Count - 1)) and (TempFound = false) then
           RefreshAll := true;
