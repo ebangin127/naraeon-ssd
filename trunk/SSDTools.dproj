@@ -152,6 +152,7 @@
         <DCCReference Include="ModulesForUI\Firmware\uFirmware.pas"/>
         <DCCReference Include="ModulesForUI\USBDrive\uUSBDrive.pas"/>
         <DCCReference Include="ModulesForUI\Refresh\uRefresh.pas"/>
+        <DCCReference Include="Classes\UAWebbrowser\uUAWebbrowser.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

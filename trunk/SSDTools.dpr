@@ -34,7 +34,8 @@ uses
   uATALowOps in 'Classes\ATALowOps\uATALowOps.pas',
   uFirmware in 'ModulesForUI\Firmware\uFirmware.pas',
   uUSBDrive in 'ModulesForUI\USBDrive\uUSBDrive.pas',
-  uRefresh in 'ModulesForUI\Refresh\uRefresh.pas';
+  uRefresh in 'ModulesForUI\Refresh\uRefresh.pas',
+  uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas';
 
 {$R *.res}
 var

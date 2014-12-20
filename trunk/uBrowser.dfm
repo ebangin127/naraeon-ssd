@@ -13,6 +13,7 @@ object fBrowser: TfBrowser
   Position = poOwnerFormCenter
   OnCreate = FormCreate
   OnResize = FormResize
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
 end

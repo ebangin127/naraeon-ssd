@@ -3,19 +3,26 @@ unit uBrowser;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.OleCtrls, SHDocVw, uLanguageSettings;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, uUAWebbrowser,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.OleCtrls, SHDocVw,
+  uLanguageSettings;
 
 procedure BrowserCreate(Sender: TForm);
+
+const
+  WM_AFTER_SHOW = WM_USER + 300;
 
 type
   TfBrowser = class(TForm)
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure wbPluginNavigateComplete2(ASender: TObject;
-      const pDisp: IDispatch; const URL: OleVariant);
+      const pDisp: IDispatch; const URL: OleVariant);     
+    procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
+    procedure FormShow(Sender: TObject);
   private
-    wbPlugin: TWebBrowser;
+    wbPlugin: TUAWebBrowser;
   public
     { Public declarations }
   end;
@@ -40,10 +47,10 @@ end;
 
 procedure TfBrowser.FormCreate(Sender: TObject);
 begin
-  wbPlugin := TWebBrowser.Create(self);
+  wbPlugin := TUAWebBrowser.Create(self);
   wbPlugin.SetParentComponent(self);
-
-  wbPlugin.Navigate(AddrSecureErase[CurrLang]);
+  wbPlugin.Navigate('about:blank');
+  wbPlugin.OnNavigateComplete2 := wbPluginNavigateComplete2;
 end;
 
 procedure TfBrowser.FormResize(Sender: TObject);
@@ -52,10 +59,20 @@ begin
   wbPlugin.Height := ClientHeight;
 end;
 
+procedure TfBrowser.FormShow(Sender: TObject);
+begin
+  PostMessage(Self.Handle, WM_AFTER_SHOW, 0, 0);
+end;
+
 procedure TfBrowser.wbPluginNavigateComplete2(ASender: TObject;
   const pDisp: IDispatch; const URL: OleVariant);
 begin
   Caption := wbPlugin.OleObject.Document.Title;
+end;
+
+procedure TfBrowser.WmAfterShow(var Msg: TMessage);
+begin
+  wbPlugin.Navigate(AddrSecureErase[CurrLang]);
 end;
 
 end.

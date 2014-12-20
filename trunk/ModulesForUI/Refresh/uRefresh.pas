@@ -47,290 +47,319 @@ begin
   begin
     InitUIToRefresh;
 
-    if Length(CurrDrive) > 0 then
+    if Length(CurrDrive) = 0 then
     begin
-      SSDInfo.ATAorSCSI := CurrATAorSCSIStatus;
-      SSDInfo.USBMode := CurrUSBMode;
-      SSDInfo.SetDeviceName(StrToInt(CurrDrive));
+      exit;
+    end;
 
-      lName.Caption := SSDInfo.Model + ' '
-                       + GetTBStr(1000, SSDInfo.UserSize / 2 * (512/500) / 1000,
-                                  0);
-      lFirmware.Caption := CapFirmware[CurrLang] + SSDInfo.Firmware;
+    SSDInfo.ATAorSCSI := CurrATAorSCSIStatus;
+    SSDInfo.USBMode := CurrUSBMode;
+    SSDInfo.SetDeviceName(StrToInt(CurrDrive));
 
-      lConnState.Caption := CapConnState[CurrLang];
-      if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
-          (SSDInfo.SATASpeed > SPEED_SATA600) then
-        lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
-      else if CurrUSBMode then
-        lConnState.Caption := lConnState.Caption + ConnState[3]
-      else
-      begin
-        lConnState.Caption := lConnState.Caption +
-          ConnState[Integer(SSDInfo.SATASpeed) - 1];
-        case SSDInfo.NCQSupport of
-          0:
-          begin
-            lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang];
-          end;
-          1:
-          begin
-            lConnState.Caption := lConnState.Caption + CapNonSupNCQ[CurrLang];
-          end;
-          2:
-          begin
-            lConnState.Caption := lConnState.Caption + CapSupportNCQ[CurrLang];
-          end;
+    lName.Caption := SSDInfo.Model + ' '
+                     + GetTBStr(1000, SSDInfo.UserSize / 2 * (512/500) / 1000,
+                                0);
+    lFirmware.Caption := CapFirmware[CurrLang] + SSDInfo.Firmware;
+
+    lConnState.Caption := CapConnState[CurrLang];
+    if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
+        (SSDInfo.SATASpeed > SPEED_SATA600) then
+      lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
+    else if CurrUSBMode then
+      lConnState.Caption := lConnState.Caption + ConnState[3]
+    else
+    begin
+      lConnState.Caption := lConnState.Caption +
+        ConnState[Integer(SSDInfo.SATASpeed) - 1];
+      case SSDInfo.NCQSupport of
+        0:
+        begin
+          lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang];
         end;
-        lConnState.Caption := lConnState.Caption + ')';
+        1:
+        begin
+          lConnState.Caption := lConnState.Caption + CapNonSupNCQ[CurrLang];
+        end;
+        2:
+        begin
+          lConnState.Caption := lConnState.Caption + CapSupportNCQ[CurrLang];
+        end;
+      end;
+      lConnState.Caption := lConnState.Caption + ')';
+    end;
+
+    if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION then
+    begin
+      lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
+      lFirmware.Font.Color := clRed;
+      lFirmware.Font.Style := [fsBold];
+    end;
+    if lName.Caption <> '' then
+    begin
+      if (cUSB.Items.Count > 0) and (cUSB.ItemIndex = -1) then
+        cUSB.ItemIndex := 0;
+      if (cUSBErase.Items.Count > 0) and (cUSBErase.ItemIndex = -1) then
+        cUSBErase.ItemIndex := 0;
+      if (cTrimList.Items.Count > 0) and (cTrimList.ItemIndex = -1) then
+        cTrimList.ItemIndex := 0;
+
+      if gFirmware.Visible = false then
+        lNewFirm.Caption := NewFirmCaption(SSDInfo.Model, SSDInfo.Firmware);
+    end
+    else
+    begin
+      AlertCreate(fMain, AlrtNoSupport[CurrLang]);
+      ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
+                  PChar('/diag'), nil, SW_SHOW);
+    end;
+    if ShowSerial = false then
+    begin
+      lSerial.Caption := CapSerial[CurrLang];
+      for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
+        lSerial.Caption := lSerial.Caption + 'X';
+    end
+    else
+      lSerial.Caption := CapSerial[CurrLang] + SSDInfo.Serial;
+
+    SSDInfo.CollectAllSmartData;
+    HostWrites := SSDInfo.HostWrites;
+
+    //통계 미지원 걸러냄
+    if SSDInfo.SSDSupport.SupportHostWrite <> HSUPPORT_NONE then
+    begin
+      if l1Month.Visible = false then
+      begin
+        lHost.Top := lHost.Top - 25;
+        lTodayUsage.Top := lTodayUsage.Top - 15;
+        lOntime.Top := lOntime.Top - 10;
+        l1Month.Visible := true;
       end;
 
-      if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION then
+      //Case 1 : 호스트 쓰기 지원
+      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
       begin
-        lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
-        lFirmware.Font.Color := clRed;
-        lFirmware.Font.Style := [fsBold];
-      end;
-      if lName.Caption <> '' then
-      begin
-        if (cUSB.Items.Count > 0) and (cUSB.ItemIndex = -1) then
-          cUSB.ItemIndex := 0;
-        if (cUSBErase.Items.Count > 0) and (cUSBErase.ItemIndex = -1) then
-          cUSBErase.ItemIndex := 0;
-        if (cTrimList.Items.Count > 0) and (cTrimList.ItemIndex = -1) then
-          cTrimList.ItemIndex := 0;
-
-        if gFirmware.Visible = false then
-          lNewFirm.Caption := NewFirmCaption(SSDInfo.Model, SSDInfo.Firmware);
-      end
-      else
-      begin
-        AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-        ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
-                    PChar('/diag'), nil, SW_SHOW);
-      end;
-      if ShowSerial = false then
-      begin
-        lSerial.Caption := CapSerial[CurrLang];
-        for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
-          lSerial.Caption := lSerial.Caption + 'X';
-      end
-      else
-        lSerial.Caption := CapSerial[CurrLang] + SSDInfo.Serial;
-
-      SSDInfo.CollectAllSmartData;
-      HostWrites := SSDInfo.HostWrites;
-
-      //통계 미지원 걸러냄
-      if SSDInfo.SSDSupport.SupportHostWrite <> HSUPPORT_NONE then
-      begin
-        if l1Month.Visible = false then
-        begin
-          lHost.Top := lHost.Top - 25;
-          lTodayUsage.Top := lTodayUsage.Top - 15;
-          lOntime.Top := lOntime.Top - 10;
-          l1Month.Visible := true;
-        end;
-
-        //Case 1 : 호스트 쓰기 지원
-        if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-        begin
-          if SSDInfo.IsHostWrite then
-            lHost.Caption := CapHostWrite[CurrLang]
-          else
-            lHost.Caption := CapNandWrite[CurrLang];
-
-          lHost.Caption :=
-            lHost.Caption
-            + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
-        end
-        //Case 2 : 호스트 쓰기가 Wear Leveling Count로 제공되는 경우
-        else if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_COUNT then
-        begin
-          lHost.Caption := CapSSDLifeLeft[CurrLang]
-                            + UIntToStr(ExtractSMARTPercent(SSDInfo.SMARTData,
-                                                            1)) + '%';
-          lTodayUsage.Caption := CapWearLevel[CurrLang]
-                                  + UIntToStr(ExtractSMART(SSDInfo.SMARTData,
-                                              'AD'));
-          lHost.Top := lHost.Top + 25;
-          lTodayUsage.Top := lTodayUsage.Top + 15;
-          lOntime.Top := lOntime.Top + 10;
-          l1Month.Visible := false;
-        end;
-
-        if SSDInfo.S10085 then
-        begin
-          lHost.Caption := lHost.Caption + CapCannotTrust[CurrLang];
-          lHost.Font.Color := clRed;
-          lHost.Font.Style := [fsBold];
-        end
+        if SSDInfo.IsHostWrite then
+          lHost.Caption := CapHostWrite[CurrLang]
         else
-        begin
-          lHost.Font.Color := clWindowText;
-          lHost.Font.Style := [];
-        end;
+          lHost.Caption := CapNandWrite[CurrLang];
 
-        if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-        begin
-          CurrWritLog := TNSTLog.Create(ExtractFilePath(GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\', 'UninstallString')),
-                                        SSDInfo.Serial, UIntToStr(HostWrites), false, SSDInfo.S10085);
-
-          AvgDays := -1;
-          for CurrAvgDay := AvgMax downto 0 do
-          begin
-            if Length(CurrWritLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
-            begin
-              AvgDays := CurrAvgDay;
-              break;
-            end;
-          end;
-          if AvgDays <> -1 then
-          begin
-            if Length(CurrWritLog.Average[IntToAvg[AvgDays]]) > 0 then
-            begin
-              l1Month.Caption := CapAvg[AvgDays][CurrLang] + CurrWritLog.Average[IntToAvg[AvgDays]] + 'GB/' + CapDay[CurrLang];
-            end;
-          end;
-          lTodayUsage.Caption := CapToday[CurrLang] + CurrWritLog.TodayUsage + 'GB';
-          FreeAndNil(CurrWritLog);
-        end;
+        lHost.Caption :=
+          lHost.Caption
+          + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
+      end
+      //Case 2 : 호스트 쓰기가 Wear Leveling Count로 제공되는 경우
+      else if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_COUNT then
+      begin
+        lHost.Caption := CapSSDLifeLeft[CurrLang]
+                          + UIntToStr(ExtractSMARTPercent(SSDInfo.SMARTData,
+                                                          1)) + '%';
+        lTodayUsage.Caption := CapWearLevel[CurrLang]
+                                + UIntToStr(ExtractSMART(SSDInfo.SMARTData,
+                                            'AD'));
+        lHost.Top := lHost.Top + 25;
+        lTodayUsage.Top := lTodayUsage.Top + 15;
+        lOntime.Top := lOntime.Top + 10;
+        l1Month.Visible := false;
       end;
 
-      lOntime.Caption := CapPowerTime[CurrLang] + UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) + CapHour[CurrLang];
-
-      // 섹터 치환
-      ReplacedSectors := SSDInfo.ReplacedSectors;
-      CurrSectLog := TNSTLog.Create(ExtractFilePath(GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\', 'UninstallString')),
-                                    SSDInfo.Serial + 'RSLog', UIntToStr(ReplacedSectors), true, false);
-
-      //섹터 치환만 지원하는 모델들
-      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
+      if SSDInfo.S10085 then
       begin
-        lHost.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) + CapCount[CurrLang];
-        lAnalytics.Caption := BtLifeAnaly[CurrLang];
-        lAnaly.Caption := CapLifeAnaly[CurrLang];
-
-        if CurrSectLog <> nil then
-        begin
-          AvgDays := -1;
-          for CurrAvgDay := AvgMax downto 0 do
-          begin
-            if Length(CurrSectLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
-            begin
-              AvgDays := CurrAvgDay;
-              break;
-            end;
-          end;
-          if AvgDays <> -1 then
-          begin
-            if Length(CurrSectLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
-            begin
-              l1Month.Caption := CaprAvg[AvgDays][CurrLang] + CurrSectLog.Average[IntToAvg[CurrAvgDay]] + CapCount[CurrLang];
-            end;
-          end;
-          lTodayUsage.Caption := CaprToday[CurrLang] + CurrSectLog.TodayUsage + CapCount[CurrLang];
-        end;
+        lHost.Caption := lHost.Caption + CapCannotTrust[CurrLang];
+        lHost.Font.Color := clRed;
+        lHost.Font.Style := [fsBold];
       end
       else
       begin
-        lAnalytics.Caption := BtAnaly[CurrLang];
-        lAnaly.Caption := CapAnaly[CurrLang];
-      end;
-      FreeAndNil(CurrSectLog);
-
-      // 지우기 에러
-      EraseErrors := SSDInfo.EraseError;
-      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
-      begin
-        lPError.Caption := CapReadError[CurrLang] + UIntToStr(EraseErrors) + CapCount[CurrLang];
-      end
-      else
-      begin
-        lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) + CapCount[CurrLang];
+        lHost.Font.Color := clWindowText;
+        lHost.Font.Style := [];
       end;
 
-      // 수명 상황 안 좋을때 오류 - 지우기 에러가 더 심각하므로 밑으로 배치.
-      if SSDInfo.RepSectorAlert then
+      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
       begin
-        lSectors.Font.Color := clRed;
-        lNotsafe.Font.Color := clRed;
-        lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) + CapCount[CurrLang];
-        lNotsafe.Caption := CapStatus[CurrLang] + CapNotSafeRepSect[CurrLang];
-      end
-      else
-      begin
-        lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) + CapCount[CurrLang];
-      end;
+        CurrWritLog :=
+          TNSTLog.Create(
+            ExtractFilePath(
+              GetRegStr('LM',
+                'Software\Microsoft\Windows\CurrentVersion\' +
+                'Uninstall\Naraeon SSD Tools\', 'UninstallString')),
+            SSDInfo.Serial, UIntToStr(HostWrites), false, SSDInfo.S10085);
 
-      if SSDInfo.EraseErrorAlert then
-      begin
-        lPError.Font.Color := clRed;
-        lNotsafe.Font.Color := clRed;
-        lNotsafe.Caption := CapNotSafeEraseErrors[CurrLang] + CapNotSafeRepSect[CurrLang];
-      end;
-
-      // 파티션 정렬
-      CurrDrvPartitions := GetPartitionList(CurrDrive);
-      lPartitionAlign.Caption := CapAlign[CurrLang];
-      for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
-      begin
-        if (CurrDrvPartitions.StartOffset[CurrPartition - 1] / 4096) =
-            (CurrDrvPartitions.StartOffset[CurrPartition - 1] div 4096) then
-          lPartitionAlign.Caption := lPartitionAlign.Caption +
-                                      CurrDrvPartitions.Letters[CurrPartition] + CapGood[CurrLang]
-        else
+        AvgDays := -1;
+        for CurrAvgDay := AvgMax downto 0 do
         begin
-          lPartitionAlign.Font.Color := clRed;
-          lPartitionAlign.Caption := lPartitionAlign.Caption +
-                                      CurrDrvPartitions.Letters[CurrPartition] + ' (' + IntToStr(CurrDrvPartitions.StartOffset[CurrPartition - 1] div 1024)  + CapBad[CurrLang];
-          if lNotsafe.Caption = CapStatus[CurrLang] + CapSafe[CurrLang] then
+          if Length(CurrWritLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
           begin
-            lNotSafe.Font.Color := clRed;
-            lNotsafe.Caption := CapStatus[CurrLang] + CapBadPartition[CurrLang];
+            AvgDays := CurrAvgDay;
+            break;
           end;
         end;
-      end;
-
-      lTrim.Visible := false;
-      iTrim.Visible := false;
-      iFirmUp.Visible := false;
-      lFirmUp.Visible := false;
-      if SSDInfo.ATAorSCSI = MODEL_ATA then
-      begin
-        if Length(CurrDrvPartitions.Letters) <> 0 then
+        if AvgDays <> -1 then
         begin
-          lTrim.Visible := true;
-          iTrim.Visible := true;
+          if Length(CurrWritLog.Average[IntToAvg[AvgDays]]) > 0 then
+          begin
+            l1Month.Caption :=
+              CapAvg[AvgDays][CurrLang] +
+              CurrWritLog.Average[IntToAvg[AvgDays]] + 'GB/' + CapDay[CurrLang];
+          end;
+        end;
+        lTodayUsage.Caption := CapToday[CurrLang] +
+          CurrWritLog.TodayUsage + 'GB';
+        FreeAndNil(CurrWritLog);
+      end;
+    end;
+
+    lOntime.Caption :=
+      CapPowerTime[CurrLang] +
+      UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) +
+      CapHour[CurrLang];
+
+    // 섹터 치환
+    ReplacedSectors := SSDInfo.ReplacedSectors;
+    CurrSectLog :=
+      TNSTLog.Create(
+        ExtractFilePath(
+          GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\' +
+            'Uninstall\Naraeon SSD Tools\', 'UninstallString')),
+        SSDInfo.Serial + 'RSLog', UIntToStr(ReplacedSectors), true, false);
+
+    //섹터 치환만 지원하는 모델들
+    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
+    begin
+      lHost.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang];
+      lAnalytics.Caption := BtLifeAnaly[CurrLang];
+      lAnaly.Caption := CapLifeAnaly[CurrLang];
+
+      if CurrSectLog <> nil then
+      begin
+        AvgDays := -1;
+        for CurrAvgDay := AvgMax downto 0 do
+        begin
+          if Length(CurrSectLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
+          begin
+            AvgDays := CurrAvgDay;
+            break;
+          end;
+        end;
+        if AvgDays <> -1 then
+        begin
+          if Length(CurrSectLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
+          begin
+            l1Month.Caption := CaprAvg[AvgDays][CurrLang] +
+              CurrSectLog.Average[IntToAvg[CurrAvgDay]] + CapCount[CurrLang];
+          end;
+        end;
+        lTodayUsage.Caption := CaprToday[CurrLang] + CurrSectLog.TodayUsage +
+          CapCount[CurrLang];
+      end;
+    end
+    else
+    begin
+      lAnalytics.Caption := BtAnaly[CurrLang];
+      lAnaly.Caption := CapAnaly[CurrLang];
+    end;
+    FreeAndNil(CurrSectLog);
+
+    // 지우기 에러
+    EraseErrors := SSDInfo.EraseError;
+    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
+    begin
+      lPError.Caption := CapReadError[CurrLang] + UIntToStr(EraseErrors) +
+        CapCount[CurrLang];
+    end
+    else
+    begin
+      lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) +
+        CapCount[CurrLang];
+    end;
+
+    // 수명 상황 안 좋을때 오류 - 지우기 에러가 더 심각하므로 밑으로 배치.
+    if SSDInfo.RepSectorAlert then
+    begin
+      lSectors.Font.Color := clRed;
+      lNotsafe.Font.Color := clRed;
+      lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang];
+      lNotsafe.Caption := CapStatus[CurrLang] + CapNotSafeRepSect[CurrLang];
+    end
+    else
+    begin
+      lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang];
+    end;
+
+    if SSDInfo.EraseErrorAlert then
+    begin
+      lPError.Font.Color := clRed;
+      lNotsafe.Font.Color := clRed;
+      lNotsafe.Caption := CapNotSafeEraseErrors[CurrLang] +
+        CapNotSafeRepSect[CurrLang];
+    end;
+
+    // 파티션 정렬
+    CurrDrvPartitions := GetPartitionList(CurrDrive);
+    lPartitionAlign.Caption := CapAlign[CurrLang];
+    for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
+    begin
+      if (CurrDrvPartitions.StartOffset[CurrPartition - 1] / 4096) =
+          (CurrDrvPartitions.StartOffset[CurrPartition - 1] div 4096) then
+        lPartitionAlign.Caption := lPartitionAlign.Caption +
+                                    CurrDrvPartitions.Letters[CurrPartition] +
+                                    CapGood[CurrLang]
+      else
+      begin
+        lPartitionAlign.Font.Color := clRed;
+        lPartitionAlign.Caption := lPartitionAlign.Caption +
+          CurrDrvPartitions.Letters[CurrPartition] +
+          ' (' +
+          IntToStr(CurrDrvPartitions.StartOffset[CurrPartition - 1] div 1024) +
+          CapBad[CurrLang];
+        if lNotsafe.Caption = CapStatus[CurrLang] + CapSafe[CurrLang] then
+        begin
+          lNotSafe.Font.Color := clRed;
+          lNotsafe.Caption := CapStatus[CurrLang] + CapBadPartition[CurrLang];
         end;
       end;
+    end;
 
-      if (SSDInfo.SSDSupport.SupportFirmUp = false) and (iTrim.Visible = false)
-          and (iOptimize.Left = firstiOptLeft) then
+    lTrim.Visible := false;
+    iTrim.Visible := false;
+    iFirmUp.Visible := false;
+    lFirmUp.Visible := false;
+    if SSDInfo.ATAorSCSI = MODEL_ATA then
+    begin
+      if Length(CurrDrvPartitions.Letters) <> 0 then
       begin
-        iOptimize.left := iErase.Left;
-        lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
-                                          - (lOptimize.Width div 2);
+        lTrim.Visible := true;
+        iTrim.Visible := true;
+      end;
+    end;
 
-        iErase.left := iFirmUp.Left;
+    if (SSDInfo.SSDSupport.SupportFirmUp = false) and (iTrim.Visible = false)
+        and (iOptimize.Left = firstiOptLeft) then
+    begin
+      iOptimize.left := iErase.Left;
+      lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
+                                        - (lOptimize.Width div 2);
+
+      iErase.left := iFirmUp.Left;
+      lErase.left := iErase.Left + (iErase.Width div 2)
+                                 - (lErase.Width div 2);
+    end
+    else
+    begin
+      iFirmUp.Visible := true;
+      lFirmUp.Visible := true;
+
+      if iOptimize.left <> firstiOptLeft then
+      begin
+        iErase.left := iOptimize.Left;
         lErase.left := iErase.Left + (iErase.Width div 2)
                                    - (lErase.Width div 2);
-      end
-      else
-      begin
-        iFirmUp.Visible := true;
-        lFirmUp.Visible := true;
 
-        if iOptimize.left <> firstiOptLeft then
-        begin
-          iErase.left := iOptimize.Left;
-          lErase.left := iErase.Left + (iErase.Width div 2)
-                                     - (lErase.Width div 2);
-
-          iOptimize.left := firstiOptLeft;
-          lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
-                                           - (lOptimize.Width div 2);
-        end;
+        iOptimize.left := firstiOptLeft;
+        lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
+                                         - (lOptimize.Width div 2);
       end;
     end;
   end;

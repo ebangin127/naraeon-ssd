@@ -105,7 +105,6 @@ type
     procedure tFindMutexTimer(Sender: TObject);
     procedure tListLeaveTimer(Sender: TObject);
     procedure tGetSSDsTimer(Sender: TObject);
-    procedure tDownloadCheckerTimer(Sender: TObject);
     procedure tErrorChkTimer(Sender: TObject);
 
     //클릭 이벤트
@@ -228,33 +227,34 @@ var
   FileName: String;
 begin
   if cEraseAgree.Checked = false then
-    AlertCreate(Self, AlrtNoCheck[CurrLang])
+  begin
+    AlertCreate(Self, AlrtNoCheck[CurrLang]);
+    exit;
+  end;
+
+  if rGParted.Checked then
+  begin
+    FileName := 'erase\gparted.iso';
+  end
+  else if rPartedMagic.Checked then
+  begin
+    FileName := 'erase\pmagic.iso';
+  end;
+
+  FileName := CheckISOfile(FileName);
+
+  if (Length(FileName) > 0) and (CheckUnetBootin) then
+  begin
+    gErase.Visible := true;
+    Application.ProcessMessages;
+    AlertCreate(Self, AlrtStartFormat[CurrLang]);
+    ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
+    AlertCreate(Self, AlrtEraEnd[CurrLang]);
+  end
   else
   begin
-    if rGParted.Checked then
-    begin
-      FileName := 'erase\gparted.iso';
-    end
-    else if rPartedMagic.Checked then
-    begin
-      FileName := 'erase\pmagic.iso';
-    end;
-
-    FileName := CheckISOfile(FileName);
-
-    if (Length(FileName) > 0) and (CheckUnetBootin) then
-    begin
-      gErase.Visible := true;
-      Application.ProcessMessages;
-      AlertCreate(Self, AlrtStartFormat[CurrLang]);
-      ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
-      AlertCreate(Self, AlrtEraEnd[CurrLang]);
-    end
-    else
-    begin
-      AlertCreate(Self, AlrtBootFail[CurrLang]);
-      BrowserCreate(Self);
-    end;
+    AlertCreate(Self, AlrtBootFail[CurrLang]);
+    BrowserCreate(Self);
   end;
 end;
 
@@ -266,50 +266,49 @@ begin
   InternetGetConnectedState(@ifConnected, 0);
   if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
       (ifConnected = 0) then
-    AlertCreate(Self, AlrtNoInternet[CurrLang])
-  else if (cAgree.Checked = false) and (Sender <> Self)  then
-    AlertCreate(Self, AlrtNoCheck[CurrLang])
-  else if (ifConnected <> INTERNET_CONNECTION_OFFLINE) and
-          (ifConnected <> 0) then
   begin
-    ChkFrmResult.FirmExists := false;
-    ChkFrmResult := DownloadFirmware(AppPath, SSDInfo);
-    if ChkFrmResult.FirmExists then
-    begin
-      if CheckUNetbootin = false then
-      begin
-        DownloadUNetbootin;
-      end;
+    AlertCreate(Self, AlrtNoInternet[CurrLang]);
+    exit;
+  end
+  else if (cAgree.Checked = false) and (Sender <> Self) then
+  begin
+    AlertCreate(Self, AlrtNoCheck[CurrLang]);
+    exit;
+  end;
 
-      if CheckUNetbootin then
-      begin
-        if (ExtractFileExt(ChkFrmResult.FirmPath) = '.exe') then
-        begin
-          ShellExecute(0, 'open', PChar(ChkFrmResult.FirmPath), nil, nil, SW_SHOW);
-          if gFirmware.Visible then
-          begin
-            Constraints.MaxHeight := 0;
-            Constraints.MinHeight := 0;
-            ClientHeight := MinimumSize;
-            gFirmware.Visible := false;
-            if FirmForce then
-            begin
-              lFirmware.Font.Color := clWindowText;
-              lFirmware.Font.Style := [];
-              FirmForce := false;
-            end;
-            Constraints.MaxHeight := Height;
-            Constraints.MinHeight := Height;
-          end;
-        end
-        else
-        begin
-          AlertCreate(Self, AlrtStartFormat[CurrLang]);
-          ProcessImager(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3), ChkFrmResult.FirmPath);
-          AlertCreate(Self, AlrtFirmEnd[CurrLang]);
-        end;
-      end;
+  ChkFrmResult.FirmExists := false;
+  ChkFrmResult := DownloadFirmware(AppPath, SSDInfo);
+  if ChkFrmResult.FirmExists = false then
+  begin
+    exit;
+  end;
+
+  if CheckUNetbootin = false then
+  begin
+    DownloadUNetbootin;
+  end;
+
+  if CheckUNetbootin = false then
+  begin
+    exit;
+  end;
+
+  if (ExtractFileExt(ChkFrmResult.FirmPath) = '.exe') then
+  begin
+    ShellExecute(0, 'open', PChar(ChkFrmResult.FirmPath), nil, nil,
+      SW_SHOW);
+
+    if gFirmware.Visible then
+    begin
+      iFirmUp.OnClick(nil);
     end;
+  end
+  else
+  begin
+    AlertCreate(Self, AlrtStartFormat[CurrLang]);
+    ProcessImager(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
+      ChkFrmResult.FirmPath);
+    AlertCreate(Self, AlrtFirmEnd[CurrLang]);
   end;
 end;
 
@@ -517,7 +516,8 @@ begin
   end;
 end;
 
-procedure TfMain.DownloaderWork(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+procedure TfMain.DownloaderWork(Sender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Int64);
 var
   LeftSec: Int64;
 begin
@@ -530,17 +530,37 @@ begin
   begin
     pDownload.Position := Round((AWorkCount / Max) * 100);
     CurrDwldCount := AWorkCount;
-    lProgress.Caption := CapProg1[CurrLang] + Format('%.1fMB', [AWorkCount / 1024 / 1024]) + ' / ' +
-                                          Format('%.1fMB', [Max / 1024 / 1024]) +
-                                          ' (' + IntToStr(Round((AWorkCount / Max) * 100)) + '%)';
+    lProgress.Caption := CapProg1[CurrLang] +
+      Format('%.1fMB', [AWorkCount / 1024 / 1024]) + ' / ' +
+      Format('%.1fMB', [Max / 1024 / 1024]) +
+      ' (' + IntToStr(Round((AWorkCount / Max) * 100)) + '%)';
 
-    lSpeed.Caption := CapSpeed[CurrLang] + Format('%.1f', [(CurrDwldCount - LastDwldCount) * 2 / 1024]) + 'KB/s';
-    if (CurrDwldCount - LastDwldCount) > 0 then LeftSec := round((Max - CurrDwldCount) / ((CurrDwldCount - LastDwldCount) * 2))
+    lSpeed.Caption :=
+      CapSpeed[CurrLang] +
+      Format('%.1f', [(CurrDwldCount - LastDwldCount) * 2 / 1024]) + 'KB/s';
+
+    if (CurrDwldCount - LastDwldCount) > 0 then
+      LeftSec := round((Max - CurrDwldCount) /
+        ((CurrDwldCount - LastDwldCount) * 2))
     else LeftSec := 0;
-    if LeftSec < 60 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(LeftSec) + CapSec[CurrLang]
-    else if LeftSec < 3600 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang] + ' ' + IntToStr(LeftSec mod 60) + CapSec[CurrLang]
-    else if LeftSec < 86400 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 3600)) + CapHour[CurrLang] + ' ' + IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang]
-    else lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 86400)) + CapDay[CurrLang] + ' ' + IntToStr(floor(LeftSec / 3600)) + CapHour[CurrLang];
+
+    if LeftSec < 60 then
+      lSpeed.Caption :=
+        CapTime[CurrLang] + IntToStr(LeftSec) + CapSec[CurrLang]
+    else if LeftSec < 3600 then
+      lSpeed.Caption :=
+        CapTime[CurrLang] + IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang] +
+          ' ' + IntToStr(LeftSec mod 60) + CapSec[CurrLang]
+    else if LeftSec < 86400 then
+      lSpeed.Caption :=
+        CapTime[CurrLang] + IntToStr(floor(LeftSec / 3600)) +
+        CapHour[CurrLang] + ' ' + IntToStr(floor(LeftSec / 60)) +
+        CapMin[CurrLang]
+    else
+      lSpeed.Caption :=
+        CapTime[CurrLang] + IntToStr(floor(LeftSec / 86400)) +
+        CapDay[CurrLang] + ' ' + IntToStr(floor(LeftSec / 3600)) +
+        CapHour[CurrLang];
     LastDwldCount := CurrDwldCount;
 
     Application.ProcessMessages;
@@ -565,10 +585,15 @@ begin
   end
   else
   begin
-    if gErase.Visible = true then iErase.OnClick(nil);
-    if gFirmware.Visible = true then iFirmUp.OnClick(nil);
-    if gOpt.Visible = true then iOptimize.OnClick(nil);
-    if (gTrim.Visible = true) or (gSchedule.Visible = true) then iTrim.OnClick(nil);
+    if gErase.Visible = true then
+      iErase.OnClick(nil);
+    if gFirmware.Visible = true then
+      iFirmUp.OnClick(nil);
+    if gOpt.Visible = true then
+      iOptimize.OnClick(nil);
+    if (gTrim.Visible = true) or (gSchedule.Visible = true) then
+      iTrim.OnClick(nil);
+
     Constraints.MaxHeight := 0;
     Constraints.MinHeight := 0;
     ClientHeight := MaximumSize;
@@ -602,7 +627,8 @@ begin
     if gFirmware.Visible = true then iFirmUp.OnClick(nil);
     if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
     if gOpt.Visible = true then iOptimize.OnClick(nil);
-    if (gTrim.Visible = true) or (gSchedule.Visible = true) then iTrim.OnClick(nil);
+    if (gTrim.Visible = true) or (gSchedule.Visible = true) then
+      iTrim.OnClick(nil);
     Constraints.MaxHeight := 0;
     Constraints.MinHeight := 0;
     if ClientHeight = MinimumSize then
@@ -654,7 +680,8 @@ begin
     if gErase.Visible = true then iErase.OnClick(nil);
     if gOpt.Visible = true then iOptimize.OnClick(nil);
     if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
-    if (gTrim.Visible = true) or (gSchedule.Visible = true) then iTrim.OnClick(nil);
+    if (gTrim.Visible = true) or (gSchedule.Visible = true) then
+      iTrim.OnClick(nil);
     cUSB.ItemIndex := 0;
     lNewFirm.Font.Color := clWindowText;
     lNewFirm.Font.Style := [];
@@ -707,15 +734,20 @@ begin
   end;
 
   if gFirmware.Visible = true then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/131', '', nil, SW_NORMAL)
+    ShellExecute(0, 'open', 'http://naraeon.tistory.com/131', '',
+      nil, SW_NORMAL)
   else if gErase.Visible = true then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/144', '', nil, SW_NORMAL)
+    ShellExecute(0, 'open', 'http://naraeon.tistory.com/144', '',
+      nil, SW_NORMAL)
   else if gTrim.Visible = true then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/142', '', nil, SW_NORMAL)
+    ShellExecute(0, 'open', 'http://naraeon.tistory.com/142', '',
+      nil, SW_NORMAL)
   else if gSchedule.Visible = true then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/143', '', nil, SW_NORMAL)
+    ShellExecute(0, 'open', 'http://naraeon.tistory.com/143', '',
+      nil, SW_NORMAL)
   else
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/132', '', nil, SW_NORMAL);
+    ShellExecute(0, 'open', 'http://naraeon.tistory.com/132', '',
+      nil, SW_NORMAL);
 end;
 
 procedure TfMain.iOptimizeClick(Sender: TObject);
@@ -728,7 +760,8 @@ begin
   if gErase.Visible = true then iErase.OnClick(nil);
   if gFirmware.Visible = true then iFirmUp.OnClick(nil);
   if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
-  if (gTrim.Visible = true) or (gSchedule.Visible = true) then iTrim.OnClick(nil);
+  if (gTrim.Visible = true) or (gSchedule.Visible = true) then
+    iTrim.OnClick(nil);
   Constraints.MaxHeight := 0;
   Constraints.MinHeight := 0;
   if ClientHeight = MinimumSize then
@@ -831,20 +864,6 @@ begin
       end;
   end;
   GSSDSel.Visible := false;
-end;
-
-procedure TfMain.tDownloadCheckerTimer(Sender: TObject);
-var
-  LeftSec: Int64;
-begin
-  lSpeed.Caption := CapSpeed[CurrLang] + Format('%.1f', [(CurrDwldCount - LastDwldCount) * 2 / 1024]) + 'KB/s';
-  if (CurrDwldCount - LastDwldCount) > 0 then LeftSec := round((Max - CurrDwldCount) / ((CurrDwldCount - LastDwldCount) * 2))
-  else LeftSec := 0;
-  if LeftSec < 60 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(LeftSec) + CapSec[CurrLang]
-  else if LeftSec < 3600 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang] + ' ' + IntToStr(LeftSec mod 60) + CapSec[CurrLang]
-  else if LeftSec < 86400 then lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 3600)) + CapHour[CurrLang] + ' ' + IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang]
-  else lSpeed.Caption := CapTime[CurrLang] + IntToStr(floor(LeftSec / 86400)) + CapDay[CurrLang] + ' ' + IntToStr(floor(LeftSec / 3600)) + CapHour[CurrLang];
-  LastDwldCount := CurrDwldCount;
 end;
 
 procedure TfMain.SSDSelLblMouseEnter(Sender: TObject);
@@ -1090,7 +1109,8 @@ begin
   AlertCreate(Self, AlrtBootInStart[CurrLang]);
 
   Src.FBaseAddress := '';
-  Src.FFileAddress := 'http://www.naraeon.net/SSDTools_Common/exec_path/unet.htm';
+  Src.FFileAddress :=
+    'http://www.naraeon.net/SSDTools_Common/exec_path/unet.htm';
   Src.FType := dftGetFromWeb;
 
   Dest.FBaseAddress := AppPath;
@@ -1098,7 +1118,8 @@ begin
   Dest.FType := dftPlain;
 
   gFirmware.Visible := false;
-  DownloadResult := DownloadFile(Src, Dest, CapBootInDwld[CurrLang], bCancel.Caption);
+  DownloadResult :=
+    DownloadFile(Src, Dest, CapBootInDwld[CurrLang], bCancel.Caption);
   gFirmware.Visible := true;
 
   if fAlert <> Nil then FreeAndNil(fAlert);
@@ -1299,7 +1320,7 @@ begin
   for CurrDrv := 0 to Drives.LetterCount - 1 do
     lDrives.Caption := lDrives.Caption + Drives.Letters[CurrDrv] + ' ';
   resultstring := UnicodeString(OpenProcWithOutput(WinDir + '\System32',
-                                                   'schtasks /query'));
+    'schtasks /query'));
   if Pos('MANTRIM' + SSDInfo.Serial, resultstring) > 0 then
     cTrimRunning.Checked := true
   else
@@ -1325,7 +1346,7 @@ begin
   bCancel.Caption := CancelCaption;
 
   DownloadStream := TFileStream.Create(DestAddress,
-                                        fmCreate or fmShareExclusive);
+    fmCreate or fmShareExclusive);
   Downloader := TIdHttp.Create();
   Downloader.Request.UserAgent := 'Naraeon SSD Tools';
 
