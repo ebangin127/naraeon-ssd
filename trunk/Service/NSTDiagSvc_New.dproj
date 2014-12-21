@@ -124,7 +124,6 @@
         <DCCReference Include="..\Modules\Disk\uDiskFunctions.pas"/>
         <DCCReference Include="..\Modules\Disk\uPartitionFunctions.pas"/>
         <DCCReference Include="..\Modules\Disk\uSMARTFunctions.pas"/>
-        <DCCReference Include="..\Modules\Disk\uTrimCommand.pas"/>
         <DCCReference Include="..\Modules\Etc\uIntFunctions.pas"/>
         <DCCReference Include="..\Modules\Etc\uStrFunctions.pas"/>
         <DCCReference Include="..\Classes\LogSystem\uLogSystem.pas"/>

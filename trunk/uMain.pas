@@ -840,28 +840,34 @@ begin
     GSSDSel.Visible := false;
     SSDSelLbl.Caption := CapSSDSelOpn[CurrLang];
   end;
-  if CurrDrive <> TSSDLabel(Sender).DriveName then
+
+  if CurrDrive = TSSDLabel(Sender).DriveName then
   begin
-    if gFirmware.Visible = true then iFirmUp.OnClick(nil);
-    if gOpt.Visible = true then iOptimize.OnClick(nil);
-    if gErase.Visible = true then iErase.OnClick(nil);
-    if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
-    if (gTrim.Visible) or (gSchedule.Visible) then iTrim.OnClick(nil);
+    GSSDSel.Visible := false;
+    exit;
+  end;
 
-    CurrDrive := TSSDLabel(Sender).DriveName;
-    CurrUSBMode := TSSDLabel(Sender).USBMode;
-    CurrATAorSCSIStatus := TSSDLabel(Sender).ATAorSCSI;
-    tRefreshTimer(Self);
+  if gFirmware.Visible = true then iFirmUp.OnClick(nil);
+  if gOpt.Visible = true then iOptimize.OnClick(nil);
+  if gErase.Visible = true then iErase.OnClick(nil);
+  if gAnalytics.Visible = true then iAnalytics.OnClick(nil);
+  if (gTrim.Visible) or (gSchedule.Visible) then iTrim.OnClick(nil);
 
-    for CurrIndex := 0 to Length(SSDLabel) - 1 do
-      if SSDLabel[CurrIndex].DriveName = TSSDLabel(Sender).DriveName then
-      begin
-        SSDLabel[CurrIndex].Font.Style := [fsBold];
-      end
-      else
-      begin
-        SSDLabel[CurrIndex].Font.Style := [];
-      end;
+  CurrDrive := TSSDLabel(Sender).DriveName;
+  CurrUSBMode := TSSDLabel(Sender).USBMode;
+  CurrATAorSCSIStatus := TSSDLabel(Sender).ATAorSCSI;
+  tRefreshTimer(Self);
+
+  for CurrIndex := 0 to Length(SSDLabel) - 1 do
+  begin
+    if SSDLabel[CurrIndex].DriveName = TSSDLabel(Sender).DriveName then
+    begin
+      SSDLabel[CurrIndex].Font.Style := [fsBold];
+    end
+    else
+    begin
+      SSDLabel[CurrIndex].Font.Style := [];
+    end;
   end;
   GSSDSel.Visible := false;
 end;
@@ -1150,41 +1156,40 @@ begin
                            CapUpdQues[CurrLang]), PChar(AlrtNewVer[CurrLang]),
                            MB_OKCANCEL  + MB_IconInformation);
 
-  if MessageResult = 1 then
+  if MessageResult <> 1 then
+    exit;
+
+  Src.FBaseAddress := 'http://www.naraeon.net';
+  Src.FFileAddress := '/SSDTools/Setup.exe';
+  Src.FType := dftPlain;
+
+  Dest.FBaseAddress := AppPath;
+  Dest.FFileAddress := 'Setup.exe';
+  Dest.FType := dftPlain;
+
+  DownloadResult := DownloadFile(Src, Dest, CapUpdDwld[CurrLang],
+                                 bCancel.Caption);
+
+  if fAlert <> Nil then FreeAndNil(fAlert);
+  if DownloadResult = false then
   begin
-    Src.FBaseAddress := 'http://www.naraeon.net';
-    Src.FFileAddress := '/SSDTools/Setup.exe';
-    Src.FType := dftPlain;
+    AlertCreate(Self, AlrtVerCanc[CurrLang]);
+    exit;
+  end;
 
-    Dest.FBaseAddress := AppPath;
-    Dest.FFileAddress := 'Setup.exe';
-    Dest.FType := dftPlain;
+  try
+    Constraints.MaxHeight := 0;
+    Constraints.MinHeight := 0;
+    ClientHeight := MinimumSize;
+    gErase.Visible := false;
+    Constraints.MaxHeight := Height;
+    Constraints.MinHeight := Height;
 
-    DownloadResult := DownloadFile(Src, Dest, CapUpdDwld[CurrLang],
-                                   bCancel.Caption);
-
-    if fAlert <> Nil then FreeAndNil(fAlert);
-    if DownloadResult then
-    begin
-      try
-        Constraints.MaxHeight := 0;
-        Constraints.MinHeight := 0;
-        ClientHeight := MinimumSize;
-        gErase.Visible := false;
-        Constraints.MaxHeight := Height;
-        Constraints.MinHeight := Height;
-
-        AlertCreate(Self, AlrtUpdateExit[CurrLang]);
-      finally
-        ShellExecute(0, nil, PChar(AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
-        FreeAndNil(VersionLoader);
-        Application.Terminate;
-      end;
-    end
-    else
-    begin
-      AlertCreate(Self, AlrtVerCanc[CurrLang]);
-    end;
+    AlertCreate(Self, AlrtUpdateExit[CurrLang]);
+  finally
+    ShellExecute(0, nil, PChar(AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
+    FreeAndNil(VersionLoader);
+    Application.Terminate;
   end;
 end;
 

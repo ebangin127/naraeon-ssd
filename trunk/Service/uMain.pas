@@ -42,6 +42,7 @@ type
     procedure CheckDrives;
     procedure DeletePrevSvc;
     procedure LoggerCreate(CurrDrv: Integer);
+    procedure MainWorks(SSDInfo: TSSDInfo_NST);
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
@@ -62,7 +63,7 @@ var
   DriveWritInfoList: Array[0..99] of TNSTLog;
   DriveSectInfoList: Array[0..99] of TNSTLog;
   DriveCount: Integer;
-  OnceAlertCreated, OnceSMARTInvestigated: Integer;
+  OnceSMARTInvestigated: Integer;
   NSTLog: TNSTLog;
   NeedRefresh: Boolean;
   Cap: String;
@@ -182,121 +183,137 @@ end;
 
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
 var
+  SSDInfo: TSSDInfo_NST;
+  DesktopPath: array[0..MAX_PATH] of char;
+begin
+  RefreshDrives;
+
+  if DriveCount = 0 then
+    FreeAndNil(Application);
+
+  OnceSMARTInvestigated := 0;
+
+  if GetSystemDefaultLangID = 1042 then
+    CurrLang := LANG_HANGUL
+  else
+    CurrLang := LANG_ENGLISH;
+
+  SSDInfo := TSSDInfo_NST.Create;
+  RefreshDrives;
+  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
+  DeskPath := DesktopPath;
+
+  while not Terminated do
+    MainWorks(SSDInfo);
+
+  FreeAndNil(SSDInfo);
+end;
+
+function GetLogLine(MsgTime: TDateTime; MsgContents: String): String;
+begin
+  result := FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + MsgContents;
+end;
+
+procedure TNaraeonSSDToolsDiag.MainWorks(SSDInfo: TSSDInfo_NST);
+var
   CurrDrive, CurrPart: Integer;
   ReplacedSectors: UInt64;
   CurrDrvPartitions: TDriveLetters;
   AllReadablePartition: String;
   SaveLog: TStringList;
-  SSDInfo: TSSDInfo_NST;
   HostWrites: UInt64;
   ErrList: TStringList;
   CurrLine: Integer;
-  DesktopPath: array[0..MAX_PATH] of char;
   MessageCount: Integer;
+  ErrFilePath: String;
 const
   MessageWaitingTime = 500;
 begin
-  RefreshDrives;
+  //서비스 종료 등 요청 처리
+  for MessageCount := 0 to MessageWaitingTime - 1 do
+  begin
+    ServiceThread.ProcessRequests(False);
+    Sleep(1);
+  end;
 
+  CheckDrives;
+  if NeedRefresh then
+    RefreshDrives;
+
+  //드라이브 없으면 종료
   if DriveCount = 0 then
-  begin
     FreeAndNil(Application);
-  end
-  else
-  begin
+
+  Dec(OnceSMARTInvestigated, 1);
+  if FormatDateTime('HH:mm', Now) = '00:00' then
     OnceSMARTInvestigated := 0;
-    OnceAlertCreated := 0;
-  end;
-  if GetSystemDefaultLangID = 1042 then
-    CurrLang := LANG_HANGUL
-  else
-    CurrLang := LANG_ENGLISH;
-  SSDInfo := TSSDInfo_NST.Create;
-  RefreshDrives;
-  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
-  DeskPath := DesktopPath;
-  while not Terminated do
+
+  //시간 안 되면 다음 회차 진행
+  if OnceSMARTInvestigated > 0 then
+    exit;
+
+  OnceSMARTInvestigated := 3600;
+  ErrFilePath := DeskPath + '\!!!SSDError!!!.err';
+
+  //쓰기 버퍼 체크
+  ErrList := WriteBufferCheck;
+  if ErrList.Count > 0 then
   begin
-    for MessageCount := 0 to MessageWaitingTime - 1 do
-    begin
-      ServiceThread.ProcessRequests(False);
-      Sleep(1);
-    end;
+    SaveLog := TStringList.Create;
+    if FileExists(ErrFilePath) then
+      SaveLog.LoadFromFile(ErrFilePath);
 
-    if (OnceSMARTInvestigated mod 50) = 0 then
-    begin
-      ErrList := WriteBufferCheck;
-      if ErrList.Count > 0 then
-      begin
-        SaveLog := TStringList.Create;
-        for CurrLine := 0 to ErrList.Count - 1 do
-          SaveLog.Add(FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) +
-            ' !!!!! ' + ErrList[CurrLine] + ' ' + CapWrongBuf[CurrLang] +
-            ' !!!!! ' + CapWrongBuf2[CurrLang]);
-        SaveLog.SaveToFile(DeskPath + '\!!!SSDError!!!.err');
-        FreeAndNil(SaveLog);
-      end;
-    end;
+    for CurrLine := 0 to ErrList.Count - 1 do
+      SaveLog.Add(GetLogLine(Now,
+        ' !!!!! ' + ErrList[CurrLine] + ' ' + CapWrongBuf[CurrLang] +
+        ' !!!!! ' + CapWrongBuf2[CurrLang]));
 
-    if (OnceSMARTInvestigated = 0) or
-        (FormatDateTime('HH:mm', Now) = '00:00') then
-    begin
-      OnceSMARTInvestigated := 3600;
-      if DriveCount > 0 then
-      begin
-        CheckDrives;
-        if NeedRefresh then
-          RefreshDrives;
-        for CurrDrive := 0 to DriveCount - 1 do
-        begin
-          SSDInfo.ATAorSCSI := MODEL_DETERMINE;
-          SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
-          SSDInfo.CollectAllSmartData;
-          HostWrites := SSDInfo.HostWrites;
-          if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-          begin
-            DriveWritInfoList[CurrDrive].ReadBothFiles(UIntToStr(HostWrites));
-          end;
-        end;
-        if OnceAlertCreated = 0 then
-        begin
-          OnceAlertCreated := 10;
-          SaveLog := TStringList.Create;
-          for CurrDrive := 0 to DriveCount - 1 do
-          begin
-            SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
-            SSDInfo.CollectAllSmartData;
-            ReplacedSectors := SSDInfo.ReplacedSectors;
-            DriveSectInfoList[CurrDrive].ReadBothFiles(
-              UIntToStr(ReplacedSectors));
-
-            if (SSDInfo.RepSectorAlert) and
-                (DriveSectInfoList[CurrDrive].LastOneGig <> ReplacedSectors) then
-            begin
-              CurrDrvPartitions := GetPartitionList(DriveList[CurrDrive]);
-              AllReadablePartition := '';
-              for CurrPart := 0 to (CurrDrvPartitions.LetterCount - 1) do
-                AllReadablePartition := AllReadablePartition + ' ' +
-                                        CurrDrvPartitions.Letters[CurrPart];
-              SaveLog.Add(
-                FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + ' !!!!! ' +
-                  AllReadablePartition + ' ' + CapBck[CurrLang] + ' !!!!! ' +
-                  CapBck2[CurrLang] + '(' + UIntToStr(ReplacedSectors) +
-                  CapCount[CurrLang] + ') ' + CapOcc[CurrLang]);
-              SaveLog.SaveToFile(DeskPath + '\!!!SSDError!!!.err');
-              OnceAlertCreated := 10;
-            end;
-          end;
-        end
-        else if (OnceAlertCreated > 0) then
-          Dec(OnceAlertCreated, 1);
-      end;
-    end
-    else if (OnceSMARTInvestigated > 0) then
-      Dec(OnceSMARTInvestigated, 1);
-    FreeAndNil(ErrList);
+    SaveLog.SaveToFile(ErrFilePath);
+    FreeAndNil(SaveLog);
   end;
-  FreeAndNil(SSDInfo);
+  FreeAndNil(ErrList);
+
+  for CurrDrive := 0 to DriveCount - 1 do
+  begin
+    //HostWrite 처리
+    SSDInfo.ATAorSCSI := MODEL_DETERMINE;
+    SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
+    SSDInfo.CollectAllSmartData;
+
+    HostWrites := SSDInfo.HostWrites;
+
+    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
+      DriveWritInfoList[CurrDrive].ReadBothFiles(UIntToStr(HostWrites));
+
+    //ReplacedSectors 처리
+    ReplacedSectors := SSDInfo.ReplacedSectors;
+    DriveSectInfoList[CurrDrive].ReadBothFiles(
+      UIntToStr(ReplacedSectors));
+
+    //ReplacedSectors 경고문
+    if (SSDInfo.RepSectorAlert = false) or
+       (DriveSectInfoList[CurrDrive].LastOneGig = ReplacedSectors) then
+       Continue;
+
+    SaveLog := TStringList.Create;
+    if FileExists(ErrFilePath) then
+      SaveLog.LoadFromFile(ErrFilePath);
+
+    CurrDrvPartitions := GetPartitionList(DriveList[CurrDrive]);
+    AllReadablePartition := '';
+    for CurrPart := 0 to (CurrDrvPartitions.LetterCount - 1) do
+      AllReadablePartition := AllReadablePartition + ' ' +
+                              CurrDrvPartitions.Letters[CurrPart];
+
+    SaveLog.Add(
+      GetLogLine(Now, ' !!!!! ' +
+        AllReadablePartition + ' ' + CapBck[CurrLang] + ' !!!!! ' +
+        CapBck2[CurrLang] + '(' + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang] + ') ' + CapOcc[CurrLang]));
+
+    SaveLog.SaveToFile(ErrFilePath);
+    FreeAndNil(SaveLog);
+  end;
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceShutdown(Sender: TService);
@@ -343,39 +360,31 @@ procedure TNaraeonSSDToolsDiag.LoggerCreate(CurrDrv: Integer);
 var
   TempSSDInfo: TSSDInfo_NST;
 begin
-  if GetLastError = 0 then
-  begin
-    try
-      TempSSDInfo := TSSDInfo_NST.Create;
-      TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-      TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
+  if GetLastError <> 0 then
+    exit;
 
-      if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+  try
+    TempSSDInfo := TSSDInfo_NST.Create;
+    TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
+    TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
+
+    if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+    begin
+      TempSSDInfo.CollectAllSmartData;
+      if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
       begin
-        TempSSDInfo.CollectAllSmartData;
-        if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-        begin
-          DriveWritInfoList[DriveCount] := TNSTLog.Create(AppPath,
-                                                          TempSSDInfo.Serial,
-                                                          UIntToStr(
-                                                          TempSSDInfo.
-                                                            HostWrites),
-                                                          false,
-                                                          TempSSDInfo.S10085);
-        end;
-        DriveSectInfoList[DriveCount] := TNSTLog.Create(AppPath,
-                                                        TempSSDInfo.Serial
-                                                          + 'RSLog',
-                                                        UIntToStr(
-                                                          TempSSDInfo.
-                                                            ReplacedSectors),
-                                                        true, false);
-        DriveList[DriveCount] := IntToStr(CurrDrv);
-        DriveCount := DriveCount + 1;
+        DriveWritInfoList[DriveCount] :=
+          TNSTLog.Create(AppPath, TempSSDInfo.Serial,
+            UIntToStr(TempSSDInfo.HostWrites), false, TempSSDInfo.S10085);
       end;
-    finally
-      FreeAndNil(TempSSDInfo);
+      DriveSectInfoList[DriveCount] :=
+        TNSTLog.Create(AppPath, TempSSDInfo.Serial + 'RSLog',
+          UIntToStr(TempSSDInfo.ReplacedSectors), true, false);
+      DriveList[DriveCount] := IntToStr(CurrDrv);
+      DriveCount := DriveCount + 1;
     end;
+  finally
+    FreeAndNil(TempSSDInfo);
   end;
 end;
 

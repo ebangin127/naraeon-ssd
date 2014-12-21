@@ -10,7 +10,6 @@ uses
   uDiskFunctions in '..\Modules\Disk\uDiskFunctions.pas',
   uPartitionFunctions in '..\Modules\Disk\uPartitionFunctions.pas',
   uSMARTFunctions in '..\Modules\Disk\uSMARTFunctions.pas',
-  uTrimCommand in '..\Modules\Disk\uTrimCommand.pas',
   uIntFunctions in '..\Modules\Etc\uIntFunctions.pas',
   uStrFunctions in '..\Modules\Etc\uStrFunctions.pas',
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
