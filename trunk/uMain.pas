@@ -34,7 +34,6 @@ type
     lPartitionAlign: TLabel;
     iAnalytics: TImage;
     lAnalytics: TLabel;
-    tErrorChk: TTimer;
     lPError: TLabel;
     gAnalytics: TGroupBox;
     lAnaly: TLabel;
@@ -103,8 +102,6 @@ type
     procedure FormClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tListLeaveTimer(Sender: TObject);
-    procedure tGetSSDsTimer(Sender: TObject);
-    procedure tErrorChkTimer(Sender: TObject);
 
     //클릭 이벤트
     procedure bStartClick(Sender: TObject);
@@ -658,35 +655,6 @@ begin
     ListEnter := ListEnter - 1;
 end;
 
-procedure TfMain.tErrorChkTimer(Sender: TObject);
-var
-  DesktopPath: array[0..MAX_PATH] of char;
-  DeskPath: String;
-  ErrList: TStringList;
-begin
-  if tErrorChk.Interval = 500 then
-    tErrorChk.Interval := 5000;
-
-  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
-  DeskPath := DesktopPath;
-
-  if FileExists(DeskPath + '\!!!SSDError!!!.err') then
-    MsgboxCreate(Self, DeskPath + '\!!!SSDError!!!.err');
-
-  ErrList := WriteBufferCheck;
-  if ErrList.Count > 0 then
-    AlertCreate(Self, ErrCache[CurrLang] + Chr(13) + Chr(10) +  ErrList.Text);
-  FreeAndNil(ErrList);
-end;
-
-procedure TfMain.tGetSSDsTimer(Sender: TObject);
-begin
-  tGetSSDs.Enabled := false;
-  tRefresh.Enabled := false;
-  RefreshDrives(SSDInfo);
-  tRefresh.Enabled := true;
-end;
-
 procedure TfMain.tListLeaveTimer(Sender: TObject);
 begin
   if ListEnter <> 0 then
@@ -708,6 +676,9 @@ const
   INTERNET_CONNECTION_LAN = 2;
 var
   ifConnected: DWORD;
+  DesktopPath: array[0..MAX_PATH] of char;
+  DeskPath: String;
+  ErrList: TStringList;
 begin
   if lName.Caption = '' then
   begin
@@ -733,7 +704,20 @@ begin
     UpdateThread.Start;
   end;
 
-  tErrorChkTimer(nil);
+  tRefresh.Enabled := false;
+  RefreshDrives(SSDInfo);
+  tRefresh.Enabled := true;
+
+  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
+  DeskPath := DesktopPath;
+
+  if FileExists(DeskPath + '\!!!SSDError!!!.err') then
+    MsgboxCreate(Self, DeskPath + '\!!!SSDError!!!.err');
+
+  ErrList := WriteBufferCheck;
+  if ErrList.Count > 0 then
+    AlertCreate(Self, ErrCache[CurrLang] + Chr(13) + Chr(10) +  ErrList.Text);
+  FreeAndNil(ErrList);
 end;
 
 procedure TfMain.WMDeviceChange(var Msg: TMessage);

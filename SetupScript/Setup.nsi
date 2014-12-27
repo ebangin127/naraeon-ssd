@@ -65,7 +65,6 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
-  File "..\Exe\7z\7z.dll"
 
   CreateDirectory "$INSTDIR\SSDTools\Erase"
   CreateDirectory "$INSTDIR\SSDTools\Firmware"
@@ -83,6 +82,7 @@ Section "MainSection" SEC01
 
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
+  CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
 
   CreateDirectory "$INSTDIR\SSDTools\Unetbootin"

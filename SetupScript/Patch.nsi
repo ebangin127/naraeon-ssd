@@ -94,6 +94,7 @@ Section "MainSection" SEC01
 
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
+  CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
 
   Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'

@@ -30,8 +30,8 @@ begin
   FindFile := FindFirst(SearchDir,faAnyFile, FirmSR);
   while FindFile = 0 do
   begin
-    if (ExtractFileExt(FirmSR.Name) = '.exe')
-        or (ExtractFileExt(FirmSR.Name) = '.iso') then
+    if (ExtractFileExt(FirmSR.Name) = '.exe') or
+       (ExtractFileExt(FirmSR.Name) = '.iso') then
     begin
       result := FirmPath + '\' + FirmSR.Name;
       break;
@@ -93,8 +93,8 @@ begin
   FirmPath := Copy(FirmName, 0, Length(FirmName) - Length('_tmp'));
   RenameFile(FirmName, FirmPath);
 
-  if (ExtractFileExt(FirmPath) = '.zip') or (ExtractFileExt(FirmPath) = '.rar')
-      or (ExtractFileExt(FirmPath) = '.7z') then
+  if (ExtractFileExt(FirmPath) = '.zip') or
+     (ExtractFileExt(FirmPath) = '.7z') then
   begin
     OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
                         + ExtractFilePath(FirmPath) + SSDInfo.Model
@@ -103,8 +103,8 @@ begin
   end;
 
   if (FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.exe') = false) and
-    (FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.iso') = false) and
-    (DirectoryExists(AppPath + 'Firmware\' + SSDInfo.Model) = false) then
+     (FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.iso') = false) and
+     (DirectoryExists(AppPath + 'Firmware\' + SSDInfo.Model) = false) then
   begin
     DeleteFile(AppPath + 'Firmware\' + FirmName);
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
