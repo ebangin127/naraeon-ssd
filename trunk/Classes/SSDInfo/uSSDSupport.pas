@@ -54,6 +54,7 @@ type
     class function IsToshibaSupported(Model, Revision: String): TSupportStatus;
     class function IsSandiskSupported(Model, Revision: String): TSupportStatus;
     class function IsSeagateSupported(Model, Revision: String): TSupportStatus;
+    class function IsCrucialSupported(Model, Revision: String): TSupportStatus;
 
     class function IsFullySupported(Model, Revision: String): TSupportStatus;
     class function IsSemiSupported(Model, Revision: String): TSupportStatus;
@@ -125,7 +126,7 @@ begin
   result := SUPPORT_NONE;
   if (TNewVer.IsPlextorNewVer(Model, Revision) <> NOT_MINE) or
      (TNewVer.IsLiteONNewVer(Model, Revision) <> NOT_MINE) or
-     (TNewVer.IsCrucialNewVer(Model, Revision) <> NOT_MINE) or
+     (TSupportedSSD.IsCrucialSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsToshibaSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsSandiskSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsSeagateSupported(Model, Revision) <> SUPPORT_NONE) or
@@ -451,18 +452,18 @@ class function TNewVer.IsCrucialNewVer(Model, Revision: String): TFirmVersion;
 begin
   Model := UpperCase(Model);
 
+  result := NOT_MINE;
+  //M550&MX100 펌웨어 나오면 주석 풀 것
   if (Pos('CRUCIAL', Model) > 0) and
-     ((Pos('M500', Model) > 0) or
+     ((Pos('M500', Model) > 0){ or
       (Pos('M550', Model) > 0) or
-      (Pos('MX100', Model) > 0)) then
+      (Pos('MX100', Model) > 0)}) then
   begin
     result := NEW_VERSION;
     if (Pos('M500', Model) > 0) and
        (StrToInt(Copy(Revision, 3, 2)) < LastM500) then
       result := OLD_VERSION;
-  end
-  else
-    result := NOT_MINE;
+  end;
 end;
 
 { TSupportedClass }
@@ -499,6 +500,19 @@ begin
      ((Pos('THNSNF', Model) > 0) or
       (Pos('THNSNH', Model) > 0) or
       (Pos('THNSNJ', Model) > 0)) then
+    result := SUPPORT_FULL;
+end;
+
+class function TSupportedSSD.IsCrucialSupported(Model,
+  Revision: String): TSupportStatus;
+begin
+  Model := UpperCase(Model);
+
+  result := SUPPORT_NONE;
+  if (Pos('CRUCIAL', Model) > 0) and
+     ((Pos('M500', Model) > 0) or
+      (Pos('M550', Model) > 0) or
+      (Pos('MX100', Model) > 0)) then
     result := SUPPORT_FULL;
 end;
 

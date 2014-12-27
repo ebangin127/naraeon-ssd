@@ -10,7 +10,6 @@ type
   protected
     AllBlocks: _LARGE_INTEGER;
     Progress: Cardinal;
-    LBASize: Cardinal;
     procedure ChangeProgressbar;
     procedure ChangeStage;
     procedure Execute; override;
@@ -29,6 +28,9 @@ implementation
 
 uses uMain;
 
+const
+  LBASize = 512;
+
 procedure TTrimThread.Execute;
 var
   CurrDrive: Integer;
@@ -40,7 +42,6 @@ begin
   begin
     if MainLoaded then
       Synchronize(ChangeStage);
-    LBASize := NeedTrimLBASize[CurrDrive];
     DoTrim(NeedTrimPartition[CurrDrive]);
     CompletedPartition := CurrDrive + 1;
     if MainLoaded then
@@ -107,7 +108,7 @@ begin
 
   if NTFSInfo.ErrorCode = 0 then
   begin
-    LBAPerSector := (Cardinal(NTFSInfo.SectorPerCluster) * 512) div LBASize;
+    LBAPerSector := Cardinal(NTFSInfo.SectorPerCluster);
   end
   else
   begin
@@ -116,7 +117,7 @@ begin
     FATLength := (GetPartitionLength(DriveLetter) div GottenLBAPerSector) -
                  (GottenLBAPerSector * TempResult.BitmapSize.QuadPart);
     StartLBA := StartLBA + FATLength;
-    LBAPerSector := (GottenLBAPerSector shl 9) div LBASize;
+    LBAPerSector := GottenLBAPerSector;
   end;
 
   AllBlocks := TempResult.BitmapSize;
@@ -240,6 +241,6 @@ begin
   fMain.pDownload.Top := fMain.pDownload.Top - 5;
   fMain.pDownload.Position := 0;
   fMain.gTrim.Visible := true;
-  fMain.HideDownloader;
+  fMain.HideProgress;
 end;
 end.

@@ -193,259 +193,9 @@ object fMain: TfMain
     OnMouseEnter = SSDSelLblMouseEnter
     OnMouseLeave = SSDSelLblMouseLeave
   end
-  object gErase: TGroupBox
-    Left = 8
-    Top = 291
-    Width = 584
-    Height = 240
-    TabOrder = 3
-    Visible = False
-    object lEraseUSB: TLabel
-      Left = 16
-      Top = 4
-      Width = 7
-      Height = 30
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object lUSBErase: TLabel
-      Left = 16
-      Top = 95
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object bEraseUSBStart: TButton
-      Left = 15
-      Top = 180
-      Width = 558
-      Height = 46
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -20
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      OnClick = bEraseUSBStartClick
-    end
-    object cEraseAgree: TCheckBox
-      Left = 16
-      Top = 140
-      Width = 552
-      Height = 17
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-    end
-    object cUSBErase: TComboBox
-      Left = 98
-      Top = 95
-      Width = 470
-      Height = 25
-      Style = csDropDownList
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ImeName = 'Microsoft IME 2010'
-      ParentFont = False
-      TabOrder = 2
-    end
-    object rPartedMagic: TRadioButton
-      Left = 16
-      Top = 50
-      Width = 161
-      Height = 26
-      Caption = 'Parted Magic (New)'
-      Checked = True
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 3
-      TabStop = True
-      OnClick = rPartedMagicClick
-    end
-    object rGParted: TRadioButton
-      Left = 256
-      Top = 53
-      Width = 165
-      Height = 20
-      Caption = 'GParted (Legacy)'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 4
-      OnClick = rGPartedClick
-    end
-  end
-  object GSSDSel: TGroupBox
-    Left = 260
-    Top = 36
-    Width = 335
-    Height = 263
-    Ctl3D = False
-    ParentBackground = False
-    ParentCtl3D = False
-    TabOrder = 8
-    Visible = False
-    OnMouseEnter = SSDSelLblMouseEnter
-    OnMouseLeave = SSDSelLblMouseLeave
-  end
-  object gAnalytics: TGroupBox
-    Left = 8
-    Top = 290
-    Width = 584
-    Height = 240
-    TabOrder = 1
-    Visible = False
-    object lAnaly: TLabel
-      Left = 16
-      Top = 4
-      Width = 7
-      Height = 30
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -21
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object l1Month: TLabel
-      Left = 16
-      Top = 179
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object lTodayUsage: TLabel
-      Left = 16
-      Top = 143
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object lHost: TLabel
-      Left = 16
-      Top = 91
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object lOntime: TLabel
-      Left = 16
-      Top = 55
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-  end
-  object gTrim: TGroupBox
-    Left = 8
-    Top = 291
-    Width = 584
-    Height = 240
-    TabOrder = 5
-    Visible = False
-    object lTrimName: TLabel
-      Left = 15
-      Top = 4
-      Width = 7
-      Height = 30
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -21
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object bSchedule: TButton
-      Left = 312
-      Top = 180
-      Width = 260
-      Height = 46
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -20
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      OnClick = bScheduleClick
-    end
-    object bTrimStart: TButton
-      Left = 15
-      Top = 180
-      Width = 260
-      Height = 46
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -20
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      OnClick = bTrimStartClick
-    end
-    object cTrimList: TCheckListBox
-      Left = 15
-      Top = 45
-      Width = 557
-      Height = 125
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ImeName = 'Microsoft IME 2010'
-      ItemHeight = 20
-      ParentFont = False
-      TabOrder = 1
-    end
-  end
   object gSchedule: TGroupBox
     Left = 8
-    Top = 291
+    Top = 290
     Width = 584
     Height = 240
     TabOrder = 7
@@ -587,7 +337,7 @@ object fMain: TfMain
   end
   object gDownload: TGroupBox
     Left = 8
-    Top = 291
+    Top = 290
     Width = 584
     Height = 240
     TabOrder = 6
@@ -648,6 +398,236 @@ object fMain: TfMain
       ParentFont = False
       TabOrder = 1
       OnClick = bCancelClick
+    end
+  end
+  object gFirmware: TGroupBox
+    Left = 8
+    Top = 290
+    Width = 584
+    Height = 240
+    TabOrder = 2
+    Visible = False
+    object lUpdate: TLabel
+      Left = 15
+      Top = 4
+      Width = 7
+      Height = 30
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object lUSB: TLabel
+      Left = 15
+      Top = 95
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object lNewFirm: TLabel
+      Left = 14
+      Top = 53
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object bFirmStart: TButton
+      Left = 14
+      Top = 180
+      Width = 558
+      Height = 46
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = bFirmStartClick
+    end
+    object cAgree: TCheckBox
+      Left = 15
+      Top = 140
+      Width = 552
+      Height = 17
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+    end
+    object cUSB: TComboBox
+      Left = 97
+      Top = 95
+      Width = 470
+      Height = 25
+      Style = csDropDownList
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ImeName = 'Microsoft IME 2010'
+      ParentFont = False
+      TabOrder = 2
+    end
+  end
+  object gSSDSel: TGroupBox
+    Left = 257
+    Top = 36
+    Width = 335
+    Height = 263
+    Ctl3D = False
+    ParentBackground = False
+    ParentCtl3D = False
+    TabOrder = 8
+    Visible = False
+    OnMouseEnter = SSDSelLblMouseEnter
+    OnMouseLeave = SSDSelLblMouseLeave
+  end
+  object gAnalytics: TGroupBox
+    Left = 8
+    Top = 290
+    Width = 584
+    Height = 240
+    TabOrder = 1
+    Visible = False
+    object lAnaly: TLabel
+      Left = 16
+      Top = 4
+      Width = 7
+      Height = 30
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -21
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object l1Month: TLabel
+      Left = 16
+      Top = 179
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object lTodayUsage: TLabel
+      Left = 16
+      Top = 143
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object lHost: TLabel
+      Left = 16
+      Top = 91
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object lOntime: TLabel
+      Left = 16
+      Top = 55
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+  end
+  object gTrim: TGroupBox
+    Left = 8
+    Top = 290
+    Width = 584
+    Height = 240
+    TabOrder = 5
+    Visible = False
+    object lTrimName: TLabel
+      Left = 15
+      Top = 4
+      Width = 7
+      Height = 30
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -21
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object bSchedule: TButton
+      Left = 312
+      Top = 180
+      Width = 260
+      Height = 46
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = bScheduleClick
+    end
+    object bTrimStart: TButton
+      Left = 15
+      Top = 180
+      Width = 260
+      Height = 46
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = bTrimStartClick
+    end
+    object cTrimList: TCheckListBox
+      Left = 15
+      Top = 45
+      Width = 557
+      Height = 125
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ImeName = 'Microsoft IME 2010'
+      ItemHeight = 20
+      ParentFont = False
+      TabOrder = 1
     end
   end
   object gInfo: TGroupBox
@@ -1823,15 +1803,15 @@ object fMain: TfMain
       OnClick = iSCheckClick
     end
   end
-  object gFirmware: TGroupBox
+  object gErase: TGroupBox
     Left = 8
-    Top = 291
+    Top = 290
     Width = 584
     Height = 240
-    TabOrder = 2
+    TabOrder = 3
     Visible = False
-    object lUpdate: TLabel
-      Left = 15
+    object lEraseUSB: TLabel
+      Left = 16
       Top = 4
       Width = 7
       Height = 30
@@ -1842,32 +1822,20 @@ object fMain: TfMain
       Font.Style = []
       ParentFont = False
     end
-    object lUSB: TLabel
+    object lUSBErase: TLabel
+      Left = 16
+      Top = 74
+      Width = 5
+      Height = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+    end
+    object bEraseUSBStart: TButton
       Left = 15
-      Top = 95
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object lNewFirm: TLabel
-      Left = 14
-      Top = 53
-      Width = 5
-      Height = 20
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-    end
-    object bFirmStart: TButton
-      Left = 14
       Top = 180
       Width = 558
       Height = 46
@@ -1878,11 +1846,11 @@ object fMain: TfMain
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      OnClick = bFirmStartClick
+      OnClick = bEraseUSBStartClick
     end
-    object cAgree: TCheckBox
-      Left = 15
-      Top = 140
+    object cEraseAgree: TCheckBox
+      Left = 16
+      Top = 119
       Width = 552
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -1893,9 +1861,9 @@ object fMain: TfMain
       ParentFont = False
       TabOrder = 1
     end
-    object cUSB: TComboBox
-      Left = 97
-      Top = 95
+    object cUSBErase: TComboBox
+      Left = 98
+      Top = 74
       Width = 470
       Height = 25
       Style = csDropDownList

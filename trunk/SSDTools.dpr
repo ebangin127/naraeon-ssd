@@ -35,7 +35,9 @@ uses
   uFirmware in 'ModulesForUI\Firmware\uFirmware.pas',
   uUSBDrive in 'ModulesForUI\USBDrive\uUSBDrive.pas',
   uRefresh in 'ModulesForUI\Refresh\uRefresh.pas',
-  uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas';
+  uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas',
+  uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
+  uInit in 'ModulesForUI\Init\uInit.pas';
 
 {$R *.res}
 var
@@ -61,9 +63,17 @@ var
   DiagFile: TStringList;
   DrvName: String;
 
+  //현재 프로세스 뮤텍스 관리
+  MutexAppear: LongInt;
+
 begin
   Application.Initialize;
   Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
+
+  AppPath := ExtractFilePath(Application.ExeName);
+  WinDir := GetEnvironmentVariable('windir');
+  WinDrive := ExtractFileDrive(WinDir);
+
   if (ParamStr(1) <> '')
       and (UpperCase(ParamStr(1)) <> '/SIMULMODE')
       and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
@@ -244,8 +254,10 @@ begin
       MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened1');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-  fMain.Caption := Cap;
+      fMain.Caption := Cap;
       Application.Run;
     end;
   end;
+  ReleaseMutex(MutexAppear);
+  CloseHandle(MutexAppear);
 end.
