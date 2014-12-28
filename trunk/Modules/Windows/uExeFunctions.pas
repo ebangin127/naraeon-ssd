@@ -12,7 +12,6 @@ procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
 
 function CheckUNetbootin: Boolean;
-function CheckISOfile(FileName: String): String;
 
 implementation
 
@@ -177,29 +176,5 @@ end;
 function CheckUNetbootin: Boolean;
 begin
   result := FileExists(AppPath + 'Unetbootin\unetbootin.exe');
-end;
-
-function CheckISOfile(FileName: String): String;
-var
-  ErasePaths: Array[0..2] of String;
-  CurrErasePath: Integer;
-begin
-  result := '';
-  ErasePaths[0] := AppPath + FileName;
-  ErasePaths[1] := ExtractFilePath(GetRegStr('LM',
-                                  'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools - Eraser Pack(Parted Magic)\',
-                                  'UninstallString')) + FileName;
-  ErasePaths[2] := ExtractFilePath(GetRegStr('LM',
-                                  'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools - Eraser Pack(GParted)\',
-                                  'UninstallString')) + FileName;
-
-  for CurrErasePath := 0 to 2 do
-  begin
-    if FileExists(ErasePaths[CurrErasePath]) then
-    begin
-      result := ErasePaths[CurrErasePath];
-      break;
-    end;
-  end;
 end;
 end.

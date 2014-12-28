@@ -74,7 +74,7 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOverwrite on
   SetOutPath "$INSTDIR\SSDTools\Erase"
-  File "..\exec_files\pmagic.iso"
+  File "..\exec_files\pmagic.7z"
   SetOutPath "$INSTDIR\SSDTools\Unetbootin"
   File "..\exec_files\unetbootin.exe"
 SectionEnd
@@ -132,7 +132,7 @@ Function GetParent
 FunctionEnd
 
 Section Uninstall
-  Delete "$INSTDIR\Erase\pmagic.iso"
+  Delete "$INSTDIR\Erase\pmagic.7z"
   Delete "$INSTDIR\uninst_plugin_pmagic.exe"
 
   SetShellVarContext all

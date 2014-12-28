@@ -212,12 +212,10 @@ begin
     exit;
   end;
 
-  FileName := CheckISOfile('erase\pmagic.iso');
+  FileName := AppPath + 'erase\pmagic.7z';
 
-  if (Length(FileName) > 0) and (CheckUnetBootin) then
+  if (FileExists(FileName)) and (CheckUnetBootin) then
   begin
-    gErase.Visible := true;
-    Application.ProcessMessages;
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
     ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
@@ -873,7 +871,6 @@ begin
   Dest.FBaseAddress := AppPath;
   Dest.FFileAddress := 'Setup.exe';
   Dest.FType := dftPlain;
-
 
   if DownloadFile(Src, Dest, CapUpdDwld[CurrLang], bCancel.Caption) = false then
   begin

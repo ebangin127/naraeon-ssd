@@ -47,19 +47,21 @@ var
   FileEx1, FileEx2, DirEx: Boolean;
   Src, Dest: TDownloadFile;
   DownloadResult: Boolean;
+  TempFolder: String;
 begin
+  TempFolder := GetEnvironmentVariable('TMP');
   result.FirmExists := false;
 
-  FileEx1 := FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.exe');
-  FileEx2 := FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.iso');
-  DirEx := DirectoryExists(AppPath + 'Firmware\' + SSDInfo.Model);
+  FileEx1 := FileExists(TempFolder + SSDInfo.Model + '.exe');
+  FileEx2 := FileExists(TempFolder + SSDInfo.Model + '.iso');
+  DirEx := DirectoryExists(TempFolder + SSDInfo.Model);
 
   if FileEx1 then
-    DeleteFile(AppPath + 'Firmware\' + SSDInfo.Model + '.exe');
+    DeleteFile(TempFolder + SSDInfo.Model + '.exe');
   if FileEx2 then
-    DeleteFile(AppPath + 'Firmware\' + SSDInfo.Model + '.iso');
+    DeleteFile(TempFolder + SSDInfo.Model + '.iso');
   if DirEx then
-    DeleteDirectory(AppPath + 'Firmware\' + SSDInfo.Model + '.iso');
+    DeleteDirectory(TempFolder + SSDInfo.Model + '.iso');
 
   AlertCreate(fMain, AlrtFirmStart[CurrLang]);
 
@@ -68,7 +70,7 @@ begin
                       + TrimEx(SSDInfo.Model) + 'path.htm';
   Src.FType := dftGetFromWeb;
 
-  Dest.FBaseAddress := AppPath + 'Firmware\';
+  Dest.FBaseAddress := TempFolder;
   Dest.FFileAddress := 'http://www.naraeon.net/SSDTools_Common/Firmware/'
                         + TrimEx(SSDInfo.Model) + 'name.htm';
   Dest.FPostAddress := '_tmp';
@@ -99,25 +101,30 @@ begin
     OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
                         + ExtractFilePath(FirmPath) + SSDInfo.Model
                         + '\" "' + FirmPath + '"');
-    DeleteFile(AppPath + 'Firmware\' + FirmName);
+    DeleteFile(TempFolder + FirmName);
   end;
 
-  if (FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.exe') = false) and
-     (FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.iso') = false) and
-     (DirectoryExists(AppPath + 'Firmware\' + SSDInfo.Model) = false) then
+  if (FileExists(
+        TempFolder + SSDInfo.Model + '.exe') = false) and
+     (FileExists(
+        TempFolder + SSDInfo.Model + '.iso') = false) and
+     (DirectoryExists(
+        TempFolder + SSDInfo.Model) = false) then
   begin
-    DeleteFile(AppPath + 'Firmware\' + FirmName);
+    DeleteFile(TempFolder + FirmName);
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
   end
   else
     result.FirmExists := true;
 
   if result.FirmExists then
-    if FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.iso') then
-      result.FirmPath := AppPath + 'Firmware\' + SSDInfo.Model + '.iso'
-    else if FileExists(AppPath + 'Firmware\' + SSDInfo.Model + '.exe') then
-      result.FirmPath := AppPath + 'Firmware\' + SSDInfo.Model + '.exe'
+    if FileExists(TempFolder + SSDInfo.Model + '.iso') then
+      result.FirmPath := TempFolder + SSDInfo.Model + '.iso'
+    else if FileExists(
+        TempFolder + SSDInfo.Model + '.exe') then
+      result.FirmPath := TempFolder + SSDInfo.Model + '.exe'
     else
-      result.FirmPath := FindFirmware(AppPath + 'Firmware\' + SSDInfo.Model);
+      result.FirmPath :=
+        FindFirmware(TempFolder + SSDInfo.Model);
 end;
 end.
