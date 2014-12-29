@@ -42,7 +42,7 @@ function NewFirmSub(Model, Revision: String): String;
 
 implementation
 
-// ³»ºÎ¿ë Å¬·¡½º
+// ë‚´ë¶€ìš© í´ë˜ìŠ¤
 type
   TNewVer = class
     class function IsLiteONNewVer(Model, Revision: String): TFirmVersion;
@@ -60,7 +60,7 @@ type
     class function IsSemiSupported(Model, Revision: String): TSupportStatus;
   end;
 
-//³»ºÎ¿ë »ó¼ö
+//ë‚´ë¶€ìš© ìƒìˆ˜
 const
   LastVA8 = 5;
   LastVB8 = 5;
@@ -205,12 +205,12 @@ begin
   with result do
   begin
 
-    // LBA ´ÜÀ§
-    if (TNewVer.IsCrucialNewVer(Model, Revision) <> NOT_MINE) or
+    // LBA ë‹¨ìœ„
+    if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE) or
        ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
         (Pos('SSD', UpperCase(Model)) > 0)) then
     begin
-      if TNewVer.IsCrucialNewVer(Model, Revision) <> NOT_MINE then
+      if TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE then
         Position := 'F6'
       else
         Position := 'F1';
@@ -220,14 +220,14 @@ begin
       IsHostWrite := true;
     end
 
-    // 32MB ´ÜÀ§
+    // 32MB ë‹¨ìœ„
     else if (Pos('MXSSD', Model) > 0) and (Pos('JT', Model) > 0) then
     begin
       HostWrites := round(ExtractSMART(SMARTData, 'F1') / 2);
       IsHostWrite := true;
     end
 
-    // 1GB Ç¥ÁØ´ÜÀ§
+    // 1GB í‘œì¤€ë‹¨ìœ„
     else if (Pos('MXSSD', Model) > 0) or ((Pos('OCZ', Model) > 0) and
             (Pos('VERTEX3', Model) > 0)) or
             ((Pos('OCZ', Model) > 0) and (Pos('AGILITY3', Model) > 0)) or
@@ -245,13 +245,13 @@ begin
       IsHostWrite := true;
     end
 
-    // 128MB ´ÜÀ§
+    // 128MB ë‹¨ìœ„
     else if (Pos('Ninja-', Model) > 0) or
             (Pos('M5P', Model) > 0) or
             (S10085) then
       HostWrites := (ExtractSMART(SMARTData, 177) * 2)
 
-    // 64MB ´ÜÀ§
+    // 64MB ë‹¨ìœ„
     else
       HostWrites := ExtractSMART(SMARTData, 177);
   end;
@@ -269,7 +269,7 @@ begin
            (Pos('THNSNF', UpperCase(Model)) > 0)) then
     result.EraseError := ExtractSMART(SMARTData, 1)
 
-  else if (TNewVer.IsCrucialNewVer(Model, Revision) <> NOT_MINE) or
+  else if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE) or
           (Pos('MXSSD', Model) > 0) or
           ((Pos('OCZ', Model) > 0) and
            ((Pos('VERTEX3', Model) > 0) or
@@ -453,7 +453,7 @@ begin
   Model := UpperCase(Model);
 
   result := NOT_MINE;
-  //M550&MX100 Æß¿ş¾î ³ª¿À¸é ÁÖ¼® Ç® °Í
+  //M550&MX100 íŒì›¨ì–´ ë‚˜ì˜¤ë©´ ì£¼ì„ í’€ ê²ƒ
   if (Pos('CRUCIAL', Model) > 0) and
      ((Pos('M500', Model) > 0){ or
       (Pos('M550', Model) > 0) or
