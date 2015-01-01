@@ -35,34 +35,34 @@ end;
 
 class function TATALowOps.GetInfoATA(hdrive: THandle): TLLBuffer;
 var
-  ICBuffer: ATA_PTH_BUFFER;
+  ICDBuffer: ATA_PTH_DIR_BUFFER;
   bResult: Boolean;
   BytesRead: Cardinal;
 begin
-  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
+  FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
 
   If GetLastError = 0 Then
   begin
-    ICBuffer.PTH.Length := SizeOf(ICBuffer.PTH);
-    ICBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
-    ICBuffer.PTH.DataTransferLength := 512;
-    ICBuffer.PTH.TimeOutValue := 2;
-    ICBuffer.PTH.DataBufferOffset := PChar(@ICBuffer.Buffer)
-                                      - PChar(@ICBuffer.PTH) + 20;
+    ICDBuffer.PTH.Length := SizeOf(ICDBuffer.PTH);
+    ICDBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
+    ICDBuffer.PTH.DataTransferLength := SizeOf(ICDBuffer.Buffer);
+    ICDBuffer.PTH.TimeOutValue := 2;
+    ICDBuffer.PTH.DataBuffer := @ICDBuffer.Buffer;
 
-    ICBuffer.PTH.CurrentTaskFile[6] := $EC;
+    ICDBuffer.PTH.CurrentTaskFile[6] := $EC;
 
-    bResult := DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH, @ICBuffer,
-                                SizeOf(ICBuffer), @ICBuffer, SizeOf(ICBuffer),
-                                BytesRead, nil);
+    bResult :=
+      DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH_DIRECT,
+        @ICDBuffer, SizeOf(ICDBuffer),
+        @ICDBuffer, SizeOf(ICDBuffer), BytesRead, nil);
     if bResult and (GetLastError = 0) then
     begin
-      exit(ICBuffer.Buffer);
+      exit(ICDBuffer.Buffer);
     end;
   end;
 
-  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
-  exit(ICBuffer.Buffer);
+  FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
+  exit(ICDBuffer.Buffer);
 end;
 
 class function TATALowOps.GetInfoSCSI(hdrive: THandle): TLLBuffer;
