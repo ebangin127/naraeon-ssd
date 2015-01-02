@@ -388,7 +388,7 @@ end;
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if ((UpdateThread <> nil) and
-      (not UpdateThread.Finished)) or
+      (not UpdateThread.UpdFinished)) or
      ((TrimThread <> nil) and
       (TrimStat < 2)) then
   begin

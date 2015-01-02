@@ -10,6 +10,7 @@ uses Classes, SysUtils, Math, Dialogs, Windows,
 type
   TUpdateThread = class(TThread)
   public
+    UpdFinished: Boolean;
     destructor Destroy; virtual;
   protected
     VersionLoader: TIdHttp;
@@ -48,6 +49,7 @@ var
   CurrVer: Integer;
   LogStream: TStringStream;
 begin
+  UpdFinished := false;
   ConnectionChecker := TIdHttp.Create(nil);
   try
     ConnectionChecker.HandleRedirects := True;
@@ -85,6 +87,7 @@ begin
   if ClientVer >= ServerVer then
   begin
     FreeAndNil(VersionLoader);
+    UpdFinished := true;
     exit;
   end;
 
@@ -148,6 +151,7 @@ begin
   end;
 
   Synchronize(fMain.ProgressDownload);
+  UpdFinished := true;
   FreeAndNil(VersionLoader);
 end;
 end.
