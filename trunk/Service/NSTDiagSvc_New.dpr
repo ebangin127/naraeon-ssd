@@ -15,7 +15,8 @@ uses
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
   uSSDInfo in '..\Classes\SSDInfo\uSSDInfo.pas',
   uSSDSupport in '..\Classes\SSDInfo\uSSDSupport.pas',
-  uATALowOps in '..\Classes\ATALowOps\uATALowOps.pas';
+  uATALowOps in '..\Classes\ATALowOps\uATALowOps.pas',
+  uGetFirm in '..\Classes\GetFirm\uGetFirm.pas';
 
 {$R *.RES}
 
