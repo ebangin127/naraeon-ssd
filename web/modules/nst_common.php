@@ -1,6 +1,6 @@
 <?php
-  require './nst_config.php';
-  require './nst_function.php';
+  require './modules/nst_config.php';
+  require './modules/nst_function.php';
 
   class Stages {
     var $Conn;

@@ -3,7 +3,7 @@
 
   function SpecificJob($Row) {
     $VersionCompare =
-      (strcmp($Firmware, $Row['Firmware']) >= 0) + 1;
+      (strcmp($_GET['Firmware'], $Row['Firmware']) >= 0) + 1;
     printf(
       "%d\n%s\n%s",
       $VersionCompare,

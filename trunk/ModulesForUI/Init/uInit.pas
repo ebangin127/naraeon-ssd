@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows, Classes, Graphics, Controls,
-  uAlert, uButtonGroup, uLanguageSettings;
+  uAlert, uButtonGroup, uLanguageSettings, uGetFirm;
 
 procedure InitMainForm;
 procedure RefreshOptList;
@@ -201,6 +201,7 @@ end;
 
 procedure InitMainForm;
 begin
+  TGetFirm.CreateCache;
   CheckVersion;
   CreateButtonGroup;
   InitFormSizeAndIcon;

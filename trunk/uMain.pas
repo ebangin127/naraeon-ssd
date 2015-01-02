@@ -12,7 +12,7 @@ uses
   uTrimThread, uLanguageSettings, uUpdateThread, uBrowser,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh,
-  uButtonGroup, uInit;
+  uButtonGroup, uInit, uGetFirm;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -205,6 +205,7 @@ end;
 procedure TfMain.bEraseUSBStartClick(Sender: TObject);
 var
   FileName: String;
+  TempFolder: String;
 begin
   if cEraseAgree.Checked = false then
   begin
@@ -212,13 +213,38 @@ begin
     exit;
   end;
 
-  FileName := AppPath + 'erase\pmagic.7z';
+  FileName := AppPath + 'Erase\pmagic.7z';
 
   if (FileExists(FileName)) and (CheckUnetBootin) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
+
+    TempFolder :=
+      GetEnvironmentVariable('TMP') +
+      '\NST' + IntToStr(Random(2147483647)) + '\';
+    while DirectoryExists(TempFolder) do
+      TempFolder :=
+        GetEnvironmentVariable('TMP') +
+        '\NST' + IntToStr(Random(2147483647)) + '\';
+    CreateDir(TempFolder);
+
+    OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
+                        + TempFolder + '" "' + FileName + '" ' +
+                        '-p"' +                              //비번
+                          CapTrimName[LANG_ENGLISH] +
+                          CapStartManTrim[LANG_ENGLISH] +
+                          BtSemiAutoTrim[LANG_ENGLISH] +
+                          CapLocalDisk[LANG_ENGLISH] +
+                          CapRemvDisk[LANG_ENGLISH] +
+                          CapProg1[LANG_ENGLISH] +
+                          CapProg2[LANG_ENGLISH] +
+                          CapProg3[LANG_ENGLISH] +
+                        '"');
+    FileName := TempFolder + 'pmagic.iso';
+
     ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
+    DeleteDirectory(TempFolder);
   end
   else
   begin
@@ -264,6 +290,7 @@ begin
     ProcessImager(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
       ChkFrmResult.FirmPath);
     AlertCreate(Self, AlrtFirmEnd[CurrLang]);
+    DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));
   end;
 end;
 
@@ -360,8 +387,6 @@ end;
 
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  FreeAndNil(ButtonGroup);
-
   if ((UpdateThread <> nil) and
       (not UpdateThread.Finished)) or
      ((TrimThread <> nil) and
@@ -373,9 +398,6 @@ begin
 
   if (TrimThread <> nil) and (TrimStat >= 2) then
     FreeAndNil(TrimThread);
-
-  if VersionLoader <> nil then
-    FreeAndNil(VersionLoader);
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);
@@ -399,8 +421,11 @@ end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
+  TGetFirm.DestroyCache;
+
   FreeAndNil(SSDInfo);
   FreeAndNil(Optimizer);
+  FreeAndNil(ButtonGroup);
 end;
 
 procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
@@ -475,6 +500,8 @@ begin
 end;
 
 procedure TfMain.iFirmUpClick(Sender: TObject);
+var
+  ifConnected: DWORD;
 begin
   CloseDriveList;
 
@@ -484,17 +511,29 @@ begin
     exit;
   end;
 
-  if ButtonGroup.Click(iFirmUp) <> clkOpen then
+  if ButtonGroup.FindEntry(iFirmUp).Selected then
+  begin
+    ButtonGroup.Click(iFirmUp);
     exit;
+  end;
 
   GetUSBDrives(cUSB.Items);
   cUSB.ItemIndex := 0;
   if cUSB.Items.Count = 0 then
   begin
-    ButtonGroup.Click(iFirmUp);
     AlertCreate(Self, AlrtNoUSB[CurrLang]);
     exit;
   end;
+
+  InternetGetConnectedState(@ifConnected, 0);
+  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
+      (ifConnected = 0) then
+  begin
+    AlertCreate(Self, AlrtNoInternet[CurrLang]);
+    exit;
+  end;
+
+  ButtonGroup.Click(iFirmUp);
 
   if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then
   begin
@@ -513,16 +552,21 @@ procedure TfMain.iEraseClick(Sender: TObject);
 begin
   CloseDriveList;
 
-  if ButtonGroup.Click(iErase) <> clkOpen then
+  if ButtonGroup.FindEntry(iErase).Selected then
+  begin
+    ButtonGroup.Click(iErase);
     exit;
+  end;
 
   GetUSBDrives(cUSBErase.Items);
   cUSBErase.ItemIndex := 0;
 
   if cUSBErase.Items.Count > 0 then
+  begin
+    ButtonGroup.Click(iErase);
     exit;
+  end;
 
-  ButtonGroup.Click(iErase);
   AlertCreate(Self, AlrtNoUSB[CurrLang]);
 end;
 
@@ -827,7 +871,7 @@ begin
 
   Src.FBaseAddress := '';
   Src.FFileAddress :=
-    'http://www.naraeon.net/SSDTools_Common/exec_path/unet.htm';
+    'http://nstfirmware.naraeon.net/nst_unet.htm';
   Src.FType := dftGetFromWeb;
 
   Dest.FBaseAddress := AppPath;
@@ -864,8 +908,8 @@ begin
                            MB_OKCANCEL  + MB_IconInformation) <> 1 then
     exit;
 
-  Src.FBaseAddress := 'http://www.naraeon.net';
-  Src.FFileAddress := '/SSDTools/Setup.exe';
+  Src.FBaseAddress := 'http://nstupdate.naraeon.net';
+  Src.FFileAddress := '/Setup.exe';
   Src.FType := dftPlain;
 
   Dest.FBaseAddress := AppPath;
@@ -881,7 +925,6 @@ begin
   ButtonGroup.Close;
   AlertCreate(Self, AlrtUpdateExit[CurrLang]);
   ShellExecute(0, nil, PChar(AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
-  FreeAndNil(VersionLoader);
   Application.Terminate;
 end;
 
@@ -927,6 +970,7 @@ begin
     fmCreate or fmShareExclusive);
   Downloader := TIdHttp.Create;
   Downloader.Request.UserAgent := 'Naraeon SSD Tools';
+  Downloader.HandleRedirects := true;
 
   try
     Aborted := false;

@@ -37,7 +37,8 @@ uses
   uRefresh in 'ModulesForUI\Refresh\uRefresh.pas',
   uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas',
   uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
-  uInit in 'ModulesForUI\Init\uInit.pas';
+  uInit in 'ModulesForUI\Init\uInit.pas',
+  uGetFirm in 'Classes\GetFirm\uGetFirm.pas';
 
 {$R *.res}
 var
@@ -254,7 +255,7 @@ begin
       MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened1');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-      fMain.Caption := Cap;
+  fMain.Caption := Cap;
       Application.Run;
     end;
   end;

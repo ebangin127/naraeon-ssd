@@ -9,12 +9,15 @@ uses Classes, SysUtils, Math, Dialogs, Windows,
 
 type
   TUpdateThread = class(TThread)
+  public
+    destructor Destroy; virtual;
   protected
+    VersionLoader: TIdHttp;
+
     procedure Execute; override;
   end;
 
 var
-  VersionLoader: TIdHttp;
   ServerVersion: String;
   CurrChr: Integer;
   ChangeLog: String;
@@ -24,6 +27,14 @@ implementation
 uses
   uMain, uSSDInfo;
 
+
+destructor TUpdateThread.Destroy;
+begin
+  if VersionLoader <> nil then
+    FreeAndNil(VersionLoader);
+
+  inherited Destroy;
+end;
 
 procedure TUpdateThread.Execute;
 var
@@ -42,7 +53,7 @@ begin
     ConnectionChecker.HandleRedirects := True;
     ConnectionChecker.Request.UserAgent := 'Naraeon SSD Tools';
     ConnectionChecker.Head(
-      'http://www.naraeon.net/SSDTools/latestSSDTools.htm');
+      'http://nstupdate.naraeon.net/latestSSDTools.htm');
     Connected := (ConnectionChecker.response.ResponseCode = 200);
   except
     Connected := false;
@@ -56,9 +67,9 @@ begin
   LogStream := TStringStream.Create('', TEncoding.Unicode);
   VersionLoader.Request.UserAgent := 'Naraeon SSD Tools';
   ServerVersion :=
-    VersionLoader.Get('http://www.naraeon.net/SSDTools/latestSSDTools.htm');
+    VersionLoader.Get('http://nstupdate.naraeon.net/latestSSDTools.htm');
   VersionLoader.Request.CharSet := 'Unicode';
-  VersionLoader.Get('http://www.naraeon.net/SSDTools/ChangeLog' +
+  VersionLoader.Get('http://nstupdate.naraeon.net/ChangeLog' +
                       LangFileName + '.htm', LogStream);
   ChangeLog := LogStream.DataString;
 

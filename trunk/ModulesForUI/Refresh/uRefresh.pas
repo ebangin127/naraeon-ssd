@@ -4,9 +4,9 @@ interface
 
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
-  uAlert, uLanguageSettings, ShellApi,
+  uAlert, uLanguageSettings, ShellApi, Dialogs,
   uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
-  uSMARTFunctions, uStrFunctions, uLogSystem;
+  uSMARTFunctions, uStrFunctions, uLogSystem, uGetFirm;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
                       CurrUSBMode: Boolean;

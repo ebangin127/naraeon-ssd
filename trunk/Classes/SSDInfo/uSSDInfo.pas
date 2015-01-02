@@ -3,7 +3,8 @@ unit uSSDInfo;
 interface
 
 uses Windows, Classes, Math, Dialogs, SysUtils,
-      uATALowOps, uDiskFunctions, uSSDSupport, uSMARTFunctions, uStrFunctions;
+      uATALowOps, uDiskFunctions, uSSDSupport, uSMARTFunctions, uStrFunctions,
+      uGetFirm;
 
 type
   TSATASpeed =

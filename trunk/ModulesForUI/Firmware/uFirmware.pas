@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils,
   uAlert, uLanguageSettings,
-  uStrFunctions, uExeFunctions,
+  uStrFunctions, uExeFunctions, uGetFirm,
   uFileFunctions, uDownloadPath, uSSDInfo;
 
 type
@@ -43,13 +43,23 @@ end;
 
 function DownloadFirmware(AppPath: String; SSDInfo: TSSDInfo): FirmCheck;
 var
-  FirmName, FirmPath: String;
+  FirmPath: String;
   FileEx1, FileEx2, DirEx: Boolean;
   Src, Dest: TDownloadFile;
   DownloadResult: Boolean;
   TempFolder: String;
+  GetFirm: TGetFirm;
 begin
-  TempFolder := GetEnvironmentVariable('TMP');
+  Randomize;
+  TempFolder :=
+    GetEnvironmentVariable('TMP') +
+    '\NST' + IntToStr(Random(2147483647)) + '\';
+  while DirectoryExists(TempFolder) do
+    TempFolder :=
+      GetEnvironmentVariable('TMP') +
+      '\NST' + IntToStr(Random(2147483647)) + '\';
+
+  CreateDir(TempFolder);
   result.FirmExists := false;
 
   FileEx1 := FileExists(TempFolder + SSDInfo.Model + '.exe');
@@ -65,18 +75,19 @@ begin
 
   AlertCreate(fMain, AlrtFirmStart[CurrLang]);
 
+  GetFirm := TGetFirm.Create(SSDInfo.Model, SSDInfo.Firmware);
+
   Src.FBaseAddress := '';
-  Src.FFileAddress := 'http://www.naraeon.net/SSDTools_Common/Firmware/'
-                      + TrimEx(SSDInfo.Model) + 'path.htm';
-  Src.FType := dftGetFromWeb;
+  Src.FFileAddress :=
+    'http://nstfirmware.naraeon.net/nst_firmdown.php?' +
+    'Model=' + SSDInfo.Model + '&' +
+    'Firmware=' + SSDInfo.Firmware;
+  Src.FType := dftPlain;
 
   Dest.FBaseAddress := TempFolder;
-  Dest.FFileAddress := 'http://www.naraeon.net/SSDTools_Common/Firmware/'
-                        + TrimEx(SSDInfo.Model) + 'name.htm';
+  Dest.FFileAddress := GetFirm.GetVersion.FirmFileName;
   Dest.FPostAddress := '_tmp';
-  Dest.FType := dftGetFromWeb;
-
-  FirmName := GetDownloadPath(Dest);
+  Dest.FType := dftPlain;
 
   with fMain do
   begin
@@ -92,8 +103,10 @@ begin
     AlertCreate(fMain, AlrtFirmCanc[CurrLang]);
     exit;
   end;
-  FirmPath := Copy(FirmName, 0, Length(FirmName) - Length('_tmp'));
-  RenameFile(FirmName, FirmPath);
+  FirmPath := TempFolder + GetFirm.GetVersion.FirmFileName;
+  RenameFile(FirmPath + '_tmp', FirmPath);
+
+  FreeAndNil(GetFirm);
 
   if (ExtractFileExt(FirmPath) = '.zip') or
      (ExtractFileExt(FirmPath) = '.7z') then
@@ -101,7 +114,7 @@ begin
     OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
                         + ExtractFilePath(FirmPath) + SSDInfo.Model
                         + '\" "' + FirmPath + '"');
-    DeleteFile(TempFolder + FirmName);
+    DeleteFile(FirmPath);
   end;
 
   if (FileExists(
@@ -111,7 +124,8 @@ begin
      (DirectoryExists(
         TempFolder + SSDInfo.Model) = false) then
   begin
-    DeleteFile(TempFolder + FirmName);
+    DeleteFile(FirmPath + '_tmp');
+    DeleteFile(FirmPath);
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
   end
   else

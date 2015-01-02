@@ -1,11 +1,12 @@
-unit uSSDSupport;
+﻿unit uSSDSupport;
 
 interface
 
-uses SysUtils, Dialogs, uLanguageSettings, uDiskFunctions, uSMARTFunctions;
+uses
+  SysUtils, Dialogs, Windows, WinInet, uGetFirm,
+  uLanguageSettings, uDiskFunctions, uSMARTFunctions;
 
 type
-  TFirmVersion = (NOT_MINE, OLD_VERSION, NEW_VERSION);
   TSupportStatus = (SUPPORT_NONE, SUPPORT_SEMI, SUPPORT_FULL);
   THostSupportStatus = (HSUPPORT_NONE, HSUPPORT_COUNT, HSUPPORT_FULL);
 
@@ -97,18 +98,19 @@ const
 
 function IsNewVersion(Model, Revision: String): TFirmVersion;
 var
-  CurrTestingVer: TFirmVersion;
+  ifConnected: DWORD;
+  GetFirm: TGetFirm;
 begin
-  CurrTestingVer := TNewVer.IsPlextorNewVer(Model, Revision);
-  if CurrTestingVer <> NOT_MINE then
-    exit(CurrTestingVer);
+  result := NOT_MINE;
 
-  CurrTestingVer := TNewVer.IsLiteONNewVer(Model, Revision);
-  if CurrTestingVer <> NOT_MINE then
-    exit(CurrTestingVer);
+  InternetGetConnectedState(@ifConnected, 0);
+  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
+      (ifConnected = 0) then
+    exit;
 
-  CurrTestingVer := TNewVer.IsCrucialNewVer(Model, Revision);
-  result := CurrTestingVer;
+  GetFirm := TGetFirm.Create(Model, Revision);
+  result := GetFirm.GetVersion.CurrVersion;
+  FreeAndNil(GetFirm);
 end;
 
 function GetSupportStatus(Model, Revision: String): TSupportStatus;
@@ -206,11 +208,11 @@ begin
   begin
 
     // LBA 단위
-    if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE) or
+    if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> SUPPORT_NONE) or
        ((Pos('SAMSUNG', UpperCase(Model)) > 0) and
         (Pos('SSD', UpperCase(Model)) > 0)) then
     begin
-      if TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE then
+      if TSupportedSSD.IsCrucialSupported(Model, Revision) <> SUPPORT_NONE then
         Position := 'F6'
       else
         Position := 'F1';
@@ -269,7 +271,7 @@ begin
            (Pos('THNSNF', UpperCase(Model)) > 0)) then
     result.EraseError := ExtractSMART(SMARTData, 1)
 
-  else if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> NOT_MINE) or
+  else if (TSupportedSSD.IsCrucialSupported(Model, Revision) <> SUPPORT_NONE) or
           (Pos('MXSSD', Model) > 0) or
           ((Pos('OCZ', Model) > 0) and
            ((Pos('VERTEX3', Model) > 0) or
