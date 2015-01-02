@@ -3,7 +3,7 @@ unit uFirmware;
 interface
 
 uses
-  Windows, SysUtils,
+  Windows, SysUtils, IdURI,
   uAlert, uLanguageSettings,
   uStrFunctions, uExeFunctions, uGetFirm,
   uFileFunctions, uDownloadPath, uSSDInfo;
@@ -78,10 +78,10 @@ begin
   GetFirm := TGetFirm.Create(SSDInfo.Model, SSDInfo.Firmware);
 
   Src.FBaseAddress := '';
-  Src.FFileAddress :=
+  Src.FFileAddress := TIdURI.URLEncode(
     'http://nstfirmware.naraeon.net/nst_firmdown.php?' +
     'Model=' + SSDInfo.Model + '&' +
-    'Firmware=' + SSDInfo.Firmware;
+    'Firmware=' + SSDInfo.Firmware);
   Src.FType := dftPlain;
 
   Dest.FBaseAddress := TempFolder;

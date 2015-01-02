@@ -3,7 +3,7 @@ unit uGetFirm;
 interface
 
 uses Classes, SysUtils, Math, Dialogs, Windows, Generics.Collections,
-    IdBaseComponent, IdRawBase, IdRawClient, idHttp,
+    IdBaseComponent, IdRawBase, IdRawClient, IdHttp, IdURI,
     uDiskFunctions, IdIcmpClient, uLanguageSettings;
 
 type
@@ -88,10 +88,10 @@ begin
   VersionLoader.Request.UserAgent := 'Naraeon SSD Tools';
   VersionLoader.Request.CharSet := 'Unicode';
   try
-    FirmChkContents.Text := VersionLoader.Get(
+    FirmChkContents.Text := VersionLoader.Get(TIdURI.URLEncode(
         'http://nstfirmware.naraeon.net/nst_firmchk.php?' +
         'Model=' + Model + '&' +
-        'Firmware=MU05');
+        'Firmware=' + Firmware));
     result.CurrVersion := TFirmVersion(StrToInt(FirmChkContents[0]));
     if result.CurrVersion <> NOT_MINE then
     begin
