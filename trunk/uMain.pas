@@ -64,7 +64,6 @@ type
     gTrim: TGroupBox;
     lTrimName: TLabel;
     bTrimStart: TButton;
-    tGetSSDs: TTimer;
     gDownload: TGroupBox;
     lDownload: TLabel;
     lProgress: TLabel;
@@ -89,6 +88,7 @@ type
     iBG: TImage;
     iHelp: TImage;
     lHelp: TLabel;
+    tUpdMon: TTimer;
 
     //생성자와 파괴자
     procedure FormCreate(Sender: TObject);
@@ -140,6 +140,7 @@ type
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure tUpdMonTimer(Sender: TObject);
   protected
     //쓰레드 관련
     TrimThread: TTrimThread;
@@ -388,7 +389,7 @@ end;
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if ((UpdateThread <> nil) and
-      (not UpdateThread.UpdFinished)) or
+      (not UpdFinished)) or
      ((TrimThread <> nil) and
       (TrimStat < 2)) then
   begin
@@ -517,14 +518,6 @@ begin
     exit;
   end;
 
-  GetUSBDrives(cUSB.Items);
-  cUSB.ItemIndex := 0;
-  if cUSB.Items.Count = 0 then
-  begin
-    AlertCreate(Self, AlrtNoUSB[CurrLang]);
-    exit;
-  end;
-
   InternetGetConnectedState(@ifConnected, 0);
   if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
       (ifConnected = 0) then
@@ -533,6 +526,13 @@ begin
     exit;
   end;
 
+  GetUSBDrives(cUSB.Items);
+  cUSB.ItemIndex := 0;
+  if cUSB.Items.Count = 0 then
+  begin
+    AlertCreate(Self, AlrtNoUSB[CurrLang]);
+    exit;
+  end;
   ButtonGroup.Click(iFirmUp);
 
   if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then
@@ -713,6 +713,16 @@ begin
     Application.Terminate;
 end;
 
+procedure TfMain.tUpdMonTimer(Sender: TObject);
+begin
+  if (UpdateThread <> nil) and
+     (UpdFinished) then
+  begin
+    tUpdMon.Enabled := false;
+    FreeAndNil(UpdateThread);
+  end;
+end;
+
 procedure TfMain.WmAfterShow(var Msg: TMessage);
 const
   INTERNET_CONNECTION_LAN = 2;
@@ -742,8 +752,8 @@ begin
   begin
     UpdateThread := TUpdateThread.Create(True);
     UpdateThread.Priority := tpLower;
-    UpdateThread.FreeOnTerminate := true;
     UpdateThread.Start;
+    tUpdMon.Enabled := true;
   end;
 
   tRefresh.Enabled := false;
@@ -773,7 +783,11 @@ begin
      (((Msg.WParam = DBT_DEVICEARRIVAL) or
        (Msg.WParam = DBT_DEVICEREMOVECOMPLETE)) and
        (PDevBroadcastHdr(Msg.lParam)^.dbcd_devicetype = DBT_STORAGE)) then
-    tGetSSDs.Enabled := true;
+  begin
+    tRefresh.Enabled := false;
+    RefreshDrives(SSDInfo);
+    tRefresh.Enabled := true;
+  end;
 end;
 
 procedure TfMain.ShowProgress;

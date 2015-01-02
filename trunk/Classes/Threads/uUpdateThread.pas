@@ -10,7 +10,6 @@ uses Classes, SysUtils, Math, Dialogs, Windows,
 type
   TUpdateThread = class(TThread)
   public
-    UpdFinished: Boolean;
     destructor Destroy; virtual;
   protected
     VersionLoader: TIdHttp;
@@ -22,6 +21,7 @@ var
   ServerVersion: String;
   CurrChr: Integer;
   ChangeLog: String;
+  UpdFinished: Boolean;
 
 implementation
 

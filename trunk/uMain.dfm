@@ -1884,16 +1884,18 @@ object fMain: TfMain
     Left = 495
     Top = 319
   end
-  object tGetSSDs: TTimer
-    Enabled = False
-    Left = 447
-    Top = 319
-  end
   object tListLeave: TTimer
     Enabled = False
     Interval = 200
     OnTimer = tListLeaveTimer
     Left = 444
-    Top = 370
+    Top = 322
+  end
+  object tUpdMon: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = tUpdMonTimer
+    Left = 535
+    Top = 319
   end
 end
