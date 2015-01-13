@@ -740,13 +740,6 @@ begin
 
   Top := Top - (MinimumSize div 2);
 
-  if Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) = '.err' then
-  begin
-    Visible := false;
-    MsgboxCreate(Self, ParamStr(1));
-    Application.Terminate;
-  end;
-
   InternetGetConnectedState(@ifConnected, 0);
   if (ifConnected and INTERNET_CONNECTION_LAN) = INTERNET_CONNECTION_LAN then
   begin
