@@ -43,27 +43,35 @@ var
 begin
   result := true;
 
+  InitUIToRefresh;
+
+  if Length(CurrDrive) = 0 then
+    exit;
+
+  SSDInfo.ATAorSCSI := CurrATAorSCSIStatus;
+  SSDInfo.USBMode := CurrUSBMode;
+  SSDInfo.SetDeviceName(StrToInt(CurrDrive));
+
+  ApplyBasicInfo(SSDInfo);
+  ApplyHostWrite(SSDInfo);
+  ApplySectLog(SSDInfo);
+  ApplySMARTInfo(SSDInfo);
+  ApplyGeneralUISetting(SSDInfo);
+end;
+
+procedure ApplyBasicInfo(SSDInfo: TSSDInfo_NST);
+begin
   with fMain do
   begin
-    InitUIToRefresh;
-
-    if Length(CurrDrive) = 0 then
-    begin
-      exit;
-    end;
-
-    SSDInfo.ATAorSCSI := CurrATAorSCSIStatus;
-    SSDInfo.USBMode := CurrUSBMode;
-    SSDInfo.SetDeviceName(StrToInt(CurrDrive));
-
-    lName.Caption := SSDInfo.Model + ' '
-                     + GetTBStr(1000, SSDInfo.UserSize / 2 * (512/500) / 1000,
-                                0);
-    lFirmware.Caption := CapFirmware[CurrLang] + SSDInfo.Firmware;
-
+    lName.Caption :=
+      SSDInfo.Model + ' ' +
+      GetTBStr(1000, SSDInfo.UserSize / 2 * (512/500) / 1000, 0);
+    lFirmware.Caption :=
+      CapFirmware[CurrLang] + SSDInfo.Firmware;
+  
     lConnState.Caption := CapConnState[CurrLang];
     if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
-        (SSDInfo.SATASpeed > SPEED_SATA600) then
+       (SSDInfo.SATASpeed > SPEED_SATA600) then
       lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
     else if CurrUSBMode then
       lConnState.Caption := lConnState.Caption + ConnState[3]
@@ -72,166 +80,153 @@ begin
       lConnState.Caption := lConnState.Caption +
         ConnState[Integer(SSDInfo.SATASpeed) - 1];
       case SSDInfo.NCQSupport of
-        0:
-        begin
-          lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang];
-        end;
-        1:
-        begin
-          lConnState.Caption := lConnState.Caption + CapNonSupNCQ[CurrLang];
-        end;
-        2:
-        begin
-          lConnState.Caption := lConnState.Caption + CapSupportNCQ[CurrLang];
-        end;
+      0: lConnState.Caption :=
+          lConnState.Caption + CapUnknown[CurrLang];
+      1: lConnState.Caption :=
+          lConnState.Caption + CapNonSupNCQ[CurrLang];
+      2: lConnState.Caption :=
+          lConnState.Caption + CapSupportNCQ[CurrLang];
       end;
       lConnState.Caption := lConnState.Caption + ')';
     end;
 
+    lNewFirm.Caption := NewFirmCaption(SSDInfo.Model, SSDInfo.Firmware);
     if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION then
     begin
       lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
       lFirmware.Font.Color := clRed;
       lFirmware.Font.Style := [fsBold];
     end;
-    if lName.Caption <> '' then
-    begin
-      if (cUSB.Items.Count > 0) and (cUSB.ItemIndex = -1) then
-        cUSB.ItemIndex := 0;
-      if (cUSBErase.Items.Count > 0) and (cUSBErase.ItemIndex = -1) then
-        cUSBErase.ItemIndex := 0;
-      if (cTrimList.Items.Count > 0) and (cTrimList.ItemIndex = -1) then
-        cTrimList.ItemIndex := 0;
-
-      if gFirmware.Visible = false then
-        lNewFirm.Caption := NewFirmCaption(SSDInfo.Model, SSDInfo.Firmware);
-    end
-    else
+    
+    if lName.Caption = '' then
     begin
       AlertCreate(fMain, AlrtNoSupport[CurrLang]);
       ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
-                  PChar('/diag'), nil, SW_SHOW);
+        PChar('/diag'), nil, SW_SHOW);
     end;
-    if ShowSerial = false then
-    begin
-      lSerial.Caption := CapSerial[CurrLang];
+    
+    lSerial.Caption := CapSerial[CurrLang];
+    if not ShowSerial then
       for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
-        lSerial.Caption := lSerial.Caption + 'X';
-    end
+        lSerial.Caption := lSerial.Caption + 'X'
     else
-      lSerial.Caption := CapSerial[CurrLang] + SSDInfo.Serial;
+      lSerial.Caption := lSerial.Caption + SSDInfo.Serial;
+  end;
+end;
 
-    SSDInfo.CollectAllSmartData;
-    HostWrites := SSDInfo.HostWrites;
+procedure ApplyHostWrite(SSDInfo: TSSDInfo_NST);
+begin
+  SSDInfo.CollectAllSmartData;
+  HostWrites := SSDInfo.HostWrites;
 
-    //≈Î∞Ë πÃ¡ˆø¯ ∞…∑Ø≥ø
-    if SSDInfo.SSDSupport.SupportHostWrite <> HSUPPORT_NONE then
+  //ÌÜµÍ≥Ñ ÎØ∏ÏßÄÏõê Í±∏Îü¨ÎÉÑ
+  if SSDInfo.SSDSupport.SupportHostWrite <> HSUPPORT_NONE then
+    exit;
+    
+  with fMain do
+  begin
+    if l1Month.Visible = false then
     begin
-      if l1Month.Visible = false then
+      lHost.Top := lHost.Top - 25;
+      lTodayUsage.Top := lTodayUsage.Top - 15;
+      lOntime.Top := lOntime.Top - 10;
+      l1Month.Visible := true;
+    end;
+
+    case SSDInfo.SSDSupport.SupportHostWrite of
+    
+    //Case 1 : Ìò∏Ïä§Ìä∏ Ïì∞Í∏∞ ÏßÄÏõê
+    HSUPPORT_FULL:
+    begin
+      if SSDInfo.IsHostWrite then
+        lHost.Caption := CapHostWrite[CurrLang]
+      else
+        lHost.Caption := CapNandWrite[CurrLang];
+
+      lHost.Caption :=
+        lHost.Caption
+        + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
+        
+      CurrWritLog :=
+        TNSTLog.Create(
+          AppPath, SSDInfo.Serial, UIntToStr(HostWrites),
+          false, SSDInfo.S10085);
+
+      AvgDays := -1;
+      for CurrAvgDay := AvgMax downto 0 do
       begin
-        lHost.Top := lHost.Top - 25;
-        lTodayUsage.Top := lTodayUsage.Top - 15;
-        lOntime.Top := lOntime.Top - 10;
-        l1Month.Visible := true;
+        if Length(CurrWritLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
+        begin
+          AvgDays := CurrAvgDay;
+          break;
+        end;
       end;
-
-      //Case 1 : »£Ω∫∆Æ æ≤±‚ ¡ˆø¯
-      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
+      
+      if AvgDays >= 0 then
       begin
-        if SSDInfo.IsHostWrite then
-          lHost.Caption := CapHostWrite[CurrLang]
-        else
-          lHost.Caption := CapNandWrite[CurrLang];
-
-        lHost.Caption :=
-          lHost.Caption
-          + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
-      end
-      //Case 2 : »£Ω∫∆Æ æ≤±‚∞° Wear Leveling Count∑Œ ¡¶∞¯µ«¥¬ ∞ÊøÏ
-      else if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_COUNT then
+        if Length(CurrWritLog.Average[IntToAvg[AvgDays]]) > 0 then
+        begin
+          l1Month.Caption :=
+            CapAvg[AvgDays][CurrLang] +
+            CurrWritLog.Average[IntToAvg[AvgDays]] + 'GB/' + CapDay[CurrLang];
+        end;
+      end;
+      lTodayUsage.Caption := CapToday[CurrLang] +
+        CurrWritLog.TodayUsage + 'GB';
+      FreeAndNil(CurrWritLog);
+    end;
+    
+    HSUPPORT_COUNT:
       begin
         lHost.Caption := CapSSDLifeLeft[CurrLang]
-                          + UIntToStr(ExtractSMARTPercent(SSDInfo.SMARTData,
-                                                          1)) + '%';
+          + UIntToStr(
+              ExtractSMARTPercent(SSDInfo.SMARTData, 1)) + '%';
         lTodayUsage.Caption := CapWearLevel[CurrLang]
-                                + UIntToStr(ExtractSMART(SSDInfo.SMARTData,
-                                            'AD'));
+          + UIntToStr(ExtractSMART(SSDInfo.SMARTData, 'AD'));
+        
+        l1Month.Visible := false;
         lHost.Top := lHost.Top + 25;
         lTodayUsage.Top := lTodayUsage.Top + 15;
         lOntime.Top := lOntime.Top + 10;
-        l1Month.Visible := false;
-      end;
-
-      if SSDInfo.S10085 then
-      begin
-        lHost.Caption := lHost.Caption + CapCannotTrust[CurrLang];
-        lHost.Font.Color := clRed;
-        lHost.Font.Style := [fsBold];
-      end
-      else
-      begin
-        lHost.Font.Color := clWindowText;
-        lHost.Font.Style := [];
-      end;
-
-      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-      begin
-        CurrWritLog :=
-          TNSTLog.Create(
-            ExtractFilePath(
-              GetRegStr('LM',
-                'Software\Microsoft\Windows\CurrentVersion\' +
-                'Uninstall\Naraeon SSD Tools\', 'UninstallString')),
-            SSDInfo.Serial, UIntToStr(HostWrites), false, SSDInfo.S10085);
-
-        AvgDays := -1;
-        for CurrAvgDay := AvgMax downto 0 do
-        begin
-          if Length(CurrWritLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
-          begin
-            AvgDays := CurrAvgDay;
-            break;
-          end;
-        end;
-        if AvgDays <> -1 then
-        begin
-          if Length(CurrWritLog.Average[IntToAvg[AvgDays]]) > 0 then
-          begin
-            l1Month.Caption :=
-              CapAvg[AvgDays][CurrLang] +
-              CurrWritLog.Average[IntToAvg[AvgDays]] + 'GB/' + CapDay[CurrLang];
-          end;
-        end;
-        lTodayUsage.Caption := CapToday[CurrLang] +
-          CurrWritLog.TodayUsage + 'GB';
-        FreeAndNil(CurrWritLog);
       end;
     end;
+    
+    if SSDInfo.S10085 then
+    begin
+      lHost.Caption := lHost.Caption + CapCannotTrust[CurrLang];
+      lHost.Font.Color := clRed;
+      lHost.Font.Style := [fsBold];
+    end
+    else
+    begin
+      lHost.Font.Color := clWindowText;
+      lHost.Font.Style := [];
+    end;
+  end;
+end;
 
-    lOntime.Caption :=
-      CapPowerTime[CurrLang] +
-      UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) +
-      CapHour[CurrLang];
-
-    // ºΩ≈Õ ƒ°»Ø
-    ReplacedSectors := SSDInfo.ReplacedSectors;
+procedure ApplySectLog(SSDInfo: TSSDInfo_NST);
+begin
+  try
     CurrSectLog :=
       TNSTLog.Create(
-        ExtractFilePath(
-          GetRegStr('LM', 'Software\Microsoft\Windows\CurrentVersion\' +
-            'Uninstall\Naraeon SSD Tools\', 'UninstallString')),
-        SSDInfo.Serial + 'RSLog', UIntToStr(ReplacedSectors), true, false);
-
-    //ºΩ≈Õ ƒ°»Ø∏∏ ¡ˆø¯«œ¥¬ ∏µ®µÈ
-    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
+        AppPath, SSDInfo.Serial + 'RSLog',
+        UIntToStr(ReplacedSectors), true, false);
+        
+    // ÏÑπÌÑ∞ ÏπòÌôò
+    ReplacedSectors := SSDInfo.ReplacedSectors;
+        
+    with fMain do
     begin
-      lHost.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
-        CapCount[CurrLang];
-      lAnalytics.Caption := BtLifeAnaly[CurrLang];
-      lAnaly.Caption := CapLifeAnaly[CurrLang];
-
-      if CurrSectLog <> nil then
+      //ÏÑπÌÑ∞ ÏπòÌôòÎßå ÏßÄÏõêÌïòÎäî Î™®Îç∏Îì§
+      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
       begin
+        lHost.Caption :=
+          CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+          CapCount[CurrLang];
+        lAnalytics.Caption := BtLifeAnaly[CurrLang];
+        lAnaly.Caption := CapLifeAnaly[CurrLang];
+      
         AvgDays := -1;
         for CurrAvgDay := AvgMax downto 0 do
         begin
@@ -241,7 +236,8 @@ begin
             break;
           end;
         end;
-        if AvgDays <> -1 then
+        
+        if AvgDays >= 0 then
         begin
           if Length(CurrSectLog.Average[IntToAvg[CurrAvgDay]]) > 0 then
           begin
@@ -251,16 +247,29 @@ begin
         end;
         lTodayUsage.Caption := CaprToday[CurrLang] + CurrSectLog.TodayUsage +
           CapCount[CurrLang];
+      end
+      else
+      begin
+        lAnalytics.Caption := BtAnaly[CurrLang];
+        lAnaly.Caption := CapAnaly[CurrLang];
       end;
-    end
-    else
-    begin
-      lAnalytics.Caption := BtAnaly[CurrLang];
-      lAnaly.Caption := CapAnaly[CurrLang];
     end;
-    FreeAndNil(CurrSectLog);
+  finally
+    if CurrSectLog <> nil then
+      FreeAndNil(CurrSectLog);
+  end;
+end;
 
-    // ¡ˆøÏ±‚ ø°∑Ø
+procedure ApplySMARTInfo(SSDInfo: TSSDInfo_NST);
+begin
+  with fMain do
+  begin
+    lOntime.Caption :=
+      CapPowerTime[CurrLang] +
+      UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) +
+      CapHour[CurrLang];
+    
+    // ÏßÄÏö∞Í∏∞ ÏóêÎü¨
     EraseErrors := SSDInfo.EraseError;
     if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
     begin
@@ -272,8 +281,8 @@ begin
       lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) +
         CapCount[CurrLang];
     end;
-
-    // ºˆ∏Ì ªÛ»≤ æ» ¡¡¿ª∂ß ø¿∑˘ - ¡ˆøÏ±‚ ø°∑Ø∞° ¥ı Ω…∞¢«œπ«∑Œ πÿ¿∏∑Œ πËƒ°.
+    
+    // ÏàòÎ™Ö ÏÉÅÌô© Ïïà Ï¢ãÏùÑÎïå Ïò§Î•ò - ÏßÄÏö∞Í∏∞ ÏóêÎü¨Í∞Ä Îçî Ïã¨Í∞ÅÌïòÎØÄÎ°ú Î∞ëÏúºÎ°ú Î∞∞Ïπò.
     if SSDInfo.RepSectorAlert then
     begin
       lSectors.Font.Color := clRed;
@@ -287,7 +296,7 @@ begin
       lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
         CapCount[CurrLang];
     end;
-
+    
     if SSDInfo.EraseErrorAlert then
     begin
       lPError.Font.Color := clRed;
@@ -295,8 +304,8 @@ begin
       lNotsafe.Caption := CapNotSafeEraseErrors[CurrLang] +
         CapNotSafeRepSect[CurrLang];
     end;
-
-    // ∆ƒ∆ºº« ¡§∑ƒ
+    
+    // ÌååÌã∞ÏÖò Ï†ïÎ†¨
     CurrDrvPartitions := GetPartitionList(CurrDrive);
     lPartitionAlign.Caption := CapAlign[CurrLang];
     for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
@@ -321,11 +330,18 @@ begin
         end;
       end;
     end;
+  end;
+end;
 
+procedure ApplyGeneralUISetting(SSDInfo: TSSDInfo_NST);
+begin
+  with fMain do
+  begin
     lTrim.Visible := false;
     iTrim.Visible := false;
     iFirmUp.Visible := false;
     lFirmUp.Visible := false;
+    
     if SSDInfo.ATAorSCSI = MODEL_ATA then
     begin
       if Length(CurrDrvPartitions.Letters) <> 0 then
@@ -334,14 +350,14 @@ begin
         iTrim.Visible := true;
       end;
     end;
-
+    
     if (SSDInfo.SSDSupport.SupportFirmUp = false) and (iTrim.Visible = false)
         and (iOptimize.Left = firstiOptLeft) then
     begin
       iOptimize.left := iErase.Left;
       lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
                                         - (lOptimize.Width div 2);
-
+    
       iErase.left := iFirmUp.Left;
       lErase.left := iErase.Left + (iErase.Width div 2)
                                  - (lErase.Width div 2);
@@ -350,13 +366,13 @@ begin
     begin
       iFirmUp.Visible := true;
       lFirmUp.Visible := true;
-
+    
       if iOptimize.left <> firstiOptLeft then
       begin
         iErase.left := iOptimize.Left;
         lErase.left := iErase.Left + (iErase.Width div 2)
                                    - (lErase.Width div 2);
-
+    
         iOptimize.left := firstiOptLeft;
         lOptimize.left := iOptimize.Left + (iOptimize.Width div 2)
                                          - (lOptimize.Width div 2);
@@ -384,183 +400,190 @@ var
   GetSSDResult: TSSDListResult;
   DrvName: String;
 begin
-  with fMain do
+  TempSSDInfo := TSSDInfo_NST.Create;
+  SelectedDrv := 0;
+  NewLen := 0;
+  if Length(SSDLabel) > 0 then
+    SelectedDrv := StrToInt(ExtractDeviceNum(SSDInfo.DeviceName));
+    
+  GetSSDResult := GetSSDList;
+  AllDrv := GetSSDResult.ResultList;
+  RobustMode := not GetSSDResult.WMIEnabled;
+
+  ATAorSCSI := false;
+  RefreshAll := false;
+    
+  for CurrDrv := 0 to AllDrv.Count - 1 do
   begin
-    TempSSDInfo := TSSDInfo_NST.Create;
-    SelectedDrv := 0;
-    NewLen := 0;
-    if Length(SSDLabel) > 0 then
-      SelectedDrv := StrToInt(ExtractDeviceNum(SSDInfo.DeviceName));
-    GetSSDResult := GetSSDList;
-    AllDrv := GetSSDResult.ResultList;
-    RobustMode := not GetSSDResult.WMIEnabled;
-
-    ATAorSCSI := false;
-    RefreshAll := false;
-    for CurrDrv := 0 to AllDrv.Count - 1 do
+    if (AllDrv[CurrDrv] = '/') or (AllDrv[CurrDrv] = '') then
     begin
-      if (AllDrv[CurrDrv] = '/') or (AllDrv[CurrDrv] = '') then
-      begin
-        ATAorSCSI := SCSIMode;
-        continue;
-      end;
-
-      CurrAvail := false;
-      if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'U')
-          and (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'H') then
-        DrvName := AllDrv[CurrDrv]
-      else
-        DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
-
-      for CurrExistAtApp := 0 to Length(SSDLabel) - 1 do
-        if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].DriveName then
-          CurrAvail := true;
-
-      if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
-      else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
-
-      if RobustMode then
-      begin
-        TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-      end;
-      TempSSDInfo.SetDeviceName(StrToInt(DrvName));
-
-      if (TempSSDInfo.SupportedDevice <> SUPPORT_NONE)
-          and (CurrAvail = false) then
-      begin
-        TempUSBMode := false;
-        if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U')
-            or (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'H') then
-        begin
-          if AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U' then
-            TempUSBMode := true;
-          AllDrv[CurrDrv] := Copy(AllDrv[CurrDrv], 0,
-                                  Length(AllDrv[CurrDrv]) - 1);
-        end;
-
-        SetLength(SSDLabel, Length(SSDLabel) + 1);
-        NewLen := Length(SSDLabel);
-
-        SSDLabel[NewLen - 1] := TSSDLabel.Create(GSSDSel);
-        SSDLabel[NewLen - 1].Parent := GSSDSel;
-        SSDLabel[NewLen - 1].Font.Name := Font.Name;
-        SSDLabel[NewLen - 1].Font.Size := 10;
-        SSDLabel[NewLen - 1].DriveName :=  AllDrv[CurrDrv];
-        SSDLabel[NewLen - 1].ATAorSCSI := TempSSDInfo.ATAorSCSI;
-        SSDLabel[NewLen - 1].Cursor := crHandPoint;
-        SSDLabel[NewLen - 1].OnClick := SSDLabelClick;
-        SSDLabel[NewLen - 1].OnMouseEnter := SSDSelLblMouseEnter;
-        SSDLabel[NewLen - 1].OnMouseLeave := SSDSelLblMouseLeave;
-        SSDLabel[NewLen - 1].Top := (5 * (NewLen mod 11)) +
-                                     (SSDLabel[NewLen - 1].Height
-                                     * ((NewLen - 1) mod 11));
-        SSDLabel[NewLen - 1].Left := 10 + ((NewLen div 11) * 260);
-
-        if NewLen > 10 then
-        begin
-          GSSDSel.Width := 590;
-          GSSDSel.Left := 8;
-        end
-        else
-        begin
-          GSSDSel.Width := 335;
-          GSSDSel.Left := 260;
-        end;
-
-        CurrDrvPartitions :=
-          GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
-
-        Partlen := 15 * ceil(CurrDrvPartitions.LetterCount / 3);
-
-        SSDLabel[NewLen - 1].Font.Style := [fsBold];
-        SSDLabel[NewLen - 1].Font.Style := [];
-
-        if TempUSBMode then
-        begin
-          SSDLabel[NewLen - 1].USBMode := true;
-        end
-        else
-        begin
-          SSDLabel[NewLen - 1].USBMode := false;
-        end;
-
-        SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
-                                        + TempSSDInfo.Model + ' '
-                                        + GetTBStr(1000,
-                                            GetDiskSize(AllDrv[CurrDrv])
-                                                        / 1000 / 1000, 0);
-        for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
-        begin
-          if CurrPartition = 0 then
-            SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
-                                              + '(';
-          SSDLabel[NewLen - 1].Caption :=
-            SSDLabel[NewLen - 1].Caption
-              + CurrDrvPartitions.Letters[CurrPartition];
-          if CurrPartition = (CurrDrvPartitions.LetterCount - 1) then
-            SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
-                                              + ') '
-          else
-            SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
-                                              + ' ';
-        end;
-
-        if lName.Caption = '' then
-        begin
-          SSDLabel[NewLen - 1].OnClick(SSDLabel[NewLen - 1]);
-          tRefresh.Enabled := true;
-          if ATAorSCSI = ATAMode then CurrATAorSCSIStatus := MODEL_ATA
-          else if ATAorSCSI = SCSIMode then  CurrATAorSCSIStatus := MODEL_SCSI;
-        end;
-      end;
+      ATAorSCSI := SCSIMode;
+      continue;
     end;
 
+    CurrAvail := false;
+    if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'U') and
+       (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'H') then
+      DrvName := AllDrv[CurrDrv]
+    else
+      DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
+
+    for CurrExistAtApp := 0 to Length(SSDLabel) - 1 do
+      if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].DriveName then
+        CurrAvail := true;
+
+    if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
+    else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
+
+    if RobustMode then
+    begin
+      TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
+    end;
+    TempSSDInfo.SetDeviceName(StrToInt(DrvName));
+
+    if (TempSSDInfo.SupportedDevice <> SUPPORT_NONE) and
+       (CurrAvail = false) then
+    begin
+      TempUSBMode := false;
+      if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U')
+          or (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'H') then
+      begin
+        if AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U' then
+          TempUSBMode := true;
+        AllDrv[CurrDrv] := 
+          Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
+      end;
+      
+      AddDevice(
+        TempSSDInfo.DeviceName, AllDrv[CurrDrv],
+        TempSSDInfo.ATAorSCSI, TempUSBMode);
+    end;
+    if lName.Caption = '' then
+    begin
+      SSDLabel[NewLen - 1].OnClick(SSDLabel[NewLen - 1]);
+      tRefresh.Enabled := true;
+      if ATAorSCSI = ATAMode then CurrATAorSCSIStatus := MODEL_ATA
+      else if ATAorSCSI = SCSIMode then CurrATAorSCSIStatus := MODEL_SCSI;
+    end;
+  end;
+
+  with fMain do
+  begin
     for CurrExistAtApp := 0 to NewLen - 1 do
     begin
       TempFound := false;
       for CurrDrv := 0 to AllDrv.Count - 1 do
       begin
         if (SSDLabel[CurrExistAtApp].DriveName = AllDrv[CurrDrv]) or
-            (SSDLabel[CurrExistAtApp].DriveName + 'U' = AllDrv[CurrDrv]) or
-            (SSDLabel[CurrExistAtApp].DriveName + 'H' = AllDrv[CurrDrv]) then
+           (SSDLabel[CurrExistAtApp].DriveName + 'U' = AllDrv[CurrDrv]) or
+           (SSDLabel[CurrExistAtApp].DriveName + 'H' = AllDrv[CurrDrv]) then
           TempFound := true
         else if (CurrDrv = (AllDrv.Count - 1)) and (TempFound = false) then
           RefreshAll := true;
       end;
     end;
-    if lName.Caption = '' then
-    begin
-      AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-      ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
-                  PChar('/diag'), nil, SW_SHOW);
-    end;
-    FreeAndNil(AllDrv);
+  end;
+  
+  if lName.Caption = '' then
+  begin
+    AlertCreate(fMain, AlrtNoSupport[CurrLang]);
+    ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
+                PChar('/diag'), nil, SW_SHOW);
+  end;
+  FreeAndNil(AllDrv);
 
-
+  with fMain do
+  begin
     if RefreshAll then
     begin
       for CurrExistAtApp := 0 to NewLen - 1 do
       begin
         FreeAndNil(SSDLabel[CurrExistAtApp]);
       end;
-
+  
       SetLength(SSDLabel, 0);
-
+  
       lName.Caption := '';
       CurrDrive := '100';
       RefreshDrives(SSDInfo);
-
+  
       tRefresh.Enabled := true;
     end;
-
+  
     if Length(SSDLabel) > 0 then
     begin
       GSSDSel.Height := SSDLabel[Length(SSDLabel) - 1].Top
-                        + SSDLabel[Length(SSDLabel) - 1].Height + 5;
+        + SSDLabel[Length(SSDLabel) - 1].Height + 5;
+    end;
+  end;
+
+  FreeAndNil(TempSSDInfo);
+  result := SelectedDrv;
+end;
+        
+procedure AddDevice(DeviceName, DriveName, ATAorSCSI, USBMode);
+begin
+  with fMain do
+  begin
+    SetLength(SSDLabel, Length(SSDLabel) + 1);
+    NewLen := Length(SSDLabel);
+
+    SSDLabel[NewLen - 1] := TSSDLabel.Create(GSSDSel);
+    SSDLabel[NewLen - 1].Parent := GSSDSel;
+    SSDLabel[NewLen - 1].Font.Name := Font.Name;
+    SSDLabel[NewLen - 1].Font.Size := 10;
+    SSDLabel[NewLen - 1].DriveName :=  DriveName;
+    SSDLabel[NewLen - 1].ATAorSCSI := ATAorSCSI;
+    SSDLabel[NewLen - 1].Cursor := crHandPoint;
+    SSDLabel[NewLen - 1].OnClick := SSDLabelClick;
+    SSDLabel[NewLen - 1].OnMouseEnter := SSDSelLblMouseEnter;
+    SSDLabel[NewLen - 1].OnMouseLeave := SSDSelLblMouseLeave;
+    SSDLabel[NewLen - 1].Top := (5 * (NewLen mod 11)) +
+                                 (SSDLabel[NewLen - 1].Height
+                                 * ((NewLen - 1) mod 11));
+    SSDLabel[NewLen - 1].Left := 10 + ((NewLen div 11) * 260);
+
+    if NewLen > 10 then
+    begin
+      GSSDSel.Width := 590;
+      GSSDSel.Left := 8;
+    end
+    else
+    begin
+      GSSDSel.Width := 335;
+      GSSDSel.Left := 260;
     end;
 
-    FreeAndNil(TempSSDInfo);
-    result := SelectedDrv;
+    CurrDrvPartitions :=
+      GetPartitionList(ExtractDeviceNum(DeviceName));
+
+    Partlen := 15 * ceil(CurrDrvPartitions.LetterCount / 3);
+
+    SSDLabel[NewLen - 1].Font.Style := [fsBold];
+    SSDLabel[NewLen - 1].Font.Style := [];
+
+    SSDLabel[NewLen - 1].USBMode := USBMode;
+    SSDLabel[NewLen - 1].Caption :=
+      SSDLabel[NewLen - 1].Caption + TempSSDInfo.Model + ' ' +
+      GetTBStr(1000, GetDiskSize(DriveName) / 1000 / 1000, 0);
+      
+    for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
+    begin
+      if CurrPartition = 0 then
+        SSDLabel[NewLen - 1].Caption :=
+          SSDLabel[NewLen - 1].Caption + '(';
+          
+      SSDLabel[NewLen - 1].Caption :=
+        SSDLabel[NewLen - 1].Caption
+          + CurrDrvPartitions.Letters[CurrPartition];
+      
+      if CurrPartition < (CurrDrvPartitions.LetterCount - 1) then
+        SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
+                                          + ' '
+      else
+        SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
+                                          + ') ';
+    end;
   end;
 end;
 end.
