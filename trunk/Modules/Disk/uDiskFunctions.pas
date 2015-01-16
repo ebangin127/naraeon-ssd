@@ -20,41 +20,6 @@ type
   end;
   //---GetMotherDrive---//
 
-  //---DeviceIOCtl에 필수---//
-  TDRIVERSTATUS = Record
-    bDriverError: UChar;
-    bIDEError: UChar;
-    bReserved: Array[0..1] of UCHAR;
-    dwReserved: Array[0..1] of UCHAR;
-  end;
-
-  SENDCMDOUTPARAMS  = Record
-    cBufferSize: DWORD;
-    DriverStatus: TDRIVERSTATUS;
-    bBuffer: Array[0..1023] of UCHAR;
-  end;
-
-  IDEREGS  = packed Record
-    bFeaturesReg: UCHAR;
-    bSectorCountReg: UCHAR;
-    bSectorNumberReg: UCHAR;
-    bCylLowReg: UCHAR;
-    bCylHighReg: UCHAR;
-    bDriveHeadReg: UCHAR;
-    bCommandReg: UCHAR;
-    bReserved: UCHAR;
-  end;
-
-  SENDCMDINPARAMS  = Record
-    cBufferSize: dword;
-    irDriveRegs: IDEREGS;
-    bDriveNumber: byte;
-    bReserved: Array[0..2] of byte;
-    dwReserved: Array[0..3] of dword;
-  end;
-  //---DeviceIOCtl에 필수---//
-
-
   //---ATA + DeviceIOCtl---//
   TLLBuffer = Array[0..511] of Byte;
   TLLBufferEx = Array[0..4095] of Byte;
@@ -109,6 +74,40 @@ type
     Buffer: TLLBufferEx;
   end;
   //---ATA + DeviceIOCtl---//
+
+  //---DeviceIOCtl에 필수---//
+  TDRIVERSTATUS = Record
+    bDriverError: UChar;
+    bIDEError: UChar;
+    bReserved: Array[0..1] of UCHAR;
+    dwReserved: Array[0..1] of UCHAR;
+  end;
+
+  SENDCMDOUTPARAMS  = Record
+    cBufferSize: DWORD;
+    DriverStatus: TDRIVERSTATUS;
+    bBuffer: TLLBuffer;
+  end;
+
+  IDEREGS  = packed Record
+    bFeaturesReg: UCHAR;
+    bSectorCountReg: UCHAR;
+    bSectorNumberReg: UCHAR;
+    bCylLowReg: UCHAR;
+    bCylHighReg: UCHAR;
+    bDriveHeadReg: UCHAR;
+    bCommandReg: UCHAR;
+    bReserved: UCHAR;
+  end;
+
+  SENDCMDINPARAMS  = Record
+    cBufferSize: dword;
+    irDriveRegs: IDEREGS;
+    bDriveNumber: byte;
+    bReserved: Array[0..2] of byte;
+    dwReserved: Array[0..3] of dword;
+  end;
+  //---DeviceIOCtl에 필수---//
 
 
   //---SAT + DeviceIOCtl---//

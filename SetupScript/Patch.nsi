@@ -77,6 +77,7 @@ init.done:
 FunctionEnd
 
 Section "MainSection" SEC01
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
 
   SetOverwrite on
@@ -97,7 +98,6 @@ Section "MainSection" SEC01
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
 
-  Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
   ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd
 

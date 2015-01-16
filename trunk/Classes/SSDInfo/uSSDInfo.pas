@@ -112,7 +112,7 @@ const
   SimulationModel = 'PLEXTOR PX-128M3P';
   SimulationFirmware = '1.03';
 
-  CurrentVersion = '4.7.1';
+  CurrentVersion = '4.7.3';
 
 implementation
 
@@ -137,15 +137,16 @@ begin
 
   DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
 
-  LLBufferToInfo(TATALowOps.GetInfoATA(DeviceHandle));
+  ATAorSCSI := MODEL_ATA;
+  LLBufferToInfo(TATALowOps.GetInfoATADirect(DeviceHandle));
+
+  if Trim(Model) = '' then
+    LLBufferToInfo(TATALowOps.GetInfoATA(DeviceHandle));
+
   if Trim(Model) = '' then
   begin
-    LLBufferToInfo(TATALowOps.GetInfoSCSI(DeviceHandle));
     ATAorSCSI := MODEL_SCSI;
-  end
-  else
-  begin
-    ATAorSCSI := MODEL_ATA;
+    LLBufferToInfo(TATALowOps.GetInfoSCSI(DeviceHandle));
   end;
 
   NCQSupport := TATALowOps.GetNCQStatus(DeviceHandle);
@@ -207,8 +208,10 @@ begin
   DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
 
   if ATAorSCSI = MODEL_ATA then
-    SMARTData := TATALowOps.GetSMARTATA(DeviceHandle, DeviceNum);
-  if (ATAorSCSI = MODEL_SCSI) or (isValidSMART(SMARTData) = false) then
+    TransSMART(TATALowOps.GetSMARTATA(DeviceHandle), SMARTData);
+  if IsValidSMART(SMARTData) = false then
+    TransSMART(TATALowOps.GetSMARTATADirect(DeviceHandle), SMARTData);
+  if (ATAorSCSI = MODEL_SCSI) or (IsValidSMART(SMARTData) = false) then
     SMARTData := TATALowOps.GetSMARTSCSI(DeviceHandle);
 
   CloseHandle(DeviceHandle);

@@ -8,7 +8,7 @@ uses
   Vcl.ExtCtrls, WinInet, Registry, IdHttp, SHFolder, ShellAPI, ShlObj,
   TlHelp32, WinSvc,
   uDiskFunctions, uExeFunctions, uLogSystem, uSSDInfo, uLanguageSettings,
-  uRegFunctions, uSSDSupport;
+  uRegFunctions, uSSDSupport, uGetFirm;
 
 type
   PDevBroadcastHdr = ^TDevBroadcastHdr;
@@ -178,7 +178,7 @@ begin
     ExtractFilePath(GetRegStr('LM',
       'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
       'UninstallString'));
-  OnceSMARTInvestigated := 0;
+  KillAllSvc;
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
@@ -186,7 +186,9 @@ var
   SSDInfo: TSSDInfo_NST;
   DesktopPath: array[0..MAX_PATH] of char;
 begin
+  TGetFirm.CreateCache;
   RefreshDrives;
+  OnceSMARTInvestigated := 0;
 
   if DriveCount = 0 then
     FreeAndNil(Application);
@@ -207,6 +209,7 @@ begin
     MainWorks(SSDInfo);
 
   FreeAndNil(SSDInfo);
+  TGetFirm.DestroyCache;
 end;
 
 function GetLogLine(MsgTime: TDateTime; MsgContents: String): String;
@@ -469,7 +472,7 @@ end;
 
 function GetServiceExecutablePath(strServiceName: string): String;
 var
-  hSCManager,hSCService: SC_Handle;
+  hSCManager, hSCService: SC_Handle;
   lpServiceConfig: LPQUERY_SERVICE_CONFIGW;
   nSize, nBytesNeeded: DWord;
 begin
@@ -502,7 +505,11 @@ var
 begin
   OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
   NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
-  Result := KillProcess(OldSvc, False) and KillProcess(NewSvc, False);
+  Result :=
+    KillProcess(OldSvc, False) and
+    KillProcess(NewSvc, False) and
+    KillProcess('NSTDiagSvc_New.exe', False) and
+    KillProcess('NSTDiagSvc.exe', False);
 end;
 
 function KillSelf(): Boolean;

@@ -9,7 +9,7 @@ uses
   Vcl.OleCtrls, uRegFunctions, uDiskFunctions, Vcl.ExtCtrls, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, IdComponent, MMSystem, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uSSDSupport, uLogSystem, uSSDInfo, uStrFunctions,
-  uTrimThread, uLanguageSettings, uUpdateThread, uBrowser,
+  uTrimThread, uLanguageSettings, uUpdateThread, uBrowser, uSevenZip,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh,
   uButtonGroup, uInit, uGetFirm;
@@ -229,18 +229,20 @@ begin
         '\NST' + IntToStr(Random(2147483647)) + '\';
     CreateDir(TempFolder);
 
-    OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
-                        + TempFolder + '" "' + FileName + '" ' +
-                        '-p"' +                              //비번
-                          CapTrimName[LANG_ENGLISH] +
-                          CapStartManTrim[LANG_ENGLISH] +
-                          BtSemiAutoTrim[LANG_ENGLISH] +
-                          CapLocalDisk[LANG_ENGLISH] +
-                          CapRemvDisk[LANG_ENGLISH] +
-                          CapProg1[LANG_ENGLISH] +
-                          CapProg2[LANG_ENGLISH] +
-                          CapProg3[LANG_ENGLISH] +
-                        '"');
+    TSevenZip.Extract(
+      AppPath + '7z\7z.exe',
+      FileName,
+      TempFolder,
+      CapTrimName[LANG_ENGLISH] +
+      CapStartManTrim[LANG_ENGLISH] +
+      BtSemiAutoTrim[LANG_ENGLISH] +
+      CapLocalDisk[LANG_ENGLISH] +
+      CapRemvDisk[LANG_ENGLISH] +
+      CapProg1[LANG_ENGLISH] +
+      CapProg2[LANG_ENGLISH] +
+      CapProg3[LANG_ENGLISH]
+    );
+
     FileName := TempFolder + 'pmagic.iso';
 
     ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
@@ -533,6 +535,9 @@ begin
     AlertCreate(Self, AlrtNoUSB[CurrLang]);
     exit;
   end;
+
+  lNewFirm.Font.Color := clWindowText;
+  lNewFirm.Font.Style := [];
   ButtonGroup.Click(iFirmUp);
 
   if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then

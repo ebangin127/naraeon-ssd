@@ -6,5 +6,5 @@
   }
 
   $Specific = 'SpecificJob';
-  CommonJob($Specific);
+  CommonJob(1, $Specific);
 ?>

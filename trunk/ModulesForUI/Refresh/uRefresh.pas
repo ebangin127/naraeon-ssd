@@ -413,7 +413,7 @@ begin
         DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
 
       for CurrExistAtApp := 0 to Length(SSDLabel) - 1 do
-        if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].DriveName then
+        if DrvName = SSDLabel[CurrExistAtApp].DriveName then
           CurrAvail := true;
 
       if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA

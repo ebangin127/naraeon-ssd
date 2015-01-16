@@ -36,10 +36,4 @@ object fMessage: TfMessage
     ScrollBars = ssVertical
     TabOrder = 0
   end
-  object tLogger: TTimer
-    Enabled = False
-    OnTimer = tLoggerTimer
-    Left = 296
-    Top = 152
-  end
 end

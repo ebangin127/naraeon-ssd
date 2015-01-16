@@ -60,8 +60,10 @@ Function .onInit
 FunctionEnd
 
 Section "MainSection" SEC01
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc.exe 0 +2
   ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc.exe" /uninstall /silent'
-  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
+  Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
 
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
@@ -87,7 +89,6 @@ Section "MainSection" SEC01
 
   CreateDirectory "$INSTDIR\SSDTools\Unetbootin"
 
-  Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
   ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd
 

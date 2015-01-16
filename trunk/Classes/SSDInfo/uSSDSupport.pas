@@ -45,13 +45,9 @@ implementation
 
 // 내부용 클래스
 type
-  TNewVer = class
-    class function IsLiteONNewVer(Model, Revision: String): TFirmVersion;
-    class function IsPlextorNewVer(Model, Revision: String): TFirmVersion;
-    class function IsCrucialNewVer(Model, Revision: String): TFirmVersion;
-  end;
-
   TSupportedSSD = class
+    class function IsLiteONSupported(Model, Revision: String): TSupportStatus;
+    class function IsPlextorSupported(Model, Revision: String): TSupportStatus;
     class function IsToshibaSupported(Model, Revision: String): TSupportStatus;
     class function IsSandiskSupported(Model, Revision: String): TSupportStatus;
     class function IsSeagateSupported(Model, Revision: String): TSupportStatus;
@@ -63,33 +59,6 @@ type
 
 //내부용 상수
 const
-  LastVA8 = 5;
-  LastVB8 = 5;
-  LastVD8 = 5;
-  LastVE8 = 2;
-  LastVF8 = 2;
-
-  Last64M3 = 1.06;
-  Last128M3 = 1.07;
-  Last256M3 = 1.07;
-  Last512M3 = 1.06;
-
-  Last128M3P = 1.06;
-  Last256M3P = 1.06;
-  Last512M3P = 1.06;
-
-  Last128M5P = 1.07;
-  Last256M5P = 1.07;
-  Last512M5P = 1.07;
-
-  Last64M5S = 1.05;
-  Last128M5S = 1.05;
-  Last256M5S = 1.05;
-
-  LastNinja = 1.01;
-
-  LastM500 = 5;
-
   RepSectorThreshold = 50;
   RepSectorThreshold_PLEXTOR = 25;
 
@@ -124,10 +93,10 @@ end;
 
 class function TSupportedSSD.IsFullySupported(Model, Revision: String):
                 TSupportStatus;
-begin      
+begin
   result := SUPPORT_NONE;
-  if (TNewVer.IsPlextorNewVer(Model, Revision) <> NOT_MINE) or
-     (TNewVer.IsLiteONNewVer(Model, Revision) <> NOT_MINE) or
+  if (TSupportedSSD.IsPlextorSupported(Model, Revision) <> SUPPORT_NONE) or
+     (TSupportedSSD.IsLiteONSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsCrucialSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsToshibaSupported(Model, Revision) <> SUPPORT_NONE) or
      (TSupportedSSD.IsSandiskSupported(Model, Revision) <> SUPPORT_NONE) or
@@ -138,7 +107,7 @@ end;
 
 class function TSupportedSSD.IsSemiSupported(Model, Revision: String):
                 TSupportStatus;
-begin            
+begin
   result := SUPPORT_NONE;
   if ((Model = 'OCZ-VERTEX3') or (Model = 'OCZ-AGILITY3') or
       (Model = 'OCZ-VERTEX3 MI')) or
@@ -156,7 +125,7 @@ begin
 end;
 
 function GetWriteSupportLevel(Model, Revision: String): THostSupportStatus;
-begin       
+begin
   Model := UpperCase(Model);
   if (
       //S100 Under 83
@@ -174,11 +143,11 @@ begin
     result := HSUPPORT_NONE;
   end
   else if (
-            (Pos('C400', Model) > 0) and 
+            (Pos('C400', Model) > 0) and
             (Pos('MT', Model) > 0)
           ) or
           (
-            (Pos('M4', Model) > 0) and 
+            (Pos('M4', Model) > 0) and
             (Pos('CT', Model) > 0)
           ) then
   begin
@@ -187,15 +156,15 @@ begin
   else
   begin
     result := HSUPPORT_FULL;
-  end;   
+  end;
 end;
 
 function IsS10085Affected(Model, Revision: String): Boolean;
 begin
-  result := 
+  result :=
    ((Pos('S100', Model) > 0) and
     (Pos('85', Revision) > 0)) or
-   ((TNewVer.IsPlextorNewVer(Model, Revision) = NEW_VERSION) and
+   ((IsNewVersion(Model, Revision) = NEW_VERSION) and
     (Pos('M3', Model) > 0));
 end;
 
@@ -309,62 +278,20 @@ begin
 end;
 
 function NewFirmSub(Model, Revision: String): String;
+var
+  ifConnected: DWORD;
+  GetFirm: TGetFirm;
 begin
-  Result := Copy(Revision, 1, 3);
+  result := '';
 
-  if Copy(Revision, 1, 3) = 'VA8' then
-    Result := Result + IntToStr(LastVA8)
-  else if Copy(Revision, 1, 3) = 'VB8' then
-    Result := Result + IntToStr(LastVB8)
-  else if Copy(Revision, 1, 3) = 'VD8' then
-    Result := Result + IntToStr(LastVD8)
-  else if Copy(Revision, 1, 3) = 'VE8' then
-    Result := Result + IntToStr(LastVE8)
-  else if Copy(Revision, 1, 3) = 'VF8' then
-    Result := Result + IntToStr(LastVF8)
+  InternetGetConnectedState(@ifConnected, 0);
+  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
+      (ifConnected = 0) then
+    exit;
 
-  else if Pos('64M3', Model) > 0 then
-    Result := FloatToStr(Last64M3)
-  else if Pos('128M3P', Model) > 0 then
-    Result := FloatToStr(Last128M3P)
-  else if Pos('256M3P', Model) > 0 then
-    Result := FloatToStr(Last256M3P)
-  else if Pos('512M3P', Model) > 0 then
-    Result := FloatToStr(Last512M3P)
-
-  else if Pos('64M5S', Model) > 0 then
-    Result := FloatToStr(Last64M5S)
-  else if Pos('128M5S', Model) > 0 then
-    Result := FloatToStr(Last128M5S)
-  else if Pos('256M5S', Model) > 0 then
-    Result := FloatToStr(Last256M5S)
-
-  else if Pos('128M5P', Model) > 0 then
-    Result := FloatToStr(Last128M5P)
-  else if Pos('256M5P', Model) > 0 then
-    Result := FloatToStr(Last256M5P)
-  else if Pos('512M5P', Model) > 0 then
-    Result := FloatToStr(Last512M5P)
-
-  else if Pos('Ninja', Model) > 0 then
-    Result := FloatToStr(LastNinja)
-
-  else if (Pos('128M3', Model) > 0) and
-    ((Model[Pos('128M3', Model) + 5] <>'P') and
-    (Model[Pos('128M3', Model) + 5] <>'S')) then
-      Result := FloatToStr(Last128M3)
-  else if (Pos('256M3', Model) > 0) and
-    ((Model[Pos('256M3', Model) + 5] <>'P') and
-    (Model[Pos('256M3', Model) + 5] <>'S')) then
-      Result := FloatToStr(Last256M3)
-  else if (Pos('512M3', Model) > 0) and
-    ((Model[Pos('512M3', Model) + 5] <>'P') and
-    (Model[Pos('512M3', Model) + 5] <>'S')) then
-      Result := FloatToStr(Last512M3)
-
-  else if (Pos('Crucial', Model) > 0) and
-          (Pos('M500', Model) > 0) then
-    Result := 'MU' + Format('%.2d', [LastM500]);
+  GetFirm := TGetFirm.Create(Model, Revision);
+  result := GetFirm.GetVersion.LatestVersion;
+  FreeAndNil(GetFirm);
 end;
 
 function NewFirmCaption(Model, Revision: String): String;
@@ -372,103 +299,32 @@ begin
   Result := CapNewFirm[CurrLang] + NewFirmSub(Model, Revision);
 end;
 
-{ TNewVerClass }
-
-class function TNewVer.IsLiteONNewVer(Model, Revision: String): TFirmVersion;
+{ TSupportedClass }
+class function TSupportedSSD.IsLiteONSupported(Model,
+  Revision: String): TSupportStatus;
 begin
+  Model := UpperCase(Model);
+
+  result := SUPPORT_NONE;
   if  (Pos('LITEONIT', Model) > 0) and
       ((Pos('S100', Model) > 0)
         or (Pos('M3S', Model) > 0)
         or (Pos('E200', Model) > 0)) then
-  begin
-    result := NEW_VERSION;
-    if ((Copy(Revision, 1, 3) = 'VE8') and
-        (StrToInt(Copy(Revision, 4, Length(Revision) - 3)) < LastVE8)) or
-       ((Copy(Revision, 1, 3) = 'VF8') and
-        (StrToInt(Copy(Revision, 4, Length(Revision) - 3)) < LastVF8)) or
-       ((Copy(Revision, 1, 3) = 'VA8') and
-        (StrToInt(Copy(Revision, 4, Length(Revision) - 3)) < LastVA8)) or
-       ((Copy(Revision, 1, 3) = 'VB8') and
-        (StrToInt(Copy(Revision, 4, Length(Revision) - 3)) < LastVB8)) or
-       ((Copy(Revision, 1, 3) = 'VD8') and
-        (StrToInt(Copy(Revision, 4, Length(Revision) - 3)) < LastVD8)) then
-      result := OLD_VERSION;
-  end
-  else
-    result := NOT_MINE;
+    result := SUPPORT_FULL;
 end;
 
-class function TNewVer.IsPlextorNewVer(Model, Revision: String): TFirmVersion;
+class function TSupportedSSD.IsPlextorSupported(Model,
+  Revision: String): TSupportStatus;
 begin
+  Model := UpperCase(Model);
+
+  result := SUPPORT_NONE;
   if  (Pos('Ninja', Model) > 0) or
       ((Pos('PLEXTOR', Model) > 0) and
        ((Pos('M3', Model) > 0)
         or (Pos('M5', Model) > 0))) then
-  begin
-    result := NEW_VERSION;
-    if ((Pos('Ninja', Model) > 0) and
-          (StrToFloat(Revision) < LastNinja)) or
-        ((Pos('64M3', Model) > 0) and
-          (StrToFloat(Revision) < Last64M3)) or
-
-        ((Pos('128M3P', Model) > 0) and
-          (StrToFloat(Revision) < Last128M3P)) or
-        ((Pos('256M3P', Model) > 0) and
-          (StrToFloat(Revision) < Last256M3P)) or
-        ((Pos('512M3P', Model) > 0) and
-          (StrToFloat(Revision) < Last512M3P)) or
-
-        ((Pos('128M5P', Model) > 0) and
-          (StrToFloat(Revision) < Last128M5P)) or
-        ((Pos('256M5P', Model) > 0) and
-          (StrToFloat(Revision) < Last256M5P)) or
-        ((Pos('512M5P', Model) > 0) and
-          (StrToFloat(Revision) < Last512M5P)) or
-
-        ((Pos('64M5S', Model) > 0) and
-          (StrToFloat(Revision) < Last64M5S)) or
-        ((Pos('128M5S', Model) > 0) and
-          (StrToFloat(Revision) < Last128M5S)) or
-        ((Pos('256M5S', Model) > 0) and
-          (StrToFloat(Revision) < Last256M5S)) or
-
-        ((Pos('128M3', Model) > 0) and
-         ((Model[Pos('128M3', Model) + 5] <>'P') and
-         (Model[Pos('128M3', Model) + 5] <>'S')) and
-          (StrToFloat(Revision) < Last128M3)) or
-        ((Pos('256M3', Model) > 0) and
-         ((Model[Pos('256M3', Model) + 5] <>'P') and
-         (Model[Pos('256M3', Model) + 5] <>'S')) and
-          (StrToFloat(Revision) < Last256M3)) or
-        ((Pos('512M3', Model) > 0) and
-         ((Model[Pos('512M3', Model) + 5] <>'P') and
-         (Model[Pos('512M3', Model) + 5] <>'S')) and
-          (StrToFloat(Revision) < Last512M3)) then
-      result := OLD_VERSION;
-  end
-  else
-    result := NOT_MINE;
+    result := SUPPORT_FULL;
 end;
-
-class function TNewVer.IsCrucialNewVer(Model, Revision: String): TFirmVersion;
-begin
-  Model := UpperCase(Model);
-
-  result := NOT_MINE;
-  //M550&MX100 펌웨어 나오면 주석 풀 것
-  if (Pos('CRUCIAL', Model) > 0) and
-     ((Pos('M500', Model) > 0){ or
-      (Pos('M550', Model) > 0) or
-      (Pos('MX100', Model) > 0)}) then
-  begin
-    result := NEW_VERSION;
-    if (Pos('M500', Model) > 0) and
-       (StrToInt(Copy(Revision, 3, 2)) < LastM500) then
-      result := OLD_VERSION;
-  end;
-end;
-
-{ TSupportedClass }
 
 class function TSupportedSSD.IsSandiskSupported(Model,
   Revision: String): TSupportStatus;

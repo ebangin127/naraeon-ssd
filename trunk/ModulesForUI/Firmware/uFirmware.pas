@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils, IdURI,
   uAlert, uLanguageSettings,
-  uStrFunctions, uExeFunctions, uGetFirm,
+  uStrFunctions, uExeFunctions, uGetFirm, uSevenZip,
   uFileFunctions, uDownloadPath, uSSDInfo;
 
 type
@@ -111,9 +111,11 @@ begin
   if (ExtractFileExt(FirmPath) = '.zip') or
      (ExtractFileExt(FirmPath) = '.7z') then
   begin
-    OpenProcWithOutput('C:\', AppPath + '7z\7z.exe e -y -o"'
-                        + ExtractFilePath(FirmPath) + SSDInfo.Model
-                        + '\" "' + FirmPath + '"');
+    TSevenZip.Extract(
+      AppPath + '7z\7z.exe',
+      FirmPath,
+      ExtractFilePath(FirmPath) + SSDInfo.Model
+    );
     DeleteFile(FirmPath);
   end;
 

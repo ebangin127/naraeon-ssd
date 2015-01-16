@@ -38,7 +38,8 @@ uses
   uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas',
   uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
   uInit in 'ModulesForUI\Init\uInit.pas',
-  uGetFirm in 'Classes\GetFirm\uGetFirm.pas';
+  uGetFirm in 'Classes\GetFirm\uGetFirm.pas',
+  uSevenZip in 'Classes\SevenZip\uSevenZip.pas';
 
 {$R *.res}
 var

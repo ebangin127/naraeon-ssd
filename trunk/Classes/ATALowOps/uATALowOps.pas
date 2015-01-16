@@ -2,7 +2,7 @@ unit uATALowOps;
 
 interface
 
-uses SysUtils, Windows,
+uses SysUtils, Windows, Dialogs,
      uDiskFunctions;
 
 type
@@ -10,10 +10,11 @@ type
     class function CreateHandle(DeviceNum: Integer): THandle;
 
     class function GetInfoATA(hdrive: THandle): TLLBuffer;
+    class function GetInfoATADirect(hdrive: THandle): TLLBuffer;
     class function GetInfoSCSI(hdrive: THandle): TLLBuffer;
 
-    class function GetSMARTATA(hdrive: THandle; DeviceNum: Integer):
-                    SENDCMDOUTPARAMS;
+    class function GetSMARTATA(hdrive: THandle): TLLBuffer;
+    class function GetSMARTATADirect(hdrive: THandle): TLLBuffer;
     class function GetSMARTSCSI(hdrive: THandle): SENDCMDOUTPARAMS;
 
     class function GetNCQStatus(hdrive: THandle): Byte;
@@ -35,30 +36,57 @@ end;
 
 class function TATALowOps.GetInfoATA(hdrive: THandle): TLLBuffer;
 var
+  ICBuffer: ATA_PTH_BUFFER;
+  bResult: Boolean;
+  BytesRead: Cardinal;
+begin
+  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
+
+  ICBuffer.PTH.Length := SizeOf(ICBuffer.PTH);
+  ICBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
+  ICBuffer.PTH.DataTransferLength := 512;
+  ICBuffer.PTH.TimeOutValue := 2;
+  ICBuffer.PTH.DataBufferOffset := SizeOf(ICBuffer.PTH);
+
+  ICBuffer.PTH.CurrentTaskFile[6] := $EC;
+
+  bResult :=
+    DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH,
+      @ICBuffer, SizeOf(ICBuffer),
+      @ICBuffer, SizeOf(ICBuffer),
+      BytesRead, nil);
+  if bResult and (GetLastError = 0) then
+  begin
+    exit(ICBuffer.Buffer);
+  end;
+
+  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
+  exit(ICBuffer.Buffer);
+end;
+
+class function TATALowOps.GetInfoATADirect(hdrive: THandle): TLLBuffer;
+var
   ICDBuffer: ATA_PTH_DIR_BUFFER;
   bResult: Boolean;
   BytesRead: Cardinal;
 begin
   FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
 
-  If GetLastError = 0 Then
+  ICDBuffer.PTH.Length := SizeOf(ICDBuffer.PTH);
+  ICDBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
+  ICDBuffer.PTH.DataTransferLength := SizeOf(ICDBuffer.Buffer);
+  ICDBuffer.PTH.TimeOutValue := 2;
+  ICDBuffer.PTH.DataBuffer := @ICDBuffer.Buffer;
+
+  ICDBuffer.PTH.CurrentTaskFile[6] := $EC;
+
+  bResult :=
+    DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH_DIRECT,
+      @ICDBuffer, SizeOf(ICDBuffer),
+      @ICDBuffer, SizeOf(ICDBuffer), BytesRead, nil);
+  if bResult and (GetLastError = 0) then
   begin
-    ICDBuffer.PTH.Length := SizeOf(ICDBuffer.PTH);
-    ICDBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
-    ICDBuffer.PTH.DataTransferLength := SizeOf(ICDBuffer.Buffer);
-    ICDBuffer.PTH.TimeOutValue := 2;
-    ICDBuffer.PTH.DataBuffer := @ICDBuffer.Buffer;
-
-    ICDBuffer.PTH.CurrentTaskFile[6] := $EC;
-
-    bResult :=
-      DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH_DIRECT,
-        @ICDBuffer, SizeOf(ICDBuffer),
-        @ICDBuffer, SizeOf(ICDBuffer), BytesRead, nil);
-    if bResult and (GetLastError = 0) then
-    begin
-      exit(ICDBuffer.Buffer);
-    end;
+    exit(ICDBuffer.Buffer);
   end;
 
   FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
@@ -105,37 +133,69 @@ begin
   exit(ICBuffer.Buffer);
 end;
 
-class function TATALowOps.GetSMARTATA(hdrive: THandle; DeviceNum: Integer):
-                                    SENDCMDOUTPARAMS;
+class function TATALowOps.GetSMARTATA(hdrive: THandle): TLLBuffer;
 var
-  dwBytesReturned: DWORD;
-  opar: SENDCMDOUTPARAMS;
-  opar2: SENDCMDOUTPARAMS;
-  Status: Longbool;
-  ipar2: SENDCMDINPARAMS;
+  ICBuffer: ATA_PTH_BUFFER;
+  bResult: Boolean;
+  BytesRead: Cardinal;
 begin
-  ipar2.cBufferSize := 512;
-  ipar2.bDriveNumber := DeviceNum;
-  ipar2.irDriveRegs.bFeaturesReg := SMART_READ_ATTRIBUTE_VALUES;
-  ipar2.irDriveRegs.bSectorCountReg := 1;
-  ipar2.irDriveRegs.bSectorNumberReg := 1;
-  ipar2.irDriveRegs.bCylLowReg := SMART_CYL_LOW;
-  ipar2.irDriveRegs.bCylHighReg := SMART_CYL_HI;
-  ipar2.irDriveRegs.bDriveHeadReg := ((DeviceNum and 1) shl 4) or $a0;
-  ipar2.irDriveRegs.bCommandReg := SMART_CMD;
+  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
 
-  fillchar(opar, SizeOf(opar), #0);
+  ICBuffer.PTH.Length := SizeOf(ICBuffer.PTH);
+  ICBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
+  ICBuffer.PTH.DataTransferLength := 512;
+  ICBuffer.PTH.TimeOutValue := 2;
+  ICBuffer.PTH.DataBufferOffset := SizeOf(ICBuffer.PTH);
 
-  if GetLastError = 0 Then
+  ICBuffer.PTH.CurrentTaskFile[0] := SMART_READ_ATTRIBUTE_VALUES;
+  ICBuffer.PTH.CurrentTaskFile[3] := SMART_CYL_LOW;
+  ICBuffer.PTH.CurrentTaskFile[4] := SMART_CYL_HI;
+  ICBuffer.PTH.CurrentTaskFile[6] := SMART_CMD;
+
+  bResult :=
+    DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH,
+      @ICBuffer, SizeOf(ICBuffer),
+      @ICBuffer, SizeOf(ICBuffer),
+      BytesRead, nil);
+  if bResult and (GetLastError = 0) then
   begin
-    Status := DeviceIoControl(hdrive, SMART_RCV_DRIVE_DATA, @ipar2,
-                              SizeOf(SENDCMDINPARAMS), @opar,
-                              SizeOf(SENDCMDOUTPARAMS), dwBytesReturned, nil);
-    if (status = false) or (getLastError <> 0) then
-      result := opar2;
+    exit(ICBuffer.Buffer);
   end;
 
-  Result := opar;
+  FillChar(ICBuffer, SizeOf(ICBuffer), #0);
+  exit(ICBuffer.Buffer);
+end;
+
+class function TATALowOps.GetSMARTATADirect(hdrive: THandle): TLLBuffer;
+var
+  ICDBuffer: ATA_PTH_DIR_BUFFER;
+  bResult: Boolean;
+  BytesRead: Cardinal;
+begin
+  FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
+
+  ICDBuffer.PTH.Length := SizeOf(ICDBuffer.PTH);
+  ICDBuffer.PTH.AtaFlags := ATA_FLAGS_DATA_IN;
+  ICDBuffer.PTH.DataTransferLength := SizeOf(ICDBuffer.Buffer);
+  ICDBuffer.PTH.TimeOutValue := 2;
+  ICDBuffer.PTH.DataBuffer := @ICDBuffer.Buffer;
+
+  ICDBuffer.PTH.CurrentTaskFile[0] := SMART_READ_ATTRIBUTE_VALUES;
+  ICDBuffer.PTH.CurrentTaskFile[3] := SMART_CYL_LOW;
+  ICDBuffer.PTH.CurrentTaskFile[4] := SMART_CYL_HI;
+  ICDBuffer.PTH.CurrentTaskFile[6] := SMART_CMD;
+
+  bResult :=
+    DeviceIOControl(hdrive, IOCTL_ATA_PASS_THROUGH_DIRECT,
+      @ICDBuffer, SizeOf(ICDBuffer),
+      @ICDBuffer, SizeOf(ICDBuffer), BytesRead, nil);
+  if bResult and (GetLastError = 0) then
+  begin
+    exit(ICDBuffer.Buffer);
+  end;
+
+  FillChar(ICDBuffer, SizeOf(ICDBuffer), #0);
+  exit(ICDBuffer.Buffer);
 end;
 
 class function TATALowOps.GetSMARTSCSI(hdrive: THandle): SENDCMDOUTPARAMS;

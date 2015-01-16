@@ -62,7 +62,8 @@ end;
 
 class procedure TGetFirm.DestroyCache;
 begin
-  FreeAndNil(Cache);
+  if Cache <> nil then
+    FreeAndNil(Cache);
 end;
 
 function TGetFirm.GetVersion: TGetFirmResult;

@@ -74,7 +74,7 @@ var
   NTFSInfo: NTFS_INFO;
   Nouse: Array[0..2] of Cardinal;
   GottenLBAPerSector: Cardinal;
-  FATLength: Integer;
+  FATLength: UInt64;
   CurrTrimCount, CurrTrimLBAs: Int64;
   SleepTime_LBACount: Integer;
 begin
@@ -112,10 +112,12 @@ begin
   end
   else
   begin
-    GetDiskFreeSpace(PChar(DriveLetter + '\'), Nouse[0],
-                     GottenLBAPerSector, Nouse[1], Nouse[2]);
-    FATLength := (GetPartitionLength(DriveLetter) div GottenLBAPerSector) -
-                 (GottenLBAPerSector * TempResult.BitmapSize.QuadPart);
+    GetDiskFreeSpace(PChar(DriveLetter + '\'), GottenLBAPerSector,
+                     Nouse[0], Nouse[1], Nouse[2]);
+    FATLength :=
+      (GetPartitionLength(DriveLetter) -
+        (TempResult.BitmapSize.QuadPart * GottenLBAPerSector * LBASize))
+      div LBASize;
     StartLBA := StartLBA + FATLength;
     LBAPerSector := GottenLBAPerSector;
   end;

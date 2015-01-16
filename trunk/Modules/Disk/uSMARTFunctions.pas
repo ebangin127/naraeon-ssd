@@ -4,13 +4,21 @@ interface
 
 uses SysUtils, Math, uDiskFunctions;
 
+procedure TransSMART(LLBuffer: TLLBuffer; var SMARTData: SENDCMDOUTPARAMS);
 function ExtractSMART(SMARTData: SENDCMDOUTPARAMS; WantedInfo: Integer): UInt64; overload;
 function ExtractSMART(SMARTData: SENDCMDOUTPARAMS; WantedInfo: String): UInt64; overload;
 function ExtractSMARTPercent(const SMARTData: SENDCMDOUTPARAMS; WantedInfo: Integer): UInt64; overload;
 function ExtractSMARTPercent(const SMARTData: SENDCMDOUTPARAMS; WantedInfo: String): UInt64; overload;
-function isValidSMART(const SMARTData: SENDCMDOUTPARAMS): Boolean;
+function IsValidSMART(const SMARTData: SENDCMDOUTPARAMS): Boolean;
 
 implementation
+
+
+procedure TransSMART(LLBuffer: TLLBuffer; var SMARTData: SENDCMDOUTPARAMS);
+begin
+  SMARTData.cBufferSize := 0;
+  Move(LLBuffer[0], SMARTData.bBuffer[0], Length(LLBuffer));
+end;
 
 function ExtractSMART(SMARTData: SENDCMDOUTPARAMS; WantedInfo: Integer): UInt64; overload;
 var
@@ -98,7 +106,7 @@ begin
   end;
 end;
 
-function isValidSMART(const SMARTData: SENDCMDOUTPARAMS): Boolean;
+function IsValidSMART(const SMARTData: SENDCMDOUTPARAMS): Boolean;
 var
   Verifier: Byte;
   CurrVrfy: Integer;

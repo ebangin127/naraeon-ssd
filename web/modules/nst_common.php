@@ -37,14 +37,14 @@
       return 1;
     }
 
-    function WriteLog($IP) {
+    function WriteLog($IP, $Num) {
       $Query =
         sprintf(
           "INSERT INTO Log
            (ID, Date, IP, Action, Model, Firmware)
            VALUES
-           (NULL, CURRENT_TIMESTAMP, '%s', 1, '%s', '%s')",
-          $IP, $this->Model, $this->Firmware);
+           (NULL, CURRENT_TIMESTAMP, '%s', %d, '%s', '%s')",
+          $IP, $Num, $this->Model, $this->Firmware);
 
       if (!$Result = $this->Conn->query($Query)) {
         printf(
@@ -86,7 +86,7 @@
     }
   }
 
-  function CommonJob($Specific) {
+  function CommonJob($Num, $Specific) {
     $Stage = new Stages();
 
     //Connect
@@ -100,7 +100,7 @@
     }
 
     //Write Log
-    if (!$Stage->WriteLog(GetIP())) {
+    if (!$Stage->WriteLog(GetIP(), $Num)) {
       $Stage->Close();
       return 0;
     }
