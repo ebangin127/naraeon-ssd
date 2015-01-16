@@ -14,38 +14,38 @@ type
     (MODEL_NULL, MODEL_ATA, MODEL_SCSI, MODEL_DETERMINE);
 
   TSSDInfo = class
-    //±âº» Á¤º¸µé
-    /// <remarks>¸ğµ¨¸í</remarks>
+    //ê¸°ë³¸ ì •ë³´ë“¤
+    /// <remarks>ëª¨ë¸ëª…</remarks>
     Model: String;
-    /// <remarks>Æß¿ş¾î ¹öÀü</remarks>
+    /// <remarks>íŒì›¨ì–´ ë²„ì „</remarks>
     Firmware: String;
-    /// <remarks>½Ã¸®¾ó ¹øÈ£</remarks>
+    /// <remarks>ì‹œë¦¬ì–¼ ë²ˆí˜¸</remarks>
     Serial: String;
-    /// <remarks>¹°¸® ÁÖ¼Ò (ex: \\.\PhysicalDrive0)</remarks>
+    /// <remarks>ë¬¼ë¦¬ ì£¼ì†Œ (ex: \\.\PhysicalDrive0)</remarks>
     DeviceName: String;
     UserSize: UInt64;
 
-    //SATA Á¤º¸
+    //SATA ì •ë³´
     /// <remarks>
-    ///   <para>SATA ¼Óµµ (0~4)</para>
+    ///   <para>SATA ì†ë„ (0~4)</para>
     ///   <para>Unknown / SATA 1.5Gbps / SATA 3Gbps / SATA 6Gbps / USB</para>
     /// </remarks>
     SATASpeed: TSATASpeed;
     /// <remarks>
-    ///   <para>NCQ Áö¿ø ¿©ºÎ (0~2)</para>
-    ///   <para>Unknown / Áö¿ø / ¹ÌÁö¿ø</para>
+    ///   <para>NCQ ì§€ì› ì—¬ë¶€ (0~2)</para>
+    ///   <para>Unknown / ì§€ì› / ë¯¸ì§€ì›</para>
     /// </remarks>
     NCQSupport: Byte;
 
-    //¿¬°á ¼ö´Ü
+    //ì—°ê²° ìˆ˜ë‹¨
     /// <remarks>
-    ///   <para>ATAÀÎ°¡ SCSIÀÎ°¡ (0~3)</para>
-    ///   <para>Null / ATA / SCSI / ÀÚµ¿ °¨Áö</para>
+    ///   <para>ATAì¸ê°€ SCSIì¸ê°€ (0~3)</para>
+    ///   <para>Null / ATA / SCSI / ìë™ ê°ì§€</para>
     /// </remarks>
     ATAorSCSI: TStorInterface;
     USBMode: Boolean;
 
-    //³»ºÎ¿¡¼­¸¸ »ç¿ëµÇ´Â Á¤º¸µé
+    //ë‚´ë¶€ì—ì„œë§Œ ì‚¬ìš©ë˜ëŠ” ì •ë³´ë“¤
     SMARTData: SENDCMDOUTPARAMS;
     LBASize: Integer;
 
@@ -53,7 +53,7 @@ type
     procedure LLBufferToInfo(Buffer: TLLBuffer);
     procedure CollectAllSMARTData; virtual;
 
-    //1. Ã¢Á¶ÀÚ¿Í ÆÄ±«ÀÚ
+    //1. ì°½ì¡°ìì™€ íŒŒê´´ì
     constructor Create;
   end;
 
@@ -79,27 +79,27 @@ type
   end;
 
   TSSDInfo_NST = class(TSSDInfo)
-    //Ç¥½ÃµÉ Á¤º¸µé
+    //í‘œì‹œë  ì •ë³´ë“¤
     /// <remarks>
-    ///   <para>S10085 False: ±âº» 64MB ´ÜÀ§</para>
-    ///   <para>S10085 True: ±âº» 128MB ´ÜÀ§</para>
+    ///   <para>S10085 False: ê¸°ë³¸ 64MB ë‹¨ìœ„</para>
+    ///   <para>S10085 True: ê¸°ë³¸ 128MB ë‹¨ìœ„</para>
     /// </remarks>
     HostWrites: UInt64;
     EraseError: UInt64;
     ReplacedSectors: UInt64;
     RepSectorAlert: Boolean;
     EraseErrorAlert: Boolean;
-    /// <remarks>È£½ºÆ® ¾²±â(T) / ³½µå ¾²±â(F)</remarks>
-    IsHostWrite: Boolean; // È£½ºÆ® ¾²±â/³½µå ¾²±â
+    /// <remarks>í˜¸ìŠ¤íŠ¸ ì“°ê¸°(T) / ë‚¸ë“œ ì“°ê¸°(F)</remarks>
+    IsHostWrite: Boolean; // í˜¸ìŠ¤íŠ¸ ì“°ê¸°/ë‚¸ë“œ ì“°ê¸°
 
-    //Áö¿ø ¼öÁØ
+    //ì§€ì› ìˆ˜ì¤€
     SupportedDevice: TSupportStatus;
     SSDSupport: TSSDSupportStatus;
 
-    //128MB ¿ë·® ´ÜÀ§ Àû¿ë ¿©ºÎ
+    //128MB ìš©ëŸ‰ ë‹¨ìœ„ ì ìš© ì—¬ë¶€
     S10085: Boolean;
 
-    //Ã¢Á¶ÀÚ¿Í ÆÄ±«ÀÚ
+    //ì°½ì¡°ìì™€ íŒŒê´´ì
     constructor Create;
     procedure SetDeviceName(DeviceNum: Integer); reintroduce;
     procedure CollectAllSMARTData; reintroduce;
@@ -131,9 +131,6 @@ var
   DeviceHandle: THandle;
 begin
   DeviceName := '\\.\PhysicalDrive' + IntToStr(DeviceNum);
-  Model := '';
-  Firmware := '';
-  Serial := '';
 
   DeviceHandle := TATALowOps.CreateHandle(DeviceNum);
 
@@ -165,16 +162,19 @@ var
   CurrBuf: Integer;
   SATASpeedInNum: Integer;
 begin
+  Model := '';
   for CurrBuf := ModelStart to ModelEnd do
     Model := Model + Chr(Buffer[CurrBuf * 2 + 1]) +
                      Chr(Buffer[CurrBuf * 2]);
   Model := Trim(Model);
 
+  Firmware := '';
   for CurrBuf := FirmStart to FirmEnd do
     Firmware := Firmware + Chr(Buffer[CurrBuf * 2 + 1]) +
                            Chr(Buffer[CurrBuf * 2]);
   Firmware := Trim(Firmware);
 
+  Serial := '';
   for CurrBuf := SerialStart to SerialEnd do
     Serial := Serial + Chr(Buffer[CurrBuf * 2 + 1]) +
                        Chr(Buffer[CurrBuf * 2]);

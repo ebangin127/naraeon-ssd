@@ -124,7 +124,7 @@ begin
     SSDInfo.CollectAllSmartData;
     HostWrites := SSDInfo.HostWrites;
 
-    //Åë°è ¹ÌÁö¿ø °É·¯³¿
+    //í†µê³„ ë¯¸ì§€ì› ê±¸ëŸ¬ëƒ„
     if SSDInfo.SSDSupport.SupportHostWrite <> HSUPPORT_NONE then
     begin
       if l1Month.Visible = false then
@@ -135,7 +135,7 @@ begin
         l1Month.Visible := true;
       end;
 
-      //Case 1 : È£½ºÆ® ¾²±â Áö¿ø
+      //Case 1 : í˜¸ìŠ¤íŠ¸ ì“°ê¸° ì§€ì›
       if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
       begin
         if SSDInfo.IsHostWrite then
@@ -147,7 +147,7 @@ begin
           lHost.Caption
           + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
       end
-      //Case 2 : È£½ºÆ® ¾²±â°¡ Wear Leveling Count·Î Á¦°øµÇ´Â °æ¿ì
+      //Case 2 : í˜¸ìŠ¤íŠ¸ ì“°ê¸°ê°€ Wear Leveling Countë¡œ ì œê³µë˜ëŠ” ê²½ìš°
       else if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_COUNT then
       begin
         lHost.Caption := CapSSDLifeLeft[CurrLang]
@@ -213,7 +213,7 @@ begin
       UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) +
       CapHour[CurrLang];
 
-    // ¼½ÅÍ Ä¡È¯
+    // ì„¹í„° ì¹˜í™˜
     ReplacedSectors := SSDInfo.ReplacedSectors;
     CurrSectLog :=
       TNSTLog.Create(
@@ -222,7 +222,7 @@ begin
             'Uninstall\Naraeon SSD Tools\', 'UninstallString')),
         SSDInfo.Serial + 'RSLog', UIntToStr(ReplacedSectors), true, false);
 
-    //¼½ÅÍ Ä¡È¯¸¸ Áö¿øÇÏ´Â ¸ğµ¨µé
+    //ì„¹í„° ì¹˜í™˜ë§Œ ì§€ì›í•˜ëŠ” ëª¨ë¸ë“¤
     if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
     begin
       lHost.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
@@ -260,7 +260,7 @@ begin
     end;
     FreeAndNil(CurrSectLog);
 
-    // Áö¿ì±â ¿¡·¯
+    // ì§€ìš°ê¸° ì—ëŸ¬
     EraseErrors := SSDInfo.EraseError;
     if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
     begin
@@ -273,7 +273,7 @@ begin
         CapCount[CurrLang];
     end;
 
-    // ¼ö¸í »óÈ² ¾È ÁÁÀ»¶§ ¿À·ù - Áö¿ì±â ¿¡·¯°¡ ´õ ½É°¢ÇÏ¹Ç·Î ¹ØÀ¸·Î ¹èÄ¡.
+    // ìˆ˜ëª… ìƒí™© ì•ˆ ì¢‹ì„ë•Œ ì˜¤ë¥˜ - ì§€ìš°ê¸° ì—ëŸ¬ê°€ ë” ì‹¬ê°í•˜ë¯€ë¡œ ë°‘ìœ¼ë¡œ ë°°ì¹˜.
     if SSDInfo.RepSectorAlert then
     begin
       lSectors.Font.Color := clRed;
@@ -296,7 +296,7 @@ begin
         CapNotSafeRepSect[CurrLang];
     end;
 
-    // ÆÄÆ¼¼Ç Á¤·Ä
+    // íŒŒí‹°ì…˜ ì •ë ¬
     CurrDrvPartitions := GetPartitionList(CurrDrive);
     lPartitionAlign.Caption := CapAlign[CurrLang];
     for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
