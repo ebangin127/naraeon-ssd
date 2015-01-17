@@ -90,9 +90,10 @@ begin
   VersionLoader.Request.CharSet := 'Unicode';
   try
     FirmChkContents.Text := VersionLoader.Get(TIdURI.URLEncode(
-        'http://nstfirmware.naraeon.net/nst_firmchk.php?' +
-        'Model=' + Model + '&' +
-        'Firmware=' + Firmware));
+      'http://nstfirmware.naraeon.net/nst_firmchk.php?' +
+      'Model=' + Model + '&' +
+      'Firmware=' + Firmware));
+
     result.CurrVersion := TFirmVersion(StrToInt(FirmChkContents[0]));
     if result.CurrVersion <> NOT_MINE then
     begin

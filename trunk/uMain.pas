@@ -12,7 +12,7 @@ uses
   uTrimThread, uLanguageSettings, uUpdateThread, uBrowser, uSevenZip,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh,
-  uButtonGroup, uInit, uGetFirm;
+  uButtonGroup, uInit, uGetFirm, uTrimList, uRufus;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -155,7 +155,6 @@ type
     //표시 정보 관련
     SSDInfo: TSSDInfo_NST;
     ShowSerial: Boolean;
-    FirstiOptLeft: Integer;
     ListEnter: Integer;
 
     //창 관리자
@@ -174,6 +173,7 @@ type
     //현재 드라이브 관련
     CurrUSBMode: Boolean;
     CurrATAorSCSIStatus: TStorInterface;
+    FirstiOptLeft: Integer;
 
     procedure ShowProgress;
     procedure HideProgress;
@@ -185,10 +185,6 @@ var
   //프로그램 관련 Path들
   AppPath: String;
   WinDir, WinDrive: String;
-
-  //전체 프로그램 공유 내용
-  PartCount, CompletedPartition: Integer;
-  NeedTrimPartition: Array of String;
 
 const
   MinimumSize = 290;
@@ -214,6 +210,8 @@ begin
     exit;
   end;
 
+  tRefresh.Enabled := false;
+
   FileName := AppPath + 'Erase\pmagic.7z';
 
   if (FileExists(FileName)) and (CheckUnetBootin) then
@@ -221,11 +219,11 @@ begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
 
     TempFolder :=
-      GetEnvironmentVariable('TMP') +
+      WinDrive +
       '\NST' + IntToStr(Random(2147483647)) + '\';
     while DirectoryExists(TempFolder) do
       TempFolder :=
-        GetEnvironmentVariable('TMP') +
+        WinDrive +
         '\NST' + IntToStr(Random(2147483647)) + '\';
     CreateDir(TempFolder);
 
@@ -254,6 +252,8 @@ begin
     AlertCreate(Self, AlrtBootFail[CurrLang]);
     BrowserCreate(Self);
   end;
+
+  tRefresh.Enabled := true;
 end;
 
 procedure TfMain.bFirmStartClick(Sender: TObject);
@@ -274,12 +274,17 @@ begin
     exit;
   end;
 
+  tRefresh.Enabled := false;
+
   ChkFrmResult.FirmExists := false;
   ChkFrmResult := DownloadFirmware(AppPath, SSDInfo);
 
   if (ChkFrmResult.FirmExists = false) or
      ((CheckUNetbootin = false) and (DownloadUNetbootin = false)) then
-      exit;
+  begin
+    tRefresh.Enabled := true;
+    exit;
+  end;
 
   if (ExtractFileExt(ChkFrmResult.FirmPath) = '.exe') then
   begin
@@ -295,6 +300,8 @@ begin
     AlertCreate(Self, AlrtFirmEnd[CurrLang]);
     DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));
   end;
+
+  tRefresh.Enabled := true;
 end;
 
 procedure TfMain.bStartClick(Sender: TObject);
@@ -330,10 +337,10 @@ procedure TfMain.bTrimStartClick(Sender: TObject);
 var
   CurrPartition: Integer;
   CurrDrive: Integer;
+  PartCount: Integer;
+  PartToTrim: TTrimList;
 begin
   PartCount := 0;
-  CompletedPartition := 0;
-
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
     if cTrimList.Checked[CurrPartition] then
       PartCount := PartCount + 1;
@@ -355,21 +362,22 @@ begin
   pDownload.Height := pDownload.Height + 10;
   pDownload.Top := pDownload.Top + 5;
 
-  SetLength(NeedTrimPartition, PartCount);
   CurrDrive := 0;
+  PartToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
   begin
     if cTrimList.Checked[CurrPartition] then
     begin
-      NeedTrimPartition[CurrDrive] :=
-        Copy(cTrimList.Items[CurrPartition], 1, 2);
+      PartToTrim.Add(
+        Copy(cTrimList.Items[CurrPartition], 1, 2));
       CurrDrive := CurrDrive + 1;
     end;
   end;
-  MainLoaded := true;
+  TrimThread.IsSemiAuto := false;
 
   if TrimThread <> Nil then FreeAndNil(TrimThread);
   TrimThread := TTrimThread.Create(true);
+  TrimThread.ApplyPartList(PartToTrim);
   TrimThread.Priority := tpLower;
   TrimThread.Start;
 end;
@@ -390,17 +398,17 @@ end;
 
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if ((UpdateThread <> nil) and
-      (not UpdFinished)) or
-     ((TrimThread <> nil) and
-      (TrimStat < 2)) then
+  if ((TrimThread <> nil) and
+      (TrimThread.TrimStage < TRIMSTAGE_END)) then
   begin
     Action := caNone;
     exit;
   end;
 
-  if (TrimThread <> nil) and (TrimStat >= 2) then
+  if (TrimThread <> nil) and (TrimThread.TrimStage >= TRIMSTAGE_END) then
     FreeAndNil(TrimThread);
+  if (UpdateThread <> nil) and (not UpdFinished) then
+    FreeAndNil(UpdateThread);
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);

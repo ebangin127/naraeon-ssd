@@ -134,16 +134,6 @@ type
   end;
   //---SAT + DeviceIOCtl---//
 
-
-  //---GetPartitionList---//
-  TDriveLetters = Record
-    LetterCount: Byte;
-    Letters: Array[0..99] of String;
-    StartOffset: Array[0..99] of TLargeInteger;
-  end;
-  //---GetPartitionList---//
-
-
   //---Trim Command--//
   PSTARTING_LCN_INPUT_BUFFER = ^STARTING_LCN_INPUT_BUFFER;
   {$EXTERNALSYM PSTARTING_LCN_INPUT_BUFFER}
@@ -159,6 +149,14 @@ type
     Buffer: array [0..4095] of Byte;
   end;
   //---Trim Command--//
+
+  //---GetPartitionList---//
+  TDriveLetters = Record
+    LetterCount: Byte;
+    Letters: Array[0..99] of String;
+    StartOffset: Array[0..99] of TLargeInteger;
+  end;
+  //---GetPartitionList---//
 
   TSSDListResult = record
     ResultList: TStringList;

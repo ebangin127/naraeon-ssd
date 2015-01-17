@@ -177,6 +177,8 @@
         <DCCReference Include="ModulesForUI\Init\uInit.pas"/>
         <DCCReference Include="Classes\GetFirm\uGetFirm.pas"/>
         <DCCReference Include="Classes\SevenZip\uSevenZip.pas"/>
+        <DCCReference Include="Classes\Threads\uTrimList.pas"/>
+        <DCCReference Include="Classes\Rufus\uRufus.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

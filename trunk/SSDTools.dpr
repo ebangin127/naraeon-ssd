@@ -39,7 +39,9 @@ uses
   uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
   uInit in 'ModulesForUI\Init\uInit.pas',
   uGetFirm in 'Classes\GetFirm\uGetFirm.pas',
-  uSevenZip in 'Classes\SevenZip\uSevenZip.pas';
+  uSevenZip in 'Classes\SevenZip\uSevenZip.pas',
+  uTrimList in 'Classes\Threads\uTrimList.pas',
+  uRufus in 'Classes\Rufus\uRufus.pas';
 
 {$R *.res}
 var
@@ -55,7 +57,7 @@ var
   RobustMode, ATAorSCSI, Completed: Boolean;
 
   //트림 진행용(트림 자체)
-  CurrDrvNum, CurrPartition: Integer;
+  CurrPartition: Integer;
   AllDrv: TStringList;
   CurrDrv: Integer;
   hdrive: THandle;
@@ -67,6 +69,9 @@ var
 
   //현재 프로세스 뮤텍스 관리
   MutexAppear: LongInt;
+
+  //트림 파티션
+  PartToTrim: TTrimList;
 
 begin
   Application.Initialize;
@@ -80,7 +85,7 @@ begin
       and (UpperCase(ParamStr(1)) <> '/SIMULMODE')
       and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
   begin
-    MainLoaded := false;
+    TTrimThread.IsSemiAuto := true;
     MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened2');
     if MutexAppear <> 0 then Application.Terminate
     else MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened2');
@@ -89,11 +94,6 @@ begin
       CurrLang := LANG_HANGUL
     else
       CurrLang := LANG_ENGLISH;
-
-    PartCount := 0;
-    CompletedPartition := 0;
-    CurrDrvNum := 0;
-    SetLength(NeedTrimPartition, 0);
 
     TempSSDInfo := TSSDInfo_NST.Create;
     AllDrv := GetSSDList.ResultList;
@@ -120,6 +120,7 @@ begin
         DiagFile.Add('Mode, WMI');
     end;
 
+    PartToTrim := TTrimList.Create;
     for CurrDrv := 0 to AllDrv.Count - 1 do
     begin
       if (AllDrv[CurrDrv] <> '/') and (AllDrv[CurrDrv] <> '') then
@@ -156,15 +157,12 @@ begin
         begin
           if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
           begin
-            if (TempSSDInfo.Serial = ParamStr(1)) and (TempSSDInfo.ATAorSCSI = MODEL_ATA) then
+            if (TempSSDInfo.Serial = ParamStr(1)) and
+               (TempSSDInfo.ATAorSCSI = MODEL_ATA) then
             begin
               Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
-              SetLength(NeedTrimPartition, Length(NeedTrimPartition) + Length(Drives.Letters));
               for CurrPartition := 1 to Length(Drives.Letters) do
-              begin
-                NeedTrimPartition[CurrDrvNum] := Drives.Letters[CurrPartition] + ':';
-                CurrDrvNum := CurrDrvNum + 1;
-              end;
+                PartToTrim.Add(Drives.Letters[CurrPartition] + ':');
               Completed := true;
             end;
           end;
@@ -213,12 +211,13 @@ begin
 
     if DiagMode = false then
     begin
-      TrimStat := 0;
+      TTrimThread.TrimStage := TRIMSTAGE_NONE;
       if TrimThread <> Nil then FreeAndNil(TrimThread);
       TrimThread := TTrimThread.Create(true);
+      TrimThread.ApplyPartList(PartToTrim);
       TrimThread.Priority := tpLower;
       TrimThread.Start;
-      while TrimStat < 2 do Sleep(10);
+      while TTrimThread.TrimStage < TRIMSTAGE_END do Sleep(10);
       Sleep(10);
       FreeAndNil(TrimThread);
     end;

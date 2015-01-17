@@ -3,7 +3,7 @@ unit uFirmware;
 interface
 
 uses
-  Windows, SysUtils, IdURI,
+  Windows, SysUtils, IdURI, Dialogs,
   uAlert, uLanguageSettings,
   uStrFunctions, uExeFunctions, uGetFirm, uSevenZip,
   uFileFunctions, uDownloadPath, uSSDInfo;
@@ -51,14 +51,14 @@ var
   GetFirm: TGetFirm;
 begin
   Randomize;
+
   TempFolder :=
-    GetEnvironmentVariable('TMP') +
+    WinDrive +
     '\NST' + IntToStr(Random(2147483647)) + '\';
   while DirectoryExists(TempFolder) do
     TempFolder :=
-      GetEnvironmentVariable('TMP') +
+      WinDrive +
       '\NST' + IntToStr(Random(2147483647)) + '\';
-
   CreateDir(TempFolder);
   result.FirmExists := false;
 

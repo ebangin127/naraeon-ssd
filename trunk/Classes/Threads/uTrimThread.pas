@@ -1,48 +1,27 @@
-unit uTrimThread;
+﻿unit uTrimThread;
 
 interface
 
 uses
-  Classes, SysUtils, uDiskFunctions, Math, 
-  Generics.Collections, Dialogs, Windows,
-  uATALowOps, uLanguageSettings, uPartitionFunctions;
+  Classes, SysUtils, uDiskFunctions, Math, Dialogs, Windows,
+  uATALowOps, uLanguageSettings, uPartitionFunctions,
+  uTrimList;
 
 type
   TTrimStage = (TRIMSTAGE_NONE, TRIMSTAGE_INPROGRESS,
     TRIMSTAGE_END, TRIMSTAGE_ERROR);
-  TTrimListNextStat = (NEXTSTAT_SUCCESS, NEXTSTAT_NOTCMPL);
-  TTrimListNext = record
-    Status: TTrimListNextStat;
-    NextPartition: String;
-  end;
   TPartInfo = record
     StartPadding: Int64;
     LBAPerCluster: Cardinal;
   end;
-  
-  TTrimList = class(TList<String>)
-  public
-    property CurrPartition: Integer
-      read FCurrPartition;
-    property CompletedPartition: Integer
-      read FCompletedPartition;
-  
-    procedure PointerToFirst;
-    function GetNextPartition: TTrimListNext;
-    procedure MarkAsCompleted;
-    function GetPartInfo(DriveLetter: String; PartSize: Int64): TPartInfo;
-  private
-    FCurrPartition: Integer;
-    FCompletedPartition: Integer;
-  end;
-  
+
   TTrimThread = class(TThread)
   public
     class var IsSemiAuto: Boolean; //반자동 트림 상황인가
     class var TrimStage: TTrimStage; //현재 트림 스테이지
-    
+
     destructor Destroy; override;
-    
+
     function ApplyPartList(PartListToTrim: TTrimList): Boolean;
   private
     PartToTrim: TTrimList;
@@ -51,10 +30,12 @@ type
   protected
     procedure Execute; override;
     procedure TrimPartition(const DriveLetter: String);
+    function GetPartInfo(DriveLetter: String;
+      PartSize: Int64): TPartInfo;
     
     //Main과의 Sync함수
-    procedure ChangeProgressbar;
-    procedure ChangeStage;
+    procedure ApplyProgress;
+    procedure ApplyStage;
     procedure EndTrim;
   end;
 
@@ -64,32 +45,8 @@ uses uMain;
 
 const
   LBASize = 512;
-  
-procedure TTrimList.PointerToFirst;
-begin
-  FCurrPartition := -1;
-  FCompletedPartition := -1;
-end;
 
-function TTrimList.GetNextPartition: TTrimListNext;
-begin
-  if FCurrPartition < FCompletedPartition then
-  begin
-    result.Status := NEXTSTAT_NOTCMPL;
-    exit;
-  end;
-
-  FCurrPartition := FCurrPartition + 1;
-  result.Status := NEXTSTAT_SUCCESS;
-  result.NextPartition := self[CurrPartition];
-end;
-
-procedure TTrimList.MarkAsCompleted;
-begin
-  FCompletedPartition := FCurrPartition;
-end;
-  
-destructor TTrimThread.Destroy; 
+destructor TTrimThread.Destroy;
 begin
   if PartToTrim <> nil then
     FreeAndNil(PartToTrim);
@@ -100,7 +57,7 @@ end;
 function TTrimThread.ApplyPartList(PartListToTrim: TTrimList): Boolean;
 begin
   result := PartListToTrim <> nil;
-  
+
   if not result then
     exit;
   
@@ -124,21 +81,20 @@ begin
   PartCount := PartToTrim.Count;
   
   if not IsSemiAuto then
-    Synchronize(ChangeStage);
+    Synchronize(ApplyStage);
   
   for CurrDrive := 0 to PartCount - 1 do
   begin
     TrimPartition(PartToTrim.GetNextPartition.NextPartition);
-    PartToTrim.MarkAsComplete;
+    PartToTrim.MarkAsCompleted;
     
     if not IsSemiAuto then
-      Synchronize(ChangeStage);
+      Synchronize(ApplyStage);
   end;
-  
+
+  TrimStage := TRIMSTAGE_END;
   if not IsSemiAuto then
     Synchronize(EndTrim);
-    
-  TrimStage := TRIMSTAGE_END;
 end;
 
 function TTrimThread.GetPartInfo(DriveLetter: String;
@@ -153,7 +109,6 @@ begin
   
   //NTFS라고 가정
   NTFSInfo := GetNTFSVolumeData(DriveLetter);
-  StartingBuffer.StartingLcn.QuadPart := 0;
   
   if NTFSInfo.ErrorCode = 0 then
   begin
@@ -162,7 +117,7 @@ begin
   end;
   
   //FAT종류인 경우
-  GetDiskFreeSpace(PChar(DriveLetter + '\'), GottenLBAPerSector,
+  GetDiskFreeSpace(PChar(DriveLetter + '\'), GottenLBAPerCluster,
     Nouse[0], Nouse[1], Nouse[2]);
                    
   {GetPartitionLength의 결과값은 Bytes로 나오므로 그대로 사용
@@ -171,7 +126,7 @@ begin
   
   FATLength :=
     (GetPartitionLength(DriveLetter) -
-      (TempResult.BitmapSize.QuadPart * GottenLBAPerSector * LBASize))
+      (PartSize * GottenLBAPerCluster * LBASize))
     div LBASize;
   
   result.StartPadding := FATLength;
@@ -181,14 +136,14 @@ end;
 procedure TTrimThread.TrimPartition(const DriveLetter: String);
 const
   BITS_PER_BYTE = 8;
-  VOLUME_BITMAP_SIZE = SizeOf(VOLUME_BITMAP_BUFFER);
+  VOLUME_BITMAP_BYTES = SizeOf(VOLUME_BITMAP_BUFFER);
   VOLUME_BITMAP_BITS = VOLUME_BITMAP_BYTES * BITS_PER_BYTE;
   
   BIT_UNUSED = 0;
   BIT_USED = 1;
   
   TRIM_LIMIT_LBA = 65500;
-  LBACOUNT_REST_THRESHOLD = TRIM_LIMIT_LBA shl 1;
+  LBACOUNT_REST_THRESHOLD: Integer = TRIM_LIMIT_LBA shl 4;
 var
   //핸들
   PartHandle, DeviceHandle: THandle;
@@ -208,6 +163,7 @@ var
   CurrPart: Int64;
   CurrByte, CurrBit: Integer;
   IsCurrClusterUsed: Boolean;
+  CurrPosByte: Integer;
   
   //트림 정보
   IsUnusedSpaceFound: Boolean;
@@ -215,7 +171,6 @@ var
   
   //쉬어주는 부분(샌드포스)
   CurrTrimLBAs: Int64;
-  SleepTime_LBACount: Integer;
   
   LastPart, LastBit, BitCount: Integer;
 begin
@@ -238,7 +193,7 @@ begin
   SetupPoint := 0;
   LBACount := 0;
   CurrPart := 0;
-  IsUnusedSpaceFound := 0;
+  IsUnusedSpaceFound := false;
   CurrTrimLBAs := 0;
 
   //파티션 정보 받기보다 무조건 위에 있어야 함
@@ -247,7 +202,7 @@ begin
     PartHandle,
     FSCTL_GET_VOLUME_BITMAP,
     @StartingBuffer, SizeOf(STARTING_LCN_INPUT_BUFFER),
-    @BitmapBuffer, VOLUME_BITMAP_SIZE,
+    @BitmapBuffer, VOLUME_BITMAP_BYTES,
     BytesRead, nil);
   error := GetLastError;
   
@@ -261,9 +216,9 @@ begin
   AllClusters := BitmapBuffer.BitmapSize;
   Progress :=
     round(
-      ((CurrPart / AllClusters.QuadPart) + CompletedPartition)
-      / PartCount * 100);
-  if MainLoaded then
+      ((CurrPart / AllClusters.QuadPart) + PartToTrim.CompletedPartition)
+      / PartToTrim.Count * 100);
+  if not IsSemiAuto then
     Synchronize(ApplyProgress);
 
   //디바이스에 대한 핸들 열기
@@ -300,28 +255,28 @@ begin
         BitCount := LastBit
       else
         BitCount := BITS_PER_BYTE - 1;
-      
+
+      CurrPosByte := BitmapBuffer.Buffer[CurrByte];
       for CurrBit := 0 to BitCount do
       begin
         //안 쓰는 공간인지 Bit단위로 체크
         IsCurrClusterUsed :=
-          (BitmapBuffer.Buffer[CurrByte] and 1) = BIT_UNUSED;
-        BitmapBuffer.Buffer[CurrByte] :=
-          BitmapBuffer.Buffer[CurrByte] shr 1;
+          (CurrPosByte and 1) = BIT_UNUSED;
+        CurrPosByte := CurrPosByte shr 1;
           
         //안 쓰는 공간이면 다음과 같이 적용
         if not IsCurrClusterUsed then
         begin
           if IsUnusedSpaceFound then
           begin
-            Assert(BitmapBuffer.StartingLcn.QuadPart = CurrPart,
-              IntToStr(BitmapBuffer.StartingLcn.QuadPart)
-              + ' <> ' +
-              IntToStr(CurrPart));
+            LBACount := LBACount + LBAPerCluster
+          end
+          else
+          begin
             SetupPoint :=
-              StartLBA + 
-              ((CurrPart +
-                  //비트맵 받아오는 단위 위치
+              StartLBA +
+              ((BitmapBuffer.StartingLcn.QuadPart +
+                  //비트맵 받아오는 단위 위치 (CurrPart와는 다르니 주의!)
                 (CurrByte shl 3) +
                   // 현재 비트맵 내의 바이트 위치
                 CurrBit)
@@ -329,10 +284,7 @@ begin
                * LBAPerCluster); //섹터당 LBA
             LBACount := LBAPerCluster;
             IsUnusedSpaceFound := true;
-            Continue;
-          end
-          else
-            LBACount := LBACount + LBAPerSector;
+          end;
         end;
           
         {트림 해야되는 조건:
@@ -345,7 +297,7 @@ begin
           ((IsCurrClusterUsed) or //2
            ((not IsCurrClusterUsed) and //3
             ((LBACount > TRIM_LIMIT_LBA) or //3-1
-             ((CurrByte = LastPart) and (CurrBit = LastBit)))) //3-2
+             ((CurrByte = LastPart) and (CurrBit = LastBit))))) //3-2
           then
         begin
           //쉬어주는 부분 계산
@@ -355,11 +307,9 @@ begin
             SetupPoint, LBACount);
           
           //트림 완료했으므로 초기화
+          IsUnusedSpaceFound := false;
           SetupPoint := 0;
           LBACount := 0;
-          IsUnusedSpaceFound := false;
-          
-          Continue;
         end;
       end;
     end;
@@ -371,8 +321,16 @@ begin
       //쉬어줘야 하면 쉬어줌
       if CurrTrimLBAs > LBACOUNT_REST_THRESHOLD then
       begin
-        SleepTime_LBACount := CurrTrimLBAs shr 16;
-        Sleep(SleepTime_LBACount);
+        //진행률 계산 및 반영
+        Progress :=
+          round(
+            ((CurrPart / AllClusters.QuadPart) +
+             (PartToTrim.CompletedPartition + 1))
+            / PartToTrim.Count * 100);
+
+        if not IsSemiAuto then
+          Synchronize(ApplyProgress);
+
         CurrTrimLBAs := 0;
       end;
       
@@ -380,26 +338,17 @@ begin
       SetupPoint := 0;
       LBACount := 0;
       IsUnusedSpaceFound := false;
-      
-      
+
       //현재 위치 재계산 및 비트맵 받아옴
-      CurrPart := CurrPart + (Length(TempResult.Buffer) shl 3);
+      CurrPart := CurrPart + (Length(BitmapBuffer.Buffer) shl 3);
       StartingBuffer.StartingLcn.QuadPart := CurrPart;
       DeviceIoControl(
         PartHandle,
         FSCTL_GET_VOLUME_BITMAP,
         @StartingBuffer, SizeOf(STARTING_LCN_INPUT_BUFFER),
-        @BitmapBuffer, VOLUME_BITMAP_SIZE,
+        @BitmapBuffer, VOLUME_BITMAP_BYTES,
         BytesRead, nil);
       error := GetLastError;
-      
-      //진행률 계산 및 반영
-      Progress := 
-        round(
-          ((CurrPart / AllClusters.QuadPart) + CompletedPartition)
-          / PartCount * 100);
-      if MainLoaded then
-        Synchronize(ChangeProgressbar);
     end
     else
       break;
@@ -409,21 +358,25 @@ begin
   CloseHandle(PartHandle);
 end;
 
-procedure TTrimThread.ChangeProgressbar;
+procedure TTrimThread.ApplyProgress;
 begin
   fMain.pDownload.Position := Progress;
 end;
 
-procedure TTrimThread.ChangeStage;
+procedure TTrimThread.ApplyStage;
 begin
   fMain.pDownload.Position := Progress;
-  if CompletedPartition < PartCount then
+
+  if PartToTrim.CompletedPartition < 0 then
+    exit;
+
+  if PartToTrim.CompletedPartition < PartToTrim.Count then
     fMain.lProgress.Caption := 
       CapProg1[CurrLang] +
-      NeedTrimPartition[CompletedPartition] + ' ' +
+      PartToTrim[PartToTrim.CompletedPartition] + ' ' +
       CapProg2[CurrLang] + ' (' +
-      IntToStr(CompletedPartition + 1) + '/' +
-      IntToStr(PartCount) + ')';
+      IntToStr(PartToTrim.CompletedPartition + 1) + '/' +
+      IntToStr(PartToTrim.Count) + ')';
 end;
 
 procedure TTrimThread.EndTrim;
