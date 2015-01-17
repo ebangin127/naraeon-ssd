@@ -134,8 +134,8 @@ type
       AWorkCount: Int64);
     procedure ProgressDownload;
 
-    //펌웨어/Unetbootin 다운로드
-    function DownloadUnetbootin: Boolean;
+    //펌웨어/Rufus 다운로드
+    function DownloadRufus: Boolean;
 
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
@@ -280,7 +280,7 @@ begin
   ChkFrmResult := DownloadFirmware(AppPath, SSDInfo);
 
   if (ChkFrmResult.FirmExists = false) or
-     ((CheckUNetbootin = false) and (DownloadUNetbootin = false)) then
+     ((CheckRufus = false) and (DownloadRufus = false)) then
   begin
     tRefresh.Enabled := true;
     exit;
@@ -880,7 +880,7 @@ begin
         '/F'));                                     //강제 삭제
 end;
 
-function TfMain.DownloadUnetbootin: Boolean;
+function TfMain.DownloadRufus: Boolean;
 var
   Src, Dest: TDownloadFile;
   DownloadResult: Boolean;
@@ -891,11 +891,11 @@ begin
 
   Src.FBaseAddress := '';
   Src.FFileAddress :=
-    'http://nstfirmware.naraeon.net/nst_unet.htm';
+    'http://nstfirmware.naraeon.net/nst_rufus.htm';
   Src.FType := dftGetFromWeb;
 
   Dest.FBaseAddress := AppPath;
-  Dest.FFileAddress := 'Unetbootin\unetbootin.exe_tmp';
+  Dest.FFileAddress := 'Rufus\rufus.exe_tmp';
   Dest.FType := dftPlain;
 
   gFirmware.Visible := false;
@@ -908,8 +908,8 @@ begin
     AlertCreate(Self, AlrtFirmCanc[CurrLang]);
     exit;
   end;
-  RenameFile(AppPath + 'Unetbootin\unetbootin.exe_tmp',
-             AppPath + 'Unetbootin\unetbootin.exe');
+  RenameFile(AppPath + 'Rufus\rufus.exe_tmp',
+             AppPath + 'Rufus\rufus.exe');
 
   result := CheckUnetbootin;
 end;

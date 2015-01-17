@@ -11,7 +11,7 @@ function OpenProcWithOutput(Path: String; Command: String): AnsiString; //ÇÁ·Î±×
 procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
 
-function CheckUNetbootin: Boolean;
+function CheckRufus: Boolean;
 
 implementation
 
@@ -173,8 +173,8 @@ begin
   end;
 end;
 
-function CheckUNetbootin: Boolean;
+function CheckRufus: Boolean;
 begin
-  result := FileExists(AppPath + 'Unetbootin\unetbootin.exe');
+  result := FileExists(AppPath + 'Rufus\rufus.exe');
 end;
 end.

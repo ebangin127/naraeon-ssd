@@ -82,6 +82,9 @@ Section "MainSection" SEC01
 
   SetOverwrite on
 
+  SetOutPath "$INSTDIR\SSDTools\Rufus"
+  File "..\Exe\Rufus\rufus.exe"
+
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
   File "..\Exe\NSTDiagSvc_New.exe"

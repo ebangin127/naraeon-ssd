@@ -65,6 +65,9 @@ Section "MainSection" SEC01
   IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
 
+  SetOutPath "$INSTDIR\SSDTools\Rufus"
+  File "..\Exe\Rufus\rufus.exe"
+
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
 
