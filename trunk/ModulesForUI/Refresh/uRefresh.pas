@@ -541,7 +541,8 @@ begin
   if TrvResult.AddList.Count > 0 then
     AddByList(TrvResult.AddList);
 
-  if fMain.SSDList.Count > 0 then
+  if (fMain.SSDList.Count > 0) and
+     (fMain.CurrDrive = '') then
     fMain.SSDLabel[0].OnClick(fMain.SSDLabel[0]);
 
   FreeAndNil(TrvResult.AddList);

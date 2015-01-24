@@ -125,7 +125,6 @@ begin
       result.AddList.Add(CurrEntry);
   end;
 
-
   if not IsDiffNeeded then
   begin
     FreeAndNil(CurrSSDList);

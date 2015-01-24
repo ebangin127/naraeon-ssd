@@ -444,7 +444,7 @@ begin
       end;
       OleDrives := Unassigned;
     end;
-    OleDrivesVar :=  Unassigned;
+    OleDrivesVar := Unassigned;
   except
   end;
 

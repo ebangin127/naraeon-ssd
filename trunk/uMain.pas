@@ -712,7 +712,12 @@ begin
 end;
 
 procedure TfMain.tRefreshTimer(Sender: TObject);
+const
+  ORIGINAL_INTERVAL = 60000;
 begin
+  if tRefresh.Interval < ORIGINAL_INTERVAL then
+    tRefresh.Interval := ORIGINAL_INTERVAL;
+
   if RefreshTimer(SSDInfo, ShowSerial, firstiOptLeft) = false then
     Application.Terminate;
 end;
@@ -781,9 +786,7 @@ begin
        (Msg.WParam = DBT_DEVICEREMOVECOMPLETE)) and
        (PDevBroadcastHdr(Msg.lParam)^.dbcd_devicetype = DBT_STORAGE)) then
   begin
-    tRefresh.Enabled := false;
-    RefreshDrives(SSDInfo);
-    tRefresh.Enabled := true;
+    tRefresh.Interval := 1;
   end;
 end;
 
