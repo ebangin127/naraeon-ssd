@@ -7,8 +7,6 @@ uses
   Windows,
   SysUtils,
   Classes,
-  Dialogs,
-  ClipBrd,
   ShellAPI,
   uMessage in 'uMessage.pas' {fMessage},
   uBrowser in 'uBrowser.pas' {fBrowser},
@@ -41,203 +39,52 @@ uses
   uGetFirm in 'Classes\GetFirm\uGetFirm.pas',
   uSevenZip in 'Classes\SevenZip\uSevenZip.pas',
   uTrimList in 'Classes\Threads\uTrimList.pas',
-  uRufus in 'Classes\Rufus\uRufus.pas';
+  uRufus in 'Classes\Rufus\uRufus.pas',
+  uDiag in 'Classes\Diag\uDiag.pas',
+  uSSDList in 'Classes\SSDList\uSSDList.pas',
+  uPathManager in 'Classes\PathManager\uPathManager.pas',
+  uSemiAuto in 'Classes\SemiAuto\uSemiAuto.pas';
+
+type
+  TRunMode = (RM_NORMAL, RM_DIAG, RM_SEMIAUTO);
 
 {$R *.res}
 var
-  //반자동 트림용 쓰레드
-  TrimThread: TTrimThread;
-
   //캡션 생성 및 뮤텍스 찾기
   Cap: String;
 
-  //트림 진행용(파티션 찾기까지)
-  Drives: TDriveLetters;
-  TempSSDInfo: TSSDInfo_NST;
-  RobustMode, ATAorSCSI, Completed: Boolean;
-
-  //트림 진행용(트림 자체)
-  CurrPartition: Integer;
-  AllDrv: TStringList;
-  CurrDrv: Integer;
-  hdrive: THandle;
-
-  //진단용 변수
-  DiagMode: Boolean;
-  DiagFile: TStringList;
-  DrvName: String;
+  //명령행 해석
+  ParamInUpper: String;
+  RunMode: TRunMode;
 
   //현재 프로세스 뮤텍스 관리
   MutexAppear: LongInt;
-
-  //트림 파티션
-  PartToTrim: TTrimList;
 
 begin
   Application.Initialize;
   Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
 
-  AppPath := ExtractFilePath(Application.ExeName);
-  WinDir := GetEnvironmentVariable('windir');
-  WinDrive := ExtractFileDrive(WinDir);
+  TPathManager.GetPath(Application);
+  DetermineLanguage;
 
-  if (ParamStr(1) <> '')
-      and (UpperCase(ParamStr(1)) <> '/SIMULMODE')
-      and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  ParamInUpper := UpperCase(ParamStr(1));
+
+  SimulationMode := ParamInUpper = '/SIMULMODE';
+  RunMode := RM_NORMAL;
+
+  if ParamInUpper = '/DIAG' then
+    RunMode := RM_DIAG
+  else if (not SimulationMode) and (ParamInUpper <> '') then
+    RunMode := RM_SEMIAUTO;
+
+  MutexAppear := 0;
+
+  case RunMode of
+  RM_NORMAL:
   begin
-    TTrimThread.IsSemiAuto := true;
-    MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened2');
-    if MutexAppear <> 0 then Application.Terminate
-    else MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened2');
+    SimulationMode := ParamInUpper = '/SIMULMODE';
 
-    if GetSystemDefaultLangID = 1042 then
-      CurrLang := LANG_HANGUL
-    else
-      CurrLang := LANG_ENGLISH;
-
-    TempSSDInfo := TSSDInfo_NST.Create;
-    AllDrv := GetSSDList.ResultList;
-    if (AllDrv.Count = 1) and (AllDrv[0] = '/') then
-    begin
-      AllDrv.Clear;
-      RobustMode := true;
-      for CurrDrv := 0 to 99 do
-        AllDrv.Add(IntToStr(CurrDrv));
-    end
-    else
-      RobustMode := false;
-
-    ATAorSCSI := false;
-    Completed := false;
-    DiagMode := (UpperCase(ParamStr(1)) = '/DIAG');
-    if DiagMode then
-    begin
-      DiagFile := TStringList.Create;
-      DiagFile.Add('DiagStart, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
-      if RobustMode then
-        DiagFile.Add('Mode, Direct')
-      else
-        DiagFile.Add('Mode, WMI');
-    end;
-
-    PartToTrim := TTrimList.Create;
-    for CurrDrv := 0 to AllDrv.Count - 1 do
-    begin
-      if (AllDrv[CurrDrv] <> '/') and (AllDrv[CurrDrv] <> '') then
-      begin
-        if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'U')
-            and (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'H') then
-          DrvName := AllDrv[CurrDrv]
-        else
-          DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
-
-        if DiagMode then
-          DiagFile.Add('Probe, ' +
-                        '\\.\PhysicalDrive' + DrvName + ', ');
-        hdrive := CreateFile(PChar('\\.\PhysicalDrive' + DrvName),
-                                    GENERIC_READ or GENERIC_WRITE,
-                                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
-                                    OPEN_EXISTING, 0, 0);
-        if GetLastError <> 0 then
-        begin
-          Continue;
-        end;
-
-        try
-        begin
-          if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
-          else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
-          if RobustMode then
-          begin
-            TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-          end;
-          TempSSDInfo.SetDeviceName(StrToInt(DrvName));
-        end;
-        finally
-        begin
-          if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
-          begin
-            if (TempSSDInfo.Serial = ParamStr(1)) and
-               (TempSSDInfo.ATAorSCSI = MODEL_ATA) then
-            begin
-              Drives := GetPartitionList(ExtractDeviceNum(TempSSDInfo.DeviceName));
-              for CurrPartition := 1 to Length(Drives.Letters) do
-                PartToTrim.Add(Drives.Letters[CurrPartition] + ':');
-              Completed := true;
-            end;
-          end;
-          end;
-        end;
-
-
-        if DiagMode then
-        begin
-          DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                        + TempSSDInfo.Model + ', '
-                                        + TempSSDInfo.Firmware + ', ';
-
-          case TempSSDInfo.SupportedDevice of
-          SUPPORT_FULL:
-            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                          + 'Full';
-          SUPPORT_SEMI:
-            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                          + 'Semi';
-          SUPPORT_NONE:
-            DiagFile[DiagFile.Count - 1] := DiagFile[DiagFile.Count - 1]
-                                          + 'None';
-          end;
-        end;
-
-        CloseHandle(hdrive);
-      end
-      else
-      begin
-        ATAorSCSI := SCSIMode;
-      end;
-
-      if Completed then Break;
-    end;
-
-    if DiagMode then
-    begin
-      DiagFile.Add('DiagEnd, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
-      Clipboard.AsText := DiagFile.Text;
-      MessageBox(0, PChar(DiagContents[CurrLang]), PChar(DiagName[CurrLang]),
-                  MB_OK or MB_IConInformation);
-      FreeAndNil(DiagFile);
-    end;
-    FreeAndNil(TempSSDInfo);
-
-    if DiagMode = false then
-    begin
-      TTrimThread.TrimStage := TRIMSTAGE_NONE;
-      if TrimThread <> Nil then FreeAndNil(TrimThread);
-      TrimThread := TTrimThread.Create(true);
-      TrimThread.ApplyPartList(PartToTrim);
-      TrimThread.Priority := tpLower;
-      TrimThread.Start;
-      while TTrimThread.TrimStage < TRIMSTAGE_END do Sleep(10);
-      Sleep(10);
-      FreeAndNil(TrimThread);
-    end;
-    ReleaseMutex(MutexAppear);
-    CloseHandle(MutexAppear);
-  end
-  else 
-  begin
-    if UpperCase(ParamStr(1)) = '/SIMULMODE' then
-    begin
-      SimulationMode := true;
-    end;
-    
-    MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened1');
-
-    if GetSystemDefaultLangID = 1042 then
-      CurrLang := LANG_HANGUL
-    else
-      CurrLang := LANG_ENGLISH;
-    Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
+    MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened');
 
     if MutexAppear <> 0 then
     begin
@@ -252,13 +99,29 @@ begin
     end
     else
     begin
-      MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened1');
+      MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-  fMain.Caption := Cap;
+      fMain.Caption := Cap;
       Application.Run;
     end;
   end;
-  ReleaseMutex(MutexAppear);
-  CloseHandle(MutexAppear);
+
+  RM_DIAG:
+  begin
+    TDiag.Diagnosis;
+  end;
+
+  RM_SEMIAUTO:
+  begin
+    TSemiAuto.SemiAutoTrim(ParamStr(1), ParamStr(2));
+  end;
+
+  end;
+
+  if MutexAppear <> 0 then
+  begin
+    ReleaseMutex(MutexAppear);
+    CloseHandle(MutexAppear);
+  end;
 end.

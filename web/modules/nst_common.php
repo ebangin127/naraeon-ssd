@@ -15,9 +15,9 @@
       }
 
       $this->Model =
-        mysqli_real_escape_string($this->Conn, $_GET['Model']);
+        $this->Conn->real_escape_string($_GET['Model']);
       $this->Firmware =
-        mysqli_real_escape_string($this->Conn, $_GET['Firmware']);
+        $this->Conn->real_escape_string($_GET['Firmware']);
       return 1;
     }
 

@@ -11,8 +11,6 @@ function OpenProcWithOutput(Path: String; Command: String): AnsiString; //ÇÁ·Î±×
 procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
 
-function CheckRufus: Boolean;
-
 implementation
 
 uses
@@ -171,10 +169,5 @@ begin
   finally
     FreeLibrary(vKernel32Handle);
   end;
-end;
-
-function CheckRufus: Boolean;
-begin
-  result := FileExists(AppPath + 'Rufus\rufus.exe');
 end;
 end.

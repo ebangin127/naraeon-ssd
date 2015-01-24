@@ -319,7 +319,7 @@ begin
   Model := UpperCase(Model);
 
   result := SUPPORT_NONE;
-  if  (Pos('Ninja', Model) > 0) or
+  if  (Pos('NINJA', Model) > 0) or
       ((Pos('PLEXTOR', Model) > 0) and
        ((Pos('M3', Model) > 0)
         or (Pos('M5', Model) > 0))) then

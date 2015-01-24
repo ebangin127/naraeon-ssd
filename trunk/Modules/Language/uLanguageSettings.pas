@@ -2,6 +2,8 @@ unit uLanguageSettings;
 
 interface
 
+uses Windows;
+
 var
   CurrLang: Integer;
 
@@ -213,6 +215,16 @@ const
     DiagName: Array[0..1] of String = ('나래온 툴 진단도구', 'NSTools Diagnosis');
     DiagContents: Array[0..1] of String = ('진단에 필요한 정보가 복사되었습니다.' + Chr(13) + Chr(10) + '필요한 곳에 Ctrl + V로 붙여넣어 사용하세요.',
                                             'Information for Diagnosis copied.' + Chr(13) + Chr(10) + 'Press Ctrl + V when needed.');
+
+procedure DetermineLanguage;
+
 implementation
 
+procedure DetermineLanguage;
+begin
+  if GetSystemDefaultLangID = 1042 then
+    CurrLang := LANG_HANGUL
+  else
+    CurrLang := LANG_ENGLISH;
+end;
 end.

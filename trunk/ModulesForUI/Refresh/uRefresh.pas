@@ -4,23 +4,24 @@ interface
 
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
-  uAlert, uLanguageSettings, ShellApi, Dialogs,
+  uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
   uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
-  uSMARTFunctions, uStrFunctions, uLogSystem, uGetFirm;
+  uSMARTFunctions, uStrFunctions, uLogSystem, uGetFirm, uSSDList, uPathManager;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
-                      CurrUSBMode: Boolean;
-                      CurrATAorSCSIStatus: TStorInterface;
                       ShowSerial: Boolean;
                       FirstiOptLeft: Integer): Boolean;
-function RefreshDrives(SSDInfo: TSSDInfo_NST): Integer;
+procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
 
 type
   TSSDLabel = class(TLabel)
   public
-    DriveName: String;
-    USBMode: Boolean;
-    ATAorSCSI: TStorInterface;
+    DeviceInfo: TSSDEntry;
+  end;
+
+  TSSDLabelList = class(TList<TSSDLabel>)
+  public
+    function IndexOf(Entry: TSSDEntry): Integer;
   end;
 
 implementation
@@ -44,7 +45,7 @@ begin
     if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
        (SSDInfo.SATASpeed > SPEED_SATA600) then
       lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
-    else if CurrUSBMode then
+    else if SSDInfo.USBMode then
       lConnState.Caption := lConnState.Caption + ConnState[3]
     else
     begin
@@ -72,7 +73,8 @@ begin
     if lName.Caption = '' then
     begin
       AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-      ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
+      ShellExecute(Handle, 'open',
+        PChar(TPathManager.AppPath + 'SSDTools.exe'),
         PChar('/diag'), nil, SW_SHOW);
     end;
 
@@ -124,7 +126,7 @@ begin
 
       CurrWritLog :=
         TNSTLog.Create(
-          AppPath, SSDInfo.Serial, UIntToStr(HostWrites),
+          TPathManager.AppPath, SSDInfo.Serial, UIntToStr(HostWrites),
           false, SSDInfo.S10085);
 
       AvgDays := -1;
@@ -187,13 +189,13 @@ var
   AvgDays, CurrAvgDay: Integer;
 begin
   try
-    CurrSectLog :=
-      TNSTLog.Create(
-        AppPath, SSDInfo.Serial + 'RSLog',
-        UIntToStr(ReplacedSectors), true, false);
-
     // 섹터 치환
     ReplacedSectors := SSDInfo.ReplacedSectors;
+
+    CurrSectLog :=
+      TNSTLog.Create(
+        TPathManager.AppPath, SSDInfo.Serial + 'RSLog',
+        UIntToStr(ReplacedSectors), true, false);
 
     with fMain do
     begin
@@ -260,9 +262,8 @@ end;
 procedure ApplySMARTInfo(SSDInfo: TSSDInfo_NST);
 var
   EraseErrors: UInt64;
-  ReplacedSectors: UInt64;
   CurrDrvPartitions: TDriveLetters;
-  CurrPartition, AvgDays, CurrAvgDay: Integer;
+  CurrPartition: Integer;
 begin
   with fMain do
   begin
@@ -373,35 +374,69 @@ begin
   end;
 end;
 
-procedure AddDevice(DeviceName: String; Model: String;
-  DriveName: String; ATAorSCSI: TStorInterface; USBMode: Boolean);
+procedure SetLabelPosition;
+var
+  CurrLabel: Integer;
+begin
+  with fMain do
+  begin
+    for CurrLabel := 0 to SSDLabel.Count - 1 do
+    begin
+      SSDLabel[CurrLabel].Top :=
+        (5 * ((CurrLabel + 1) mod 11)) +
+        (SSDLabel[CurrLabel].Height * (CurrLabel mod 11));
+      SSDLabel[CurrLabel].Left :=
+        10 + (((CurrLabel + 1) div 11) * 260);
+    end;
+
+    GSSDSel.Height :=
+      SSDLabel[SSDLabel.Count - 1].Top +
+      SSDLabel[SSDLabel.Count - 1].Height + 5;
+  end;
+end;
+
+procedure DelDevice(SSDEntry: TSSDEntry);
+var
+  IndexOfEntry: Integer;
+begin
+  with fMain do
+  begin
+    IndexOfEntry := SSDLabel.IndexOf(SSDEntry);
+    if IndexOfEntry = -1 then
+      exit;
+
+    SSDLabel[IndexOfEntry].Free;
+    SSDLabel.Delete(IndexOfEntry);
+  end;
+end;
+
+procedure AddDevice(SSDEntry: TSSDEntry);
 var
   NewLen: Integer;
   CurrDrvPartitions: TDriveLetters;
   CurrPartition: Integer;
-  Partlen: Integer;
+
+  CurrSSDInfo: TSSDInfo;
 begin
   with fMain do
   begin
-    SetLength(SSDLabel, Length(SSDLabel) + 1);
-    NewLen := Length(SSDLabel);
+    NewLen := SSDLabel.Count;
 
-    SSDLabel[NewLen - 1] := TSSDLabel.Create(GSSDSel);
-    SSDLabel[NewLen - 1].Parent := GSSDSel;
-    SSDLabel[NewLen - 1].Font.Name := Font.Name;
-    SSDLabel[NewLen - 1].Font.Size := 10;
-    SSDLabel[NewLen - 1].DriveName :=  DriveName;
-    SSDLabel[NewLen - 1].ATAorSCSI := ATAorSCSI;
-    SSDLabel[NewLen - 1].Cursor := crHandPoint;
-    SSDLabel[NewLen - 1].OnClick := SSDLabelClick;
-    SSDLabel[NewLen - 1].OnMouseEnter := SSDSelLblMouseEnter;
-    SSDLabel[NewLen - 1].OnMouseLeave := SSDSelLblMouseLeave;
-    SSDLabel[NewLen - 1].Top := (5 * (NewLen mod 11)) +
-                                 (SSDLabel[NewLen - 1].Height
-                                 * ((NewLen - 1) mod 11));
-    SSDLabel[NewLen - 1].Left := 10 + ((NewLen div 11) * 260);
+    SSDLabel.Add(TSSDLabel.Create(GSSDSel));
 
-    if NewLen > 10 then
+    SSDLabel[NewLen].Parent := GSSDSel;
+    SSDLabel[NewLen].Font.Name := Font.Name;
+    SSDLabel[NewLen].Font.Size := 10;
+    SSDLabel[NewLen].DeviceInfo := SSDEntry;
+    SSDLabel[NewLen].Cursor := crHandPoint;
+    SSDLabel[NewLen].OnClick := SSDLabelClick;
+    SSDLabel[NewLen].OnMouseEnter := SSDSelLblMouseEnter;
+    SSDLabel[NewLen].OnMouseLeave := SSDSelLblMouseLeave;
+
+    CurrSSDInfo := TSSDInfo.Create;
+    CurrSSDInfo.SetDeviceName(StrToInt(SSDEntry.DeviceName));
+
+    if NewLen > 9 then
     begin
       GSSDSel.Width := 590;
       GSSDSel.Left := 8;
@@ -413,41 +448,56 @@ begin
     end;
 
     CurrDrvPartitions :=
-      GetPartitionList(ExtractDeviceNum(DeviceName));
+      GetPartitionList(SSDEntry.DeviceName);
 
-    Partlen := 15 * ceil(CurrDrvPartitions.LetterCount / 3);
+    SSDLabel[NewLen].Font.Style := [fsBold];
+    SSDLabel[NewLen].Font.Style := [];
 
-    SSDLabel[NewLen - 1].Font.Style := [fsBold];
-    SSDLabel[NewLen - 1].Font.Style := [];
-
-    SSDLabel[NewLen - 1].USBMode := USBMode;
-    SSDLabel[NewLen - 1].Caption :=
-      SSDLabel[NewLen - 1].Caption + Model + ' ' +
-      GetTBStr(1000, GetDiskSize(DriveName) / 1000 / 1000, 0);
+    SSDLabel[NewLen].Caption :=
+      SSDLabel[NewLen].Caption + CurrSSDInfo.Model + ' ' +
+      GetTBStr(1000, GetDiskSize(SSDEntry.DeviceName) / 1000 / 1000, 0);
 
     for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
     begin
       if CurrPartition = 0 then
-        SSDLabel[NewLen - 1].Caption :=
-          SSDLabel[NewLen - 1].Caption + '(';
+        SSDLabel[NewLen].Caption :=
+          SSDLabel[NewLen].Caption + '(';
 
-      SSDLabel[NewLen - 1].Caption :=
-        SSDLabel[NewLen - 1].Caption
+      SSDLabel[NewLen].Caption :=
+        SSDLabel[NewLen].Caption
           + CurrDrvPartitions.Letters[CurrPartition];
 
       if CurrPartition < (CurrDrvPartitions.LetterCount - 1) then
-        SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
+        SSDLabel[NewLen].Caption := SSDLabel[NewLen].Caption
                                           + ' '
       else
-        SSDLabel[NewLen - 1].Caption := SSDLabel[NewLen - 1].Caption
+        SSDLabel[NewLen].Caption := SSDLabel[NewLen].Caption
                                           + ') ';
     end;
+
+    FreeAndNil(CurrSSDInfo);
   end;
+
+  SetLabelPosition;
+end;
+
+procedure AddByList(SSDList: TSSDList);
+var
+  CurrEntry: TSSDEntry;
+begin
+  for CurrEntry in SSDList do
+    AddDevice(CurrEntry);
+end;
+
+procedure DelByList(SSDList: TSSDList);
+var
+  CurrEntry: TSSDEntry;
+begin
+  for CurrEntry in SSDList do
+    DelDevice(CurrEntry);
 end;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
-                      CurrUSBMode: Boolean;
-                      CurrATAorSCSIStatus: TStorInterface;
                       ShowSerial: Boolean;
                       FirstiOptLeft: Integer): Boolean;
 begin
@@ -458,8 +508,6 @@ begin
   if Length(fMain.CurrDrive) = 0 then
     exit;
 
-  SSDInfo.ATAorSCSI := CurrATAorSCSIStatus;
-  SSDInfo.USBMode := CurrUSBMode;
   SSDInfo.SetDeviceName(StrToInt(fMain.CurrDrive));
 
   ApplyBasicInfo(SSDInfo, ShowSerial);
@@ -469,149 +517,53 @@ begin
   ApplyGeneralUISetting(SSDInfo);
 end;
 
-function RefreshDrives(SSDInfo: TSSDInfo_NST): integer;
+procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
 var
-  TempSSDInfo: TSSDInfo_NST;
-  AllDrv: TStringList;
-  CurrDrv, CurrExistAtApp, SelectedDrv: Integer;
-  CurrAvail, RefreshAll: Boolean;
-  TempFound: Boolean;
-  ATAorSCSI: Boolean;
-  RobustMode: Boolean;
-  TempUSBMode: Boolean;
-  isDriveAccessible: Boolean;
-  NewLen: Integer;
-
-  GetSSDResult: TSSDListResult;
-  DrvName: String;
+  TrvResult: TDiffResult;
 begin
-  TempSSDInfo := TSSDInfo_NST.Create;
-  SelectedDrv := 0;
-  if Length(fMain.SSDLabel) > 0 then
-    SelectedDrv := StrToInt(ExtractDeviceNum(SSDInfo.DeviceName));
+  TrvResult := TraverseDevice(true, true, fMain.SSDList);
 
-  GetSSDResult := GetSSDList;
-  AllDrv := GetSSDResult.ResultList;
-  RobustMode := not GetSSDResult.WMIEnabled;
-
-  ATAorSCSI := false;
-  RefreshAll := false;
-
-  for CurrDrv := 0 to AllDrv.Count - 1 do
+  if fMain.SSDList.Count = 0 then
   begin
-    if (AllDrv[CurrDrv] = '/') or (AllDrv[CurrDrv] = '') then
-    begin
-      ATAorSCSI := SCSIMode;
-      continue;
-    end;
+    AlertCreate(fMain, AlrtNoSupport[CurrLang]);
+    ShellExecute(fMain.Handle, 'open',
+      PChar(TPathManager.AppPath + 'SSDTools.exe'),
+      PChar('/diag'), nil, SW_SHOW);
 
-    CurrAvail := false;
-    if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'U') and
-       (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] <> 'H') then
-      DrvName := AllDrv[CurrDrv]
-    else
-      DrvName := Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
-
-    with fMain do
-    begin
-      for CurrExistAtApp := 0 to Length(SSDLabel) - 1 do
-        if AllDrv[CurrDrv] = SSDLabel[CurrExistAtApp].DriveName then
-          CurrAvail := true;
-    end;
-
-    if ATAorSCSI = ATAMode then TempSSDInfo.ATAorSCSI := MODEL_ATA
-    else if ATAorSCSI = SCSIMode then TempSSDInfo.ATAorSCSI := MODEL_SCSI;
-
-    if RobustMode then
-    begin
-      TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-    end;
-    TempSSDInfo.SetDeviceName(StrToInt(DrvName));
-
-    if (TempSSDInfo.SupportedDevice <> SUPPORT_NONE) and
-       (CurrAvail = false) then
-    begin
-      TempUSBMode := false;
-      if (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U')
-          or (AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'H') then
-      begin
-        if AllDrv[CurrDrv][Length(AllDrv[CurrDrv])] = 'U' then
-          TempUSBMode := true;
-        AllDrv[CurrDrv] :=
-          Copy(AllDrv[CurrDrv], 0, Length(AllDrv[CurrDrv]) - 1);
-      end;
-
-      AddDevice(TempSSDInfo.DeviceName, TempSSDInfo.Model, AllDrv[CurrDrv],
-        TempSSDInfo.ATAorSCSI, TempUSBMode);
-    end;
-    with fMain do
-    begin
-      if lName.Caption = '' then
-      begin
-        NewLen := Length(SSDLabel);
-        SSDLabel[NewLen - 1].OnClick(SSDLabel[NewLen - 1]);
-        tRefresh.Enabled := true;
-        if ATAorSCSI = ATAMode then CurrATAorSCSIStatus := MODEL_ATA
-        else if ATAorSCSI = SCSIMode then CurrATAorSCSIStatus := MODEL_SCSI;
-      end;
-    end;
+    FreeAndNil(TrvResult.AddList);
+    FreeAndNil(TrvResult.DelList);
+    exit;
   end;
 
-  with fMain do
-  begin
-    for CurrExistAtApp := 0 to NewLen - 1 do
-    begin
-      TempFound := false;
-      for CurrDrv := 0 to AllDrv.Count - 1 do
-      begin
-        if (SSDLabel[CurrExistAtApp].DriveName = AllDrv[CurrDrv]) or
-           (SSDLabel[CurrExistAtApp].DriveName + 'U' = AllDrv[CurrDrv]) or
-           (SSDLabel[CurrExistAtApp].DriveName + 'H' = AllDrv[CurrDrv]) then
-          TempFound := true
-        else if (CurrDrv = (AllDrv.Count - 1)) and (TempFound = false) then
-          RefreshAll := true;
-      end;
-    end;
-  end;
+  if TrvResult.DelList.Count > 0 then
+    DelByList(TrvResult.DelList);
 
-  with fMain do
-  begin
-    if lName.Caption = '' then
-    begin
-      AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-      ShellExecute(Handle, 'open', PChar(AppPath + 'SSDTools.exe'),
-                  PChar('/diag'), nil, SW_SHOW);
-    end;
-  end;
-  FreeAndNil(AllDrv);
+  if TrvResult.AddList.Count > 0 then
+    AddByList(TrvResult.AddList);
 
-  with fMain do
-  begin
-    if RefreshAll then
-    begin
-      for CurrExistAtApp := 0 to NewLen - 1 do
-      begin
-        FreeAndNil(SSDLabel[CurrExistAtApp]);
-      end;
+  if fMain.SSDList.Count > 0 then
+    fMain.SSDLabel[0].OnClick(fMain.SSDLabel[0]);
 
-      SetLength(SSDLabel, 0);
-
-      lName.Caption := '';
-      CurrDrive := '100';
-      RefreshDrives(SSDInfo);
-
-      tRefresh.Enabled := true;
-    end;
-
-    if Length(SSDLabel) > 0 then
-    begin
-      GSSDSel.Height := SSDLabel[Length(SSDLabel) - 1].Top
-        + SSDLabel[Length(SSDLabel) - 1].Height + 5;
-    end;
-  end;
-
-  FreeAndNil(TempSSDInfo);
-  result := SelectedDrv;
+  FreeAndNil(TrvResult.AddList);
+  FreeAndNil(TrvResult.DelList);
 end;
+
+function TSSDLabelList.IndexOf(Entry: TSSDEntry): Integer;
+var
+  CurrEntry: Integer;
+begin
+  for CurrEntry := 0 to Count - 1 do
+    if (self[CurrEntry].DeviceInfo.DeviceName =
+        Entry.DeviceName) and
+       (self[CurrEntry].DeviceInfo.IsUSBDevice =
+        Entry.IsUSBDevice) then
+      break;
+
+  if CurrEntry < Count then
+    exit(CurrEntry)
+  else
+    exit(-1);
+end;
+
 end.
 

@@ -122,6 +122,8 @@
         <DCC_DebugInformation>false</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <Manifest_File>GetAdmin.manifest</Manifest_File>
         <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -179,6 +181,10 @@
         <DCCReference Include="Classes\SevenZip\uSevenZip.pas"/>
         <DCCReference Include="Classes\Threads\uTrimList.pas"/>
         <DCCReference Include="Classes\Rufus\uRufus.pas"/>
+        <DCCReference Include="Classes\Diag\uDiag.pas"/>
+        <DCCReference Include="Classes\SSDList\uSSDList.pas"/>
+        <DCCReference Include="Classes\PathManager\uPathManager.pas"/>
+        <DCCReference Include="Classes\SemiAuto\uSemiAuto.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -3,16 +3,20 @@ unit uRufus;
 interface
 
 uses
-  Windows, SysUtils, Messages, Dialogs, IOUtils, Math,
-  ShellAPI;
+  Windows, SysUtils, Messages, Dialogs, IOUtils, Math, ShellAPI,
+  uPathManager;
 
 type
   TRufus = class
   public
+    class function CheckRufus: Boolean;
     class procedure SetRufus
       (RufusPath, DriveName, ISOPath: String);
   private
     class function FindMainWindow: THandle;
+
+    class function FindFTCombo(MWHandle: THandle): THandle;
+    class function GetFTComboText(EDTHandle: THandle): String;
 
     class function FindDriveCombo(MWHandle: THandle): THandle;
     class function EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
@@ -35,6 +39,14 @@ implementation
 const
   RufusWinCap = 'Rufus 1.4.12.535';
   MAX_LENGTH = 1024;
+  ComboDefaultText = 'FreeDOS';
+  ComboISOText = 'ISO Image';
+
+
+class function TRufus.CheckRufus: Boolean;
+begin
+  result := FileExists(TPathManager.AppPath + 'Rufus\rufus.exe');
+end;
 
 class function TRufus.FindMainWindow: THandle;
 begin
@@ -43,6 +55,35 @@ begin
     result := FindWindow(Nil, RufusWinCap);
   until (result <> INVALID_HANDLE_VALUE) and
         (result <> 0);
+end;
+
+class function TRufus.FindFTCombo(MWHandle: THandle): THandle;
+var
+  ReceivedCaptionWC: Array of WideChar;
+  ReceivedCaptionStr: String;
+begin
+  result := 0;
+  SetLength(ReceivedCaptionWC, MAX_LENGTH);
+
+  repeat
+    result :=
+      FindWindowEx(MWHandle, result, 'ComboBox', nil);
+    SendMessage(result, WM_GETTEXT,
+      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
+    ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
+  until (ReceivedCaptionStr = ComboDefaultText) or
+        (ReceivedCaptionStr = ComboISOText);
+end;
+
+class function TRufus.GetFTComboText(EDTHandle: THandle): String;
+var
+  ReceivedCaptionWC: Array of WideChar;
+begin
+  SetLength(ReceivedCaptionWC, MAX_LENGTH);
+  SendMessage(EDTHandle, WM_GETTEXT,
+    MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
+  result := PWideChar(ReceivedCaptionWC);
+  SetLength(ReceivedCaptionWC, 0);
 end;
 
 class function TRufus.FindDriveCombo(MWHandle: THandle): THandle;
@@ -172,30 +213,23 @@ class procedure TRufus.SetRufus
   (RufusPath, DriveName, ISOPath: String);
 var
   MWHandle, SWHandle: THandle;
-  DriveComboHandle: THandle;
+  DriveComboHandle,
+  FileTypeComboHandle: THandle;
   StartButtonHandle,
   CloseButtonHandle,
   OKButtonHandle: THandle;
-  FileHandle: THandle;
-  SleepLength: LARGE_INTEGER;
 begin
-  FileHandle :=
-    CreateFile(PChar(ISOPath),
-      GENERIC_READ or GENERIC_WRITE,
-      FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING,
-      0, 0);
-  SleepLength.LowPart := GetFileSize(FileHandle, @SleepLength.HighPart);
-
   ShellExecute(0, 'open',
     PChar(RufusPath),
     PChar('-l en_US --iso="' + ISOPath + '"')
     //한글경로 안됨.
     , nil, SW_NORMAL);
-  SleepLength.QuadPart :=
-    floor(Log10(SleepLength.QuadPart));
-  Sleep(SleepLength.QuadPart shl 7);
 
   MWHandle := FindMainWindow;
+  FileTypeComboHandle := FindFTCombo(MWHandle);
+  repeat
+    Sleep(10);
+  until GetFTComboText(FileTypeComboHandle) = ComboISOText;
 
   DriveComboHandle := FindDriveCombo(MWHandle);
   EditDriveCombo(DriveComboHandle, DriveName);

@@ -16,7 +16,8 @@ uses
   uSSDInfo in '..\Classes\SSDInfo\uSSDInfo.pas',
   uSSDSupport in '..\Classes\SSDInfo\uSSDSupport.pas',
   uATALowOps in '..\Classes\ATALowOps\uATALowOps.pas',
-  uGetFirm in '..\Classes\GetFirm\uGetFirm.pas';
+  uGetFirm in '..\Classes\GetFirm\uGetFirm.pas',
+  uSSDList in '..\Classes\SSDList\uSSDList.pas';
 
 {$R *.RES}
 

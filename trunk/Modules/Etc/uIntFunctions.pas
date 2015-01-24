@@ -35,7 +35,7 @@ begin
   uValue := 0;
   for n := Start to Length(StrValue) do
   begin
-      if Character.IsDigit(StrValue[n]) then
+      if StrValue[n].IsNumber then
           Digit := Ord(StrValue[n]) - Ord('0')
       else if  (Base = 16) and (StrValue[n] >= 'A') and (StrValue[n] <= 'F') then
           Digit := (Ord(StrValue[n]) - Ord('A'))+10

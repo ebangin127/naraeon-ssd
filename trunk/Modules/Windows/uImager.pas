@@ -3,23 +3,19 @@ unit uImager;
 interface
 
 uses
-  ShellAPI, Windows, SysUtils,
+  ShellAPI, Windows, SysUtils, uPathManager,
   uExeFunctions, uLanguageSettings, uRufus;
 
 procedure ProcessImager(DestDrive, FromISO: String);
 
 implementation
 
-uses uMain;
-
 procedure ProcessImager(DestDrive, FromISO: String);
-var
-  aHandle: THandle;
 begin
   DestDrive := Copy(DestDrive, 1, 2);
 
   TRufus.SetRufus(
-    AppPath + '\Rufus\rufus.exe',
+    TPathManager.AppPath + '\Rufus\rufus.exe',
     DestDrive, FromISO);
 
   DeleteFile(FromISO);

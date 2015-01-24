@@ -4,7 +4,8 @@ interface
 
 uses Windows, SysUtils, Dialogs, Math, Classes,
      ComObj, ShellAPI, Variants, ActiveX,
-     uRegFunctions, uPartitionFunctions, uStrFunctions;
+     uRegFunctions, uPartitionFunctions, uStrFunctions,
+     uSSDList;
 
 type
   //--GetMotherDrive--//
@@ -158,11 +159,6 @@ type
   end;
   //---GetPartitionList---//
 
-  TSSDListResult = record
-    ResultList: TStringList;
-    WMIEnabled: Boolean;
-  end;
-
   //---NCQ---//
   STORAGE_QUERY_TYPE = (PropertyStandardQuery = 0, PropertyExistsQuery,
                         PropertyMaskQuery, PropertyQueryMaxDefined);
@@ -224,7 +220,7 @@ function GetVolumeLabel(AltName: String; DriveName: String): string;
 function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
 
 //Fixed HDD, USB Mass Storage 정보 얻어오기
-function GetSSDList: TSSDListResult;
+function GetSSDList: TSSDList;
 
 //용량 계산
 function GetTBStr(DivUnit, MB: Double; NumAfterPoint: Integer): String;
@@ -399,10 +395,8 @@ begin
   result.LetterCount := CurrPartition;
 end;
 
-function GetSSDList: TSSDListResult;
+function GetSSDList: TSSDList;
 var
-  i: Integer;
-  iValue: LongWord;
   wsFileObj: WideString;
   OleDrives: OleVariant;
   Dispatch: IDispatch;
@@ -410,15 +404,17 @@ var
   OleEnum: IEnumvariant;
   OleCtx: IBindCtx;
   OleMoniker: IMoniker;
-  ATAList, SCSIList: TStringList;
+
+  i: Integer;
+  iValue: LongWord;
+
+  CurrEntry: TSSDEntry;
 
   CurrDrv: Integer;
   hdrive: THandle;
 begin
+  result := TSSDList.Create;
   wsFileObj := 'winmgmts:\\localhost\root\cimv2';
-  ATAList := TStringList.Create;
-  SCSIList := TStringList.Create;
-  result.WMIEnabled := true;
   try
     OleCheck(CreateBindCtx(0, OleCtx));
     OleCheck(MkParseDisplayName(OleCtx, PWideChar(wsFileObj), i, OleMoniker));
@@ -430,64 +426,48 @@ begin
 
     while OleEnum.Next(1, OleDrives, iValue) = 0 do
     begin
-      if (not VarIsNull(OleDrives.DeviceID <> '')) and (OleDrives.MediaLoaded)
-          and (not VarIsNull(OleDrives.MediaType))then
+      if (not VarIsNull(OleDrives.DeviceID <> '')) and
+         (OleDrives.MediaLoaded) and
+         (not VarIsNull(OleDrives.MediaType)) then
       begin
+        CurrEntry.DeviceName := ExtractDeviceNum(OleDrives.DeviceID);
+
         if Pos('hard', Lowercase(OleDrives.MediaType)) >= 0 then
-          if OleDrives.InterfaceType = 'IDE' then
-            ATAList.Add(OleDrives.DeviceID)
-          else if OleDrives.InterfaceType = 'USB' then
-            SCSIList.Add(OleDrives.DeviceID + 'U')
-          else if OleDrives.InterfaceType = 'SCSI' then
-            SCSIList.Add(OleDrives.DeviceID + 'H');
+        begin
+          CurrEntry.IsUSBDevice := OleDrives.InterfaceType = 'USB';
+
+          if (OleDrives.InterfaceType = 'IDE') or
+             (OleDrives.InterfaceType = 'SCSI') or
+             (OleDrives.InterfaceType = 'USB') then
+            result.Add(CurrEntry);
+        end;
       end;
       OleDrives := Unassigned;
     end;
     OleDrivesVar :=  Unassigned;
   except
-    on e: Exception do
-    begin
-      ATAList.Add(e.Message);
-      ATAList.SaveToFile('C:\NSTwmierror.txt');
-      ATAList.Clear;
-      result.WMIEnabled := false;
-    end;
   end;
 
-  for i := 0 to ATAList.Count - 1 do
-    ATAList[i] := ExtractDeviceNum(ATAList[i]);
-  for i := 0 to SCSIList.Count - 1 do
-    SCSIList[i] := ExtractDeviceNum(SCSIList[i]);
+  if (result.Count > 0) then
+    exit;
 
-  result.ResultList := TStringList.Create;
+  for CurrDrv := 0 to 99 do
+  begin
+    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)),
+                         GENERIC_READ or GENERIC_WRITE,
+                         FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
+                         OPEN_EXISTING, 0, 0);
 
-  if (ATAList.Count > 0) or
-      (SCSIList.Count > 0) then
-  begin
-    result.ResultList.AddStrings(ATAList);
-    result.ResultList.Add('/');
-    result.ResultList.AddStrings(SCSIList);
-  end
-  else
-  begin
-    for CurrDrv := 0 to 99 do
+
+    if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
     begin
-      hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)),
-                           GENERIC_READ or GENERIC_WRITE,
-                           FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
-                           OPEN_EXISTING, 0, 0);
-
-      if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
-      begin
-        result.ResultList.Add(IntToStr(CurrDrv));
-      end;
-
-      CloseHandle(hdrive);
+      CurrEntry.DeviceName := ExtractDeviceNum(OleDrives.DeviceID);
+      CurrEntry.IsUSBDevice := false;
+      result.Add(CurrEntry);
     end;
-  end;
 
-  FreeAndNil(ATAList);
-  FreeAndNil(SCSIList);
+    CloseHandle(hdrive);
+  end;
 end;
 
 function GetTBStr(DivUnit, MB: Double; NumAfterPoint: Integer): String;

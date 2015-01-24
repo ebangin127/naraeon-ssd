@@ -4,7 +4,7 @@ interface
 
 uses SysUtils, Classes, Forms,
     Generics.Collections,
-    uRegFunctions, uExeFunctions, uLanguageSettings, uAlert;
+    uRegFunctions, uExeFunctions, uLanguageSettings, uAlert, uPathManager;
 
 type
   TOptList = TList<Boolean>;
@@ -63,11 +63,14 @@ begin
 
   //Hibernation
   if (Win32MajorVersion < 6) or
-     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then //Exclude above win8
+     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then
+     //Exclude above win8
   begin
     if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
     begin
-      OpenProcWithOutput(WinDrive, WinDir + '\System32\cmd.exe /C powercfg -h off');
+      OpenProcWithOutput(
+        TPathManager.WinDrive,
+        TPathManager.WinDir + '\System32\cmd.exe /C powercfg -h off');
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -75,7 +78,8 @@ begin
   //LastExcess
   if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
   begin
-    OpenProcWithOutput(WinDrive, 'FSUTIL behavior set disablelastaccess 1');
+    OpenProcWithOutput(
+      TPathManager.WinDrive, 'FSUTIL behavior set disablelastaccess 1');
   end;
   CurrItem := CurrItem + 1;
 
@@ -87,14 +91,22 @@ begin
     begin
       if Win32MajorVersion = 6 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnableSuperfetch', 0);
+        SetRegInt('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
+        SetRegInt('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnableSuperfetch', 0);
         SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\SysMain', 'Start', 4);
-        Resultfutil := string(OpenProcWithOutput(WinDir + '\System32', 'net stop SysMain'));
+        Resultfutil :=
+          string(OpenProcWithOutput(
+            TPathManager.WinDir + '\System32', 'net stop SysMain'));
       end
       else if Win32MajorVersion = 5 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
+        SetRegInt('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
       end;
     end;
     CurrItem := CurrItem + 1;
@@ -105,8 +117,10 @@ begin
   begin
     if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
     begin
-      SetRegStr('LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable', 'N');
-      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout', 'EnableAutoLayout', 0);
+      SetRegStr('LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction',
+        'Enable', 'N');
+      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion' +
+        '\OptimalLayout', 'EnableAutoLayout', 0);
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -121,12 +135,14 @@ begin
     if Win32MajorVersion = 6 then
     begin
       SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start', 4);
-      Resultfutil := string(OpenProcWithOutput(WinDrive, 'net stop WSearch'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
       SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start', 4);
-      Resultfutil := string(OpenProcWithOutput(WinDrive, 'net stop CiSvc'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop CiSvc'));
     end;
   end;
   CurrItem := CurrItem + 1;
@@ -135,15 +151,23 @@ begin
   if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
   begin
     SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start', 4);
-    Resultfutil := string(OpenProcWithOutput(WinDrive, 'net stop srservice'));
-    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore', 'DisableSR', 1);
+    Resultfutil :=
+      string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop srservice'));
+    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
+      '\SystemRestore', 'DisableSR', 1);
     if Is64Bit then
     begin
-      Resultfutil := string(OpenProcWithOutput(WinDrive, WinDir + '\System32\cmd.exe /C "%windir%\sysnative\vssadmin.exe" delete shadows /all /quiet'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive,
+          TPathManager.WinDir + '\System32\cmd.exe /C ' +
+          '"%windir%\sysnative\vssadmin.exe" delete shadows /all /quiet'));
     end
     else
     begin
-      Resultfutil := string(OpenProcWithOutput(WinDrive, WinDir + '\System32\cmd.exe /C "%windir%\system32\vssadmin.exe" delete shadows /all /quiet'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive,
+          TPathManager.WinDir + '\System32\cmd.exe /C ' +
+          '"%windir%\system32\vssadmin.exe" delete shadows /all /quiet'));
     end;
   end;
 
@@ -163,11 +187,14 @@ begin
 
   //Hibernation
   if (Win32MajorVersion < 6) or
-     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then //Exclude above win8
+     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then
+     //Exclude above win8
   begin
     if Optimized[CurrItem] then
     begin
-      OpenProcWithOutput(WinDrive, WinDir + '\System32\cmd.exe /C powercfg -h on');
+      OpenProcWithOutput(
+        TPathManager.WinDrive,
+        TPathManager.WinDir + '\System32\cmd.exe /C powercfg -h on');
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -175,26 +202,34 @@ begin
   //LastExcess
   if Optimized[CurrItem] then
   begin
-    OpenProcWithOutput(WinDrive, 'FSUTIL behavior set disablelastaccess 0');
+    OpenProcWithOutput(TPathManager.WinDrive,
+      'FSUTIL behavior set disablelastaccess 0');
   end;
   CurrItem := CurrItem + 1;
 
   //Prefetch
   if (Win32MajorVersion < 6) or
-     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then //Exclude above win8
+     ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then
+     //Exclude above win8
   begin
     if Optimized[CurrItem] then
     begin
       if Win32MajorVersion = 6 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnableSuperfetch', 3);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\SysMain', 'Start', 2);
-        Resultfutil := string(OpenProcWithOutput(WinDir + '\System32', 'net start SysMain'));
+        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
+        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnableSuperfetch', 3);
+        SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\SysMain',
+          'Start', 2);
+        Resultfutil := string(OpenProcWithOutput(TPathManager.WinDir +
+          '\System32',
+          'net start SysMain'));
       end
       else if Win32MajorVersion = 5 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
+        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\' +
+          'Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
       end;
     end;
     CurrItem := CurrItem + 1;
@@ -206,7 +241,8 @@ begin
     if Optimized[CurrItem] then
     begin
       SetRegStr('LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable', 'Y');
-      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout', 'EnableAutoLayout', 1);
+      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion' +
+        '\OptimalLayout', 'EnableAutoLayout', 1);
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -221,12 +257,14 @@ begin
     if Win32MajorVersion = 6 then
     begin
       SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start', 2);
-      Resultfutil := string(OpenProcWithOutput(WinDrive, 'net start WSearch'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive, 'net start WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
       SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start', 2);
-      Resultfutil := string(OpenProcWithOutput(WinDrive, 'net start CiSvc'));
+      Resultfutil :=
+        string(OpenProcWithOutput(TPathManager.WinDrive, 'net start CiSvc'));
     end;
   end;
   CurrItem := CurrItem + 1;
@@ -235,8 +273,10 @@ begin
   if Optimized[CurrItem] then
   begin
     SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start', 2);
-    Resultfutil := string(OpenProcWithOutput(WinDrive, 'net start srservice'));
-    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore', 'DisableSR', 0);
+    Resultfutil :=
+      string(OpenProcWithOutput(TPathManager.WinDrive, 'net start srservice'));
+    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
+      'SystemRestore', 'DisableSR', 0);
   end;
 
   //--- Selective ---//
@@ -258,12 +298,15 @@ begin
   if (Win32MajorVersion < 6) or
      ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then //Exclude above win8
   begin
-    Optimized[CurrItem] := not FileExists(WinDrive + '\hiberfil.sys');
+    Optimized[CurrItem] :=
+      not FileExists(TPathManager.WinDrive + '\hiberfil.sys');
     CurrItem := CurrItem + 1;
   end;
 
   //LastAccess
-  Resultfutil := string(OpenProcWithOutput(WinDrive, 'FSUTIL behavior query disablelastaccess'));
+  Resultfutil :=
+    string(OpenProcWithOutput(TPathManager.WinDrive,
+      'FSUTIL behavior query disablelastaccess'));
   Optimized[CurrItem] := not (Pos('= 0', Resultfutil) > 0);
   CurrItem := CurrItem + 1;
 
@@ -272,9 +315,11 @@ begin
      ((Win32MajorVersion = 6) and (Win32MinorVersion = 1)) then //Exclude above win8
   begin
     Optimized[CurrItem] :=
-      not (GetRegInt('LM',
-                     'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters',
-                     'EnablePrefetcher') > 0);
+      not
+        (GetRegInt('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters',
+          'EnablePrefetcher') > 0);
     CurrItem := CurrItem + 1;
   end;
 
@@ -282,12 +327,13 @@ begin
   if Win32MajorVersion = 6 then
   begin
     Optimized[CurrItem] :=
-      not ((GetRegStr('LM',
-                      'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable') <> 'N')
-            and
-           (GetRegInt('LM',
-                      'SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout',
-                      'EnableAutoLayout') <> 0));
+      not
+        ((GetRegStr('LM',
+          'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable') <> 'N')
+        and
+        (GetRegInt('LM',
+          'SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout',
+          'EnableAutoLayout') <> 0));
     CurrItem := CurrItem + 1;
   end;
 
@@ -298,11 +344,15 @@ begin
   //Indexing
   if Win32MajorVersion = 6 then
   begin
-    Optimized[CurrItem] := (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start') = 4);
+    Optimized[CurrItem] :=
+      (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch',
+        'Start') = 4);
   end
   else if Win32MajorVersion = 5 then
   begin
-    Optimized[CurrItem] := (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start') = 4);
+    Optimized[CurrItem] :=
+      (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc',
+        'Start') = 4);
   end;
   CurrItem := CurrItem + 1;
 

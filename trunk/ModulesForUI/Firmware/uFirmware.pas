@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, IdURI, Dialogs,
   uAlert, uLanguageSettings,
   uStrFunctions, uExeFunctions, uGetFirm, uSevenZip,
-  uFileFunctions, uDownloadPath, uSSDInfo;
+  uFileFunctions, uDownloadPath, uSSDInfo, uPathManager;
 
 type
   FirmCheck = record
@@ -52,13 +52,7 @@ var
 begin
   Randomize;
 
-  TempFolder :=
-    WinDrive +
-    '\NST' + IntToStr(Random(2147483647)) + '\';
-  while DirectoryExists(TempFolder) do
-    TempFolder :=
-      WinDrive +
-      '\NST' + IntToStr(Random(2147483647)) + '\';
+  TempFolder := TPathManager.TempFolder;
   CreateDir(TempFolder);
   result.FirmExists := false;
 

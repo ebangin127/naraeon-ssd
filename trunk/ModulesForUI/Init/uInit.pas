@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows, Classes, Graphics, Controls,
-  uAlert, uButtonGroup, uLanguageSettings, uGetFirm;
+  uAlert, uButtonGroup, uLanguageSettings, uGetFirm, uPathManager;
 
 procedure InitMainForm;
 procedure RefreshOptList;
@@ -56,14 +56,14 @@ end;
 
 procedure CheckEssentialDir;
 begin
-  if FileExists(AppPath + 'Setup.exe') then
-    SysUtils.DeleteFile(AppPath + 'Setup.exe');
-  if DirectoryExists(AppPath + 'Image') = false then
-    CreateDirectory(PChar(AppPath + 'Image'), nil);
-  if DirectoryExists(AppPath + 'Erase') = false then
-    CreateDirectory(PChar(AppPath + 'Erase'), nil);
-  if DirectoryExists(AppPath + 'Unetbootin') = false then
-    CreateDirectory(PChar(AppPath + 'Unetbootin'), nil);
+  if FileExists(TPathManager.AppPath + 'Setup.exe') then
+    SysUtils.DeleteFile(TPathManager.AppPath + 'Setup.exe');
+  if DirectoryExists(TPathManager.AppPath + 'Image') = false then
+    CreateDirectory(PChar(TPathManager.AppPath + 'Image'), nil);
+  if DirectoryExists(TPathManager.AppPath + 'Erase') = false then
+    CreateDirectory(PChar(TPathManager.AppPath + 'Erase'), nil);
+  if DirectoryExists(TPathManager.AppPath + 'Unetbootin') = false then
+    CreateDirectory(PChar(TPathManager.AppPath + 'Unetbootin'), nil);
 end;
 
 procedure RefreshOptList;
@@ -192,10 +192,10 @@ procedure LoadBGImage;
 begin
   with fMain do
   begin
-    if FileExists(AppPath + 'Image\bg.png') then
-      iBG.Picture.LoadFromFile(AppPath + 'Image\bg.png');
-    if FileExists(AppPath + 'Image\logo.png') then
-      iLogo.Picture.LoadFromFile(AppPath + 'Image\logo.png');
+    if FileExists(TPathManager.AppPath + 'Image\bg.png') then
+      iBG.Picture.LoadFromFile(TPathManager.AppPath + 'Image\bg.png');
+    if FileExists(TPathManager.AppPath + 'Image\logo.png') then
+      iLogo.Picture.LoadFromFile(TPathManager.AppPath + 'Image\logo.png');
   end;
 end;
 

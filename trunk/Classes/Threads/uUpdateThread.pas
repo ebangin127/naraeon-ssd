@@ -10,7 +10,7 @@ uses Classes, SysUtils, Math, Dialogs, Windows,
 type
   TUpdateThread = class(TThread)
   public
-    destructor Destroy; virtual;
+    destructor Destroy; reintroduce; virtual;
   protected
     VersionLoader: TIdHttp;
 

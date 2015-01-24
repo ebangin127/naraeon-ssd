@@ -17,7 +17,7 @@ type
                     VarResult, ExcepInfo, ArgErr: Pointer): HRESULT; stdcall;
   public
     property UserAgent: string read FUserAgent write SetUserAgent;
-    constructor Create(AOwner: TComponent); virtual;
+    constructor Create(AOwner: TComponent); reintroduce; virtual;
   end;
 
 implementation

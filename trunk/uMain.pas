@@ -12,7 +12,7 @@ uses
   uTrimThread, uLanguageSettings, uUpdateThread, uBrowser, uSevenZip,
   uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
   uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh,
-  uButtonGroup, uInit, uGetFirm, uTrimList, uRufus;
+  uButtonGroup, uInit, uGetFirm, uTrimList, uRufus, uSSDList, uPathManager;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -168,11 +168,10 @@ type
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     CurrDrive: String;
-    SSDLabel: Array of TSSDLabel;
+    SSDLabel: TSSDLabelList;
+    SSDList: TSSDList;
 
     //현재 드라이브 관련
-    CurrUSBMode: Boolean;
-    CurrATAorSCSIStatus: TStorInterface;
     FirstiOptLeft: Integer;
 
     procedure ShowProgress;
@@ -181,10 +180,6 @@ type
 
 var
   fMain: TfMain;
-
-  //프로그램 관련 Path들
-  AppPath: String;
-  WinDir, WinDrive: String;
 
 const
   MinimumSize = 290;
@@ -212,23 +207,17 @@ begin
 
   tRefresh.Enabled := false;
 
-  FileName := AppPath + 'Erase\pmagic.7z';
+  FileName := TPathManager.AppPath + 'Erase\pmagic.7z';
 
-  if (FileExists(FileName)) and (CheckUnetBootin) then
+  if (FileExists(FileName)) and (TRufus.CheckRufus) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
 
-    TempFolder :=
-      WinDrive +
-      '\NST' + IntToStr(Random(2147483647)) + '\';
-    while DirectoryExists(TempFolder) do
-      TempFolder :=
-        WinDrive +
-        '\NST' + IntToStr(Random(2147483647)) + '\';
+    TempFolder := TPathManager.TempFolder;
     CreateDir(TempFolder);
 
     TSevenZip.Extract(
-      AppPath + '7z\7z.exe',
+      TPathManager.AppPath + '7z\7z.exe',
       FileName,
       TempFolder,
       CapTrimName[LANG_ENGLISH] +
@@ -277,10 +266,10 @@ begin
   tRefresh.Enabled := false;
 
   ChkFrmResult.FirmExists := false;
-  ChkFrmResult := DownloadFirmware(AppPath, SSDInfo);
+  ChkFrmResult := DownloadFirmware(TPathManager.AppPath, SSDInfo);
 
   if (ChkFrmResult.FirmExists = false) or
-     ((CheckRufus = false) and (DownloadRufus = false)) then
+     ((TRufus.CheckRufus = false) and (DownloadRufus = false)) then
   begin
     tRefresh.Enabled := true;
     exit;
@@ -336,7 +325,6 @@ end;
 procedure TfMain.bTrimStartClick(Sender: TObject);
 var
   CurrPartition: Integer;
-  CurrDrive: Integer;
   PartCount: Integer;
   PartToTrim: TTrimList;
 begin
@@ -362,7 +350,7 @@ begin
   pDownload.Height := pDownload.Height + 10;
   pDownload.Top := pDownload.Top + 5;
 
-  CurrDrive := 0;
+  CurrDrive := '';
   PartToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
   begin
@@ -370,7 +358,6 @@ begin
     begin
       PartToTrim.Add(
         Copy(cTrimList.Items[CurrPartition], 1, 2));
-      CurrDrive := CurrDrive + 1;
     end;
   end;
   TrimThread.IsSemiAuto := false;
@@ -415,6 +402,8 @@ procedure TfMain.FormCreate(Sender: TObject);
 begin
   Optimizer := TNSTOptimizer.Create;
   SSDInfo := TSSDInfo_NST.Create;
+  SSDLabel := TSSDLabelList.Create;
+  SSDList := TSSDList.Create;
 
   CurrDrive := '';
   ShowSerial := false;
@@ -434,6 +423,8 @@ procedure TfMain.FormDestroy(Sender: TObject);
 begin
   TGetFirm.DestroyCache;
 
+  FreeAndNil(SSDList);
+  FreeAndNil(SSDLabel);
   FreeAndNil(SSDInfo);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
@@ -665,7 +656,7 @@ var
 begin
   CloseDriveList;
 
-  if CurrDrive = TSSDLabel(Sender).DriveName then
+  if CurrDrive = TSSDLabel(Sender).DeviceInfo.DeviceName then
   begin
     gSSDSel.Visible := false;
     exit;
@@ -674,13 +665,12 @@ begin
   lFirmware.Font.Color := clWindowText;
   ButtonGroup.CloseAll;
 
-  CurrDrive := TSSDLabel(Sender).DriveName;
-  CurrUSBMode := TSSDLabel(Sender).USBMode;
-  CurrATAorSCSIStatus := TSSDLabel(Sender).ATAorSCSI;
+  CurrDrive := TSSDLabel(Sender).DeviceInfo.DeviceName;
   tRefreshTimer(Self);
 
-  for CurrIndex := 0 to Length(SSDLabel) - 1 do
-    if SSDLabel[CurrIndex].DriveName = TSSDLabel(Sender).DriveName then
+  for CurrIndex := 0 to SSDLabel.Count - 1 do
+    if SSDLabel[CurrIndex].DeviceInfo.DeviceName =
+       TSSDLabel(Sender).DeviceInfo.DeviceName then
       SSDLabel[CurrIndex].Font.Style := [fsBold]
     else
       SSDLabel[CurrIndex].Font.Style := [];
@@ -721,8 +711,7 @@ end;
 
 procedure TfMain.tRefreshTimer(Sender: TObject);
 begin
-  if RefreshTimer(SSDInfo, CurrUSBMode, CurrATAorSCSIStatus,
-                  ShowSerial, firstiOptLeft) = false then
+  if RefreshTimer(SSDInfo, ShowSerial, firstiOptLeft) = false then
     Application.Terminate;
 end;
 
@@ -800,7 +789,7 @@ procedure TfMain.ShowProgress;
 var
   CurrImgLbl: Integer;
 begin
-  for CurrImgLbl := 0 to Length(SSDLabel) - 1 do
+  for CurrImgLbl := 0 to SSDLabel.Count - 1 do
     SSDLabel[CurrImgLbl].Enabled := false;
 
   iFirmUp.Enabled := false;
@@ -824,7 +813,7 @@ procedure TfMain.HideProgress;
 var
   CurrImgLbl: Integer;
 begin
-  for CurrImgLbl := 0 to Length(SSDLabel) - 1 do
+  for CurrImgLbl := 0 to SSDLabel.Count - 1 do
     SSDLabel[CurrImgLbl].Enabled := true;
 
   iFirmUp.Enabled := true;
@@ -851,7 +840,7 @@ begin
     begin
       SchedResult :=
         string(OpenProcWithOutput(
-          WinDir + '\System32',
+          TPathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
@@ -863,7 +852,7 @@ begin
     else
       SchedResult :=
         string(OpenProcWithOutput(
-          WinDir + '\System32',
+          TPathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
@@ -874,7 +863,7 @@ begin
   else
     SchedResult :=
       string(OpenProcWithOutput(
-        WinDir + '\System32',
+        TPathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
         '/TN "MANTRIM' + SSDInfo.Serial + '" ' +    //작업 이름
         '/F'));                                     //강제 삭제
@@ -894,7 +883,7 @@ begin
     'http://nstfirmware.naraeon.net/nst_rufus.htm';
   Src.FType := dftGetFromWeb;
 
-  Dest.FBaseAddress := AppPath;
+  Dest.FBaseAddress := TPathManager.AppPath;
   Dest.FFileAddress := 'Rufus\rufus.exe_tmp';
   Dest.FType := dftPlain;
 
@@ -908,10 +897,10 @@ begin
     AlertCreate(Self, AlrtFirmCanc[CurrLang]);
     exit;
   end;
-  RenameFile(AppPath + 'Rufus\rufus.exe_tmp',
-             AppPath + 'Rufus\rufus.exe');
+  RenameFile(TPathManager.AppPath + 'Rufus\rufus.exe_tmp',
+             TPathManager.AppPath + 'Rufus\rufus.exe');
 
-  result := CheckUnetbootin;
+  result := TRufus.CheckRufus;
 end;
 
 procedure TfMain.ProgressDownload;
@@ -932,7 +921,7 @@ begin
   Src.FFileAddress := '/Setup.exe';
   Src.FType := dftPlain;
 
-  Dest.FBaseAddress := AppPath;
+  Dest.FBaseAddress := TPathManager.AppPath;
   Dest.FFileAddress := 'Setup.exe';
   Dest.FType := dftPlain;
 
@@ -944,7 +933,8 @@ begin
 
   ButtonGroup.Close;
   AlertCreate(Self, AlrtUpdateExit[CurrLang]);
-  ShellExecute(0, nil, PChar(AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
+  ShellExecute(0, nil,
+    PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
   Application.Terminate;
 end;
 
@@ -965,7 +955,7 @@ begin
   cTrimRunning.Checked :=
     Pos('MANTRIM' + SSDInfo.Serial,
       UnicodeString(OpenProcWithOutput(
-        WinDir + '\System32',
+        TPathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;
 end;
 
