@@ -3,16 +3,18 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  Winapi.Windows, Winapi.Messages, System.SysUtils,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.CheckLst, WinInet, URLMon, idHttp,
-  Vcl.OleCtrls, uRegFunctions, uDiskFunctions, Vcl.ExtCtrls, ShellApi, Math,
-  Vcl.Imaging.pngimage, ShlObj, IdComponent, MMSystem, Vcl.Mask, Vcl.ComCtrls,
-  uAlert, uMessage, uSSDSupport, uLogSystem, uSSDInfo, uStrFunctions,
-  uTrimThread, uLanguageSettings, uUpdateThread, uBrowser, uSevenZip,
-  uSMARTFunctions, uPartitionFunctions, uOptimizer, uExeFunctions, uUSBDrive,
-  uFileFunctions, uImager, uDownloadPath, uPlugAndPlay, uFirmware, uRefresh,
-  uButtonGroup, uInit, uGetFirm, uTrimList, uRufus, uSSDList, uPathManager;
+  Vcl.StdCtrls, Vcl.CheckLst, WinInet,
+  Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
+  Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
+  uAlert, uMessage, uBrowser, uLanguageSettings,
+  uSSDInfo, uSSDSupport, uLogSystem, uSSDList,
+  uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
+  uDiskFunctions, uSMARTFunctions, uPartitionFunctions, uExeFunctions,
+  uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
+  uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
+  uUpdateThread, uTrimThread, uTrimList;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -232,7 +234,7 @@ begin
 
     FileName := TempFolder + 'pmagic.iso';
 
-    ProcessImager(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
+    TRufus.RunRufus(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
     DeleteDirectory(TempFolder);
   end
@@ -284,7 +286,7 @@ begin
   else
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
-    ProcessImager(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
+    TRufus.RunRufus(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
       ChkFrmResult.FirmPath);
     AlertCreate(Self, AlrtFirmEnd[CurrLang]);
     DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));

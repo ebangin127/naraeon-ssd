@@ -77,9 +77,6 @@ init.done:
 FunctionEnd
 
 Section "MainSection" SEC01
-  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
-  Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
-
   SetOverwrite on
 
   SetOutPath "$INSTDIR\SSDTools\Rufus"
@@ -87,11 +84,14 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
-  File "..\Exe\NSTDiagSvc_New.exe"
+
+  File "..\Exe\NSTDiagSvc_Patch.exe"
+  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" /uninstall /silent'
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
+  Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
 
   SetShellVarContext all
-  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Parted Magic).lnk"
-  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(GParted).lnk"
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall.lnk"
   Delete "$DESKTOP\Naraeon SSD Tools.lnk"
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk"

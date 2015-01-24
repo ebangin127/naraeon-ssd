@@ -10,6 +10,7 @@ type
   TRufus = class
   public
     class function CheckRufus: Boolean;
+    class procedure RunRufus(DestDrive, FromISO: String);
     class procedure SetRufus
       (RufusPath, DriveName, ISOPath: String);
   private
@@ -46,6 +47,17 @@ const
 class function TRufus.CheckRufus: Boolean;
 begin
   result := FileExists(TPathManager.AppPath + 'Rufus\rufus.exe');
+end;
+
+class procedure TRufus.RunRufus(DestDrive, FromISO: String);
+begin
+  DestDrive := Copy(DestDrive, 1, 2);
+
+  TRufus.SetRufus(
+    TPathManager.AppPath + '\Rufus\rufus.exe',
+    DestDrive, FromISO);
+
+  DeleteFile(FromISO);
 end;
 
 class function TRufus.FindMainWindow: THandle;

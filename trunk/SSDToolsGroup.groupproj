@@ -6,7 +6,7 @@
         <Projects Include="SSDTools.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Service\NSTDiagSvc_New.dproj">
+        <Projects Include="Service\NSTDiagSvc_Patch.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -26,23 +26,23 @@
     <Target Name="SSDTools:Make">
         <MSBuild Projects="SSDTools.dproj" Targets="Make"/>
     </Target>
-    <Target Name="NSTDiagSvc_New">
-        <MSBuild Projects="Service\NSTDiagSvc_New.dproj"/>
+    <Target Name="NSTDiagSvc_Patch">
+        <MSBuild Projects="Service\NSTDiagSvc_Patch.dproj"/>
     </Target>
-    <Target Name="NSTDiagSvc_New:Clean">
-        <MSBuild Projects="Service\NSTDiagSvc_New.dproj" Targets="Clean"/>
+    <Target Name="NSTDiagSvc_Patch:Clean">
+        <MSBuild Projects="Service\NSTDiagSvc_Patch.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="NSTDiagSvc_New:Make">
-        <MSBuild Projects="Service\NSTDiagSvc_New.dproj" Targets="Make"/>
+    <Target Name="NSTDiagSvc_Patch:Make">
+        <MSBuild Projects="Service\NSTDiagSvc_Patch.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="SSDTools;NSTDiagSvc_New"/>
+        <CallTarget Targets="SSDTools;NSTDiagSvc_Patch"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SSDTools:Clean;NSTDiagSvc_New:Clean"/>
+        <CallTarget Targets="SSDTools:Clean;NSTDiagSvc_Patch:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SSDTools:Make;NSTDiagSvc_New:Make"/>
+        <CallTarget Targets="SSDTools:Make;NSTDiagSvc_Patch:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

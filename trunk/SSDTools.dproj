@@ -160,7 +160,6 @@
         <DCCReference Include="Modules\Windows\uFileFunctions.pas"/>
         <DCCReference Include="Modules\Etc\uStrFunctions.pas"/>
         <DCCReference Include="Modules\Windows\uExeFunctions.pas"/>
-        <DCCReference Include="Modules\Windows\uImager.pas"/>
         <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>
         <DCCReference Include="Classes\SSDInfo\uSSDInfo.pas"/>

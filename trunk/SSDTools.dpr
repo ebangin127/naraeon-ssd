@@ -19,7 +19,6 @@ uses
   uFileFunctions in 'Modules\Windows\uFileFunctions.pas',
   uStrFunctions in 'Modules\Etc\uStrFunctions.pas',
   uExeFunctions in 'Modules\Windows\uExeFunctions.pas',
-  uImager in 'Modules\Windows\uImager.pas',
   uLogSystem in 'Classes\LogSystem\uLogSystem.pas',
   uOptimizer in 'Classes\Optimizer\uOptimizer.pas',
   uSSDInfo in 'Classes\SSDInfo\uSSDInfo.pas',
@@ -102,7 +101,7 @@ begin
       MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-      fMain.Caption := Cap;
+  fMain.Caption := Cap;
       Application.Run;
     end;
   end;

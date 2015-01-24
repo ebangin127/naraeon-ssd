@@ -38,11 +38,16 @@ type
     procedure ServiceBeforeUnInstall(Sender: TService);
     procedure ServiceBeforeInstall(Sender: TService);
   private
+    OldSvc: String;
+    NewSvc: String;
+
     procedure RefreshDrives;
     procedure CheckDrives;
     procedure DeletePrevSvc;
     procedure LoggerCreate(CurrDrv: Integer);
     procedure MainWorks(SSDInfo: TSSDInfo_NST);
+
+    function KillAllSvc: Boolean;
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
@@ -50,8 +55,7 @@ type
 
 function GetServiceExecutablePath(strServiceName: string): String;
 function DeleteServiceNST(strServiceName: string): String;
-function KillAllSvc(): Boolean;
-function KillSelf(): Boolean;
+function KillSelf: Boolean;
 function KillProcess(const ProcName: String; Suicide: Boolean): Boolean;
 
 var
@@ -124,6 +128,14 @@ var
   Reg: TRegistry;
   aHandle: THandle;
 begin
+  KillAllSvc;
+  if Length(NewSvc) = 0 then
+  begin
+    DeletePrevSvc;
+    KillSelf;
+  end;
+  DeletePrevSvc;
+
   if GetSystemDefaultLangID = 1042 then
     CurrLang := LANG_HANGUL
   else
@@ -151,22 +163,14 @@ end;
 
 procedure TNaraeonSSDToolsDiag.ServiceBeforeInstall(Sender: TService);
 begin
-  KillAllSvc();
-  DeletePrevSvc;
+  OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
+  NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceBeforeUnInstall(Sender: TService);
-var
-  NewSvc: String;
 begin
+  OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
   NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
-  KillAllSvc();
-  if Length(NewSvc) = 0 then
-  begin
-    DeletePrevSvc;
-    KillSelf();
-  end;
-  DeletePrevSvc;
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceCreate(Sender: TObject);
@@ -178,7 +182,6 @@ begin
     ExtractFilePath(GetRegStr('LM',
       'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
       'UninstallString'));
-  KillAllSvc;
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
@@ -498,21 +501,19 @@ begin
   end;
 end;
 
-function KillAllSvc(): Boolean;
-var
-  OldSvc: String;
-  NewSvc: String;
+function TNaraeonSSDToolsDiag.KillAllSvc: Boolean;
 begin
-  OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
-  NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
-  Result :=
-    KillProcess(OldSvc, False) and
-    KillProcess(NewSvc, False) and
-    KillProcess('NSTDiagSvc_New.exe', False) and
-    KillProcess('NSTDiagSvc.exe', False);
+  repeat
+    Result :=
+      KillProcess(OldSvc, False) and
+      KillProcess(NewSvc, False) and
+      KillProcess('NSTDiagSvc_New.exe', False) and
+      KillProcess('NSTDiagSvc.exe', False);
+    Sleep(10);
+  until Result;
 end;
 
-function KillSelf(): Boolean;
+function KillSelf: Boolean;
 var
   hProcess: THandle;
 begin

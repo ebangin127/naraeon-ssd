@@ -60,11 +60,6 @@ Function .onInit
 FunctionEnd
 
 Section "MainSection" SEC01
-  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc.exe 0 +2
-  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc.exe" /uninstall /silent'
-  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
-  Exec '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /uninstall /silent'
-
   SetOutPath "$INSTDIR\SSDTools\Rufus"
   File "..\Exe\Rufus\rufus.exe"
 
@@ -83,14 +78,17 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
-  File "..\Exe\NSTDiagSvc_New.exe"
+
+  File "..\Exe\NSTDiagSvc_Patch.exe"
+  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" /uninstall /silent'
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
+  Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
 
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
-
-  CreateDirectory "$INSTDIR\SSDTools\Unetbootin"
 
   ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd

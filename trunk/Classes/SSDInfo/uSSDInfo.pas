@@ -1,4 +1,4 @@
-unit uSSDInfo;
+﻿unit uSSDInfo;
 
 interface
 
@@ -112,7 +112,7 @@ const
   SimulationModel = 'PLEXTOR PX-128M3P';
   SimulationFirmware = '1.03';
 
-  CurrentVersion = '4.7.3';
+  CurrentVersion = '4.8.0';
 
 implementation
 
