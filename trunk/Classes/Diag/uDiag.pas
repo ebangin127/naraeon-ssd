@@ -20,19 +20,19 @@ implementation
 
 class procedure TDiag.Diagnosis;
 var
-  DiagContents: TStringList;
+  DiagClipBrd: TStringList;
 begin
-  DiagContents := TStringList.Create;
+  DiagClipBrd := TStringList.Create;
 
-  Header(DiagContents);
-  Body(DiagContents);
-  Footer(DiagContents);
+  Header(DiagClipBrd);
+  Body(DiagClipBrd);
+  Footer(DiagClipBrd);
 
-  Clipboard.AsText := DiagContents.Text;
+  Clipboard.AsText := DiagClipBrd.Text;
   MessageBox(0, PChar(DiagContents[CurrLang]), PChar(DiagName[CurrLang]),
     MB_OK or MB_IConInformation);
 
-  FreeAndNil(DiagContents);
+  FreeAndNil(DiagClipBrd);
 end;
 
 class procedure TDiag.Header(Contents: TStringList);

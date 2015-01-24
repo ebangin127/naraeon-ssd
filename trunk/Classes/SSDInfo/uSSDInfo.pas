@@ -239,9 +239,7 @@ begin
   SSDSupport.SupportHostWrite := GetWriteSupportLevel(Model, Firmware);
 
   if IsNewVersion(Model, Firmware) <> NOT_MINE then
-  begin
     SSDSupport.SupportFirmUp := true;
-  end;
 
   S10085 := IsS10085Affected(Model, Firmware);
 end;

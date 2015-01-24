@@ -78,6 +78,7 @@ begin
 
   MutexAppear := 0;
 
+  TGetFirm.CreateCache;
   case RunMode of
   RM_NORMAL:
   begin
@@ -101,7 +102,7 @@ begin
       MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-  fMain.Caption := Cap;
+      fMain.Caption := Cap;
       Application.Run;
     end;
   end;
@@ -114,9 +115,11 @@ begin
   RM_SEMIAUTO:
   begin
     TSemiAuto.SemiAutoTrim(ParamStr(1), ParamStr(2));
+    TGetFirm.DestroyCache;
   end;
 
   end;
+  TGetFirm.DestroyCache;
 
   if MutexAppear <> 0 then
   begin

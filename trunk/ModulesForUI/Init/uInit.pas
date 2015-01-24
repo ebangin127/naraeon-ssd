@@ -201,7 +201,6 @@ end;
 
 procedure InitMainForm;
 begin
-  TGetFirm.CreateCache;
   CheckVersion;
   CreateButtonGroup;
   InitFormSizeAndIcon;
