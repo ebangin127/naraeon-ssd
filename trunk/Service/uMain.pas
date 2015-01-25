@@ -35,28 +35,17 @@ type
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
     procedure ServiceShutdown(Sender: TService);
     procedure ServiceAfterUninstall(Sender: TService);
-    procedure ServiceBeforeUnInstall(Sender: TService);
-    procedure ServiceBeforeInstall(Sender: TService);
   private
-    OldSvc: String;
-    NewSvc: String;
-
     procedure RefreshDrives;
     procedure CheckDrives;
-    procedure DeletePrevSvc;
     procedure LoggerCreate(CurrDrv: Integer);
     procedure MainWorks(SSDInfo: TSSDInfo_NST);
-
-    function KillAllSvc: Boolean;
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
   end;
 
 function GetServiceExecutablePath(strServiceName: string): String;
-function DeleteServiceNST(strServiceName: string): String;
-function KillSelf: Boolean;
-function KillProcess(const ProcName: String; Suicide: Boolean): Boolean;
 
 var
   NaraeonSSDToolsDiag: TNaraeonSSDToolsDiag;
@@ -99,6 +88,7 @@ begin
         'Naraeon SSD Tools - SSD life alerter service.');
       Reg.CloseKey;
     end;
+
     Reg.RootKey := HKEY_CLASSES_ROOT;
     if Reg.OpenKey('.' + 'err', True) then
     begin
@@ -126,31 +116,7 @@ end;
 procedure TNaraeonSSDToolsDiag.ServiceAfterUninstall(Sender: TService);
 var
   Reg: TRegistry;
-  aHandle: THandle;
 begin
-  KillAllSvc;
-  if Length(NewSvc) = 0 then
-  begin
-    DeletePrevSvc;
-    KillSelf;
-  end;
-  DeletePrevSvc;
-
-  if GetSystemDefaultLangID = 1042 then
-    CurrLang := LANG_HANGUL
-  else
-    CurrLang := LANG_ENGLISH;
-  Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
-
-  aHandle := FindWindow(Nil, PChar(Cap));
-
-  while aHandle <> 0 do
-  begin
-    Sleep(10);
-    SendMessage(aHandle, WM_CLOSE, 0, 0);
-    aHandle := FindWindow(Nil, PChar(Cap));
-  end;
-
   Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
   try
     Reg.RootKey := HKEY_CLASSES_ROOT;
@@ -159,18 +125,6 @@ begin
   finally
     Reg.Free;
   end;
-end;
-
-procedure TNaraeonSSDToolsDiag.ServiceBeforeInstall(Sender: TService);
-begin
-  OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
-  NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
-end;
-
-procedure TNaraeonSSDToolsDiag.ServiceBeforeUnInstall(Sender: TService);
-begin
-  OldSvc := ExtractFileName(GetServiceExecutablePath('NareonSSDToolsDiag'));
-  NewSvc := ExtractFileName(GetServiceExecutablePath('NaraeonSSDToolsDiag'));
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceCreate(Sender: TObject);
@@ -421,58 +375,6 @@ begin
   FreeAndNil(TempSSDInfo);
 end;
 
-procedure TNaraeonSSDToolsDiag.DeletePrevSvc;
-var
-  Reg: TRegistry;
-begin
-  DeleteServiceNST('NareonSSDToolsDiag');
-  DeleteServiceNST('NaraeonSSDToolsDiag');
-  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
-  try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NareonSSDToolsDiag',
-                    false) then
-    begin
-      Reg.CloseKey;
-      Reg.RootKey := HKEY_LOCAL_MACHINE;
-      Reg.OpenKey('SYSTEM\CurrentControlSet\Services', false);
-      Reg.DeleteKey('NareonSSDToolsDiag');
-      Reg.CloseKey;
-    end;
-    Reg.CloseKey;
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey('SYSTEM\CurrentControlSet\Services\NaraeonSSDToolsDiag',
-                    false) then
-    begin
-      Reg.CloseKey;
-      Reg.RootKey := HKEY_LOCAL_MACHINE;
-      Reg.OpenKey('SYSTEM\CurrentControlSet\Services', false);
-      Reg.DeleteKey('NaraeonSSDToolsDiag');
-      Reg.CloseKey;
-    end;
-  finally
-    FreeAndNil(Reg);
-  end;
-end;
-
-function DeleteServiceNST(strServiceName: string): String;
-var
-  hSCManager,hSCService: SC_Handle;
-begin
-  Result := '';
-  hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
-  if (hSCManager > 0) then
-  begin
-    hSCService := OpenService(hSCManager, PChar(strServiceName),
-                              SERVICE_QUERY_CONFIG);
-    if (hSCService > 0) then
-    begin
-      DeleteService(hSCService);
-      CloseServiceHandle(hSCService);
-    end;
-  end;
-end;
-
 function GetServiceExecutablePath(strServiceName: string): String;
 var
   hSCManager, hSCService: SC_Handle;
@@ -499,18 +401,6 @@ begin
       CloseServiceHandle(hSCService);
     end;
   end;
-end;
-
-function TNaraeonSSDToolsDiag.KillAllSvc: Boolean;
-begin
-  repeat
-    Result :=
-      KillProcess(OldSvc, False) and
-      KillProcess(NewSvc, False) and
-      KillProcess('NSTDiagSvc_New.exe', False) and
-      KillProcess('NSTDiagSvc.exe', False);
-    Sleep(10);
-  until Result;
 end;
 
 function KillSelf: Boolean;

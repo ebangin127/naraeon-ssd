@@ -290,6 +290,7 @@ begin
       ChkFrmResult.FirmPath);
     AlertCreate(Self, AlrtFirmEnd[CurrLang]);
     DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));
+    DeleteDirectory(ChkFrmResult.TempFolder);
   end;
 
   tRefresh.Enabled := true;

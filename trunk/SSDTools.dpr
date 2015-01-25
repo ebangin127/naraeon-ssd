@@ -45,7 +45,7 @@ uses
   uSemiAuto in 'Classes\SemiAuto\uSemiAuto.pas';
 
 type
-  TRunMode = (RM_NORMAL, RM_DIAG, RM_SEMIAUTO);
+  TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);
 
 {$R *.res}
 var
@@ -73,6 +73,8 @@ begin
 
   if ParamInUpper = '/DIAG' then
     RunMode := RM_DIAG
+  else if ParamInUpper = '/UNINSTALL' then
+    RunMode := RM_UNINSTALL
   else if (not SimulationMode) and (ParamInUpper <> '') then
     RunMode := RM_SEMIAUTO;
 
@@ -105,6 +107,11 @@ begin
       fMain.Caption := Cap;
       Application.Run;
     end;
+  end;
+
+  RM_UNINSTALL:
+  begin
+    DeletePrevSvc;
   end;
 
   RM_DIAG:

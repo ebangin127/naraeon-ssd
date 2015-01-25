@@ -80,7 +80,7 @@ Section "MainSection" SEC01
   File "..\Exe\SSDTools.exe"
 
   File "..\Exe\NSTDiagSvc_Patch.exe"
-  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" /uninstall /silent'
+  ExecWait '"$INSTDIR\SSDTools\SSDTools.exe" /uninstall'
   IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"

@@ -12,6 +12,7 @@ type
   FirmCheck = record
     FirmExists: Boolean;
     FirmPath: String;
+    TempFolder: String;
   end;
 
 function DownloadFirmware(AppPath: String; SSDInfo: TSSDInfo): FirmCheck;
@@ -54,6 +55,7 @@ begin
 
   TempFolder := TPathManager.TempFolder;
   CreateDir(TempFolder);
+  result.TempFolder := TempFolder;
   result.FirmExists := false;
 
   FileEx1 := FileExists(TempFolder + SSDInfo.Model + '.exe');

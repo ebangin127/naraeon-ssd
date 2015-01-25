@@ -4,12 +4,15 @@ interface
 
 uses
   SysUtils, Classes, Windows, Dialogs,
-  uRegFunctions;
+  uRegFunctions, WinSvc, Registry;
 
 function WriteBufferCheck: TStringList; //쓰기 버퍼 체크되어있나 확인
 function OpenProcWithOutput(Path: String; Command: String): AnsiString; //프로그램 열기
 procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
+
+procedure StopServiceNST(strServiceName: String);
+procedure DeletePrevSvc;
 
 implementation
 
@@ -169,5 +172,86 @@ begin
   finally
     FreeLibrary(vKernel32Handle);
   end;
+end;
+
+function FindServiceNST(strServiceName: String): Boolean;
+var
+  hSCManager, hSCService: SC_Handle;
+begin
+  hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
+  result := false;
+  if (hSCManager > 0) then
+  begin
+    hSCService := OpenService(hSCManager, PChar(strServiceName),
+      SERVICE_QUERY_CONFIG);
+    if (hSCService > 0) then
+    begin
+      CloseServiceHandle(hSCService);
+      result := true;
+    end;
+  end;
+end;
+
+procedure StopServiceNST(strServiceName: String);
+var
+  hSCManager, hSCService: SC_Handle;
+  sServiceStat: TServiceStatus;
+  dwChkP: DWord;
+begin
+  if not FindServiceNST(strServiceName) then
+    exit;
+
+  hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
+  if (hSCManager > 0) then
+  begin
+    hSCService := OpenService(hSCManager, PChar(strServiceName),
+      SERVICE_QUERY_CONFIG or SERVICE_STOP);
+    if (hSCService > 0) and
+       (ControlService(hSCService, SERVICE_CONTROL_STOP, sServiceStat)) and
+       (QueryServiceStatus(hSCService, sServiceStat)) then
+    begin
+      while(SERVICE_STOPPED <> sServiceStat.dwCurrentState)do
+      begin
+        dwChkP := sServiceStat.dwCheckPoint;
+        Sleep(sServiceStat.dwWaitHint);
+
+        if (not QueryServiceStatus(hSCService, sServiceStat)) or
+           (sServiceStat.dwCheckPoint < dwChkP) then
+          break;
+      end;
+    end;
+    CloseServiceHandle(hSCService);
+  end;
+  CloseServiceHandle(hSCManager);
+end;
+
+procedure DeleteServiceNST(strServiceName: String);
+var
+  hSCManager, hSCService: SC_Handle;
+begin
+  hSCManager := OpenSCManager(nil, nil, SC_MANAGER_ALL_ACCESS);
+  if (hSCManager > 0) then
+  begin
+    hSCService := OpenService(hSCManager, PChar(strServiceName),
+                              SERVICE_ALL_ACCESS);
+    if (hSCService > 0) then
+    begin
+      DeleteService(hSCService);
+      CloseServiceHandle(hSCService);
+    end;
+  end;
+  CloseServiceHandle(hSCManager);
+end;
+
+procedure DeletePrevSvc;
+begin
+  repeat
+    StopServiceNST('NareonSSDToolsDiag');
+    StopServiceNST('NaraeonSSDToolsDiag');
+    DeleteServiceNST('NareonSSDToolsDiag');
+    DeleteServiceNST('NaraeonSSDToolsDiag');
+    Sleep(10);
+  until (not FindServiceNST('NareonSSDToolsDiag')) and
+        (not FindServiceNST('NaraeonSSDToolsDiag'));
 end;
 end.
