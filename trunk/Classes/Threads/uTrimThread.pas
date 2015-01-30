@@ -50,7 +50,11 @@ begin
 
   PartCount := PartListToTrim.Count;
   if (not result) or (PartCount = 0) then
+  begin
+    if PartListToTrim <> nil then
+      FreeAndNil(PartListToTrim);
     exit;
+  end;
   
   SetLength(NeedTrimPartition, PartCount);
   SetLength(NeedTrimLBASize, PartCount);
@@ -60,6 +64,8 @@ begin
     NeedTrimPartition[CurrDrive] := PartListToTrim[CurrDrive];
     NeedTrimLBASize[CurrDrive] := LBA_SIZE;
   end;
+  
+  FreeAndNil(PartListToTrim);
 end;
 
 procedure TTrimThread.Execute;
