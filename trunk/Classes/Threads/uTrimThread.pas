@@ -1,4 +1,4 @@
-unit uTrimThread;
+﻿unit uTrimThread;
 
 interface
 
@@ -287,6 +287,6 @@ begin
   fMain.pDownload.Top := fMain.pDownload.Top - 5;
   fMain.pDownload.Position := 0;
   fMain.gTrim.Visible := true;
-  fMain.HideDownloader;
+  fMain.HideProgress;
 end;
 end.
