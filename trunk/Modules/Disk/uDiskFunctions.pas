@@ -4,7 +4,7 @@ interface
 
 uses Windows, SysUtils, Dialogs, Math, Classes,
      ComObj, ShellAPI, Variants, ActiveX,
-     uRegFunctions, uPartitionFunctions, uStrFunctions,
+     uRegFunctions, uPartitionFunctions, uStrFunctions, uDatasizeUnit,
      uSSDList;
 
 type
@@ -222,9 +222,6 @@ function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
 //Fixed HDD, USB Mass Storage 정보 얻어오기
 function GetSSDList: TSSDList;
 
-//용량 계산
-function GetTBStr(DivUnit, MB: Double; NumAfterPoint: Integer): String;
-
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
   IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16)
@@ -283,12 +280,30 @@ begin
   result.LetterCount := DriveCount;
 end;
 
-function GetVolumeLabel(AltName: String; DriveName: String): string;
+function GetSizeOfDiskInMB(DriveName: String): Double;
 var
-  NotUsed:     DWORD;
+  SizeOfDiskInByte: Int64;
+  ByteToMega: DatasizeUnitChangeSetting;
+begin
+  SizeOfDiskInByte := DiskSize(Pos(DriveName[1], VolumeNames));
+
+  ByteToMega.FNumeralSystem := Denary;
+  ByteToMega.FFromUnit := ByteUnit;
+  ByteToMega.FToUnit := MegaUnit;
+
+  exit(ChangeDatasizeUnit(SizeOfDiskInByte, ByteToMega));
+end;
+
+function GetVolumeLabel(AltName: String; DriveName: String): string;
+const
+  VolumeLabelSetting: FormatSizeSetting =
+    (FNumeralSystem: Binary; FPrecision: 0);
+var
+  NotUsed: DWORD;
   VolumeFlags: DWORD;
   VolumeSerialNumber: DWORD;
   Buf: array [0..MAX_PATH] of Char;
+  SizeOfDiskInMB: Double;
 begin
   FillMemory(@Buf, Length(Buf) * SizeOf(Char), 0);
   GetVolumeInformation(PChar(DriveName), Buf, SizeOf(Buf), @VolumeSerialNumber,
@@ -298,10 +313,10 @@ begin
     CopyMemory(@Buf, @AltName[1],
                Length(AltName) * SizeOf(Char));
 
-  Result := DriveName + ' (' + Buf + ' - ' +
-            GetTBStr(1024,
-                     DiskSize(Pos(DriveName[1], VolumeNames)) / 1024 / 1024, 0)
-                     + ')';
+  SizeOfDiskInMB := GetSizeOfDiskInMB(DriveName);
+  Result :=
+    DriveName + ' (' + Buf + ' - ' +
+      FormatSizeInMB(SizeOfDiskInMB, VolumeLabelSetting) + ')';
 end;
 
 
@@ -470,28 +485,5 @@ begin
   end;
 end;
 
-function GetTBStr(DivUnit, MB: Double; NumAfterPoint: Integer): String;
-begin
-  if MB > (DivUnit * DivUnit * DivUnit / 4 * 3) then //Above 0.75PB
-  begin
-    result := Format('%.' + IntToStr(NumAfterPoint) +
-                            'fPB', [MB / DivUnit / DivUnit / DivUnit]);
-  end
-  else if MB > (DivUnit * DivUnit / 4 * 3) then //Above 0.75TB
-  begin
-    result := Format('%.' + IntToStr(NumAfterPoint) +
-                            'fTB', [MB / DivUnit / DivUnit]);
-  end
-  else if MB > (DivUnit / 4 * 3) then //Above 0.75GB
-  begin
-    result := Format('%.' + IntToStr(NumAfterPoint) +
-                            'fGB', [MB / DivUnit]);
-  end
-  else
-  begin
-    result := Format('%.' + IntToStr(NumAfterPoint) +
-                            'fMB', [MB]);
-  end;
-end;
 end.
 

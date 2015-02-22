@@ -42,7 +42,12 @@ uses
   uDiag in 'Classes\Diag\uDiag.pas',
   uSSDList in 'Classes\SSDList\uSSDList.pas',
   uPathManager in 'Classes\PathManager\uPathManager.pas',
-  uSemiAuto in 'Classes\SemiAuto\uSemiAuto.pas';
+  uSemiAuto in 'Classes\SemiAuto\uSemiAuto.pas',
+  uErase in 'Classes\Erase\uErase.pas',
+  uDatasizeUnit in 'Classes\MeasureUnit\uDatasizeUnit.pas',
+  uTimeUnit in 'Classes\MeasureUnit\uTimeUnit.pas',
+  uInitializer in 'Classes\Initializer\uInitializer.pas',
+  uLocaleApplier in 'ModulesForUI\Init\uLocaleApplier.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);
@@ -104,7 +109,7 @@ begin
       MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened');
       Application.MainFormOnTaskbar := True;
       Application.CreateForm(TfMain, fMain);
-      fMain.Caption := Cap;
+  fMain.Caption := Cap;
       Application.Run;
     end;
   end;

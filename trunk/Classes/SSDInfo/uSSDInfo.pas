@@ -84,7 +84,7 @@ type
     ///   <para>S10085 False: 기본 64MB 단위</para>
     ///   <para>S10085 True: 기본 128MB 단위</para>
     /// </remarks>
-    HostWrites: UInt64;
+    HostWriteInLiteONUnit: UInt64;
     EraseError: UInt64;
     ReplacedSectors: UInt64;
     RepSectorAlert: Boolean;
@@ -257,9 +257,9 @@ begin
   //HostWrites
   if SSDSupport.SupportHostWrite = HSUPPORT_FULL then
   begin
-    HWResult := GetHostWrites(Model, Firmware, SMARTData, S10085);
+    HWResult := GetHostWriteInLiteONUnit(Model, Firmware, SMARTData, S10085);
     IsHostWrite := HWResult.IsHostWrite;
-    HostWrites := HWResult.HostWrites;
+    HostWriteInLiteONUnit := HWResult.HostWriteInLiteONUnit;
   end;
 
   //EraseError

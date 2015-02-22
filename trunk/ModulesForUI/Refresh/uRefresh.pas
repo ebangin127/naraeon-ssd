@@ -6,7 +6,8 @@ uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
   uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
   uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
-  uSMARTFunctions, uStrFunctions, uLogSystem, uGetFirm, uSSDList, uPathManager;
+  uSMARTFunctions, uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm, uSSDList,
+  uPathManager;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
                       ShowSerial: Boolean;
@@ -28,16 +29,42 @@ implementation
 
 uses uMain;
 
+function BinaryToDenary(Size: Double): Double;
+begin
+  exit(Size * (512 / 500));
+end;
+
+function LBAtoKB(Size: Double): Double;
+begin
+  exit(Size / 2);
+end;
+
 procedure ApplyBasicInfo(SSDInfo: TSSDInfo_NST;
   ShowSerial: Boolean);
 var
   CurrNum: Integer;
+  DenaryUserSizeInKB: Double;
+  KBtoMB: DatasizeUnitChangeSetting;
+  DenaryInteger: FormatSizeSetting;
 begin
   with fMain do
   begin
+    KBtoMB.FNumeralSystem := Denary;
+    KBtoMB.FFromUnit := KiloUnit;
+    KBtoMB.FToUnit := MegaUnit;
+
+    DenaryUserSizeInKB :=
+      ChangeDatasizeUnit(
+        LBAtoKB(BinaryToDenary(SSDInfo.UserSize)),
+        KBtoMB);
+
+    DenaryInteger.FNumeralSystem := Denary;
+    DenaryInteger.FPrecision := 0;
+
     lName.Caption :=
       SSDInfo.Model + ' ' +
-      GetTBStr(1000, SSDInfo.UserSize / 2 * (512/500) / 1000, 0);
+      FormatSizeInMB(DenaryUserSizeInKB, DenaryInteger);
+
     lFirmware.Caption :=
       CapFirmware[CurrLang] + SSDInfo.Firmware;
 
@@ -89,12 +116,13 @@ end;
 
 procedure ApplyHostWrite(SSDInfo: TSSDInfo_NST);
 var
-  HostWrites: UInt64;
+  HostWriteInMB, HostWriteInLiteONUnit: UInt64;
   CurrWritLog: TNSTLog;
   AvgDays, CurrAvgDay: Integer;
+  BinaryPointOne: FormatSizeSetting;
 begin
   SSDInfo.CollectAllSmartData;
-  HostWrites := SSDInfo.HostWrites;
+  HostWriteInLiteONUnit := SSDInfo.HostWriteInLiteONUnit;
 
   //통계 미지원 걸러냄
   if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
@@ -120,14 +148,18 @@ begin
       else
         lHost.Caption := CapNandWrite[CurrLang];
 
+      HostWriteInMB := LiteONUnitToMB(HostWriteInLiteONUnit);
+      BinaryPointOne.FNumeralSystem := Binary;
+      BinaryPointOne.FPrecision := 1;
+
       lHost.Caption :=
         lHost.Caption
-        + GetTBStr(1024, HostWrites / 10.24 * 0.64 * 1024, 1);
+        + FormatSizeInMB(HostWriteInMB, BinaryPointOne);
 
       CurrWritLog :=
         TNSTLog.Create(
-          TPathManager.AppPath, SSDInfo.Serial, UIntToStr(HostWrites),
-          false, SSDInfo.S10085);
+          TPathManager.AppPath, SSDInfo.Serial,
+          UIntToStr(HostWriteInLiteONUnit), false, SSDInfo.S10085);
 
       AvgDays := -1;
       for CurrAvgDay := AvgMax downto 0 do
@@ -417,6 +449,9 @@ var
   CurrPartition: Integer;
 
   CurrSSDInfo: TSSDInfo;
+  DenaryInteger: FormatSizeSetting;
+  DenaryByteToMB: DatasizeUnitChangeSetting;
+  DiskSizeInMB: Double;
 begin
   with fMain do
   begin
@@ -453,9 +488,19 @@ begin
     SSDLabel[NewLen].Font.Style := [fsBold];
     SSDLabel[NewLen].Font.Style := [];
 
+    DenaryByteToMB.FNumeralSystem := Denary;
+    DenaryByteToMB.FFromUnit := ByteUnit;
+    DenaryByteToMB.FToUnit := MegaUnit;
+
+    DiskSizeInMB :=
+      ChangeDatasizeUnit(GetDiskSize(SSDEntry.DeviceName), DenaryByteToMB);
+
+    DenaryInteger.FNumeralSystem := Denary;
+    DenaryInteger.FPrecision := 0;
+
     SSDLabel[NewLen].Caption :=
       SSDLabel[NewLen].Caption + CurrSSDInfo.Model + ' ' +
-      GetTBStr(1000, GetDiskSize(SSDEntry.DeviceName) / 1000 / 1000, 0);
+      FormatSizeInMB(DiskSizeInMB, DenaryInteger);
 
     for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
     begin

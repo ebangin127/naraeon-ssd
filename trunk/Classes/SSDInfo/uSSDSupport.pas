@@ -12,7 +12,7 @@ type
 
   THostWrite = record
     IsHostWrite: Boolean;
-    HostWrites: UInt64;
+    HostWriteInLiteONUnit: UInt64;
   end;
 
   TRepSector = record
@@ -31,8 +31,8 @@ function GetSupportStatus(Model, Revision: String): TSupportStatus;
 function GetWriteSupportLevel(Model, Revision: String): THostSupportStatus;
 function IsS10085Affected(Model, Revision: String): Boolean;
 
-function GetHostWrites(Model, Revision: String; SMARTData: SENDCMDOUTPARAMS;
-          S10085: Boolean): THostWrite;
+function GetHostWriteInLiteONUnit(Model, Revision: String;
+          SMARTData: SENDCMDOUTPARAMS; S10085: Boolean): THostWrite;
 function GetEraseError(Model, Revision: String; SMARTData: SENDCMDOUTPARAMS)
           :TEraseError;
 function GetRepSector(Model, Revision: String; SMARTData: SENDCMDOUTPARAMS)
@@ -168,8 +168,8 @@ begin
     (Pos('M3', Model) > 0));
 end;
 
-function GetHostWrites(Model, Revision: String; SMARTData: SENDCMDOUTPARAMS;
-          S10085: Boolean): THostWrite;
+function GetHostWriteInLiteONUnit(Model, Revision: String;
+          SMARTData: SENDCMDOUTPARAMS; S10085: Boolean): THostWrite;
 var
   Position: String;
 begin
@@ -186,7 +186,7 @@ begin
       else
         Position := 'F1';
 
-      HostWrites :=
+      HostWriteInLiteONUnit :=
         round(ExtractSMART(SMARTData, Position) / 1024 / 2048 * 10 * 1.56);
       IsHostWrite := true;
     end
@@ -194,7 +194,7 @@ begin
     // 32MB 단위
     else if (Pos('MXSSD', Model) > 0) and (Pos('JT', Model) > 0) then
     begin
-      HostWrites := round(ExtractSMART(SMARTData, 'F1') / 2);
+      HostWriteInLiteONUnit := round(ExtractSMART(SMARTData, 'F1') / 2);
       IsHostWrite := true;
     end
 
@@ -212,7 +212,7 @@ begin
              (Pos('SD6SB1', UpperCase(Model)) > 0)) or
             ((Pos('ST', Model) > 0) and (Pos('HM000', Model) > 0)) then
     begin
-      HostWrites := ExtractSMART(SMARTData, 'F1') * 16;
+      HostWriteInLiteONUnit := ExtractSMART(SMARTData, 'F1') * 16;
       IsHostWrite := true;
     end
 
@@ -220,11 +220,11 @@ begin
     else if (Pos('Ninja-', Model) > 0) or
             (Pos('M5P', Model) > 0) or
             (S10085) then
-      HostWrites := (ExtractSMART(SMARTData, 177) * 2)
+      HostWriteInLiteONUnit := (ExtractSMART(SMARTData, 177) * 2)
 
     // 64MB 단위
     else
-      HostWrites := ExtractSMART(SMARTData, 177);
+      HostWriteInLiteONUnit := ExtractSMART(SMARTData, 177);
   end;
 end;
 

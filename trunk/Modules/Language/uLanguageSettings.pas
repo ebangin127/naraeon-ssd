@@ -164,7 +164,8 @@ const
     CapCount: Array[0..1] of String = ('개' , '');
     CapSec: Array[0..1] of String = ('초' , 'sec');
     CapMin: Array[0..1] of String = ('분' , 'min');
-    CapHour: Array[0..1] of String = ('시간' , 'hrs');
+    CapHour: Array[0..1] of String = ('시간' , 'hour');
+    CapMultiple: Array[0..1] of String = ('' , 's');
 
     CapPortable: Array[0..1] of String = ('포터블 버전에서는 지원하지 않습니다.', 'Portable edition doesn''t have this feature.');
     CapNotSupported: Array[0..1] of String = ('미지원 제품입니다', 'Not supported');

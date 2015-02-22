@@ -2,7 +2,8 @@ unit uRegFunctions;
 
 interface
 
-uses Registry, Windows, Classes, Dialogs, SysUtils;
+uses
+  Registry, Windows, Classes, Dialogs, SysUtils;
 
 function GetRegInt(Const Root, Path, ValueName: String): Integer;
 function GetRegStr(Const Root, Path, ValueName: String): String;
@@ -13,6 +14,18 @@ function SetRegStr(Const Root, Path, ValueName, NewValue: String): Boolean;
 
 implementation
 
+uses
+  uExeFunctions;
+
+const
+  KEY_WOW64_64KEY = $0100;
+
+function BitSpecificRight: Cardinal;
+begin
+  if Is64Bit then
+    exit(KEY_WOW64_64KEY);
+end;
+
 function GetRegInt(Const Root, Path, ValueName: String): Integer;
 var
   TempRegistry: TRegistry;
@@ -22,7 +35,7 @@ begin
   result := -1;
   if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
   begin
-    TempRegistry := TRegistry.Create(KEY_READ);
+    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
@@ -53,7 +66,7 @@ begin
   result := '';
   if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
   begin
-    TempRegistry := TRegistry.Create(KEY_READ);
+    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
@@ -81,7 +94,7 @@ var
 begin
   if (Length(Root) > 0) and (Length(Path) > 0) then
   begin
-    TempRegistry := TRegistry.Create(KEY_READ);
+    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
@@ -102,7 +115,7 @@ var
 begin
   if (Length(Root) > 0) and (Length(Path) > 0) then
   begin
-    TempRegistry := TRegistry.Create;
+    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
@@ -124,7 +137,7 @@ begin
   result := false;
   if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
   begin
-    TempRegistry := TRegistry.Create(KEY_READ or KEY_WRITE);
+    TempRegistry := TRegistry.Create(KEY_READ or KEY_WRITE or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
@@ -147,7 +160,7 @@ begin
   result := false;
   if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
   begin
-    TempRegistry := TRegistry.Create;
+    TempRegistry := TRegistry.Create(KEY_READ or KEY_WRITE or BitSpecificRight);
     if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
     else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
     else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE

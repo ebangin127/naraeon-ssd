@@ -148,7 +148,7 @@ begin
   CurrItem := CurrItem + 1;
 
   //System Restore
-  if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
+  if (Optimized[CurrItem] = false) and (OptList[CurrItem]) then
   begin
     SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start', 4);
     Resultfutil :=

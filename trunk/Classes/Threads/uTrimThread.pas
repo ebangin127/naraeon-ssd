@@ -225,18 +225,15 @@ begin
     TATALowOps.CreateHandle(
       GetMotherDrive(DriveLetter).Extents[0].DiskNumber);
 
+  LastPart := VOLUME_BITMAP_BYTES - 1;
+  LastBit := BITS_PER_BYTE - 1;
   while
     (error = ERROR_MORE_DATA) or
     (error = ERROR_INVALID_PARAMETER) or
     (error = ERROR_SUCCESS) do
   begin
     //0부터 시작하므로 1씩 뺀다
-    if BitmapBuffer.BitmapSize.QuadPart >= VOLUME_BITMAP_BITS then
-    begin
-      LastPart := VOLUME_BITMAP_BYTES - 1;
-      LastBit := BITS_PER_BYTE - 1;
-    end
-    else
+    if BitmapBuffer.BitmapSize.QuadPart < VOLUME_BITMAP_BITS then
     begin
       LastPart :=
         ceil(BitmapBuffer.BitmapSize.QuadPart / BITS_PER_BYTE)
@@ -247,13 +244,12 @@ begin
     end;
 
     //LastPart / LastBit은 이미 1씩 빠져있다는 점에 주의
+    BitCount := BITS_PER_BYTE - 1;
     for CurrByte := 0 to LastPart do
     begin
       //마지막이면 LastBit에 따르고 아니면 Full로 적용
       if CurrByte = LastPart then
-        BitCount := LastBit
-      else
-        BitCount := BITS_PER_BYTE - 1;
+        BitCount := LastBit;
 
       CurrPosByte := BitmapBuffer.Buffer[CurrByte];
       for CurrBit := 0 to BitCount do

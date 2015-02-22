@@ -14,7 +14,7 @@ uses
   uDiskFunctions, uSMARTFunctions, uPartitionFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
-  uUpdateThread, uTrimThread, uTrimList;
+  uUpdateThread, uTrimThread, uTrimList, uLocaleApplier;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -163,7 +163,6 @@ type
     ButtonGroup: TButtonGroup;
 
     //최적화 관련
-    FirstOpt: String;
     Optimizer: TNSTOptimizer;
 
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
@@ -307,7 +306,7 @@ begin
   Optimizer.Optimize(OptList);
   FreeAndNil(OptList);
 
-  RefreshOptList;
+  RefreshOptimizeList;
   AlertCreate(Self, AlrtOptCmpl[CurrLang]);
 end;
 
@@ -315,7 +314,7 @@ procedure TfMain.bRtnClick(Sender: TObject);
 begin
   Optimizer.OptimizeReturn;
 
-  RefreshOptList;
+  RefreshOptimizeList;
   AlertCreate(Self, AlrtOptRetCmpl[CurrLang]);
 end;
 
@@ -416,7 +415,8 @@ begin
   if Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) = '.err' then
     exit;
 
-  InitMainForm;
+  InitializeMainForm;
+  ApplyLocaleToMainformAndArrangeButton;
   RefreshDrives(SSDInfo);
 
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
@@ -478,21 +478,7 @@ begin
       round((Max - CurrDwldCount) /
         ((CurrDwldCount - LastDwldCount) * 2));
 
-  if LeftSec < 60 then
-    lSpeed.Caption :=
-      IntToStr(LeftSec mod 60) + CapSec[CurrLang];
-
-  if LeftSec < 3600 then
-    lSpeed.Caption :=
-      IntToStr(floor(LeftSec / 60)) + CapMin[CurrLang] + ' ' +
-      lSpeed.Caption;
-
-  if LeftSec >= 3600 then
-    lSpeed.Caption :=
-      IntToStr(floor(LeftSec / 3600)) + CapHour[CurrLang] + ' ' +
-      lSpeed.Caption;
-
-  lSpeed.Caption := CapTime[CurrLang] + lSpeed.Caption;
+  lSpeed.Caption := CapTime[CurrLang] + FormatTimeInSecond(LeftSec);
   LastDwldCount := CurrDwldCount;
 
   Application.ProcessMessages;
