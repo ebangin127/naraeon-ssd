@@ -38,8 +38,11 @@ type
   private
     procedure RefreshDrives;
     procedure CheckDrives;
-    procedure LoggerCreate(CurrDrv: Integer);
+    procedure CreateLogger(CurrDrv: Integer);
+    procedure DestroyLogger(CurrDrv: Integer);
     procedure MainWorks(SSDInfo: TSSDInfo_NST);
+    procedure DestroyDrives;
+    procedure LoadDrives;
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
@@ -188,6 +191,9 @@ var
   ErrFilePath: String;
 const
   MessageWaitingTime = 500;
+  SecondsPerHour = 3600;
+  MillisecondPerSecond = 1000;
+  SMARTInvestigateInterval = SecondsPerHour * MillisecondPerSecond;
 begin
   //서비스 종료 등 요청 처리
   for MessageCount := 0 to MessageWaitingTime - 1 do
@@ -212,7 +218,7 @@ begin
   if OnceSMARTInvestigated > 0 then
     exit;
 
-  OnceSMARTInvestigated := 3600;
+  OnceSMARTInvestigated := SMARTInvestigateInterval;
   ErrFilePath := DeskPath + '\!!!SSDError!!!.err';
 
   //쓰기 버퍼 체크
@@ -240,7 +246,7 @@ begin
     SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
     SSDInfo.CollectAllSmartData;
 
-    HostWrites := SSDInfo.HostWrites;
+    HostWrites := SSDInfo.HostWriteInLiteONUnit;
 
     if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
       DriveWritInfoList[CurrDrive].ReadBothFiles(UIntToStr(HostWrites));
@@ -298,11 +304,27 @@ begin
 end;
 
 procedure TNaraeonSSDToolsDiag.RefreshDrives;
+begin
+  DestroyDrives;
+  LoadDrives;
+end;
+
+procedure TNaraeonSSDToolsDiag.DestroyDrives;
+var
+  CurrDrv: Integer;
+begin
+  DriveCount := 0;
+  for CurrDrv := 0 to 99 do
+  begin
+    DestroyLogger(CurrDrv);
+  end;
+end;
+
+procedure TNaraeonSSDToolsDiag.LoadDrives;
 var
   CurrDrv: Integer;
   hdrive: Integer;
 begin
-  DriveCount := 0;
   for CurrDrv := 0 to 99 do
   begin
     DriveList[CurrDrv] := '';
@@ -310,41 +332,8 @@ begin
                                 GENERIC_READ or GENERIC_WRITE,
                                 FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
                                 OPEN_EXISTING, 0, 0);
-    LoggerCreate(CurrDrv);
+    CreateLogger(CurrDrv);
     CloseHandle(hdrive);
-  end;
-end;
-
-
-procedure TNaraeonSSDToolsDiag.LoggerCreate(CurrDrv: Integer);
-var
-  TempSSDInfo: TSSDInfo_NST;
-begin
-  if GetLastError <> 0 then
-    exit;
-
-  try
-    TempSSDInfo := TSSDInfo_NST.Create;
-    TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-    TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
-
-    if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
-    begin
-      TempSSDInfo.CollectAllSmartData;
-      if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-      begin
-        DriveWritInfoList[DriveCount] :=
-          TNSTLog.Create(AppPath, TempSSDInfo.Serial,
-            UIntToStr(TempSSDInfo.HostWrites), false, TempSSDInfo.S10085);
-      end;
-      DriveSectInfoList[DriveCount] :=
-        TNSTLog.Create(AppPath, TempSSDInfo.Serial + 'RSLog',
-          UIntToStr(TempSSDInfo.ReplacedSectors), true, false);
-      DriveList[DriveCount] := IntToStr(CurrDrv);
-      DriveCount := DriveCount + 1;
-    end;
-  finally
-    FreeAndNil(TempSSDInfo);
   end;
 end;
 
@@ -363,16 +352,57 @@ begin
                                 FILE_SHARE_READ or FILE_SHARE_WRITE,
                                 nil, OPEN_EXISTING, 0, 0);
     TempSSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrv]));
-    if GetLastError = 0 then
-    begin
-      if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
-        NeedRefresh := true;
-    end
-    else
+    if (GetLastError <> 0) or
+       (TempSSDInfo.SupportedDevice = SUPPORT_NONE) then
       NeedRefresh := true;
-    CloseHandle(hDrive)
+    CloseHandle(hDrive);
   end;
   FreeAndNil(TempSSDInfo);
+end;
+
+procedure TNaraeonSSDToolsDiag.CreateLogger(CurrDrv: Integer);
+var
+  TempSSDInfo: TSSDInfo_NST;
+begin
+  if GetLastError <> 0 then
+    exit;
+
+  try
+    TempSSDInfo := TSSDInfo_NST.Create;
+    TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
+    TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
+
+    if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+    begin
+      TempSSDInfo.CollectAllSmartData;
+      if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
+      begin
+        DriveWritInfoList[DriveCount] :=
+          TNSTLog.Create(AppPath, TempSSDInfo.Serial,
+            UIntToStr(TempSSDInfo.HostWriteInLiteONUnit),
+            false, TempSSDInfo.S10085);
+      end
+      else
+        DriveWritInfoList[DriveCount] := nil;
+
+      DriveSectInfoList[DriveCount] :=
+        TNSTLog.Create(AppPath, TempSSDInfo.Serial + 'RSLog',
+          UIntToStr(TempSSDInfo.ReplacedSectors), true, false);
+
+      DriveList[DriveCount] := IntToStr(CurrDrv);
+      DriveCount := DriveCount + 1;
+    end;
+  finally
+    FreeAndNil(TempSSDInfo);
+  end;
+end;
+
+procedure TNaraeonSSDToolsDiag.DestroyLogger(CurrDrv: Integer);
+begin
+  if DriveWritInfoList[CurrDrv] <> nil then
+    FreeAndNil(DriveWritInfoList[CurrDrv]);
+  if DriveSectInfoList[CurrDrv] <> nil then
+    FreeAndNil(DriveSectInfoList[CurrDrv]);
 end;
 
 function GetServiceExecutablePath(strServiceName: string): String;

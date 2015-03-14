@@ -50,6 +50,7 @@ begin
     Binary:
       exit(BinaryKibi);
   end;
+  exit(1);
 end;
 
 function ChangeDatasizeUnit

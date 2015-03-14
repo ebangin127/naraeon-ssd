@@ -24,6 +24,7 @@ function BitSpecificRight: Cardinal;
 begin
   if Is64Bit then
     exit(KEY_WOW64_64KEY);
+  exit(0);
 end;
 
 function GetRegInt(Const Root, Path, ValueName: String): Integer;
