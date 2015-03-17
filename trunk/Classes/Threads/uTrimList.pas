@@ -9,7 +9,7 @@ type
   TTrimListNextStat = (NEXTSTAT_SUCCESS, NEXTSTAT_NOTCMPL);
   TTrimListNext = record
     Status: TTrimListNextStat;
-    NextPartition: String;
+    PartitionName: String;
   end;
   TTrimList = class(TList<String>)
   private
@@ -45,7 +45,7 @@ begin
 
   FCurrPartition := FCurrPartition + 1;
   result.Status := NEXTSTAT_SUCCESS;
-  result.NextPartition := self[CurrPartition];
+  result.PartitionName := self[CurrPartition];
 end;
 
 procedure TTrimList.MarkAsCompleted;

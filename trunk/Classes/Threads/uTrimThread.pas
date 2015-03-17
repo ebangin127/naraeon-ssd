@@ -16,8 +16,8 @@ type
 
   TTrimThread = class(TThread)
   public
-    class var IsSemiAuto: Boolean; //반자동 트림 상황인가
-    class var TrimStage: TTrimStage; //현재 트림 스테이지
+    class var IsSemiAuto: Boolean;
+    class var TrimStage: TTrimStage;
 
     destructor Destroy; override;
 
@@ -26,6 +26,17 @@ type
     PartToTrim: TTrimList;
     AllClusters: _LARGE_INTEGER;
     Progress: Cardinal;
+    procedure ApplyTrimProgressToUI;
+    procedure ApplyTrimStageToUI;
+    function CheckPartitionInputValidity: Boolean;
+    procedure SetTrimError;
+    procedure SetTrimInProgress;
+    procedure SetTrimIsEnd;
+    procedure InitializeTrim;
+    procedure TrimPartitions;
+    procedure ApplyEndStateOfTrim;
+    procedure SetThisPartitionAsCompleted;
+    procedure CleanupTrim;
   protected
     procedure Execute; override;
     procedure TrimPartition(const DriveLetter: String);
@@ -36,6 +47,10 @@ type
     procedure ApplyProgress;
     procedure ApplyStage;
     procedure EndTrim;
+  end;
+
+  EException = class(Exception)
+
   end;
 
 implementation
@@ -63,37 +78,83 @@ begin
   PartToTrim := PartListToTrim;
 end;
 
-procedure TTrimThread.Execute;
-var
-  CurrDrive: Integer;
-  PartCount: Integer;
+procedure TTrimThread.ApplyTrimStageToUI;
 begin
-  if PartToTrim = nil then
-  begin
-    TrimStage := TRIMSTAGE_ERROR;
-    exit;
-  end;
-
-  PartToTrim.PointerToFirst;
-
-  TrimStage := TRIMSTAGE_INPROGRESS;
-  PartCount := PartToTrim.Count;
-
   if not IsSemiAuto then
     Synchronize(ApplyStage);
+end;
 
-  for CurrDrive := 0 to PartCount - 1 do
-  begin
-    TrimPartition(PartToTrim.GetNextPartition.NextPartition);
-    PartToTrim.MarkAsCompleted;
+procedure TTrimThread.ApplyTrimProgressToUI;
+begin
+  if not IsSemiAuto then
+    Synchronize(ApplyProgress);
+end;
 
-    if not IsSemiAuto then
-      Synchronize(ApplyStage);
-  end;
-
-  TrimStage := TRIMSTAGE_END;
+procedure TTrimThread.ApplyEndStateOfTrim;
+begin
   if not IsSemiAuto then
     Synchronize(EndTrim);
+end;
+
+function TTrimThread.CheckPartitionInputValidity: Boolean;
+begin
+  raise EArgumentNilException;
+end;
+
+procedure TTrimThread.SetTrimError;
+begin
+  TrimStage := TRIMSTAGE_ERROR;
+end;
+
+procedure TTrimThread.SetTrimInProgress;
+begin
+  TrimStage := TRIMSTAGE_INPROGRESS;
+end;
+
+procedure TTrimThread.SetTrimIsEnd;
+begin
+  TrimStage := TRIMSTAGE_END;
+end;
+
+procedure TTrimThread.InitializeTrim;
+begin
+  CheckPartitionInputValidity;
+  PartToTrim.PointerToFirst;
+  SetTrimInProgress;
+end;
+
+procedure TTrimThread.CleanupTrim;
+begin
+  SetTrimIsEnd;
+  ApplyEndStateOfTrim;
+end;
+
+procedure TTrimThread.SetThisPartitionAsCompleted;
+begin
+  PartToTrim.MarkAsCompleted;
+  ApplyTrimStageToUI;
+end;
+
+procedure TTrimThread.TrimPartitions;
+var
+  CurrDrive: Integer;
+begin
+  for CurrDrive := 0 to PartToTrim.Count - 1 do
+  begin
+    TrimPartition(PartToTrim.GetNextPartition.PartitionName);
+    SetThisPartitionAsCompleted;
+  end;
+end;
+
+procedure TTrimThread.Execute;
+begin
+  try
+    InitializeTrim;
+    TrimPartitions;
+    CleanupTrim;
+  except
+    SetTrimError;
+  end;
 end;
 
 function TTrimThread.GetPartInfo(DriveLetter: String;
