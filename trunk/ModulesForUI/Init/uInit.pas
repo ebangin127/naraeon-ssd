@@ -27,7 +27,6 @@ type
     procedure CreateButtonGroup;
     procedure RefreshOptimizeList;
     procedure LoadBGImage;
-    procedure ApplyLocale;
     procedure SetFormSize;
     procedure SetIcon;
     procedure AddButtonsToButtonGroup;
@@ -68,7 +67,6 @@ begin
   LoadBGImage;
   SetFormSize;
   SetIcon;
-  ApplyLocale;
   RefreshOptimizeList;
   SetMessageFontAsApplicationFont;
   FixFontToApplicationFont;
@@ -126,10 +124,6 @@ begin
         Mainform.lList.Items[CurrItem] +
         CapAlreadyCompleted[CurrLang];
   end;
-end;
-
-procedure TMainformInitializer.ApplyLocale;
-begin
 end;
 
 procedure TMainformInitializer.SetMessageFontAsApplicationFont;

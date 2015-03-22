@@ -24,6 +24,13 @@ type
   end;
 
 implementation
+const
+  IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
+  IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16)
+                            or ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14)
+                            or ($040B shl 2) or (METHOD_BUFFERED);
+  IOCTL_ATA_PASS_THROUGH_DIRECT = $4D030;
+  IOCTL_SCSI_PASS_THROUGH      =  $0004D004;
 
 
 class function TATALowOps.CreateHandle(DeviceNum: Integer): THandle;

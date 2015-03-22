@@ -40,14 +40,28 @@ uses
   uTrimList in 'Classes\Threads\uTrimList.pas',
   uRufus in 'Classes\Rufus\uRufus.pas',
   uDiag in 'Classes\Diag\uDiag.pas',
-  uSSDList in 'Classes\SSDList\uSSDList.pas',
+  uPhysicalDriveList in 'Classes\SSDList\uPhysicalDriveList.pas',
   uPathManager in 'Classes\PathManager\uPathManager.pas',
   uSemiAuto in 'Classes\SemiAuto\uSemiAuto.pas',
   uErase in 'Classes\Erase\uErase.pas',
   uDatasizeUnit in 'Classes\MeasureUnit\uDatasizeUnit.pas',
   uTimeUnit in 'Classes\MeasureUnit\uTimeUnit.pas',
   uInitializer in 'Classes\Initializer\uInitializer.pas',
-  uLocaleApplier in 'ModulesForUI\Init\uLocaleApplier.pas';
+  uLocaleApplier in 'ModulesForUI\Init\uLocaleApplier.pas',
+  uNTFSStruct in 'Classes\Partition\uNTFSStruct.pas',
+  uDiskGeometryGetter in 'WindowsFileAPI\uDiskGeometryGetter.pas',
+  uMotherDriveGetter in 'WindowsFileAPI\uMotherDriveGetter.pas',
+  uIoControlFile in 'WindowsFileAPI\Abstraction\uIoControlFile.pas',
+  uOSFileWithHandle in 'WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
+  uPartitionListGetter in 'WindowsFileAPI\uPartitionListGetter.pas',
+  uFixedDriveListGetter in 'WindowsFileAPI\uFixedDriveListGetter.pas',
+  uOSFile in 'WindowsFileAPI\Abstraction\uOSFile.pas',
+  uDriveAvailabilityGetter in 'WindowsFileAPI\uDriveAvailabilityGetter.pas',
+  uPhysicalDrive in 'Objects\uPhysicalDrive.pas',
+  uDrive in 'Objects\uDrive.pas',
+  uPhysicalDriveGetter in 'WindowsFileAPI\Abstraction\uPhysicalDriveGetter.pas',
+  uBruteForcePhysicalDriveGetter in 'WindowsFileAPI\uBruteForcePhysicalDriveGetter.pas',
+  uWMIPhysicalDriveListGetter in 'WindowsFileAPI\uWMIPhysicalDriveListGetter.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);

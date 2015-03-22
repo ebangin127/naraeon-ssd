@@ -6,8 +6,9 @@ uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
   uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
   uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
-  uSMARTFunctions, uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm, uSSDList,
-  uPathManager;
+  uSMARTFunctions, uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm,
+  uPhysicalDriveList,
+  uPathManager, uPhysicalDrive, uPartitionListGetter;
 
 function RefreshTimer(SSDInfo: TSSDInfo_NST;
                       ShowSerial: Boolean;
@@ -17,12 +18,12 @@ procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
 type
   TSSDLabel = class(TLabel)
   public
-    DeviceInfo: TSSDEntry;
+    DeviceInfo: TPhysicalDriveEntry;
   end;
 
   TSSDLabelList = class(TList<TSSDLabel>)
   public
-    function IndexOf(Entry: TSSDEntry): Integer;
+    function IndexOf(Entry: TPhysicalDriveEntry): Integer;
   end;
 
 implementation
@@ -293,10 +294,12 @@ end;
 
 procedure ApplySMARTInfo(SSDInfo: TSSDInfo_NST);
 var
+  PhysicalDrive: TPhysicalDrive;
+  CurrDrvPartitions: TPartitionList;
   EraseErrors: UInt64;
-  CurrDrvPartitions: TDriveLetters;
   CurrPartition: Integer;
 begin
+  PhysicalDrive := TPhysicalDrive.Create(SSDInfo.DeviceName);
   with fMain do
   begin
     lOntime.Caption :=
@@ -326,22 +329,23 @@ begin
     end;
 
     // 파티션 정렬
-    CurrDrvPartitions := GetPartitionList(CurrDrive);
+    CurrDrvPartitions := PhysicalDrive.GetPartitionList;
     lPartitionAlign.Caption := CapAlign[CurrLang];
-    for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
+    for CurrPartition := 0 to (CurrDrvPartitions.Count - 1) do
     begin
-      if (CurrDrvPartitions.StartOffset[CurrPartition - 1] / 4096) =
-          (CurrDrvPartitions.StartOffset[CurrPartition - 1] div 4096) then
+      if (CurrDrvPartitions[CurrPartition].StartingOffset / 4096) =
+          (CurrDrvPartitions[CurrPartition].StartingOffset div 4096) then
         lPartitionAlign.Caption := lPartitionAlign.Caption +
-                                    CurrDrvPartitions.Letters[CurrPartition] +
-                                    CapGood[CurrLang]
+          CurrDrvPartitions[CurrPartition].Letter +
+          CapGood[CurrLang]
       else
       begin
         lPartitionAlign.Font.Color := clRed;
         lPartitionAlign.Caption := lPartitionAlign.Caption +
-          CurrDrvPartitions.Letters[CurrPartition] +
+          CurrDrvPartitions[CurrPartition].Letter +
           ' (' +
-          IntToStr(CurrDrvPartitions.StartOffset[CurrPartition - 1] div 1024) +
+          IntToStr(
+            CurrDrvPartitions[CurrPartition].StartingOffset div 1024) +
           CapBad[CurrLang];
         if lNotsafe.Caption = CapStatus[CurrLang] + CapSafe[CurrLang] then
         begin
@@ -350,12 +354,12 @@ begin
         end;
       end;
     end;
+    FreeAndNil(CurrDrvPartitions);
   end;
+  FreeAndNil(PhysicalDrive);
 end;
 
 procedure ApplyGeneralUISetting(SSDInfo: TSSDInfo_NST);
-var
-  CurrDrvPartitions: TDriveLetters;
 begin
   with fMain do
   begin
@@ -364,15 +368,10 @@ begin
     iFirmUp.Visible := false;
     lFirmUp.Visible := false;
 
-    // 파티션 정렬
-    CurrDrvPartitions := GetPartitionList(CurrDrive);
     if SSDInfo.ATAorSCSI = MODEL_ATA then
     begin
-      if Length(CurrDrvPartitions.Letters) <> 0 then
-      begin
-        lTrim.Visible := true;
-        iTrim.Visible := true;
-      end;
+      lTrim.Visible := true;
+      iTrim.Visible := true;
     end;
 
     if (SSDInfo.SSDSupport.SupportFirmUp = false) and
@@ -427,7 +426,7 @@ begin
   end;
 end;
 
-procedure DelDevice(SSDEntry: TSSDEntry);
+procedure DelDevice(SSDEntry: TPhysicalDriveEntry);
 var
   IndexOfEntry: Integer;
 begin
@@ -442,10 +441,11 @@ begin
   end;
 end;
 
-procedure AddDevice(SSDEntry: TSSDEntry);
+procedure AddDevice(SSDEntry: TPhysicalDriveEntry);
 var
+  AddingPhysicalDrive: TPhysicalDrive;
+  CurrDrvPartitions: TPartitionList;
   NewLen: Integer;
-  CurrDrvPartitions: TDriveLetters;
   CurrPartition: Integer;
 
   CurrSSDInfo: TSSDInfo;
@@ -453,6 +453,7 @@ var
   DenaryByteToMB: DatasizeUnitChangeSetting;
   DiskSizeInMB: Double;
 begin
+  AddingPhysicalDrive := TPhysicalDrive.Create(StrToInt(SSDEntry.DeviceName));
   with fMain do
   begin
     NewLen := SSDLabel.Count;
@@ -482,8 +483,7 @@ begin
       GSSDSel.Left := 260;
     end;
 
-    CurrDrvPartitions :=
-      GetPartitionList(SSDEntry.DeviceName);
+    CurrDrvPartitions := AddingPhysicalDrive.GetPartitionList;
 
     SSDLabel[NewLen].Font.Style := [fsBold];
     SSDLabel[NewLen].Font.Style := [];
@@ -493,7 +493,7 @@ begin
     DenaryByteToMB.FToUnit := MegaUnit;
 
     DiskSizeInMB :=
-      ChangeDatasizeUnit(GetDiskSize(SSDEntry.DeviceName), DenaryByteToMB);
+      ChangeDatasizeUnit(AddingPhysicalDrive.GetDiskSize, DenaryByteToMB);
 
     DenaryInteger.FNumeralSystem := Denary;
     DenaryInteger.FPrecision := 0;
@@ -502,7 +502,7 @@ begin
       SSDLabel[NewLen].Caption + CurrSSDInfo.Model + ' ' +
       FormatSizeInMB(DiskSizeInMB, DenaryInteger);
 
-    for CurrPartition := 0 to (CurrDrvPartitions.LetterCount - 1) do
+    for CurrPartition := 0 to (CurrDrvPartitions.Count - 1) do
     begin
       if CurrPartition = 0 then
         SSDLabel[NewLen].Caption :=
@@ -510,9 +510,9 @@ begin
 
       SSDLabel[NewLen].Caption :=
         SSDLabel[NewLen].Caption
-          + CurrDrvPartitions.Letters[CurrPartition];
+          + CurrDrvPartitions[CurrPartition].Letter;
 
-      if CurrPartition < (CurrDrvPartitions.LetterCount - 1) then
+      if CurrPartition < (CurrDrvPartitions.Count - 1) then
         SSDLabel[NewLen].Caption := SSDLabel[NewLen].Caption
                                           + ' '
       else
@@ -520,23 +520,25 @@ begin
                                           + ') ';
     end;
 
+    FreeAndNil(CurrDrvPartitions);
     FreeAndNil(CurrSSDInfo);
   end;
+  FreeAndNil(AddingPhysicalDrive);
 
   SetLabelPosition;
 end;
 
-procedure AddByList(SSDList: TSSDList);
+procedure AddByList(SSDList: TPhysicalDriveList);
 var
-  CurrEntry: TSSDEntry;
+  CurrEntry: TPhysicalDriveEntry;
 begin
   for CurrEntry in SSDList do
     AddDevice(CurrEntry);
 end;
 
-procedure DelByList(SSDList: TSSDList);
+procedure DelByList(SSDList: TPhysicalDriveList);
 var
-  CurrEntry: TSSDEntry;
+  CurrEntry: TPhysicalDriveEntry;
 begin
   for CurrEntry in SSDList do
     DelDevice(CurrEntry);
@@ -553,6 +555,8 @@ begin
   if Length(fMain.CurrDrive) = 0 then
     exit;
 
+  FreeAndNil(fMain.PhysicalDrive);
+  fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
   SSDInfo.SetDeviceName(StrToInt(fMain.CurrDrive));
 
   ApplyBasicInfo(SSDInfo, ShowSerial);
@@ -594,7 +598,7 @@ begin
   FreeAndNil(TrvResult.DelList);
 end;
 
-function TSSDLabelList.IndexOf(Entry: TSSDEntry): Integer;
+function TSSDLabelList.IndexOf(Entry: TPhysicalDriveEntry): Integer;
 var
   CurrEntry: Integer;
 begin

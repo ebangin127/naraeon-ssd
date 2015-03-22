@@ -5,15 +5,16 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   uTrimThread, uTrimList, uDiskFunctions, uStrFunctions,
-  uSSDInfo, uSSDList, uSSDSupport, uLanguageSettings;
+  uSSDInfo, uPhysicalDriveList, uSSDSupport, uLanguageSettings,
+  uPhysicalDrive, uPartitionListGetter;
 
 type
   TSemiAuto = class
   public
     class procedure SemiAutoTrim(Model, Serial: String);
   private
-    class function GetDeviceEntry(Model, Serial: String): TSSDEntry;
-    class function GetTrimList(SSDEntry: TSSDEntry): TTrimList;
+    class function GetDeviceEntry(Model, Serial: String): TPhysicalDriveEntry;
+    class function GetTrimList(SSDEntry: TPhysicalDriveEntry): TTrimList;
     class procedure ExecuteTrim(TrimList: TTrimList);
   end;
 
@@ -21,7 +22,7 @@ implementation
 
 class procedure TSemiAuto.SemiAutoTrim(Model, Serial: String);
 var
-  SSDEntry: TSSDEntry;
+  SSDEntry: TPhysicalDriveEntry;
   PartToTrim: TTrimList;
 begin
   SSDEntry := GetDeviceEntry(Model, Serial);
@@ -30,27 +31,32 @@ begin
   FreeAndNil(PartToTrim);
 end;
 
-class function TSemiAuto.GetDeviceEntry(Model, Serial: String): TSSDEntry;
+class function TSemiAuto.GetDeviceEntry(Model, Serial: String):
+  TPhysicalDriveEntry;
 var
-  SSDList: TSSDList;
+  SSDList: TPhysicalDriveList;
 begin
-  SSDList := TSSDList.Create;
+  SSDList := TPhysicalDriveList.Create;
   TraverseDevice(false, false, SSDList);
   result := SSDList[SSDList.IndexOf(Model, Serial)];
   FreeAndNil(SSDList);
 end;
 
-class function TSemiAuto.GetTrimList(SSDEntry: TSSDEntry): TTrimList;
+class function TSemiAuto.GetTrimList(SSDEntry: TPhysicalDriveEntry):
+  TTrimList;
 var
-  Drives: TDriveLetters;
+  PhysicalDrive: TPhysicalDrive;
+  Drives: TPartitionList;
   CurrPartition: Integer;
 begin
   result := TTrimList.Create;
+  PhysicalDrive := TPhysicalDrive.Create(StrToInt(SSDEntry.DeviceName));
   Drives :=
-    GetPartitionList(ExtractDeviceNum(
-      '\\.\PhysicalDrive' + SSDEntry.DeviceName));
-  for CurrPartition := 1 to Length(Drives.Letters) do
-    result.Add(Drives.Letters[CurrPartition] + ':');
+    PhysicalDrive.GetPartitionList;
+  for CurrPartition := 0 to Drives.Count - 1 do
+    result.Add(Drives[CurrPartition].Letter + ':');
+  FreeAndNil(Drives);
+  FreeAndNil(PhysicalDrive);
 end;
 
 class procedure TSemiAuto.ExecuteTrim(TrimList: TTrimList);

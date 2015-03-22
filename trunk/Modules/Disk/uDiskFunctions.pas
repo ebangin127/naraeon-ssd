@@ -5,22 +5,9 @@ interface
 uses Windows, SysUtils, Dialogs, Math, Classes,
      ComObj, ShellAPI, Variants, ActiveX,
      uRegFunctions, uPartitionFunctions, uStrFunctions, uDatasizeUnit,
-     uSSDList;
+     uPhysicalDriveList;
 
 type
-  //--GetMotherDrive--//
-  DISK_EXTENT = RECORD
-    DiskNumber: DWORD;
-    StartingOffset: TLargeInteger;
-    ExtentLength: TLargeInteger;
-  end;
-
-  VOLUME_DISK_EXTENTS = Record
-    NumberOfDiskExtents: DWORD;
-    Extents: Array[0..50] of DISK_EXTENT;
-  end;
-  //---GetMotherDrive---//
-
   //---ATA + DeviceIOCtl---//
   TLLBuffer = Array[0..511] of Byte;
   TLLBufferEx = Array[0..4095] of Byte;
@@ -151,14 +138,6 @@ type
   end;
   //---Trim Command--//
 
-  //---GetPartitionList---//
-  TDriveLetters = Record
-    LetterCount: Byte;
-    Letters: Array[0..99] of String;
-    StartOffset: Array[0..99] of TLargeInteger;
-  end;
-  //---GetPartitionList---//
-
   //---NCQ---//
   STORAGE_QUERY_TYPE = (PropertyStandardQuery = 0, PropertyExistsQuery,
                         PropertyMaskQuery, PropertyQueryMaxDefined);
@@ -210,26 +189,13 @@ type
   end;
   //---NCQ---//
 
-//디스크 - 파티션 간 관계 얻어오기
-function GetPartitionList(DiskNumber: String): TDriveLetters;
-function GetMotherDrive(const VolumeToGet: String): VOLUME_DISK_EXTENTS;
-
 //용량, 볼륨 이름 및 각종 정보 얻어오기
-function GetFixedDrivesFunction: TDriveLetters;
 function GetVolumeLabel(AltName: String; DriveName: String): string;
-function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
 
 //Fixed HDD, USB Mass Storage 정보 얻어오기
-function GetSSDList: TSSDList;
+function GetSSDList: TPhysicalDriveList;
 
 const
-  IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
-  IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16)
-                            or ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14)
-                            or ($040B shl 2) or (METHOD_BUFFERED);
-  IOCTL_ATA_PASS_THROUGH_DIRECT = $4D030;
-  IOCTL_SCSI_PASS_THROUGH      =  $0004D004;
-
   SMART_READ_ATTRIBUTE_VALUES = $D0;
   SMART_CYL_LOW = $4F;
   SMART_CYL_HI = $C2;
@@ -249,36 +215,6 @@ const
 implementation
 
 uses uSSDInfo;
-
-function GetFixedDrivesFunction: TDriveLetters;
-var
-  CurrDrv, DrvStrLen: Integer;
-  DriveCount: Byte;
-  Drives: Array[0..255] of char;
-  DrvName: String;
-begin
-  FillChar(Drives, 256, #0 );
-  DrvStrLen := GetLogicalDriveStrings(256, Drives);
-  DriveCount := 0;
-
-  for CurrDrv := 0 to DrvStrLen - 1 do
-  begin
-    if Drives[CurrDrv] = #0  then
-    begin
-      if GetDriveType(PChar(DrvName)) = DRIVE_FIXED then
-      begin
-        if DrvName[Length(DrvName)] = '\' then
-          DrvName := Copy(DrvName, 1, Length(DrvName) - 1);
-        result.Letters[DriveCount] := DrvName;
-        DriveCount := DriveCount + 1;
-      end;
-      DrvName := '';
-    end
-    else
-      DrvName := DrvName + Drives[CurrDrv];
-  end;
-  result.LetterCount := DriveCount;
-end;
 
 function GetSizeOfDiskInMB(DriveName: String): Double;
 var
@@ -343,74 +279,7 @@ begin
   end;
 end;
 
-function GetMotherDrive(const VolumeToGet: String): VOLUME_DISK_EXTENTS;
-var
-  RetBytes: DWORD;
-  hDevice: Longint;
-  Status: Longbool;
-  VolumeName: Array[0..MAX_PATH] of Char;
-  i: Integer;
-begin
-  for i := 0 to MAX_PATH do
-    VolumeName[i] := #0;
-  QueryDosDeviceW(PChar(VolumeToGet), VolumeName, MAX_PATH);
-  try
-    hDevice := CreateFile(PChar('\\.\' + VolumeToGet), GENERIC_READ,
-                FILE_SHARE_WRITE or FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
-  except
-    exit;
-  end;
-  if Pos('ramdriv', lowercase(VolumeName)) > 0 then
-    result.NumberOfDiskExtents := 0
-  else
-  begin
-    If hDevice <> -1 Then
-    begin
-      Status := DeviceIoControl (hDevice, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
-                nil, 0, @result, Sizeof(VOLUME_DISK_EXTENTS), RetBytes, nil);
-      if (status = false) then
-      begin
-        result.NumberOfDiskExtents := 0;
-      end;
-      CloseHandle(hDevice);
-    end
-    else
-    begin
-      result.NumberOfDiskExtents := 0;
-    end;
-  end;
-end;
-
-function GetPartitionList(DiskNumber: String): TDriveLetters;
-var
-  CurrDrv, CurrExtents: Integer;
-  CurrDrvInfo: VOLUME_DISK_EXTENTS;
-  CurrPartition, DiskNumberInt: Cardinal;
-  FixedDrives: TDriveLetters;
-begin
-  FixedDrives := GetFixedDrivesFunction;
-  DiskNumberInt := StrToInt(DiskNumber);
-  CurrPartition := 0;
-
-  for CurrDrv := 0 to (FixedDrives.LetterCount - 1) do
-  begin
-    CurrDrvInfo := GetMotherDrive(FixedDrives.Letters[CurrDrv]);
-    for CurrExtents := 0 to (CurrDrvInfo.NumberOfDiskExtents - 1) do
-    begin
-      if CurrDrvInfo.Extents[CurrExtents].DiskNumber = DiskNumberInt then
-      begin
-        result.Letters[CurrPartition] := FixedDrives.Letters[CurrDrv];
-        result.StartOffset[CurrPartition] :=
-          CurrDrvInfo.Extents[CurrExtents].StartingOffset;
-        CurrPartition := CurrPartition + 1;
-      end;
-    end;
-  end;
-
-  result.LetterCount := CurrPartition;
-end;
-
-function GetSSDList: TSSDList;
+function GetSSDList: TPhysicalDriveList;
 var
   wsFileObj: WideString;
   OleDrives: OleVariant;
@@ -423,12 +292,12 @@ var
   i: Integer;
   iValue: LongWord;
 
-  CurrEntry: TSSDEntry;
+  CurrEntry: TPhysicalDriveEntry;
 
   CurrDrv: Integer;
   hdrive: THandle;
 begin
-  result := TSSDList.Create;
+  result := TPhysicalDriveList.Create;
   wsFileObj := 'winmgmts:\\localhost\root\cimv2';
   try
     OleCheck(CreateBindCtx(0, OleCtx));
@@ -476,7 +345,7 @@ begin
 
     if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
     begin
-      CurrEntry.DeviceName := ExtractDeviceNum(OleDrives.DeviceID);
+      CurrEntry.DeviceName := '\\.\PhysicalDrive' + IntToStr(CurrDrv);
       CurrEntry.IsUSBDevice := false;
       result.Add(CurrEntry);
     end;

@@ -4,7 +4,7 @@ interface
 
 uses Classes, SysUtils, Math, Dialogs, Windows, Generics.Collections,
     IdBaseComponent, IdRawBase, IdRawClient, IdHttp, IdURI,
-    uDiskFunctions, IdIcmpClient, uLanguageSettings;
+    uDiskFunctions, IdIcmpClient, uLanguageSettings, WinInet;
 
 type
   TFirmVersion = (NOT_MINE, OLD_VERSION, NEW_VERSION, NOT_FOUND);
@@ -71,12 +71,18 @@ var
   FirmChkContents: TStringList;
   CurrCacheLine: TCacheLine;
   CacheResult: TGetFirmResult;
+  ifConnected: DWORD;
 begin
   //캐시에서 먼저 찾음
   CacheResult := Cache.Find(Model, Firmware);
 
   if CacheResult.CurrVersion <> NOT_FOUND then
     exit(CacheResult);
+
+  InternetGetConnectedState(@ifConnected, 0);
+  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
+      (ifConnected = 0) then
+      exit;
 
   //없으면 만들기
   CurrCacheLine.Query.Model := Model;

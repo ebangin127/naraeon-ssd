@@ -4,7 +4,7 @@ interface
 
 uses Windows, Classes, Math, Dialogs, SysUtils,
       uATALowOps, uDiskFunctions, uSSDSupport, uSMARTFunctions, uStrFunctions,
-      uGetFirm;
+      uGetFirm, uPhysicalDrive;
 
 type
   TSATASpeed =
@@ -55,6 +55,7 @@ type
 
     //1. 창조자와 파괴자
     constructor Create;
+    destructor Destroy; override;
   end;
 
 const
@@ -124,6 +125,11 @@ begin
   DeviceName := '';
   ATAorSCSI := MODEL_NULL;
   USBMode := false;
+end;
+
+destructor TSSDInfo.Destroy;
+begin
+  inherited;
 end;
 
 procedure TSSDInfo.SetDeviceName(DeviceNum: Integer);

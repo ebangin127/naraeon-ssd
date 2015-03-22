@@ -3,9 +3,10 @@ unit uUSBDrive;
 interface
 
 uses
-  Windows, Classes,
+  Windows, Classes, SysUtils,
   uLanguageSettings,
-  uDiskFunctions, uPartitionFunctions;
+  uDiskFunctions, uPartitionFunctions,
+  uPhysicalDrive, uPartitionListGetter;
 
 
 //자식 드라이브 가져오기
@@ -18,15 +19,18 @@ uses uMain;
 
 procedure GetChildDrives(DiskNumber: String; ChildDrives: TStrings);
 var
-  CurrDrv, DriveCount: Integer;
-  DrvNames: TDriveLetters;
+  CurrDrv: Integer;
+  PhysicalDrive: TPhysicalDrive;
+  DrvNames: TPartitionList;
 begin
   ChildDrives.Clear;
-  DrvNames := GetPartitionList(DiskNumber);
-  DriveCount := DrvNames.LetterCount;
-  for CurrDrv := 0 to DriveCount - 1 do
+  PhysicalDrive := TPhysicalDrive.Create(StrToInt(DiskNumber));
+  DrvNames := PhysicalDrive.GetPartitionList;
+  for CurrDrv := 0 to DrvNames.Count - 1 do
     ChildDrives.Add(GetVolumeLabel(CapLocalDisk[CurrLang],
-                                   DrvNames.Letters[CurrDrv] + '\'));
+                                   DrvNames[CurrDrv].Letter));
+  FreeAndNil(DrvNames);
+  FreeAndNil(PhysicalDrive);
 end;
 
 procedure GetUSBDrives(USBDrives: TStrings);

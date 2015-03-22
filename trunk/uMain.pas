@@ -9,12 +9,13 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uSSDInfo, uSSDSupport, uLogSystem, uSSDList,
+  uSSDInfo, uSSDSupport, uLogSystem, uPhysicalDriveList,
   uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
   uDiskFunctions, uSMARTFunctions, uPartitionFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
-  uUpdateThread, uTrimThread, uTrimList, uLocaleApplier;
+  uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
+  uPhysicalDrive, uPartitionListGetter;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -170,7 +171,8 @@ type
   public
     CurrDrive: String;
     SSDLabel: TSSDLabelList;
-    SSDList: TSSDList;
+    SSDList: TPhysicalDriveList;
+    PhysicalDrive: TPhysicalDrive;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -405,7 +407,7 @@ begin
   Optimizer := TNSTOptimizer.Create;
   SSDInfo := TSSDInfo_NST.Create;
   SSDLabel := TSSDLabelList.Create;
-  SSDList := TSSDList.Create;
+  SSDList := TPhysicalDriveList.Create;
 
   CurrDrive := '';
   ShowSerial := false;
@@ -426,6 +428,7 @@ procedure TfMain.FormDestroy(Sender: TObject);
 begin
   TGetFirm.DestroyCache;
 
+  FreeAndNil(PhysicalDrive);
   FreeAndNil(SSDList);
   FreeAndNil(SSDLabel);
   FreeAndNil(SSDInfo);
@@ -932,17 +935,18 @@ end;
 
 procedure TfMain.bScheduleClick(Sender: TObject);
 var
-  Drives: TDriveLetters;
+  DriveList: TPartitionList;
   CurrDrv: Integer;
 begin
   gTrim.Visible := false;
   gSchedule.Visible := true;
 
-  Drives := GetPartitionList(ExtractDeviceNum(SSDInfo.DeviceName));
   lDrives.Caption := CapAppDisk[CurrLang];
 
-  for CurrDrv := 0 to Drives.LetterCount - 1 do
-    lDrives.Caption := lDrives.Caption + Drives.Letters[CurrDrv] + ' ';
+  DriveList := PhysicalDrive.GetPartitionList;
+  for CurrDrv := 0 to DriveList.Count - 1 do
+    lDrives.Caption := lDrives.Caption + DriveList[CurrDrv].Letter + ' ';
+  FreeAndNil(DriveList);
 
   cTrimRunning.Checked :=
     Pos('MANTRIM' + SSDInfo.Serial,

@@ -1,4 +1,4 @@
-unit uSSDList;
+unit uPhysicalDriveList;
 
 interface
 
@@ -6,32 +6,32 @@ uses
   SysUtils, Generics.Collections;
 
 type
-  TSSDEntry = record
+  TPhysicalDriveEntry = record
     DeviceName: String;
     IsUSBDevice: Boolean;
   end;
 
-  TSSDList = class(TList<TSSDEntry>)
+  TPhysicalDriveList = class(TList<TPhysicalDriveEntry>)
   public
     function IndexOf(Model, Serial: String): Integer; overload;
-    function IndexOf(Entry: TSSDEntry): Integer; overload;
+    function IndexOf(Entry: TPhysicalDriveEntry): Integer; overload;
     function IndexOf(DeviceName: String): Integer; overload;
   end;
 
   TDiffResult = record
-    DelList: TSSDList;
-    AddList: TSSDList;
+    DelList: TPhysicalDriveList;
+    AddList: TPhysicalDriveList;
   end;
 
 function TraverseDevice
   (IsDiffNeeded: Boolean; IsOnlySupported: Boolean;
-   var PrevList: TSSDList): TDiffResult;
+   var PrevList: TPhysicalDriveList): TDiffResult;
 
 implementation
 
 uses uSSDInfo, uDiskFunctions, uSSDSupport;
 
-function TSSDList.IndexOf(Model, Serial: String): Integer;
+function TPhysicalDriveList.IndexOf(Model, Serial: String): Integer;
 var
   CurrEntry: Integer;
   CurrSSDInfo: TSSDInfo;
@@ -52,7 +52,7 @@ begin
     exit(-1);
 end;
 
-function TSSDList.IndexOf(Entry: TSSDEntry): Integer;
+function TPhysicalDriveList.IndexOf(Entry: TPhysicalDriveEntry): Integer;
 var
   CurrEntry: Integer;
 begin
@@ -67,7 +67,7 @@ begin
     exit(-1);
 end;
 
-function TSSDList.IndexOf(DeviceName: String): Integer;
+function TPhysicalDriveList.IndexOf(DeviceName: String): Integer;
 var
   CurrEntry: Integer;
 begin
@@ -83,26 +83,26 @@ end;
 
 function TraverseDevice
   (IsDiffNeeded: Boolean; IsOnlySupported: Boolean;
-   var PrevList: TSSDList): TDiffResult;
+   var PrevList: TPhysicalDriveList): TDiffResult;
 var
   CurrSSDInfo: TSSDInfo_NST;
-  CurrList: TSSDList;
-  CurrEntry: TSSDEntry;
+  CurrList: TPhysicalDriveList;
+  CurrEntry: TPhysicalDriveEntry;
 
   CurrDrv: Integer;
   CurrAvail: Boolean;
 
-  CurrSSDList: TSSDList;
+  CurrSSDList: TPhysicalDriveList;
 begin
   CurrSSDInfo := TSSDInfo_NST.Create;
 
   CurrSSDList := GetSSDList;
-  CurrList := TSSDList.Create;
+  CurrList := TPhysicalDriveList.Create;
 
   if IsDiffNeeded then
   begin
-    result.AddList := TSSDList.Create;
-    result.DelList := TSSDList.Create;
+    result.AddList := TPhysicalDriveList.Create;
+    result.DelList := TPhysicalDriveList.Create;
   end;
 
   for CurrDrv := 0 to CurrSSDList.Count - 1 do

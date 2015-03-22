@@ -57,7 +57,6 @@ type
 
 //디스크 용량 받아오는 함수
 function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
-function GetDiskSize(const DiskNumber: String): TLargeInteger;
 
 //파티션 용량 받아오는 함수
 function GetPartitionLength(DriveLetter: String): Int64;
@@ -87,6 +86,17 @@ begin
 end;
 
 function GetPartitionLength(DriveLetter: String): Int64;
+type
+  TMotherDriveEntry = record
+    DriveNumber: DWORD;
+    StartingOffset: TLargeInteger;
+    ExtentLength: TLargeInteger;
+  end;
+  DISK_EXTENT = TMotherDriveEntry;
+  VOLUME_DISK_EXTENTS = record
+    NumberOfDiskExtents: DWORD;
+    Extents: Array[0..50] of DISK_EXTENT;
+  end;
 var
   RetBytes: DWORD;
   hDevice: Longint;
@@ -158,14 +168,6 @@ begin
       result.ErrorCode := GetLastError;
     CloseHandle(hdrive);
   end;
-end;
-
-function GetDiskSize(const DiskNumber: String): TLargeInteger;
-var
-  Geometry: DISK_GEOMETRY_EX;
-begin
-  Geometry := GetDiskGeometry(DiskNumber);
-  result := Geometry.DiskSize;
 end;
 
 function GetFirstSector(const DriveLetter: String): Int64;

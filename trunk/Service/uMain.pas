@@ -8,7 +8,8 @@ uses
   Vcl.ExtCtrls, WinInet, Registry, IdHttp, SHFolder, ShellAPI, ShlObj,
   TlHelp32, WinSvc,
   uDiskFunctions, uExeFunctions, uLogSystem, uSSDInfo, uLanguageSettings,
-  uRegFunctions, uSSDSupport, uGetFirm;
+  uRegFunctions, uSSDSupport, uGetFirm,
+  uPhysicalDrive, uPartitionListGetter;
 
 type
   PDevBroadcastHdr = ^TDevBroadcastHdr;
@@ -181,7 +182,8 @@ procedure TNaraeonSSDToolsDiag.MainWorks(SSDInfo: TSSDInfo_NST);
 var
   CurrDrive, CurrPart: Integer;
   ReplacedSectors: UInt64;
-  CurrDrvPartitions: TDriveLetters;
+  PhysicalDrive: TPhysicalDrive;
+  CurrDrvPartitions: TPartitionList;
   AllReadablePartition: String;
   SaveLog: TStringList;
   HostWrites: UInt64;
@@ -265,11 +267,14 @@ begin
     if FileExists(ErrFilePath) then
       SaveLog.LoadFromFile(ErrFilePath);
 
-    CurrDrvPartitions := GetPartitionList(DriveList[CurrDrive]);
+    PhysicalDrive := TPhysicalDrive.Create(StrToInt(DriveList[CurrDrive]));
+    CurrDrvPartitions := PhysicalDrive.GetPartitionList;
     AllReadablePartition := '';
-    for CurrPart := 0 to (CurrDrvPartitions.LetterCount - 1) do
+    for CurrPart := 0 to (CurrDrvPartitions.Count - 1) do
       AllReadablePartition := AllReadablePartition + ' ' +
-                              CurrDrvPartitions.Letters[CurrPart];
+                              CurrDrvPartitions[CurrPart].Letter;
+    FreeAndNil(CurrDrvPartitions);
+    FreeAndNil(PhysicalDrive);
 
     SaveLog.Add(
       GetLogLine(Now, ' !!!!! ' +

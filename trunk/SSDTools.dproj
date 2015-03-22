@@ -182,7 +182,7 @@
         <DCCReference Include="Classes\Threads\uTrimList.pas"/>
         <DCCReference Include="Classes\Rufus\uRufus.pas"/>
         <DCCReference Include="Classes\Diag\uDiag.pas"/>
-        <DCCReference Include="Classes\SSDList\uSSDList.pas"/>
+        <DCCReference Include="Classes\SSDList\uPhysicalDriveList.pas"/>
         <DCCReference Include="Classes\PathManager\uPathManager.pas"/>
         <DCCReference Include="Classes\SemiAuto\uSemiAuto.pas"/>
         <DCCReference Include="Classes\Erase\uErase.pas"/>
@@ -190,6 +190,20 @@
         <DCCReference Include="Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="Classes\Initializer\uInitializer.pas"/>
         <DCCReference Include="ModulesForUI\Init\uLocaleApplier.pas"/>
+        <DCCReference Include="Classes\Partition\uNTFSStruct.pas"/>
+        <DCCReference Include="WindowsFileAPI\uDiskGeometryGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\uMotherDriveGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
+        <DCCReference Include="WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
+        <DCCReference Include="WindowsFileAPI\uPartitionListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\uFixedDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Abstraction\uOSFile.pas"/>
+        <DCCReference Include="WindowsFileAPI\uDriveAvailabilityGetter.pas"/>
+        <DCCReference Include="Objects\uPhysicalDrive.pas"/>
+        <DCCReference Include="Objects\uDrive.pas"/>
+        <DCCReference Include="WindowsFileAPI\Abstraction\uPhysicalDriveGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\uBruteForcePhysicalDriveGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\uWMIPhysicalDriveListGetter.pas"/>
         <None Include="ModelSupport_SSDTools\default.txaPackage"/>
         <None Include="ModelSupport_SSDTools\default.txvpck"/>
         <None Include="ModelSupport_SSDTools\SSDTools\default.txvpck"/>
@@ -202,6 +216,24 @@
         <None Include="ModelSupport_SSDTools\uDiskFunctions\default.txaPackage"/>
         <None Include="ModelSupport_SSDTools\uSSDInfo\default.txvpck"/>
         <None Include="ModelSupport_SSDTools\uSSDInfo\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uPartitionFunctions\default.txvpck"/>
+        <None Include="ModelSupport_SSDTools\uTrimThread\default.txvpck"/>
+        <None Include="ModelSupport_SSDTools\uPartition\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uOSErrorToException\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uNTFSStruct\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uOSFile\default.txvpck"/>
+        <None Include="ModelSupport_SSDTools\uIoControlFile\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uPartitionListGetter\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uFixedDriveListGetter\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uOSFile\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uDiskGeometryGetter\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txvpck"/>
+        <None Include="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txvpck"/>
+        <None Include="ModelSupport_SSDTools\uDrive\default.txaPackage"/>
+        <None Include="ModelSupport_SSDTools\uPhysicalDrive\default.txaPackage"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -267,7 +299,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uFixedDriveListGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -279,21 +311,51 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="ModelSupport_SSDTools\uAlert\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
+                <DeployFile LocalName="ModelSupport_SSDTools\uOSFile\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
-                        <RemoteName>SSDTools.exe</RemoteName>
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uPhysicalDrive\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uOSFile\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uPartition\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uNTFSStruct\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uMotherDriveGetter\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uOSFileWithHandle\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -303,7 +365,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uMotherDriveGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -321,7 +383,85 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uATALowOps\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uDiskFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uIoControlFile\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uOSFileWithHandle\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uOSErrorToException\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uPartitionListGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uDiskGeometryGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>SSDTools.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uTrimThread\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uDrive\default.txaPackage" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_SSDTools\uPartitionFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -333,7 +473,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDiskFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uATALowOps\default.txaPackage" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
