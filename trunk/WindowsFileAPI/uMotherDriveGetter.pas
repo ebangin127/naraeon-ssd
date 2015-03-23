@@ -87,8 +87,10 @@ begin
 end;
 
 function TMotherDriveGetter.IsRAMDrive: Boolean;
+const
+  QSoftRamdriveVolumeName = 'ramdriv';
 begin
-  result := Pos('ramdriv', lowercase(VolumeName)) > 0;
+  result := Pos(QSoftRamdriveVolumeName, lowercase(VolumeName)) > 0;
 end;
 
 procedure TMotherDriveGetter.IfRAMDriveRaiseException;

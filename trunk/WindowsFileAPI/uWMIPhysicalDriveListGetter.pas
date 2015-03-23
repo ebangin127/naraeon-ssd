@@ -14,7 +14,12 @@ type
 
 implementation
 
-{ TBruteForcePhysicalDriveGetter }
+{ TWMIPhysicalDriveListGetter }
+
+function ConnectToWMI;
+begin
+  
+end;
 
 function TWMIPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
