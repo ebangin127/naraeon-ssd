@@ -110,11 +110,20 @@ begin
     IfNotFixedDelete(CurrentDrive);
 end;
 
-function TFixedDriveListGetter.GetFixedDriveList: TFixedDriveList;
+procedure TFixedDriveListGetter.TryToGetFixedDriveList;
 begin
   FixedDriveListInConcatString := GetLogicalDriveInConcatString;
   ConcatStringToTFixedDriveList;
   LeaveOnlyFixedDrives;
+end;
+
+function TFixedDriveListGetter.GetFixedDriveList: TFixedDriveList;
+begin
+  try
+    TryToGetFixedDriveList;
+  except
+    FreeAndNil(FixedDriveList);
+  end;
   result := FixedDriveList;
 end;
 

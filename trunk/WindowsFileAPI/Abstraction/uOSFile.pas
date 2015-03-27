@@ -14,11 +14,11 @@ type
   public
     constructor Create(FileToGetAccess: String); virtual;
 
-  protected
-    procedure IfOSErrorRaiseException;
-
     function GetPathOfFileAccessing: String;
     function GetPathOfFileAccessingWithoutPrefix: String;
+
+  protected
+    procedure IfOSErrorRaiseException;
 
   private
     PathOfFileAccessing: String;

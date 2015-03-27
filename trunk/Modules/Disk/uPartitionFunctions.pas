@@ -55,13 +55,12 @@ type
   end;
   //---GetDiskGeometry---//
 
-//µð½ºÅ© ¿ë·® ¹Þ¾Æ¿À´Â ÇÔ¼ö
+//ï¿½ï¿½ï¿½ï¿½Å© ï¿½ë·® ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
 
-//ÆÄÆ¼¼Ç ¿ë·® ¹Þ¾Æ¿À´Â ÇÔ¼ö
+//ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ë·® ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
 function GetPartitionLength(DriveLetter: String): Int64;
 function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
-function GetFirstSector(const DriveLetter: String): Int64;
 
 implementation
 
@@ -166,31 +165,6 @@ begin
     end
     else
       result.ErrorCode := GetLastError;
-    CloseHandle(hdrive);
-  end;
-end;
-
-function GetFirstSector(const DriveLetter: String): Int64;
-var
-  hdrive: Cardinal;
-  dwBytesReturned: DWORD;
-  Status: Longbool;
-  FirstSectorInfo: RETRIEVAL_POINTER_BASE;
-begin
-  fillchar(result, SizeOf(result), #0);
-
-  hdrive := CreateFile(PChar('\\.\' + DriveLetter), GENERIC_READ or GENERIC_WRITE,
-                    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-
-  If GetLastError = 0 Then
-  begin
-    Status := DeviceIoControl(hdrive, FSCTL_GET_RETRIEVAL_POINTER_BASE, nil, 0, @FirstSectorInfo, SizeOf(RETRIEVAL_POINTER_BASE), dwBytesReturned, nil);
-    if Status then
-    begin
-      result := FirstSectorInfo.FileAreaOffset.QuadPart;
-    end
-    else
-      result := 0;
     CloseHandle(hdrive);
   end;
 end;

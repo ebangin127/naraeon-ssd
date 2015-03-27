@@ -12,7 +12,7 @@ type
     StartingOffset: TLargeInteger;
   end;
 
-  TDriveNumberQueryResult = record
+  TPhysicalDriveNumberQueryResult = record
     Found: Boolean;
     Position: Cardinal;
   end;
@@ -27,7 +27,7 @@ type
     PartitionList: TPartitionList;
     MotherDriveList: TMotherDriveList;
     FixedDriveList: TFixedDriveList;
-    DriveNumber: Cardinal;
+    PhysicalDriveNumber: Cardinal;
 
     function GetFixedDrives: TFixedDriveList;
     procedure AddThisDriveToList
@@ -60,7 +60,7 @@ begin
   result := MotherDriveList[CurrentExtent].DriveNumber = DriveNumber;
 end;
 
-function TPartitionListGetter.FindDiskNumberInMotherDriveEntry:
+function TPartitionListGetter.FindPhysicalDriveNumberInMotherDriveEntry:
   TDriveNumberQueryResult;
 var
   CurrentExtent: Cardinal;
@@ -100,7 +100,7 @@ procedure TPartitionListGetter.IfPartitionOfThisDriveAddToList
   (CurrentDrive: Integer);
 var
   MotherDriveGetter: TMotherDriveGetter;
-  DriveNumberQueryResult: TDriveNumberQueryResult;
+  PhysicalDriveNumberQueryResult: TPhysicalDriveNumberQueryResult;
 begin
   try
     MotherDriveGetter := TMotherDriveGetter.Create
@@ -108,30 +108,40 @@ begin
         (ThisComputerPrefix + FixedDriveList[CurrentDrive]));
     MotherDriveList := MotherDriveGetter.GetMotherDriveList;
 
-    DriveNumberQueryResult := FindDiskNumberInMotherDriveEntry;
-    if DriveNumberQueryResult.Found then
-      AddThisDriveToList(CurrentDrive, DriveNumberQueryResult.Position);
+    PhysicalDriveNumberQueryResult := FindPhysicalDriveNumberInMotherDriveEntry;
+    if PhysicalDriveNumberQueryResult.Found then
+      AddThisDriveToList(CurrentDrive, PhysicalDriveNumberQueryResult.Position);
   finally
     FreeAndNil(MotherDriveList);
     FreeAndNil(MotherDriveGetter);
   end;
 end;
 
-function TPartitionListGetter.GetPartitionList: TPartitionList;
+function TPartitionListGetter.CreateAndReturnThisDrivesPartitionList:
+  TPartitionList;
 var
   CurrentDrive: Integer;
 begin
+  PartitionList := TPartitionList.Create;
+  for CurrentDrive := 0 to (FixedDriveList.Count - 1) do
+    IfPartitionOfThisDriveAddToList(CurrentDrive);
+  result := PartitionList;
+end;
+
+function TPartitionListGetter.TryToGetPartitionList: TPartitionList;
+begin
+  FixedDriveList := GetFixedDrives;
+  PhysicalDriveNumber := StrToInt(GetPathOfFileAccessingWithoutPrefix);
+  result := CreateAndReturnThisDrivesPartitionList;
+end;
+
+function TPartitionListGetter.GetPartitionList: TPartitionList;
+begin
   try
-    FixedDriveList := GetFixedDrives;
-    DriveNumber := StrToInt(GetPathOfFileAccessingWithoutPrefix);
-    PartitionList := TPartitionList.Create;
-
-    for CurrentDrive := 0 to (FixedDriveList.Count - 1) do
-      IfPartitionOfThisDriveAddToList(CurrentDrive);
-
-    result := PartitionList;
+    result := TryToGetPartitionList;
   finally
     FreeAndNil(FixedDriveList);
+    result := nil;
   end;
 end;
 

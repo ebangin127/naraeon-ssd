@@ -6,7 +6,7 @@ uses
   uOSFile, uPhysicalDriveList;
 
 type
-  TPhysicalDriveGetter = class abstract(TOSFile)
+  TPhysicalDriveGetter = class abstract
   public
     PhysicalDriveList: TPhysicalDriveList;
     function GetPhysicalDriveList: TPhysicalDriveList; virtual; abstract;

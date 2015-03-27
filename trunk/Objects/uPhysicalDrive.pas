@@ -9,18 +9,14 @@ uses
 type
   TPhysicalDrive = class
   public
-    constructor Create(DriveNumber: Cardinal); overload;
-    constructor Create(DrivePath: String); overload;
-    destructor Destroy; override;
+    constructor Create(DriveNumber: Cardinal); 
 
     function GetDiskSize: TLargeInteger;
     function GetPartitionList: TPartitionList;
     function GetIsDriveAvailable: Boolean;
 
   private
-    DiskGeometryGetter: TDiskGeometryGetter;
-    PartitionListGetter: TPartitionListGetter;
-    DriveAvailabilityGetter: TDriveAvailabilityGetter;
+    PhysicalDrivePath: String;
   end;
 
 implementation
@@ -28,42 +24,36 @@ implementation
 { TPhysicalDrive }
 
 constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
-var
-  PhysicalDrivePath: String;
 begin
   PhysicalDrivePath :=
     ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber);
-  Create(PhysicalDrivePath);
-end;
-
-constructor TPhysicalDrive.Create(DrivePath: String);
-begin
-  DiskGeometryGetter := TDiskGeometryGetter.Create(DrivePath);
-  PartitionListGetter := TPartitionListGetter.Create(DrivePath);
-  DriveAvailabilityGetter := TDriveAvailabilityGetter.Create(DrivePath);
-end;
-
-destructor TPhysicalDrive.Destroy;
-begin
-  FreeAndNil(DiskGeometryGetter);
-  FreeAndNil(PartitionListGetter);
-  FreeAndNil(DriveAvailabilityGetter);
-  inherited;
 end;
 
 function TPhysicalDrive.GetDiskSize: TLargeInteger;
+var
+  DiskGeometryGetter: TDiskGeometryGetter;
 begin
+  DiskGeometryGetter := TDiskGeometryGetter.Create(PhysicalDrivePath);
   result := DiskGeometryGetter.GetDiskSizeInByte;
+  FreeAndNil(DiskGeometryGetter);
 end;
 
 function TPhysicalDrive.GetIsDriveAvailable: Boolean;
+var
+  DriveAvailabilityGetter: TDriveAvailabilityGetter;
 begin
+  DriveAvailabilityGetter := TDriveAvailabilityGetter.Create(PhysicalDrivePath);
   result := DriveAvailabilityGetter.GetAvailability;
+  FreeAndNil(DriveAvailabilityGetter);
 end;
 
 function TPhysicalDrive.GetPartitionList: TPartitionList;
+var
+  PartitionListGetter: TPartitionListGetter;
 begin
+  PartitionListGetter := TPartitionListGetter.Create(PhysicalDrivePath);
   result := PartitionListGetter.GetPartitionList;
+  FreeAndNil(PartitionListGetter);
 end;
 
 end.

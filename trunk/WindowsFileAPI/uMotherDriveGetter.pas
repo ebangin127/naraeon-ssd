@@ -144,11 +144,21 @@ begin
   exit(MotherDriveList);
 end;
 
-function TMotherDriveGetter.GetMotherDriveList: TMotherDriveList;
+procedure TMotherDriveGetter.TryToGetMotherDriveList;
 begin
   SetVolumeNameBuffer;
   IfRAMDriveRaiseException;
-  exit(GetMotherDrive);
+  result := GetMotherDrive;
+end;
+
+function TMotherDriveGetter.GetMotherDriveList: TMotherDriveList;
+begin
+  try
+    result := TryToGetMotherDriveList;
+  except
+    FreeAndNil(MotherDriveList);
+    result := nil;
+  end;
 end;
 
 function TMotherDriveGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
