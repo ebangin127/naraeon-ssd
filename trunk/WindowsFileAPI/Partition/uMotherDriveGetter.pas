@@ -27,6 +27,7 @@ type
   private
     MotherDriveList: TMotherDriveList;
     VolumeName: String;
+    function TryToGetMotherDriveList: TMotherDriveList;
 
     type
       TVolumeNameBuffer = Array[0..MAX_PATH] of Char;
@@ -144,7 +145,7 @@ begin
   exit(MotherDriveList);
 end;
 
-procedure TMotherDriveGetter.TryToGetMotherDriveList;
+function TMotherDriveGetter.TryToGetMotherDriveList: TMotherDriveList;
 begin
   SetVolumeNameBuffer;
   IfRAMDriveRaiseException;

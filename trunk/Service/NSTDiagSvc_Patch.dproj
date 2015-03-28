@@ -131,7 +131,7 @@
         <DCCReference Include="..\Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="..\Classes\SSDInfo\uSSDInfo.pas"/>
         <DCCReference Include="..\Classes\SSDInfo\uSSDSupport.pas"/>
-        <DCCReference Include="..\Classes\ATALowOps\uATALowOps.pas"/>
+        <DCCReference Include="..\Classes\ATALowOps\uDirectCommandSet.pas"/>
         <DCCReference Include="..\Classes\GetFirm\uGetFirm.pas"/>
         <DCCReference Include="..\Classes\SSDList\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uDatasizeUnit.pas"/>
@@ -220,19 +220,19 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uStrFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uTimeUnit\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uMain\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSMARTFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSSDList\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSSDInfo\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -316,6 +316,18 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uStrFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uMain\default.txvpck" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uDatasizeUnit\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
@@ -334,19 +346,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uTimeUnit\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSMARTFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSSDInfo\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_NSTDiagSvc_Patch\uSSDList\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

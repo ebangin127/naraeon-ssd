@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ClipBrd, Windows,
-  uSSDInfo, uPhysicalDriveList, uSSDSupport, uLanguageSettings;
+  uSSDInfo, uPhysicalDriveList, uPhysicalDrive, uSSDSupport, uLanguageSettings;
 
 type
   TDiag = class
@@ -44,7 +44,7 @@ end;
 class procedure TDiag.Body(Contents: TStringList);
 var
   SSDList: TPhysicalDriveList;
-  CurrEntry: TPhysicalDriveEntry;
+  CurrEntry: TPhysicalDrive;
   CurrSSDInfo: TSSDInfo_NST;
 begin
   SSDList := TPhysicalDriveList.Create;
@@ -53,8 +53,9 @@ begin
   TraverseDevice(false, false, SSDList);
   for CurrEntry in SSDList do
   begin
-    Contents.Add('Probe, \\.\PhysicalDrive' + CurrEntry.DeviceName + ', ');
-    CurrSSDInfo.SetDeviceName(StrToInt(CurrEntry.DeviceName));
+    Contents.Add('Probe, ' + CurrEntry.GetPathOfFileAccessing + ', ');
+    CurrSSDInfo.SetDeviceName(
+      StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix));
 
     Contents[Contents.Count - 1] :=
       Contents[Contents.Count - 1] +

@@ -648,7 +648,8 @@ var
 begin
   CloseDriveList;
 
-  if CurrDrive = TSSDLabel(Sender).DeviceInfo.DeviceName then
+  if CurrDrive =
+    TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessingWithoutPrefix then
   begin
     gSSDSel.Visible := false;
     exit;
@@ -657,12 +658,13 @@ begin
   lFirmware.Font.Color := clWindowText;
   ButtonGroup.CloseAll;
 
-  CurrDrive := TSSDLabel(Sender).DeviceInfo.DeviceName;
+  CurrDrive :=
+    TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessingWithoutPrefix;
   tRefreshTimer(Self);
 
   for CurrIndex := 0 to SSDLabel.Count - 1 do
-    if SSDLabel[CurrIndex].DeviceInfo.DeviceName =
-       TSSDLabel(Sender).DeviceInfo.DeviceName then
+    if SSDLabel[CurrIndex].DeviceInfo.GetPathOfFileAccessing =
+       TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessing then
       SSDLabel[CurrIndex].Font.Style := [fsBold]
     else
       SSDLabel[CurrIndex].Font.Style := [];

@@ -23,7 +23,7 @@ type
     Serial: String;
     /// <remarks>물리 주소 (ex: \\.\PhysicalDrive0)</remarks>
     DeviceName: String;
-    UserSize: UInt64;
+    UserSizeInKB: UInt64;
 
     //SATA 정보
     /// <remarks>

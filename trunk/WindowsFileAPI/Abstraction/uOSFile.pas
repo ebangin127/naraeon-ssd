@@ -7,7 +7,7 @@ uses
 
 const
   ThisComputerPrefix = '\\.\';
-  PhysicalDrivePrefix = 'PhysicalDrive';
+  PhysicalDrivePrefix = 'PHYSICALDRIVE';
 
 type
   TOSFile = class abstract(TObject)
@@ -87,7 +87,7 @@ end;
 constructor TOSFile.Create(FileToGetAccess: String);
 begin
   inherited Create;
-  PathOfFileAccessing := FileToGetAccess;
+  PathOfFileAccessing := UpperCase(FileToGetAccess);
 end;
 
 end.

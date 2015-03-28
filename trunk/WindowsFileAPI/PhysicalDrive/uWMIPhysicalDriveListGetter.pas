@@ -13,6 +13,30 @@ type
   private
     CurrentDrive: OleVariant;
     PhysicalDriveList: TPhysicalDriveList;
+    procedure AddDriveToList;
+    procedure CheckMediaTypeAndAddIfRequirementMet;
+    function ConnectToWMIObjectByMoniker: IDispatch;
+    function GetDefaultMonikerFromObjectPath(ObjectPath: String;
+      BindableContext: IBindCtx): IMoniker;
+    function GetDiskDriveSearchResult(WMIObject: IDispatch): IEnumVARIANT;
+    function GetLocalhostWMIRepositoryURI: String;
+    function GetMonikerBindableContext: IBindCtx;
+    function GetNextDriveAndReturnResult(
+      DiskDriveSearchResult: IEnumVARIANT): Boolean;
+    function GetReferredObjectByMoniker(DefaultMoniker: IMoniker;
+      BindableContext: IBindCtx): IDispatch;
+    procedure IfDriveConnectedByKnownInterfaceAddToList;
+    procedure IfFixedOrUSBDriveAddToList;
+    function IsCurrentDriveAvailable: Boolean;
+    function IsDriveConnectedBy(InterfaceName: String): Boolean;
+    function IsDriveConnectedByKnownInterface: Boolean;
+    function IsDriveLoaded: Boolean;
+    function IsDriveSetValidID: Boolean;
+    function IsDriveSetValidType: Boolean;
+    function IsHarddrive(MediaType: String): Boolean;
+    procedure TraverseResultAndAddFixedOrUSBDrive(
+      DiskDriveSearchResult: IEnumVARIANT);
+    procedure TryToGetPhysicalDriveList;
   end;
 
 implementation
@@ -32,7 +56,7 @@ var
   LengthOfURISuccessfullyParsed: Integer;
 begin
   OleCheck(
-    MkParseDisplayName(OleCtx,
+    MkParseDisplayName(BindableContext,
       PWideChar(ObjectPath),
       LengthOfURISuccessfullyParsed,
       result));
@@ -40,11 +64,9 @@ end;
 
 function TWMIPhysicalDriveListGetter.GetReferredObjectByMoniker
   (DefaultMoniker: IMoniker; BindableContext: IBindCtx): IDispatch;
-var
-  LengthOfURISuccessfullyParsed: Integer;
 begin
   OleCheck(
-    OleMoniker.BindToObject(OleCtx, nil, IUnknown, result));
+    DefaultMoniker.BindToObject(BindableContext, nil, IUnknown, result));
 end;
 
 function TWMIPhysicalDriveListGetter.GetLocalhostWMIRepositoryURI: String;
@@ -90,6 +112,8 @@ function TWMIPhysicalDriveListGetter.GetNextDriveAndReturnResult
 const
   OneDriveInformationNeeded = 1;
   ThereIsAnotherDrive = 0;
+var
+  DriveReturned: Cardinal;
 begin
   result :=
     DiskDriveSearchResult.Next
@@ -102,21 +126,15 @@ end;
 function TWMIPhysicalDriveListGetter.IsHarddrive(MediaType: String): Boolean;
 begin
   //Refer https://msdn.microsoft.com/en-us/library/aa394132%28v=vs.85%29.aspx
-  result := Pos('hard', LowerCase(IsFixedMedia)) >= 0;
+  result := Pos('hard', LowerCase(MediaType)) >= 0;
 end;
 
 procedure TWMIPhysicalDriveListGetter.AddDriveToList;
 var
   PhysicalDrive: TPhysicalDrive;
-  EntryToAdd: TPhysicalDriveEntry;
 begin
-  PhysicalDrive := TPhysicalDrive.Create(CurrentDrive.DeviceID);
-
-  CurrEntry.DeviceName := PhysicalDrive.GetPathOfFileAccessingWithoutPrefix;
-  CurrEntry.IsUSBDevice := OleDrives.InterfaceType = 'USB';
-  PhysicalDriveList.Add(EntryToAdd);
-  
-  FreeAndNil(PhysicalDrive);
+  PhysicalDrive := TPhysicalDrive.Create(String(CurrentDrive.DeviceID));
+  PhysicalDriveList.Add(PhysicalDrive);
 end;
 
 function TWMIPhysicalDriveListGetter.IsDriveConnectedBy
@@ -139,8 +157,7 @@ begin
      AddDriveToList;
 end;
 
-procedure TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet
-  (DiskDriveSearchResult: IEnumVARIANT);
+procedure TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet;
 begin
   if IsHarddrive(CurrentDrive.MediaType) then
     IfDriveConnectedByKnownInterfaceAddToList;
@@ -148,7 +165,7 @@ end;
 
 function TWMIPhysicalDriveListGetter.IsDriveSetValidType: Boolean;
 begin
-  result := (not VarIsNull(OleDrives.MediaType));
+  result := (not VarIsNull(CurrentDrive.MediaType));
 end;
 
 function TWMIPhysicalDriveListGetter.IsDriveLoaded: Boolean;
@@ -161,8 +178,7 @@ begin
   result := (not VarIsNull(CurrentDrive.DeviceID <> ''));
 end;
 
-function TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable
-  (DiskDriveSearchResult: IEnumVARIANT): Boolean;
+function TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable: Boolean;
 begin
   result :=
     IsDriveSetValidID and
@@ -170,33 +186,29 @@ begin
     IsDriveSetValidType;
 end;
 
-function TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList
-  (DiskDriveSearchResult: IEnumVARIANT): Boolean;
+procedure TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList;
 begin
   if IsCurrentDriveAvailable then
     CheckMediaTypeAndAddIfRequirementMet;
-  
+
   CurrentDrive := Unassigned;
 end;
 
-function TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
+procedure TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
   (DiskDriveSearchResult: IEnumVARIANT);
-var
-  DriveReturned: LongWord;
 begin
-  while GetNextDriveAndReturnResult do
+  while GetNextDriveAndReturnResult(DiskDriveSearchResult) do
     IfFixedOrUSBDriveAddToList;
 end;
 
-function TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList:
-  TPhysicalDriveList;
+procedure TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList;
 var
   WMIObject: IDispatch;
   DiskDriveSearchResult: IEnumVARIANT;
 begin
   WMIObject := ConnectToWMIObjectByMoniker;
   DiskDriveSearchResult := GetDiskDriveSearchResult(WMIObject);
-  TraverseResultAndAddFixedAndUSBDrive(DiskDriveSearchResult);
+  TraverseResultAndAddFixedOrUSBDrive(DiskDriveSearchResult);
 end;
 
 function TWMIPhysicalDriveListGetter.GetPhysicalDriveList:

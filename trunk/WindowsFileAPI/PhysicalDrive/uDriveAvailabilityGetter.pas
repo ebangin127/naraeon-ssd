@@ -45,15 +45,15 @@ begin
 
   try
     IoControl(TIoControlCode.StorageCheckVerify, GetNullBuffer);
-    exit(true);
+    result := true;
   except
-    exit(false);
+    result := false;
   end;
 end;
 
 function TDriveAvailabilityGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
 begin
-  exit(DesiredNone);
+  exit(DesiredReadOnly);
 end;
 
 end.

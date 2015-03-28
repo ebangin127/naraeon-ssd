@@ -192,20 +192,11 @@ type
 //용량, 볼륨 이름 및 각종 정보 얻어오기
 function GetVolumeLabel(AltName: String; DriveName: String): string;
 
-//Fixed HDD, USB Mass Storage 정보 얻어오기
-function GetSSDList: TPhysicalDriveList;
-
 const
   SMART_READ_ATTRIBUTE_VALUES = $D0;
   SMART_CYL_LOW = $4F;
   SMART_CYL_HI = $C2;
   SMART_CMD = $B0;
-
-  ATA_FLAGS_DRDY_REQUIRED = 1;
-  ATA_FLAGS_DATA_IN = 1 shl 1;
-  ATA_FLAGS_DATA_OUT = 1 shl 2;
-  ATA_FLAGS_48BIT_COMMAND = 1 shl 3;
-  ATA_FLAGS_USE_DMA = 1 shl 4;
 
   ATAMode = false;
   SCSIMode = true;
@@ -276,81 +267,6 @@ begin
     finally
       if Handle = 0 then CloseHandle(hdrive);
     end;
-  end;
-end;
-
-function GetSSDList: TPhysicalDriveList;
-var
-  wsFileObj: WideString;
-  OleDrives: OleVariant;
-  Dispatch: IDispatch;
-  OleDrivesVar: OleVariant;
-  OleEnum: IEnumvariant;
-  OleCtx: IBindCtx;
-  OleMoniker: IMoniker;
-
-  i: Integer;
-  iValue: LongWord;
-
-  CurrEntry: TPhysicalDriveEntry;
-
-  CurrDrv: Integer;
-  hdrive: THandle;
-begin
-  result := TPhysicalDriveList.Create;
-  wsFileObj := 'winmgmts:\\localhost\root\cimv2';
-  try
-    OleCheck(CreateBindCtx(0, OleCtx));
-    OleCheck(MkParseDisplayName(OleCtx, PWideChar(wsFileObj), i, OleMoniker));
-    OleCheck(OleMoniker.BindToObject(OleCtx, nil, IUnknown, Dispatch));
-
-    OleDrivesVar :=
-      OleVariant(Dispatch).ExecQuery('Select * from Win32_DiskDrive');
-    OleEnum := IUnknown(OleDrivesVar._NewEnum) as IEnumVariant;
-
-    while OleEnum.Next(1, OleDrives, iValue) = 0 do
-    begin
-      if (not VarIsNull(OleDrives.DeviceID <> '')) and
-         (OleDrives.MediaLoaded) and
-         (not VarIsNull(OleDrives.MediaType)) then
-      begin
-        CurrEntry.DeviceName := ExtractDeviceNum(OleDrives.DeviceID);
-
-        if Pos('hard', Lowercase(OleDrives.MediaType)) >= 0 then
-        begin
-          CurrEntry.IsUSBDevice := OleDrives.InterfaceType = 'USB';
-
-          if (OleDrives.InterfaceType = 'IDE') or
-             (OleDrives.InterfaceType = 'SCSI') or
-             (OleDrives.InterfaceType = 'USB') then
-            result.Add(CurrEntry);
-        end;
-      end;
-      OleDrives := Unassigned;
-    end;
-    OleDrivesVar := Unassigned;
-  except
-  end;
-
-  if (result.Count > 0) then
-    exit;
-
-  for CurrDrv := 0 to 99 do
-  begin
-    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + IntToStr(CurrDrv)),
-                         GENERIC_READ or GENERIC_WRITE,
-                         FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
-                         OPEN_EXISTING, 0, 0);
-
-
-    if (GetLastError = 0) and (GetIsDriveAccessible('', hdrive)) then
-    begin
-      CurrEntry.DeviceName := '\\.\PhysicalDrive' + IntToStr(CurrDrv);
-      CurrEntry.IsUSBDevice := false;
-      result.Add(CurrEntry);
-    end;
-
-    CloseHandle(hdrive);
   end;
 end;
 

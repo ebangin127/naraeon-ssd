@@ -16,7 +16,7 @@ type
   private
     FixedDriveList: TFixedDriveList;
     FixedDriveListInConcatString: String;
-    ConcatStringArray: Array of PChar;
+    ConcatStringArray: Array of WideChar;
 
     CurrentCharPosition: Cardinal;
 
@@ -28,6 +28,7 @@ type
     function IsThisPointOverLimit: Boolean;
     procedure IfNotFixedDelete(CurrentDrive: Cardinal);
     procedure LeaveOnlyFixedDrives;
+    procedure TryToGetFixedDriveList;
   end;
 
 implementation
@@ -41,7 +42,6 @@ begin
     GetLogicalDriveStrings(0, @ConcatStringArray[0]);
   SetLength(ConcatStringArray, LengthOfLogicalDriveString);
   GetLogicalDriveStrings(LengthOfLogicalDriveString, @ConcatStringArray[0]);
-  IfOSErrorRaiseException;
   exit(String(ConcatStringArray));
 end;
 

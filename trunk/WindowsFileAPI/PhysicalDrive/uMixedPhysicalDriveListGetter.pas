@@ -3,7 +3,8 @@ unit uMixedPhysicalDriveListGetter;
 interface
 
 uses
-  uPhysicalDriveGetter, uBruteForcePhysicalDriveGetter,
+  SysUtils,
+  uPhysicalDriveGetter, uBruteForcePhysicalDriveListGetter,
   uWMIPhysicalDriveListGetter, uPhysicalDriveList;
 
 type
@@ -12,6 +13,11 @@ type
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
     PhysicalDriveList: TPhysicalDriveList;
+    function IsMoreTrialNeeded: Boolean;
+    procedure LetBruteForceGetterFillTheList;
+    procedure LetBruteForceGetterFillTheListIfNeeded;
+    procedure LetWMIGetterFillTheList;
+    procedure LetWMIGetterFillTheListIfNeeded;
   end;
 
 implementation
@@ -26,20 +32,22 @@ end;
 
 procedure TMixedPhysicalDriveListGetter.LetBruteForceGetterFillTheList;
 var
-  BruteForcePhysicalDriveGetter: TBruteForcePhysicalDriveGetter;
+  BruteForcePhysicalDriveListGetter: TBruteForcePhysicalDriveListGetter;
 begin
-  BruteForcePhysicalDriveGetter := TBruteForcePhysicalDriveGetter.Create;
+  BruteForcePhysicalDriveListGetter := TBruteForcePhysicalDriveListGetter.Create;
   PhysicalDriveList :=
-    BruteForcePhysicalDriveGetter.GetPhysicalDriveList;
+    BruteForcePhysicalDriveListGetter.GetPhysicalDriveList;
+  FreeAndNil(BruteForcePhysicalDriveListGetter);
 end;
 
 procedure TMixedPhysicalDriveListGetter.LetWMIGetterFillTheList;
 var
-  BruteForcePhysicalDriveGetter: TBruteForcePhysicalDriveGetter;
+  WMIPhysicalDriveListGetter: TWMIPhysicalDriveListGetter;
 begin
-  BruteForcePhysicalDriveGetter := TBruteForcePhysicalDriveGetter.Create;
+  WMIPhysicalDriveListGetter := TWMIPhysicalDriveListGetter.Create;
   PhysicalDriveList :=
-    BruteForcePhysicalDriveGetter.GetPhysicalDriveList;
+    WMIPhysicalDriveListGetter.GetPhysicalDriveList;
+  FreeAndNil(WMIPhysicalDriveListGetter);
 end;
 
 procedure TMixedPhysicalDriveListGetter.LetBruteForceGetterFillTheListIfNeeded;

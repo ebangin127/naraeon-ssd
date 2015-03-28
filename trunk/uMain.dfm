@@ -1879,7 +1879,6 @@ object fMain: TfMain
   end
   object tRefresh: TTimer
     Enabled = False
-    Interval = 60000
     OnTimer = tRefreshTimer
     Left = 495
     Top = 319

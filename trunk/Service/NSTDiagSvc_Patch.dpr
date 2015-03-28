@@ -15,7 +15,7 @@ uses
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
   uSSDInfo in '..\Classes\SSDInfo\uSSDInfo.pas',
   uSSDSupport in '..\Classes\SSDInfo\uSSDSupport.pas',
-  uATALowOps in '..\Classes\ATALowOps\uATALowOps.pas',
+  uDirectCommandSet in '..\Classes\ATALowOps\uDirectCommandSet.pas',
   uGetFirm in '..\Classes\GetFirm\uGetFirm.pas',
   uPhysicalDriveList in '..\Classes\SSDList\uPhysicalDriveList.pas',
   uDatasizeUnit in '..\Classes\MeasureUnit\uDatasizeUnit.pas',

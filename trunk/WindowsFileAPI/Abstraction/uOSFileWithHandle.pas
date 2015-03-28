@@ -11,9 +11,11 @@ type
 
   TOSFileWithHandle = class abstract(TOSFile)
   public
-    constructor Create(FileToGetAccess: String); overload; virtual; abstract;
+    constructor Create(FileToGetAccess: String); reintroduce;
+      overload; virtual; abstract;
     constructor Create(FileToGetAccess: String;
-      DesiredAccess: TCreateFileDesiredAccess); overload;
+      DesiredAccess: TCreateFileDesiredAccess); reintroduce;
+      overload;
     destructor Destroy; override;
 
   protected
@@ -33,7 +35,6 @@ type
       (Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
       DesiredAccess: DWORD): THandle;
-    procedure CloseHandleAndCheckError;
     function IsPrivilegeValid(PrivilegeToTest: TCreateFileDesiredAccess):
       Boolean;
   end;
@@ -125,16 +126,10 @@ begin
   AccessPrivilege := DesiredAccess;
 end;
 
-procedure TOSFileWithHandle.CloseHandleAndCheckError;
-begin
-  CloseHandle(FileHandle);
-  IfOSErrorRaiseException;
-end;
-
 destructor TOSFileWithHandle.Destroy;
 begin
   if IsHandleValid(FileHandle) then
-    CloseHandleAndCheckError;
+    CloseHandle(FileHandle);
   inherited Destroy;
 end;
 

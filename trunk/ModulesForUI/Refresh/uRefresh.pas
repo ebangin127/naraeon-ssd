@@ -18,12 +18,15 @@ procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
 type
   TSSDLabel = class(TLabel)
   public
-    DeviceInfo: TPhysicalDriveEntry;
+    DeviceInfo: TPhysicalDrive;
   end;
 
   TSSDLabelList = class(TList<TSSDLabel>)
   public
-    function IndexOf(Entry: TPhysicalDriveEntry): Integer;
+    destructor Destroy; override;
+    procedure Delete(Index: Integer);
+
+    function IndexOf(Entry: TPhysicalDrive): Integer;
   end;
 
 implementation
@@ -426,7 +429,7 @@ begin
   end;
 end;
 
-procedure DelDevice(SSDEntry: TPhysicalDriveEntry);
+procedure DelDevice(SSDEntry: TPhysicalDrive);
 var
   IndexOfEntry: Integer;
 begin
@@ -441,9 +444,8 @@ begin
   end;
 end;
 
-procedure AddDevice(SSDEntry: TPhysicalDriveEntry);
+procedure AddDevice(SSDEntry: TPhysicalDrive);
 var
-  AddingPhysicalDrive: TPhysicalDrive;
   CurrDrvPartitions: TPartitionList;
   NewLen: Integer;
   CurrPartition: Integer;
@@ -453,7 +455,6 @@ var
   DenaryByteToMB: DatasizeUnitChangeSetting;
   DiskSizeInMB: Double;
 begin
-  AddingPhysicalDrive := TPhysicalDrive.Create(StrToInt(SSDEntry.DeviceName));
   with fMain do
   begin
     NewLen := SSDLabel.Count;
@@ -463,14 +464,17 @@ begin
     SSDLabel[NewLen].Parent := GSSDSel;
     SSDLabel[NewLen].Font.Name := Font.Name;
     SSDLabel[NewLen].Font.Size := 10;
-    SSDLabel[NewLen].DeviceInfo := SSDEntry;
+    SSDLabel[NewLen].DeviceInfo :=
+      TPhysicalDrive.Create(
+        StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
     SSDLabel[NewLen].Cursor := crHandPoint;
     SSDLabel[NewLen].OnClick := SSDLabelClick;
     SSDLabel[NewLen].OnMouseEnter := SSDSelLblMouseEnter;
     SSDLabel[NewLen].OnMouseLeave := SSDSelLblMouseLeave;
 
     CurrSSDInfo := TSSDInfo.Create;
-    CurrSSDInfo.SetDeviceName(StrToInt(SSDEntry.DeviceName));
+    CurrSSDInfo.SetDeviceName(
+      StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
 
     if NewLen > 9 then
     begin
@@ -483,7 +487,7 @@ begin
       GSSDSel.Left := 260;
     end;
 
-    CurrDrvPartitions := AddingPhysicalDrive.GetPartitionList;
+    CurrDrvPartitions := SSDEntry.GetPartitionList;
 
     SSDLabel[NewLen].Font.Style := [fsBold];
     SSDLabel[NewLen].Font.Style := [];
@@ -493,7 +497,7 @@ begin
     DenaryByteToMB.FToUnit := MegaUnit;
 
     DiskSizeInMB :=
-      ChangeDatasizeUnit(AddingPhysicalDrive.GetDiskSize, DenaryByteToMB);
+      ChangeDatasizeUnit(SSDEntry.GetDiskSize, DenaryByteToMB);
 
     DenaryInteger.FNumeralSystem := Denary;
     DenaryInteger.FPrecision := 0;
@@ -523,14 +527,13 @@ begin
     FreeAndNil(CurrDrvPartitions);
     FreeAndNil(CurrSSDInfo);
   end;
-  FreeAndNil(AddingPhysicalDrive);
 
   SetLabelPosition;
 end;
 
 procedure AddByList(SSDList: TPhysicalDriveList);
 var
-  CurrEntry: TPhysicalDriveEntry;
+  CurrEntry: TPhysicalDrive;
 begin
   for CurrEntry in SSDList do
     AddDevice(CurrEntry);
@@ -538,7 +541,7 @@ end;
 
 procedure DelByList(SSDList: TPhysicalDriveList);
 var
-  CurrEntry: TPhysicalDriveEntry;
+  CurrEntry: TPhysicalDrive;
 begin
   for CurrEntry in SSDList do
     DelDevice(CurrEntry);
@@ -598,15 +601,29 @@ begin
   FreeAndNil(TrvResult.DelList);
 end;
 
-function TSSDLabelList.IndexOf(Entry: TPhysicalDriveEntry): Integer;
+procedure TSSDLabelList.Delete(Index: Integer);
+begin
+  Self[Index].DeviceInfo.Free;
+  Self[Index].DeviceInfo := nil;
+  inherited Delete(Index);
+end;
+
+destructor TSSDLabelList.Destroy;
+var
+  CurrentItem: Integer;
+begin
+  for CurrentItem := 0 to Count - 1 do
+    Delete(0);
+  inherited;
+end;
+
+function TSSDLabelList.IndexOf(Entry: TPhysicalDrive): Integer;
 var
   CurrEntry: Integer;
 begin
   for CurrEntry := 0 to Count - 1 do
-    if (self[CurrEntry].DeviceInfo.DeviceName =
-        Entry.DeviceName) and
-       (self[CurrEntry].DeviceInfo.IsUSBDevice =
-        Entry.IsUSBDevice) then
+    if self[CurrEntry].DeviceInfo.GetPathOfFileAccessingWithoutPrefix =
+       Entry.GetPathOfFileAccessingWithoutPrefix then
       break;
 
   if CurrEntry < Count then
