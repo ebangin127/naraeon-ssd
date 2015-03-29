@@ -163,7 +163,7 @@
         <DCCReference Include="Modules\Windows\uExeFunctions.pas"/>
         <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>
-        <DCCReference Include="Classes\SSDInfo\uSSDInfo.pas"/>
+        <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
         <DCCReference Include="Classes\SSDInfo\uSSDSupport.pas"/>
         <DCCReference Include="Classes\Threads\uTrimThread.pas"/>
         <DCCReference Include="Classes\Threads\uUpdateThread.pas"/>
@@ -210,6 +210,10 @@
         <DCCReference Include="Objects\uSMARTValueList.pas"/>
         <DCCReference Include="WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
         <DCCReference Include="WindowsFileAPI\Interpreter\uATABufferInterpreter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\uMixedCommandSet.pas"/>
+        <DCCReference Include="GlobalSettings\uGlobalSettings.pas"/>
+        <DCCReference Include="NSTSupport\Support\uPlextorNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uLiteONSupport.pas"/>
         <None Include="ModelSupport_SSDTools\default.txaPackage"/>
         <None Include="ModelSupport_SSDTools\default.txvpck"/>
         <None Include="ModelSupport_SSDTools\SSDTools\default.txvpck"/>

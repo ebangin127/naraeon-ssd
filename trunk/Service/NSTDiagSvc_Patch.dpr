@@ -13,7 +13,7 @@ uses
   uIntFunctions in '..\Modules\Etc\uIntFunctions.pas',
   uStrFunctions in '..\Modules\Etc\uStrFunctions.pas',
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
-  uSSDInfo in '..\Classes\SSDInfo\uSSDInfo.pas',
+  uNSTSupport in '..\NSTSupport\Abstraction\uNSTSupport.pas',
   uSSDSupport in '..\Classes\SSDInfo\uSSDSupport.pas',
   uDirectCommandSet in '..\Classes\ATALowOps\uDirectCommandSet.pas',
   uGetFirm in '..\Classes\GetFirm\uGetFirm.pas',

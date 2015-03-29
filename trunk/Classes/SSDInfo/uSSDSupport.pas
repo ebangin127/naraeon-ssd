@@ -7,7 +7,6 @@ uses
   uLanguageSettings, uDiskFunctions, uSMARTFunctions;
 
 type
-  TSupportStatus = (SUPPORT_NONE, SUPPORT_SEMI, SUPPORT_FULL);
   THostSupportStatus = (HSUPPORT_NONE, HSUPPORT_COUNT, HSUPPORT_FULL);
 
   THostWrite = record
@@ -60,7 +59,6 @@ type
 //내부용 상수
 const
   RepSectorThreshold = 50;
-  RepSectorThreshold_PLEXTOR = 25;
 
   EraseErrorThreshold = 10;
 

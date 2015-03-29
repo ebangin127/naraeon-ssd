@@ -8,7 +8,7 @@ uses
 type
   T512Buffer = Array[0..511] of Byte;
   TStorageInterface =
-    (MODEL_NULL, MODEL_ATA, MODEL_SCSI, MODEL_DETERMINE);
+    (INTERFACE_PROBING, INTERFACE_ATA, INTERFACE_SAT, INTERFACE_UNKNOWN);
   TSATASpeed =
     (NOT_SATA, SATA_UNKNOWN, SATA_150, SATA_300, SATA_600);
   TIdentifyDeviceResult = record
@@ -19,6 +19,7 @@ type
     SATASpeed: TSATASpeed;
     LBASize: Cardinal;
     StorageInterface: TStorageInterface;
+    IsDataSetManagementSupported: Boolean;
   end;
 
   TBufferInterpreter = class abstract

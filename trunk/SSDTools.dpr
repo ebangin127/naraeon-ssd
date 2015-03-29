@@ -21,7 +21,7 @@ uses
   uExeFunctions in 'Modules\Windows\uExeFunctions.pas',
   uLogSystem in 'Classes\LogSystem\uLogSystem.pas',
   uOptimizer in 'Classes\Optimizer\uOptimizer.pas',
-  uSSDInfo in 'Classes\SSDInfo\uSSDInfo.pas',
+  uNSTSupport in 'NSTSupport\Abstraction\uNSTSupport.pas',
   uSSDSupport in 'Classes\SSDInfo\uSSDSupport.pas',
   uTrimThread in 'Classes\Threads\uTrimThread.pas',
   uUpdateThread in 'Classes\Threads\uUpdateThread.pas',
@@ -67,7 +67,11 @@ uses
   uSATCommandSet in 'WindowsFileAPI\PhysicalDrive\uSATCommandSet.pas',
   uSMARTValueList in 'Objects\uSMARTValueList.pas',
   uBufferInterpreter in 'WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
-  uATABufferInterpreter in 'WindowsFileAPI\Interpreter\uATABufferInterpreter.pas';
+  uATABufferInterpreter in 'WindowsFileAPI\Interpreter\uATABufferInterpreter.pas',
+  uMixedCommandSet in 'WindowsFileAPI\PhysicalDrive\uMixedCommandSet.pas',
+  uGlobalSettings in 'GlobalSettings\uGlobalSettings.pas',
+  uPlextorNSTSupport in 'NSTSupport\Support\uPlextorNSTSupport.pas',
+  uLiteONSupport in 'NSTSupport\Support\uLiteONSupport.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);

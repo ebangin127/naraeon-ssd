@@ -8,7 +8,7 @@ uses
   uATABufferInterpreter;
 
 type
-  TATACommandSet = class abstract(TCommandSet)
+  TATACommandSet = class(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -57,6 +57,7 @@ type
       ATA_FLAGS_USE_DMA = 1 shl 4;
       ATA_FLAGS_NO_MULTIPLE = 1 shl 5;
 
+  private
     IoInnerBuffer: ATA_WITH_BUFFER;
     IoOSBuffer: TIoControlIOBuffer;
 
@@ -246,8 +247,7 @@ function TATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
   SetInnerBufferToDataSetManagement(StartLBA, LBACount);
   SetOSBufferByInnerBuffer;
-  IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
-  result := IoOSBuffer.OutputBuffer;
+  result := IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
 end;
 
 end.

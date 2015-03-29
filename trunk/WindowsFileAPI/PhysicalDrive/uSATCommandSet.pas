@@ -8,7 +8,7 @@ uses
   uATABufferInterpreter;
 
 type
-  TSATCommandSet = class abstract(TCommandSet)
+  TSATCommandSet = class(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -71,6 +71,7 @@ type
       SCSI_IOCTL_DATA_IN = 1;
       SCSI_IOCTL_DATA_UNSPECIFIED = 2;
 
+  private
     IoInnerBuffer: SCSI_WITH_BUFFER;
     IoOSBuffer: TIoControlIOBuffer;
 
@@ -89,7 +90,7 @@ type
 
 implementation
 
-{ TATACommandSet }
+{ TSATCommandSet }
 
 function TSATCommandSet.GetCommonBuffer: SCSI_WITH_BUFFER;
 const
@@ -140,7 +141,7 @@ begin
 end;
 
 procedure TSATCommandSet.SetInnerBufferAsFlagsAndCdb
-  (Flags: ULONG; TaskFile: SCSI_COMMAND_DESCRIPTOR_BLOCK);
+  (Flags: ULONG; CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK);
 begin
   IoInnerBuffer := GetCommonBuffer;
 	IoInnerBuffer.Parameter.DataIn := Flags;

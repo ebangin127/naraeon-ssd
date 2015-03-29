@@ -54,8 +54,8 @@ implementation
 
 { TDeviceFile }
 
-procedure TIoControlFile.IoControl(ControlCode: TIoControlCode;
-  IOBuffer: TIoControlIOBuffer);
+function TIoControlFile.IoControl(ControlCode: TIoControlCode;
+  IOBuffer: TIoControlIOBuffer): Cardinal;
 var
   OSControlCode: Cardinal;
 begin
@@ -64,9 +64,9 @@ begin
   IfOSErrorRaiseException;
 end;
 
-procedure TIoControlFile.DeviceIoControlSystemCall(
+function TIoControlFile.DeviceIoControlSystemCall(
   OSControlCode: Cardinal;
-  IOBuffer: TIoControlIOBuffer);
+  IOBuffer: TIoControlIOBuffer): Cardinal;
 const
   NotOverlappedIO = nil;
 begin

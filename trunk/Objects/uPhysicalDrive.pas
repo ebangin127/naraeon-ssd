@@ -5,32 +5,33 @@ interface
 uses
   Windows, SysUtils, uOSFile, uCommandSet,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
-  uBufferInterpreter;
+  uBufferInterpreter, uSMARTValueList, uMixedCommandSet;
 
 type
   TPhysicalDrive = class(TOSFile)
   private
-    Model: String;
-    Firmware: String;
-    Serial: String;
-    UserSizeInKB: UInt64;
-    SATASpeed: TSATASpeed;
-
+    IdentifyDeviceResultReadWrite: TIdentifyDeviceResult;
     DriveAvailabilityGetter: TDriveAvailabilityGetter;
-    function TryToGetIsDriveAvailable: Boolean;
+    MixedCommandSet: TMixedCommandSet;
+    SMARTValueList: TSMARTValueList;
+
+    procedure RequestIdentifyDevice;
+    procedure RequestSMARTReadData;
+
+    function GetIdentifyDeviceResultOrReadyAndReturn: TIdentifyDeviceResult;
+
+  public
+    property IdentifyDeviceResult: TIdentifyDeviceResult
+      read GetIdentifyDeviceResultOrReadyAndReturn;
 
     function GetDiskSizeInByte: TLargeInteger;
     function GetPartitionList: TPartitionList;
     function GetIsDriveAvailable: Boolean;
-
-  public
-    property Model: String read FModel;
-    property Firmware: String read FFirmware;
-    property Serial: String read FSerial;
-    property UserSizeInKB: UInt64 read FUserSizeInKB;
-    property SATASpeed: TSATASpeed read FSATASpeed;
+    function TryToGetIsDriveAvailable: Boolean;
+    function GetSMARTValueEntryByID(ID: Byte): TSMARTValueEntry;
 
     constructor Create(DriveNumber: Cardinal); reintroduce; overload;
+    destructor Destroy; override;
 
   end;
 
@@ -42,6 +43,15 @@ constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
 begin
   inherited
     Create(ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber));
+  MixedCommandSet := TMixedCommandSet.Create(GetPathOfFileAccessing);
+end;
+
+destructor TPhysicalDrive.Destroy;
+begin
+  if SMARTValueList <> nil then
+    FreeAndNil(SMARTValueList);
+  FreeAndNil(MixedCommandSet);
+  inherited;
 end;
 
 function TPhysicalDrive.GetDiskSizeInByte: TLargeInteger;
@@ -64,6 +74,14 @@ begin
   end;
 end;
 
+function TPhysicalDrive.GetIdentifyDeviceResultOrReadyAndReturn:
+  TIdentifyDeviceResult;
+begin
+  if IdentifyDeviceResultReadWrite.Model = '' then
+    RequestIdentifyDevice;
+  result := IdentifyDeviceResultReadWrite;
+end;
+
 function TPhysicalDrive.GetIsDriveAvailable: Boolean;
 begin
   try
@@ -80,6 +98,23 @@ begin
   PartitionListGetter := TPartitionListGetter.Create(GetPathOfFileAccessing);
   result := PartitionListGetter.GetPartitionList;
   FreeAndNil(PartitionListGetter);
+end;
+
+function TPhysicalDrive.GetSMARTValueEntryByID(ID: Byte): TSMARTValueEntry;
+begin
+  if SMARTValueList = nil then
+    RequestSMARTReadData;
+  result := SMARTValueList[SMARTValueList.IndexByID(ID)];
+end;
+
+procedure TPhysicalDrive.RequestIdentifyDevice;
+begin
+  IdentifyDeviceResultReadWrite := MixedCommandSet.IdentifyDevice;
+end;
+
+procedure TPhysicalDrive.RequestSMARTReadData;
+begin
+  SMARTValueList := MixedCommandSet.SMARTReadData;
 end;
 
 end.
