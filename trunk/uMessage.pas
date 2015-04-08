@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Vcl.ExtCtrls, uSSDInfo, uSMARTFunctions;
+  Dialogs, StdCtrls, Vcl.ExtCtrls;
 
 procedure MsgboxCreate(Sender: TForm; FileName: String);
 

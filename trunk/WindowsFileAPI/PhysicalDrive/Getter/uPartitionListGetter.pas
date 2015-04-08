@@ -4,17 +4,12 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  uOSFile, uFixedDriveListGetter, uMotherDriveGetter;
+  uOSFile, uFixedDriveListGetter, uPartitionExtentGetter;
 
 type
   TPartitionEntry = record
     Letter: String;
     StartingOffset: TLargeInteger;
-  end;
-
-  TPhysicalDriveNumberQueryResult = record
-    Found: Boolean;
-    Position: Cardinal;
   end;
 
   TPartitionList = TList<TPartitionEntry>;
@@ -24,22 +19,29 @@ type
     function GetPartitionList: TPartitionList;
 
   private
+    type
+      TPhysicalDriveNumberQueryResult = record
+        Found: Boolean;
+        Position: Cardinal;
+      end;
+      
+  private
     PartitionList: TPartitionList;
-    MotherDriveList: TMotherDriveList;
+    PartitionExtentList: TPartitionExtentList;
     FixedDriveList: TFixedDriveList;
     PhysicalDriveNumber: Cardinal;
-    MotherDriveGetter: TMotherDriveGetter;
+    PartitionExtentGetter: TPartitionExtentGetter;
 
     function GetFixedDrives: TFixedDriveList;
     procedure AddThisDriveToList
-      (CurrentDrive: Integer; MotherDrivePosition: Cardinal);
+      (CurrentDrive: Integer; PartitionExtentPosition: Cardinal);
     procedure IfPartitionOfThisDriveAddToList(CurrentDrive: Integer);
     function IsThisExtentDriveOfThisDriveNumber(
       CurrentExtent: Cardinal): Boolean;
     function DeleteLastBackslash(Source: String): String;
     function CreateAndReturnThisDrivesPartitionList: TPartitionList;
     function TryToGetPartitionList: TPartitionList;
-    function FindPhysicalDriveNumberInMotherDriveEntry:
+    function FindPhysicalDriveNumberInPartitionExtentEntry:
       TPhysicalDriveNumberQueryResult;
     procedure TryIfPartitionOfThisDriveAddToList(CurrentDrive: Integer);
     function TryAndIfFailReturnNil: TPartitionList;
@@ -64,17 +66,17 @@ function TPartitionListGetter.IsThisExtentDriveOfThisDriveNumber
   (CurrentExtent: Cardinal): Boolean;
 begin
   result :=
-    MotherDriveList[CurrentExtent].DriveNumber =
+    PartitionExtentList[CurrentExtent].DriveNumber =
     PhysicalDriveNumber;
 end;
 
-function TPartitionListGetter.FindPhysicalDriveNumberInMotherDriveEntry:
+function TPartitionListGetter.FindPhysicalDriveNumberInPartitionExtentEntry:
   TPhysicalDriveNumberQueryResult;
 var
   CurrentExtent: Cardinal;
 begin
   result.Found := false;
-  for CurrentExtent := 0 to (MotherDriveList.Count - 1) do
+  for CurrentExtent := 0 to (PartitionExtentList.Count - 1) do
   begin
     if IsThisExtentDriveOfThisDriveNumber(CurrentExtent) then
     begin
@@ -86,13 +88,13 @@ begin
 end;
 
 procedure TPartitionListGetter.AddThisDriveToList
-  (CurrentDrive: Integer; MotherDrivePosition: Cardinal);
+  (CurrentDrive: Integer; PartitionExtentPosition: Cardinal);
 var
   PartitionToAdd: TPartitionEntry;
 begin
   PartitionToAdd.Letter := FixedDriveList[CurrentDrive];
   PartitionToAdd.StartingOffset :=
-    MotherDriveList[MotherDrivePosition].StartingOffset;
+    PartitionExtentList[PartitionExtentPosition].StartingOffset;
   PartitionList.Add(PartitionToAdd);
 end;
 
@@ -109,12 +111,12 @@ procedure TPartitionListGetter.TryIfPartitionOfThisDriveAddToList
 var
   PhysicalDriveNumberQueryResult: TPhysicalDriveNumberQueryResult;
 begin
-  MotherDriveGetter := TMotherDriveGetter.Create
+  PartitionExtentGetter := TPartitionExtentGetter.Create
     (DeleteLastBackslash
       (ThisComputerPrefix + FixedDriveList[CurrentDrive]));
-  MotherDriveList := MotherDriveGetter.GetMotherDriveList;
+  PartitionExtentList := PartitionExtentGetter.GetPartitionExtentList;
 
-  PhysicalDriveNumberQueryResult := FindPhysicalDriveNumberInMotherDriveEntry;
+  PhysicalDriveNumberQueryResult := FindPhysicalDriveNumberInPartitionExtentEntry;
   if PhysicalDriveNumberQueryResult.Found then
     AddThisDriveToList(CurrentDrive, PhysicalDriveNumberQueryResult.Position);
 end;
@@ -125,8 +127,8 @@ begin
   try
     TryIfPartitionOfThisDriveAddToList(CurrentDrive);
   finally
-    FreeAndNil(MotherDriveList);
-    FreeAndNil(MotherDriveGetter);
+    FreeAndNil(PartitionExtentList);
+    FreeAndNil(PartitionExtentGetter);
   end;
 end;
 

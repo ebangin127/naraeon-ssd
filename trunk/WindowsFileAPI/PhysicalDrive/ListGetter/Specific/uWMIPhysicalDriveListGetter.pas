@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils,
-  uOSFile, uPhysicalDriveGetter, uPhysicalDrive, uPhysicalDriveList;
+  uOSFile, uPhysicalDriveListGetter, uPhysicalDrive, uPhysicalDriveList;
 
 type
-  TWMIPhysicalDriveListGetter = class(TPhysicalDriveGetter)
+  TWMIPhysicalDriveListGetter = class sealed(TPhysicalDriveListGetter)
   public
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private

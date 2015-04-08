@@ -5,15 +5,15 @@ interface
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
   uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
-  uDiskFunctions, uPartitionFunctions, uSSDInfo, uSSDSupport, uRegFunctions,
-  uSMARTFunctions, uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm,
-  uPhysicalDriveList,
+  uDiskFunctions, uPartitionFunctions, uRegFunctions,
+  uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm,
+  uPhysicalDriveList, uBufferInterpreter,
   uPathManager, uPhysicalDrive, uPartitionListGetter;
 
-function RefreshTimer(SSDInfo: TSSDInfo_NST;
-                      ShowSerial: Boolean;
-                      FirstiOptLeft: Integer): Boolean;
-procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
+function RefreshTimer(PhysicalDrive: TPhysicalDrive;
+  ShowSerial: Boolean;
+  FirstiOptLeft: Integer): Boolean;
+procedure RefreshDrives(PhysicalDrive: TPhysicalDrive);
 
 type
   TSSDLabel = class(TLabel)
@@ -43,7 +43,7 @@ begin
   exit(Size / 2);
 end;
 
-procedure ApplyBasicInfo(SSDInfo: TSSDInfo_NST;
+procedure ApplyBasicInfo(PhysicalDrive: TPhysicalDrive;
   ShowSerial: Boolean);
 var
   CurrNum: Integer;
@@ -59,30 +59,30 @@ begin
 
     DenaryUserSizeInKB :=
       ChangeDatasizeUnit(
-        LBAtoKB(BinaryToDenary(SSDInfo.UserSize)),
+        BinaryToDenary(PhysicalDrive.IdentifyDeviceResult.UserSizeInKB),
         KBtoMB);
 
     DenaryInteger.FNumeralSystem := Denary;
     DenaryInteger.FPrecision := 0;
 
     lName.Caption :=
-      SSDInfo.Model + ' ' +
+      PhysicalDrive.Model + ' ' +
       FormatSizeInMB(DenaryUserSizeInKB, DenaryInteger);
 
     lFirmware.Caption :=
-      CapFirmware[CurrLang] + SSDInfo.Firmware;
+      CapFirmware[CurrLang] + PhysicalDrive.Firmware;
 
     lConnState.Caption := CapConnState[CurrLang];
-    if (SSDInfo.SATASpeed = SPEED_UNKNOWN) or
-       (SSDInfo.SATASpeed > SPEED_SATA600) then
+    if (PhysicalDrive.IdentifyDeviceResult.SATASpeed = TSATASpeed.Unknown) or
+       (PhysicalDrive.IdentifyDeviceResult.SATASpeed > SPEED_SATA600) then
       lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
-    else if SSDInfo.USBMode then
+    else if PhysicalDrive.USBMode then
       lConnState.Caption := lConnState.Caption + ConnState[3]
     else
     begin
       lConnState.Caption := lConnState.Caption +
-        ConnState[Integer(SSDInfo.SATASpeed) - 1];
-      case SSDInfo.NCQSupport of
+        ConnState[Integer(PhysicalDrive.SATASpeed) - 1];
+      case PhysicalDrive.NCQSupport of
       0: lConnState.Caption :=
           lConnState.Caption + CapUnknown[CurrLang];
       1: lConnState.Caption :=
@@ -93,8 +93,8 @@ begin
       lConnState.Caption := lConnState.Caption + ')';
     end;
 
-    lNewFirm.Caption := NewFirmCaption(SSDInfo.Model, SSDInfo.Firmware);
-    if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = OLD_VERSION then
+    lNewFirm.Caption := NewFirmCaption(PhysicalDrive.Model, PhysicalDrive.Firmware);
+    if IsNewVersion(PhysicalDrive.Model, PhysicalDrive.Firmware) = OLD_VERSION then
     begin
       lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
       lFirmware.Font.Color := clRed;
@@ -111,10 +111,10 @@ begin
 
     lSerial.Caption := CapSerial[CurrLang];
     if not ShowSerial then
-      for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
+      for CurrNum := 0 to Length(PhysicalDrive.Serial) - 1 do
         lSerial.Caption := lSerial.Caption + 'X'
     else
-      lSerial.Caption := lSerial.Caption + SSDInfo.Serial;
+      lSerial.Caption := lSerial.Caption + PhysicalDrive.Serial;
   end;
 end;
 
@@ -547,7 +547,7 @@ begin
     DelDevice(CurrEntry);
 end;
 
-function RefreshTimer(SSDInfo: TSSDInfo_NST;
+function RefreshTimer(PhysicalDrive: TSSDInfo_NST;
                       ShowSerial: Boolean;
                       FirstiOptLeft: Integer): Boolean;
 begin
@@ -560,16 +560,16 @@ begin
 
   FreeAndNil(fMain.PhysicalDrive);
   fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
-  SSDInfo.SetDeviceName(StrToInt(fMain.CurrDrive));
+  PhysicalDrive.SetDeviceName(StrToInt(fMain.CurrDrive));
 
-  ApplyBasicInfo(SSDInfo, ShowSerial);
-  ApplyHostWrite(SSDInfo);
-  ApplySectLog(SSDInfo);
-  ApplySMARTInfo(SSDInfo);
-  ApplyGeneralUISetting(SSDInfo);
+  ApplyBasicInfo(PhysicalDrive, ShowSerial);
+  ApplyHostWrite(PhysicalDrive);
+  ApplySectLog(PhysicalDrive);
+  ApplySMARTInfo(PhysicalDrive);
+  ApplyGeneralUISetting(PhysicalDrive);
 end;
 
-procedure RefreshDrives(SSDInfo: TSSDInfo_NST);
+procedure RefreshDrives(PhysicalDrive: TSSDInfo_NST);
 var
   TrvResult: TDiffResult;
 begin

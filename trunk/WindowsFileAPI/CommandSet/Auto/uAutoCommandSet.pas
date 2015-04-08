@@ -1,4 +1,4 @@
-unit uMixedCommandSet;
+unit uAutoCommandSet;
 
 interface
 
@@ -9,16 +9,17 @@ uses
   uATACommandSet, uSATCommandSet;
 
 type
-  TMixedCommandSet = class(TCommandSet)
+  TAutoCommandSet = class(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
 
     function IsDataSetManagementSupported: Boolean; override;
+
   private
     CommandSet: TCommandSet;
-    function TryIdentifyDevice
+    function TestCommandSetCompatibilityAndReturnIdentifyDevice
       (CommandSetToTry: TCommandSet;
        LastResult: TIdentifyDeviceResult): TIdentifyDeviceResult;
     function DefaultIdentifyDevice: TIdentifyDeviceResult;
@@ -27,13 +28,13 @@ type
 
 implementation
 
-{ TMixedCommandSet }
+{ TAutoCommandSet }
 
-function TMixedCommandSet.TryIdentifyDevice
+function TAutoCommandSet.TestCommandSetCompatibilityAndReturnIdentifyDevice
   (CommandSetToTry: TCommandSet;
    LastResult: TIdentifyDeviceResult): TIdentifyDeviceResult;
 begin
-  if result.Model <> '' then
+  if LastResult.Model <> '' then
   begin
     FreeAndNil(CommandSetToTry);
     result := LastResult;
@@ -49,19 +50,19 @@ begin
     CommandSet := CommandSetToTry;
 end;
 
-function TMixedCommandSet.DefaultIdentifyDevice: TIdentifyDeviceResult;
+function TAutoCommandSet.DefaultIdentifyDevice: TIdentifyDeviceResult;
 begin
   result :=
-    TryIdentifyDevice
+    TestCommandSetCompatibilityAndReturnIdentifyDevice
       (TATACommandSet.Create(GetPathOfFileAccessing),
        result);
   result :=
-    TryIdentifyDevice
+    TestCommandSetCompatibilityAndReturnIdentifyDevice
       (TSATCommandSet.Create(GetPathOfFileAccessing),
        result);
 end;
 
-function TMixedCommandSet.IdentifyDevice: TIdentifyDeviceResult;
+function TAutoCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   if CommandSet = nil then
     result := DefaultIdentifyDevice;
@@ -70,26 +71,26 @@ begin
     CommandSet.IsDataSetManagementSupported;
 end;
 
-procedure TMixedCommandSet.IfCommandSetNilRaiseException;
+procedure TAutoCommandSet.IfCommandSetNilRaiseException;
 begin
   if CommandSet = nil then
     raise EArgumentNilException.Create('Argument Nil: CommandSet is not set');
 end;
 
-function TMixedCommandSet.DataSetManagement(StartLBA,
+function TAutoCommandSet.DataSetManagement(StartLBA,
   LBACount: Int64): Cardinal;
 begin
   IfCommandSetNilRaiseException;
   result := CommandSet.DataSetManagement(StartLBA, LBACount);
 end;
 
-function TMixedCommandSet.SMARTReadData: TSMARTValueList;
+function TAutoCommandSet.SMARTReadData: TSMARTValueList;
 begin
   IfCommandSetNilRaiseException;
   result := CommandSet.SMARTReadData;
 end;
 
-function TMixedCommandSet.IsDataSetManagementSupported: Boolean;
+function TAutoCommandSet.IsDataSetManagementSupported: Boolean;
 begin
   IfCommandSetNilRaiseException;
   result := CommandSet.IsDataSetManagementSupported;

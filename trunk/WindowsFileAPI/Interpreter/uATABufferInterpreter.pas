@@ -7,12 +7,13 @@ uses
   uBufferInterpreter, uSMARTValueList;
 
 type
-  TATABufferInterpreter = class(TBufferInterpreter)
+  TATABufferInterpreter = class sealed(TBufferInterpreter)
   public
     function BufferToIdentifyDeviceResult
       (Buffer: T512Buffer): TIdentifyDeviceResult; override;
     function BufferToSMARTValueList
       (Buffer: T512Buffer): TSMARTValueList; override;
+
   private
     SMARTValueList: TSMARTValueList;
     BufferInterpreting: T512Buffer;

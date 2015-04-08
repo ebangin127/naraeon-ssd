@@ -4,17 +4,18 @@ interface
 
 uses
   SysUtils,
-  uOSFile, uPhysicalDrive, uPhysicalDriveGetter, uPhysicalDriveList;
+  uOSFile, uPhysicalDrive, uPhysicalDriveListGetter, uPhysicalDriveList;
 
 type
-  TBruteForcePhysicalDriveListGetter = class(TPhysicalDriveGetter)
+  TBruteForcePhysicalDriveListGetter = class sealed(TPhysicalDriveListGetter)
+  public
+    function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
+    PhysicalDriveList: TPhysicalDriveList;
     procedure AddDriveToList(CurrentDrive: Integer);
     procedure IfThisDriveAccessibleAddToList(CurrentDrive: Integer);
     function IsDriveAccessible(CurrentDrive: Integer): Boolean;
     procedure TryToGetPhysicalDriveList;
-  public
-    function GetPhysicalDriveList: TPhysicalDriveList; override;
   end;
 
 implementation
@@ -33,7 +34,7 @@ var
   PhysicalDrive: TPhysicalDrive;
 begin
   PhysicalDrive := TPhysicalDrive.Create(CurrentDrive);
-  result := PhysicalDrive.GetIsDriveAvailable;
+  result := PhysicalDrive.IsDriveAvailable;
   FreeAndNil(PhysicalDrive);
 end;
 

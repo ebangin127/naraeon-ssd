@@ -3,6 +3,7 @@
 interface
 
 uses
+  SysUtils,
   uSMARTValueList;
 
 type
@@ -26,6 +27,7 @@ type
   end;
 
   TSMARTInterpreted = record
+    UsedHour: UInt64;
     TotalWrite: TTotalWrite;
     EraseError: UInt64;
     ReplacedSectors: UInt64;
@@ -51,8 +53,8 @@ implementation
 
 constructor TNSTSupport.Create(Model, Firmware: String);
 begin
-  FModel := Model;
-  FFirmware := Firmware;
+  FModel := UpperCase(Model);
+  FFirmware := UpperCase(Firmware);
 end;
 
 end.

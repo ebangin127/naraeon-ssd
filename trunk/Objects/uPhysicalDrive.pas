@@ -5,30 +5,52 @@ interface
 uses
   Windows, SysUtils, uOSFile, uCommandSet,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
-  uBufferInterpreter, uSMARTValueList, uMixedCommandSet;
+  uBufferInterpreter, uSMARTValueList, uAutoCommandSet, uAutoNSTSupport,
+  uNSTSupport;
 
 type
   TPhysicalDrive = class(TOSFile)
   private
     IdentifyDeviceResultReadWrite: TIdentifyDeviceResult;
+    SupportStatusReadWrite: TSupportStatus;
+    SMARTInterpretedReadWrite: TSMARTInterpreted;
     DriveAvailabilityGetter: TDriveAvailabilityGetter;
-    MixedCommandSet: TMixedCommandSet;
-    SMARTValueList: TSMARTValueList;
+    
+    SMARTValueListReadWrite: TSMARTValueList;
+    AutoNSTSupportReadWrite: TAutoNSTSupport;
+    AutoCommandSet: TAutoCommandSet;
+    AutoNSTSupport: TAutoNSTSupport;
 
     procedure RequestIdentifyDevice;
     procedure RequestSMARTReadData;
+    procedure RequestSMARTInterpreted;
+    procedure RequestSupportStatus;
 
-    function GetIdentifyDeviceResultOrReadyAndReturn: TIdentifyDeviceResult;
+    function GetIdentifyDeviceResultOrRequestAndReturn: TIdentifyDeviceResult;
+    function GetSupportStatusOrRequestAndReturn: TSupportStatus;
+    function GetSMARTInterpretedOrRequestAndReturn: TSMARTInterpreted;
+    function GetSMARTValueListOrRequestAndReturn: TSMARTValueList;
+
+    function GetDiskSizeInByte: TLargeInteger;
+    function GetIsDriveAvailable: Boolean;
+    function TryToGetIsDriveAvailable: Boolean;
 
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
-      read GetIdentifyDeviceResultOrReadyAndReturn;
-
-    function GetDiskSizeInByte: TLargeInteger;
+      read GetIdentifyDeviceResultOrRequestAndReturn;
+    property SupportStatus: TSupportStatus
+      read GetSupportStatusOrRequestAndReturn;
+    property SMARTInterpreted: TSMARTInterpreted
+      read GetSMARTInterpretedOrRequestAndReturn;
+    property DiskSizeInByte: TLargeInteger
+      read GetDiskSizeInByte;
+    property IsDriveAvailable: Boolean
+      read GetIsDriveAvailable;
+      
     function GetPartitionList: TPartitionList;
-    function GetIsDriveAvailable: Boolean;
-    function TryToGetIsDriveAvailable: Boolean;
-    function GetSMARTValueEntryByID(ID: Byte): TSMARTValueEntry;
+    procedure ClearSMARTCache;
+    procedure ClearIdentifyDeviceResultCache;
+    procedure ClearCache;
 
     constructor Create(DriveNumber: Cardinal); reintroduce; overload;
     destructor Destroy; override;
@@ -43,15 +65,37 @@ constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
 begin
   inherited
     Create(ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber));
-  MixedCommandSet := TMixedCommandSet.Create(GetPathOfFileAccessing);
+  AutoCommandSet := TAutoCommandSet.Create(GetPathOfFileAccessing);
 end;
 
 destructor TPhysicalDrive.Destroy;
 begin
-  if SMARTValueList <> nil then
-    FreeAndNil(SMARTValueList);
-  FreeAndNil(MixedCommandSet);
+  if AutoCommandSet <> nil then
+    FreeAndNil(AutoCommandSet);
+  if AutoNSTSupportReadWrite <> nil then
+    FreeAndNil(AutoNSTSupportReadWrite);
+  if SMARTValueListReadWrite <> nil then
+    FreeAndNil(SMARTValueListReadWrite);
   inherited;
+end;
+
+procedure TPhysicalDrive.ClearCache;
+begin
+  ClearIdentifyDeviceResultCache;
+  ClearSMARTCache;
+end;
+
+procedure TPhysicalDrive.ClearSMARTCache;
+begin
+  ZeroMemory(@SMARTInterpretedReadWrite, SizeOf(SMARTInterpretedReadWrite));
+  if SMARTValueListReadWrite <> nil then
+    FreeAndNil(SMARTValueListReadWrite);
+end;
+
+procedure TPhysicalDrive.ClearIdentifyDeviceResultCache;
+begin
+  ZeroMemory(@IdentifyDeviceResultReadWrite,
+    SizeOf(IdentifyDeviceResultReadWrite));
 end;
 
 function TPhysicalDrive.GetDiskSizeInByte: TLargeInteger;
@@ -74,12 +118,36 @@ begin
   end;
 end;
 
-function TPhysicalDrive.GetIdentifyDeviceResultOrReadyAndReturn:
+function TPhysicalDrive.GetIdentifyDeviceResultOrRequestAndReturn:
   TIdentifyDeviceResult;
 begin
   if IdentifyDeviceResultReadWrite.Model = '' then
     RequestIdentifyDevice;
   result := IdentifyDeviceResultReadWrite;
+end;
+
+function TPhysicalDrive.GetSupportStatusOrRequestAndReturn:
+  TSupportStatus;
+begin
+  if SupportStatus.Supported = false then
+    RequestSupportStatus;
+  result := SupportStatusReadWrite;
+end;
+
+function TPhysicalDrive.GetSMARTInterpretedOrRequestAndReturn:
+  TSMARTInterpreted;
+begin
+  if SMARTInterpreted.UsedHour = 0 then
+    RequestSMARTInterpreted;
+  result := SMARTInterpreted;
+end;
+
+function TPhysicalDrive.GetSMARTValueListOrRequestAndReturn:
+  TSMARTValueList;
+begin
+  if SMARTValueListReadWrite <> nil then
+    RequestSMARTReadData;
+  result := SMARTValueListReadWrite;
 end;
 
 function TPhysicalDrive.GetIsDriveAvailable: Boolean;
@@ -100,21 +168,36 @@ begin
   FreeAndNil(PartitionListGetter);
 end;
 
-function TPhysicalDrive.GetSMARTValueEntryByID(ID: Byte): TSMARTValueEntry;
-begin
-  if SMARTValueList = nil then
-    RequestSMARTReadData;
-  result := SMARTValueList[SMARTValueList.IndexByID(ID)];
-end;
-
 procedure TPhysicalDrive.RequestIdentifyDevice;
 begin
-  IdentifyDeviceResultReadWrite := MixedCommandSet.IdentifyDevice;
+  IdentifyDeviceResultReadWrite := AutoCommandSet.IdentifyDevice;
 end;
 
-procedure TPhysicalDrive.RequestSMARTReadData;
+procedure TPhysicalDrive.RequestSMARTReadData;
+begin
+  SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
+end;
+
+procedure TPhysicalDrive.RequestSupportStatus;
 begin
-  SMARTValueList := MixedCommandSet.SMARTReadData;
+  if AutoNSTSupport = nil then
+    AutoNSTSupport := 
+      TAutoNSTSupport.Create(
+        IdentifyDeviceResult.Model,
+        IdentifyDeviceResult.Firmware);
+  SupportStatusReadWrite := AutoNSTSupport.GetSupportStatus;
 end;
 
-end.
+procedure TPhysicalDrive.RequestSMARTInterpreted;
+begin
+  if AutoNSTSupport = nil then
+    AutoNSTSupport := 
+      TAutoNSTSupport.Create(
+        IdentifyDeviceResult.Model,
+        IdentifyDeviceResult.Firmware);
+  SMARTInterpretedReadWrite := AutoNSTSupport.GetSMARTInterpreted(
+    GetSMARTValueListOrRequestAndReturn);
+end;
+
+end.
+

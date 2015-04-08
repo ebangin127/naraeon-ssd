@@ -7,7 +7,7 @@ uses
   uPhysicalDrive;
 
 type
-  TPhysicalDriveList = class(TList<TPhysicalDrive>)
+  TPhysicalDriveList = class sealed(TList<TPhysicalDrive>)
   public
     destructor Destroy; override;
     procedure Delete(Index: Integer);
@@ -28,23 +28,18 @@ function TraverseDevice
 
 implementation
 
-uses uSSDInfo, uMixedPhysicalDriveListGetter, uSSDSupport;
+uses uAutoPhysicalDriveListGetter;
 
 function TPhysicalDriveList.IndexOf(Model, Serial: String): Integer;
 var
   CurrEntry: Integer;
-  CurrSSDInfo: TSSDInfo;
 begin
-  CurrSSDInfo := TSSDInfo.Create;
   for CurrEntry := 0 to Count - 1 do
   begin
-    CurrSSDInfo.SetDeviceName(
-      StrToInt(Self[CurrEntry].GetPathOfFileAccessingWithoutPrefix));
-    if (CurrSSDInfo.Model = Model) and
-       (CurrSSDInfo.Serial = Serial) then
+    if (Self[CurrEntry].IdentifyDeviceResult.Model = Model) and
+       (Self[CurrEntry].IdentifyDeviceResult.Serial = Serial) then
       break;
   end;
-  FreeAndNil(CurrSSDInfo);
 
   if CurrEntry < Count then
     exit(CurrEntry)
@@ -101,21 +96,18 @@ function TraverseDevice
   (IsDiffNeeded: Boolean; IsOnlySupported: Boolean;
    var PrevList: TPhysicalDriveList): TDiffResult;
 var
-  CurrSSDInfo: TSSDInfo_NST;
   CurrList: TPhysicalDriveList;
   CurrEntry: TPhysicalDrive;
 
   CurrDrv: Integer;
   CurrAvail: Boolean;
 
-  MixedPhysicalDriveListGetter: TMixedPhysicalDriveListGetter;
+  AutoPhysicalDriveListGetter: TAutoPhysicalDriveListGetter;
   CurrSSDList: TPhysicalDriveList;
 begin
-  CurrSSDInfo := TSSDInfo_NST.Create;
-
-  MixedPhysicalDriveListGetter := TMixedPhysicalDriveListGetter.Create;
-  CurrSSDList := MixedPhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(MixedPhysicalDriveListGetter);
+  AutoPhysicalDriveListGetter := TAutoPhysicalDriveListGetter.Create;
+  CurrSSDList := AutoPhysicalDriveListGetter.GetPhysicalDriveList;
+  FreeAndNil(AutoPhysicalDriveListGetter);
   CurrList := TPhysicalDriveList.Create;
 
   if IsDiffNeeded then
@@ -131,10 +123,8 @@ begin
     CurrAvail :=
       PrevList.IndexOf(CurrEntry) > -1;
 
-    CurrSSDInfo.SetDeviceName(
-      StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix));
     if (not IsOnlySupported) or
-       (CurrSSDInfo.SupportedDevice <> SUPPORT_NONE) then
+       (CurrEntry.SupportStatus.Supported) then
       CurrList.Add(
         TPhysicalDrive.Create
           (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
@@ -142,7 +132,7 @@ begin
     if not IsDiffNeeded then
       Continue;
 
-    if (CurrSSDInfo.SupportedDevice <> SUPPORT_NONE) and
+    if (CurrEntry.SupportStatus.Supported) and
        (CurrAvail = false) then
       result.AddList.Add(
         TPhysicalDrive.Create
@@ -163,17 +153,13 @@ begin
     CurrAvail :=
       PrevList.IndexOf(CurrEntry) > -1;
 
-    CurrSSDInfo.SetDeviceName(
-      StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix));
-
     if (not CurrAvail) or
-       (CurrSSDInfo.SupportedDevice = SUPPORT_NONE) then
+       (CurrEntry.SupportStatus.Supported) then
       result.DelList.Add(
         TPhysicalDrive.Create
           (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
   end;
 
-  FreeAndNil(CurrSSDInfo);
   FreeAndNil(CurrSSDList);
   FreeAndNil(PrevList);
 

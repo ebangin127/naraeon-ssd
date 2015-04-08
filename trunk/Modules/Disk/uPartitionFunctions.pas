@@ -39,25 +39,6 @@ type
   end;
   //---GetNTFSVolumeData---//
 
-  //---GetDiskGeometry---//
-  DISK_GEOMETRY = Record
-    Cylinders: TLargeInteger;
-    MediaType: Byte;
-    TracksPerCylinder: DWORD;
-    SectorsPerTrack: DWORD;
-    BytesPerSector: DWORD;
-  end;
-
-  DISK_GEOMETRY_EX = Record
-    Geometry: DISK_GEOMETRY;
-    DiskSize: TLargeInteger;
-    Data: Array[0..1] of UChar;
-  end;
-  //---GetDiskGeometry---//
-
-//����ũ �뷮 �޾ƿ��� �Լ�
-function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
-
 //��Ƽ�� �뷮 �޾ƿ��� �Լ�
 function GetPartitionLength(DriveLetter: String): Int64;
 function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
@@ -65,24 +46,6 @@ function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
 implementation
 
 uses uDiskFunctions;
-
-function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
-Var
-  RetBytes: DWORD;
-  hDevice: Longint;
-  Status: Longbool;
-begin
-  hDevice := CreateFile(PChar('\\.\PhysicalDrive' + DiskNumber), GENERIC_READ,
-              FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-  If hDevice <> -1 Then
-  begin
-    Status := DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
-              nil, 0, @result, Sizeof(DISK_GEOMETRY_EX), RetBytes, nil);
-    if status = false then
-      result.DiskSize := 0;
-    CloseHandle(hDevice);
-  end;
-end;
 
 function GetPartitionLength(DriveLetter: String): Int64;
 type

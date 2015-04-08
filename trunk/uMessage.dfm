@@ -18,7 +18,7 @@ object fMessage: TfMessage
   Scaled = False
   OnPaint = FormResize
   OnResize = FormResize
-  PixelsPerInch = 96
+  PixelsPerInch = 120
   TextHeight = 13
   object MMessage: TMemo
     Left = 8

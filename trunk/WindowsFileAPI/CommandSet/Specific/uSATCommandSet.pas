@@ -8,7 +8,7 @@ uses
   uATABufferInterpreter;
 
 type
-  TSATCommandSet = class(TCommandSet)
+  TSATCommandSet = class sealed(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;

@@ -1,4 +1,4 @@
-unit uDiskFunctions;
+ï»¿unit uDiskFunctions;
 
 interface
 
@@ -8,120 +8,6 @@ uses Windows, SysUtils, Dialogs, Math, Classes,
      uPhysicalDriveList;
 
 type
-  //---ATA + DeviceIOCtl---//
-  TLLBuffer = Array[0..511] of Byte;
-  TLLBufferEx = Array[0..4095] of Byte;
-
-  ATA_PASS_THROUGH_EX = Packed Record
-    Length: USHORT;
-    AtaFlags: USHORT;
-    PathId: UCHAR;
-    TargetId: UCHAR;
-    Lun: UCHAR;
-    ReservedAsUchar: UCHAR;
-    DataTransferLength: ULONG;
-    TimeOutValue: ULONG;
-    ReservedAsUlong: ULONG;
-    DataBufferOffset: ULONG_PTR;
-    PreviousTaskFile: Array[0..7] of UCHAR;
-    CurrentTaskFile: Array[0..7] of UCHAR;
-  end;
-
-  ATA_PASS_THROUGH_DIRECT = Record
-    Length: USHORT;
-    AtaFlags: USHORT;
-    PathId: UCHAR;
-    TargetId: UCHAR;
-    Lun: UCHAR;
-    ReservedAsUchar: UCHAR;
-    DataTransferLength: ULONG;
-    TimeOutValue: ULONG;
-    ReservedAsUlong: ULONG;
-    DataBuffer: PVOID;
-    PreviousTaskFile: Array[0..7] of UCHAR;
-    CurrentTaskFile: Array[0..7] of UCHAR;
-  end;
-
-  ATA_PTH_BUFFER = Packed Record
-    PTH: ATA_PASS_THROUGH_EX;
-    Buffer: TLLBuffer;
-  end;
-
-  ATA_PTH_BUFFER_4K = Packed Record
-    PTH: ATA_PASS_THROUGH_EX;
-    Buffer: TLLBufferEx;
-  end;
-
-  ATA_PTH_DIR_BUFFER = Packed Record
-    PTH: ATA_PASS_THROUGH_DIRECT;
-    Buffer: TLLBuffer;
-  end;
-
-  ATA_PTH_DIR_BUFFER_4K = Packed Record
-    PTH: ATA_PASS_THROUGH_DIRECT;
-    Buffer: TLLBufferEx;
-  end;
-  //---ATA + DeviceIOCtl---//
-
-  //---DeviceIOCtl¿¡ ÇÊ¼ö---//
-  TDRIVERSTATUS = Record
-    bDriverError: UChar;
-    bIDEError: UChar;
-    bReserved: Array[0..1] of UCHAR;
-    dwReserved: Array[0..1] of UCHAR;
-  end;
-
-  SENDCMDOUTPARAMS  = Record
-    cBufferSize: DWORD;
-    DriverStatus: TDRIVERSTATUS;
-    bBuffer: TLLBuffer;
-  end;
-
-  IDEREGS  = packed Record
-    bFeaturesReg: UCHAR;
-    bSectorCountReg: UCHAR;
-    bSectorNumberReg: UCHAR;
-    bCylLowReg: UCHAR;
-    bCylHighReg: UCHAR;
-    bDriveHeadReg: UCHAR;
-    bCommandReg: UCHAR;
-    bReserved: UCHAR;
-  end;
-
-  SENDCMDINPARAMS  = Record
-    cBufferSize: dword;
-    irDriveRegs: IDEREGS;
-    bDriveNumber: byte;
-    bReserved: Array[0..2] of byte;
-    dwReserved: Array[0..3] of dword;
-  end;
-  //---DeviceIOCtl¿¡ ÇÊ¼ö---//
-
-
-  //---SAT + DeviceIOCtl---//
-  SCSI_PASS_THROUGH = record
-    Length: Word;
-    ScsiStatus: Byte;
-    PathId: Byte;
-    TargetId: Byte;
-    Lun: Byte;
-    CdbLength: Byte;
-    SenseInfoLength: Byte;
-    DataIn: Byte;
-    DataTransferLength: ULong;
-    TimeOutValue: ULong;
-    DataBufferOffset: ULong;
-    SenseInfoOffset: ULong;
-    Cdb: array[0..12] of UCHAR;
-  end;
-
-  SCSI_PTH_BUFFER = record
-    spt: SCSI_PASS_THROUGH;
-    SenseBuf: array[0..31] of UCHAR;
-    Buffer: TLLBuffer;
-  end;
-  //---SAT + DeviceIOCtl---//
-
   //---Trim Command--//
   PSTARTING_LCN_INPUT_BUFFER = ^STARTING_LCN_INPUT_BUFFER;
   {$EXTERNALSYM PSTARTING_LCN_INPUT_BUFFER}
@@ -189,7 +75,7 @@ type
   end;
   //---NCQ---//
 
-//¿ë·®, º¼·ý ÀÌ¸§ ¹× °¢Á¾ Á¤º¸ ¾ò¾î¿À±â
+//ï¿½ë·®, ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 function GetVolumeLabel(AltName: String; DriveName: String): string;
 
 const
@@ -204,8 +90,6 @@ const
   VolumeNames = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 implementation
-
-uses uSSDInfo;
 
 function GetSizeOfDiskInMB(DriveName: String): Double;
 var
@@ -244,30 +128,6 @@ begin
   Result :=
     DriveName + ' (' + Buf + ' - ' +
       FormatSizeInMB(SizeOfDiskInMB, VolumeLabelSetting) + ')';
-end;
-
-
-function GetIsDriveAccessible(DeviceName: String; Handle: THandle = 0): Boolean;
-var
-  hdrive: THandle;
-  dwBytesReturned: DWORD;
-begin
-  Result := false;
-
-  if Handle <> 0 then hdrive := Handle
-  else hdrive := CreateFile(PChar(DeviceName), 0,
-                            FILE_SHARE_READ or FILE_SHARE_WRITE, nil,
-                            OPEN_EXISTING, 0, 0);
-
-  if hdrive <> INVALID_HANDLE_VALUE then
-  begin
-    try
-      Result := DeviceIoControl(hdrive, IOCTL_STORAGE_CHECK_VERIFY, nil, 0,
-                                nil, 0, dwBytesReturned, nil);
-    finally
-      if Handle = 0 then CloseHandle(hdrive);
-    end;
-  end;
 end;
 
 end.

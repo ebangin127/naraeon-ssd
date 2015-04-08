@@ -5,8 +5,8 @@ interface
 uses
   Windows, SysUtils, IdURI, Dialogs,
   uAlert, uLanguageSettings,
-  uStrFunctions, uExeFunctions, uGetFirm, uSevenZip,
-  uFileFunctions, uDownloadPath, uSSDInfo, uPathManager;
+  uStrFunctions, uExeFunctions, uGetFirm, uSevenZip, uPhysicalDrive,
+  uFileFunctions, uDownloadPath, uPathManager;
 
 type
   FirmCheck = record
@@ -15,7 +15,8 @@ type
     TempFolder: String;
   end;
 
-function DownloadFirmware(AppPath: String; SSDInfo: TSSDInfo): FirmCheck;
+function DownloadFirmware(AppPath: String;
+  PhysicalDrive: TPhysicalDrive): FirmCheck;
 
 implementation
 
@@ -42,7 +43,8 @@ begin
   FindClose(FirmSR);
 end;
 
-function DownloadFirmware(AppPath: String; SSDInfo: TSSDInfo): FirmCheck;
+function DownloadFirmware(AppPath: String;
+  PhysicalDrive: TPhysicalDrive): FirmCheck;
 var
   FirmPath: String;
   FileEx1, FileEx2, DirEx: Boolean;
@@ -58,26 +60,36 @@ begin
   result.TempFolder := TempFolder;
   result.FirmExists := false;
 
-  FileEx1 := FileExists(TempFolder + SSDInfo.Model + '.exe');
-  FileEx2 := FileExists(TempFolder + SSDInfo.Model + '.iso');
-  DirEx := DirectoryExists(TempFolder + SSDInfo.Model);
+  FileEx1 := FileExists(TempFolder +
+    PhysicalDrive.IdentifyDeviceResult.Model + '.exe');
+  FileEx2 := FileExists(TempFolder +
+    PhysicalDrive.IdentifyDeviceResult.Model + '.iso');
+  DirEx := DirectoryExists(TempFolder +
+    PhysicalDrive.IdentifyDeviceResult.Model);
 
   if FileEx1 then
-    DeleteFile(TempFolder + SSDInfo.Model + '.exe');
+    DeleteFile(TempFolder +
+      PhysicalDrive.IdentifyDeviceResult.Model + '.exe');
   if FileEx2 then
-    DeleteFile(TempFolder + SSDInfo.Model + '.iso');
+    DeleteFile(TempFolder +
+      PhysicalDrive.IdentifyDeviceResult.Model + '.iso');
   if DirEx then
-    DeleteDirectory(TempFolder + SSDInfo.Model + '.iso');
+    DeleteDirectory(TempFolder +
+      PhysicalDrive.IdentifyDeviceResult.Model + '.iso');
 
   AlertCreate(fMain, AlrtFirmStart[CurrLang]);
 
-  GetFirm := TGetFirm.Create(SSDInfo.Model, SSDInfo.Firmware);
+  GetFirm := TGetFirm.Create(
+    PhysicalDrive.IdentifyDeviceResult.Model,
+    PhysicalDrive.IdentifyDeviceResult.Firmware);
 
   Src.FBaseAddress := '';
   Src.FFileAddress := TIdURI.URLEncode(
     'http://nstfirmware.naraeon.net/nst_firmdown.php?' +
-    'Model=' + SSDInfo.Model + '&' +
-    'Firmware=' + SSDInfo.Firmware);
+    'Model=' +
+      PhysicalDrive.IdentifyDeviceResult.Model + '&' +
+    'Firmware=' +
+      PhysicalDrive.IdentifyDeviceResult.Firmware);
   Src.FType := dftPlain;
 
   Dest.FBaseAddress := TempFolder;
@@ -89,7 +101,7 @@ begin
   begin
     gFirmware.Visible := false;
     DownloadResult := DownloadFile(Src, Dest, CapFirmDwld[CurrLang],
-                                   bCancel.Caption);
+      bCancel.Caption);
     gFirmware.Visible := true;
   end;
 
@@ -110,17 +122,20 @@ begin
     TSevenZip.Extract(
       AppPath + '7z\7z.exe',
       FirmPath,
-      ExtractFilePath(FirmPath) + SSDInfo.Model
+      ExtractFilePath(FirmPath) + PhysicalDrive.IdentifyDeviceResult.Model
     );
     DeleteFile(FirmPath);
   end;
 
   if (FileExists(
-        TempFolder + SSDInfo.Model + '.exe') = false) and
+        TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model + '.exe') = false) and
      (FileExists(
-        TempFolder + SSDInfo.Model + '.iso') = false) and
+        TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model + '.iso') = false) and
      (DirectoryExists(
-        TempFolder + SSDInfo.Model) = false) then
+        TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model) = false) then
   begin
     DeleteFile(FirmPath + '_tmp');
     DeleteFile(FirmPath);
@@ -130,13 +145,21 @@ begin
     result.FirmExists := true;
 
   if result.FirmExists then
-    if FileExists(TempFolder + SSDInfo.Model + '.iso') then
-      result.FirmPath := TempFolder + SSDInfo.Model + '.iso'
+    if FileExists(
+      TempFolder +
+      PhysicalDrive.IdentifyDeviceResult.Model +
+      '.iso') then
+        result.FirmPath := TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model + '.iso'
     else if FileExists(
-        TempFolder + SSDInfo.Model + '.exe') then
-      result.FirmPath := TempFolder + SSDInfo.Model + '.exe'
+      TempFolder +
+      PhysicalDrive.IdentifyDeviceResult.Model + '.exe') then
+        result.FirmPath :=
+          TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model + '.exe'
     else
       result.FirmPath :=
-        FindFirmware(TempFolder + SSDInfo.Model);
+        FindFirmware(TempFolder +
+          PhysicalDrive.IdentifyDeviceResult.Model);
 end;
 end.

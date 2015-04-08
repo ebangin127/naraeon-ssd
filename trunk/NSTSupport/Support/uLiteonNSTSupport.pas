@@ -1,4 +1,4 @@
-unit uLiteONSupport;
+unit uLiteonNSTSupport;
 
 interface
 
@@ -7,14 +7,14 @@ uses
   uNSTSupport, uSMARTValueList;
 
 type
-  TLiteONSupport = class abstract(TNSTSupport)
+  TLiteonNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
     function IsProductOfLiteON: Boolean;
     function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsE200: Boolean;
-    function IsModelHasLiteONString: Boolean;
+    function IsModelHasLiteonString: Boolean;
     function IsS100: Boolean;
     function IsS200: Boolean;
     function IsS100WithNewUnit: Boolean;
@@ -26,53 +26,53 @@ type
 
 implementation
 
-{ TLiteONSupport }
+{ TLiteonNSTSupport }
 
-function TLiteONSupport.IsModelHasLiteONString: Boolean;
+function TLiteonNSTSupport.IsModelHasLiteonString: Boolean;
 begin
   result := (Pos('LITEONIT', Model) > 0);
 end;
 
-function TLiteONSupport.IsS100: Boolean;
+function TLiteonNSTSupport.IsS100: Boolean;
 begin
   result := Pos('S100', Model) > 0;
 end;
 
-function TLiteONSupport.IsS200: Boolean;
+function TLiteonNSTSupport.IsS200: Boolean;
 begin
   result := Pos('S200', Model) > 0;
 end;
 
-function TLiteONSupport.IsE200: Boolean;
+function TLiteonNSTSupport.IsE200: Boolean;
 begin
   result := Pos('E200', Model) > 0;
 end;
 
-function TLiteONSupport.IsS100WithNewUnit: Boolean;
+function TLiteonNSTSupport.IsS100WithNewUnit: Boolean;
 begin
   result := IsS100 and (Pos('85', Firmware) > 0);
 end;
 
-function TLiteONSupport.IsProductOfLiteON: Boolean;
+function TLiteonNSTSupport.IsProductOfLiteON: Boolean;
 begin
-  result := IsModelHasLiteONString and (IsS100 or IsS200 or IsE200);
+  result := IsModelHasLiteonString and (IsS100 or IsS200 or IsE200);
 end;
 
-function TLiteONSupport.GetFullSupport: TSupportStatus;
+function TLiteonNSTSupport.GetFullSupport: TSupportStatus;
 begin
   result.Supported := true;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
-function TLiteONSupport.GetSupportStatus: TSupportStatus;
+function TLiteonNSTSupport.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
   if IsProductOfLiteON then
     result := GetFullSupport;
 end;
 
-function TLiteONSupport.GetTotalWrite: TTotalWrite;
+function TLiteonNSTSupport.GetTotalWrite: TTotalWrite;
 const
   OldLiteONUnit = 64;
   NewLiteONUnit = 128;
@@ -91,17 +91,20 @@ begin
     result.ValueInMiB := RAWValue * OldLiteONUnit;
 end;
 
-function TLiteONSupport.GetSMARTInterpreted(
+function TLiteonNSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 const
   IDOfEraseError = 182;
   IDOfReplacedSector = 5;
+  IDOfUsedHour = 1;
   ReplacedSectorThreshold = 25;
   EraseErrorThreshold = 10;
 begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;
 
+  result.UsedHour := 
+    InterpretingSMARTValueList.IndexByID(IDOfUsedHour);
   result.EraseError :=
     InterpretingSMARTValueList.IndexByID(IDOfEraseError);
   result.SMARTAlert.EraseError :=

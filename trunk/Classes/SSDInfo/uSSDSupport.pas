@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Dialogs, Windows, WinInet, uGetFirm,
-  uLanguageSettings, uDiskFunctions, uSMARTFunctions;
+  uLanguageSettings, uDiskFunctions;
 
 type
   THostSupportStatus = (HSUPPORT_NONE, HSUPPORT_COUNT, HSUPPORT_FULL);

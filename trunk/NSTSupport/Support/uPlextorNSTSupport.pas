@@ -7,7 +7,7 @@ uses
   uNSTSupport, uSMARTValueList;
 
 type
-  TPlextorNSTSupport = class abstract(TNSTSupport)
+  TPlextorNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
     function IsNinja: Boolean;
@@ -24,6 +24,7 @@ type
     function IsM3256WithOldUnit: Boolean;
     function IsM3512WithOldUnit: Boolean;
     function IsM364WithOldUnit: Boolean;
+
   public
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -54,21 +55,21 @@ const
   OldUnit = 1.06;
 begin
   result :=
-    Pos('64', Model) > 0 and (StrToFloat(Firmware) < OldUnit);
+    (Pos('64', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
 end;
 function TPlextorNSTSupport.IsM3128WithOldUnit: Boolean;
 const
   OldUnit = 1.07;
 begin
   result :=
-    Pos('128', Model) > 0 and (StrToFloat(Firmware) < OldUnit);
+    (Pos('128', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
 end;
 function TPlextorNSTSupport.IsM3256WithOldUnit: Boolean;
 const
   OldUnit = 1.07;
 begin
   result :=
-    Pos('256', Model) > 0 and (StrToFloat(Firmware) < OldUnit);
+    (Pos('256', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3512WithOldUnit: Boolean;
@@ -76,7 +77,7 @@ const
   OldUnit = 1.06;
 begin
   result :=
-    Pos('512', Model) > 0 and (StrToFloat(Firmware) < OldUnit);
+    (Pos('512', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3WithOldUnit: Boolean;
@@ -149,12 +150,15 @@ function TPlextorNSTSupport.GetSMARTInterpreted(
 const
   IDOfEraseError = 182;
   IDOfReplacedSector = 5;
+  IDOfUsedHour = 1;
   ReplacedSectorThreshold = 25;
   EraseErrorThreshold = 10;
 begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;
 
+  result.UsedHour := 
+    InterpretingSMARTValueList.IndexByID(IDOfUsedHour);
   result.EraseError :=
     InterpretingSMARTValueList.IndexByID(IDOfEraseError);
   result.SMARTAlert.EraseError :=

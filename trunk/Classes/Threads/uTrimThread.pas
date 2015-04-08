@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, uDiskFunctions, Math, Dialogs, Windows,
-  uATALowOps, uLanguageSettings, uPartitionFunctions, uTrimList;
+  uLanguageSettings, uPartitionFunctions, uTrimList;
 
 type
   TTrimStage = (TRIMSTAGE_NONE, TRIMSTAGE_INPROGRESS,

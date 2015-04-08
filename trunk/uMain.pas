@@ -9,13 +9,12 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uSSDInfo, uSSDSupport, uLogSystem, uPhysicalDriveList,
-  uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
-  uDiskFunctions, uSMARTFunctions, uPartitionFunctions, uExeFunctions,
+  uLogSystem, uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
+  uDiskFunctions, uPartitionFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
-  uPhysicalDrive, uPartitionListGetter;
+  uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -156,7 +155,7 @@ type
     Aborted: Boolean;
 
     //표시 정보 관련
-    SSDInfo: TSSDInfo_NST;
+    PhysicalDrive: TPhysicalDrive;
     ShowSerial: Boolean;
     ListEnter: Integer;
 
@@ -171,8 +170,7 @@ type
   public
     CurrDrive: String;
     SSDLabel: TSSDLabelList;
-    SSDList: TPhysicalDriveList;
-    PhysicalDrive: TPhysicalDrive;
+    PhysicalDriveList: TPhysicalDriveList;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -269,7 +267,7 @@ begin
   tRefresh.Enabled := false;
 
   ChkFrmResult.FirmExists := false;
-  ChkFrmResult := DownloadFirmware(TPathManager.AppPath, SSDInfo);
+  ChkFrmResult := DownloadFirmware(TPathManager.AppPath, PhysicalDrive);
 
   if (ChkFrmResult.FirmExists = false) or
      ((TRufus.CheckRufus = false) and (DownloadRufus = false)) then
@@ -405,9 +403,8 @@ end;
 procedure TfMain.FormCreate(Sender: TObject);
 begin
   Optimizer := TNSTOptimizer.Create;
-  SSDInfo := TSSDInfo_NST.Create;
   SSDLabel := TSSDLabelList.Create;
-  SSDList := TPhysicalDriveList.Create;
+  PhysicalDriveList := TPhysicalDriveList.Create;
 
   CurrDrive := '';
   ShowSerial := false;
@@ -419,7 +416,7 @@ begin
 
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
-  RefreshDrives(SSDInfo);
+  RefreshDrives(PhysicalDrive);
 
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
@@ -428,10 +425,11 @@ procedure TfMain.FormDestroy(Sender: TObject);
 begin
   TGetFirm.DestroyCache;
 
-  FreeAndNil(PhysicalDrive);
-  FreeAndNil(SSDList);
+  if PhysicalDrive <> nil then
+    FreeAndNil(PhysicalDrive);
+  FreeAndNil(PhysicalDriveList);
   FreeAndNil(SSDLabel);
-  FreeAndNil(SSDInfo);
+  FreeAndNil(PhysicalDrive);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
 end;
@@ -499,7 +497,7 @@ var
 begin
   CloseDriveList;
 
-  if SSDInfo.SSDSupport.SupportFirmUp = false then
+  if PhysicalDrive.SupportStatus.FirmwareUpdate = false then
   begin
     AlertCreate(Self, AlrtNoFirmSupport[CurrLang]);
     exit;
@@ -531,7 +529,7 @@ begin
   lNewFirm.Font.Style := [];
   ButtonGroup.Click(iFirmUp);
 
-  if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then
+  if IsNewVersion(PhysicalDrive.Model, PhysicalDrive.Firmware) = NEW_VERSION then
   begin
     if lNewFirm.Font.Color <> clRed then
     begin
@@ -619,7 +617,7 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-  GetChildDrives(ExtractDeviceNum(SSDInfo.DeviceName), cTrimList.Items);
+  GetChildDrives(ExtractDeviceNum(PhysicalDrive.DeviceName), cTrimList.Items);
   for CheckedDrives := 0 to cTrimList.Count - 1 do
     cTrimList.Checked[CheckedDrives] := true;
 end;
@@ -632,13 +630,13 @@ begin
   begin
     ShowSerial := false;
     lSerial.Caption := CapSerial[CurrLang];
-    for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
+    for CurrNum := 0 to Length(PhysicalDrive.Serial) - 1 do
       lSerial.Caption := lSerial.Caption + 'X';
   end
   else
   begin
     ShowSerial := true;
-    lSerial.Caption := CapSerial[CurrLang] + SSDInfo.Serial;
+    lSerial.Caption := CapSerial[CurrLang] + PhysicalDrive.Serial;
   end;
 end;
 
@@ -710,7 +708,7 @@ begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
 
-  if RefreshTimer(SSDInfo, ShowSerial, firstiOptLeft) = false then
+  if RefreshTimer(PhysicalDrive, ShowSerial, firstiOptLeft) = false then
     Application.Terminate;
 end;
 
@@ -751,7 +749,7 @@ begin
   end;
 
   tRefresh.Enabled := false;
-  RefreshDrives(SSDInfo);
+  RefreshDrives(PhysicalDrive);
   tRefresh.Enabled := true;
 
   SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
@@ -841,9 +839,9 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
-          '/tn "MANTRIM' + SSDInfo.Serial + '" ' +  //이름
+          '/tn "MANTRIM' + PhysicalDrive.Serial + '" ' +  //이름
           '/tr "\" ' + Application.ExeName + '\" ' +//경로
-            SSDInfo.Serial + '" ' +
+            PhysicalDrive.Serial + '" ' +
           '/ru system'));                           //작업할 계정
     end
     else
@@ -853,16 +851,16 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
-          '/tn "MANTRIM' + SSDInfo.Serial + '" ' +  //이름
+          '/tn "MANTRIM' + PhysicalDrive.Serial + '" ' +  //이름
           '/tr "''' + Application.ExeName +         //경로
-            ''' ''' + SSDInfo.Serial + '''" ' +
+            ''' ''' + PhysicalDrive.Serial + '''" ' +
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
       string(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
-        '/TN "MANTRIM' + SSDInfo.Serial + '" ' +    //작업 이름
+        '/TN "MANTRIM' + PhysicalDrive.Serial + '" ' +    //작업 이름
         '/F'));                                     //강제 삭제
 end;
 
@@ -951,7 +949,7 @@ begin
   FreeAndNil(DriveList);
 
   cTrimRunning.Checked :=
-    Pos('MANTRIM' + SSDInfo.Serial,
+    Pos('MANTRIM' + PhysicalDrive.Serial,
       UnicodeString(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;

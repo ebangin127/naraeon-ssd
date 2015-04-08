@@ -1,4 +1,4 @@
-unit uPhysicalDriveGetter;
+unit uPhysicalDriveListGetter;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   uOSFile, uPhysicalDriveList;
 
 type
-  TPhysicalDriveGetter = class abstract
+  TPhysicalDriveListGetter = class abstract
   public
     PhysicalDriveList: TPhysicalDriveList;
     function GetPhysicalDriveList: TPhysicalDriveList; virtual; abstract;

@@ -1,14 +1,14 @@
-unit uMixedPhysicalDriveListGetter;
+unit uAutoPhysicalDriveListGetter;
 
 interface
 
 uses
   SysUtils,
-  uPhysicalDriveGetter, uBruteForcePhysicalDriveListGetter,
+  uPhysicalDriveListGetter, uBruteForcePhysicalDriveListGetter,
   uWMIPhysicalDriveListGetter, uPhysicalDriveList;
 
 type
-  TMixedPhysicalDriveListGetter = class(TPhysicalDriveGetter)
+  TAutoPhysicalDriveListGetter = class(TPhysicalDriveListGetter)
   public
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
@@ -22,15 +22,15 @@ type
 
 implementation
 
-{ TMixedPhysicalDriveListGetter }
-function TMixedPhysicalDriveListGetter.IsMoreTrialNeeded: Boolean;
+{ TAutoPhysicalDriveListGetter }
+function TAutoPhysicalDriveListGetter.IsMoreTrialNeeded: Boolean;
 begin
   result := 
     (PhysicalDriveList = nil) or
     (PhysicalDriveList.Count = 0);
 end;
 
-procedure TMixedPhysicalDriveListGetter.LetBruteForceGetterFillTheList;
+procedure TAutoPhysicalDriveListGetter.LetBruteForceGetterFillTheList;
 var
   BruteForcePhysicalDriveListGetter: TBruteForcePhysicalDriveListGetter;
 begin
@@ -40,7 +40,7 @@ begin
   FreeAndNil(BruteForcePhysicalDriveListGetter);
 end;
 
-procedure TMixedPhysicalDriveListGetter.LetWMIGetterFillTheList;
+procedure TAutoPhysicalDriveListGetter.LetWMIGetterFillTheList;
 var
   WMIPhysicalDriveListGetter: TWMIPhysicalDriveListGetter;
 begin
@@ -50,7 +50,7 @@ begin
   FreeAndNil(WMIPhysicalDriveListGetter);
 end;
 
-procedure TMixedPhysicalDriveListGetter.LetBruteForceGetterFillTheListIfNeeded;
+procedure TAutoPhysicalDriveListGetter.LetBruteForceGetterFillTheListIfNeeded;
 begin
   if IsMoreTrialNeeded = false then
     exit;
@@ -59,7 +59,7 @@ begin
   LetBruteForceGetterFillTheList;
 end;
 
-procedure TMixedPhysicalDriveListGetter.LetWMIGetterFillTheListIfNeeded;
+procedure TAutoPhysicalDriveListGetter.LetWMIGetterFillTheListIfNeeded;
 begin
   if IsMoreTrialNeeded = false then
     exit;
@@ -68,7 +68,7 @@ begin
   LetWMIGetterFillTheList;
 end;
 
-function TMixedPhysicalDriveListGetter.GetPhysicalDriveList:
+function TAutoPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
   LetWMIGetterFillTheListIfNeeded;

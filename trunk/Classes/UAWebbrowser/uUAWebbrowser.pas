@@ -4,20 +4,28 @@ interface
 
 uses Classes, SHDocVw, ActiveX;
 
-const
-  DISPID_AMBIENT_USERAGENT = -5513;
 
 type
   TUAWebBrowser = class(TWebbrowser, IDispatch)
   private
+    const
+      DISPID_AMBIENT_USERAGENT = -5513;
+      
+  private
     FUserAgent: string;
-    procedure SetUserAgent(const Value: string);
+    BrowserAmbient: IOleControl;
+    
+    function QueryBrowserAmbientAndIfAvailableSetIt: Boolean;
+    procedure SetUserAgent(const UserAgentToSet: string);
+    
     function Invoke(DispID: Integer; const IID: TGUID; LocaleID: Integer;
                     Flags: Word; var Params;
                     VarResult, ExcepInfo, ArgErr: Pointer): HRESULT; stdcall;
+                    
   public
     property UserAgent: string read FUserAgent write SetUserAgent;
-    constructor Create(AOwner: TComponent); reintroduce; virtual;
+    constructor Create(AOwner: TComponent); reintroduce; 
+    
   end;
 
 implementation
@@ -25,7 +33,7 @@ implementation
 constructor TUAWebBrowser.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FUserAgent := '';
+  UserAgent := '';
   SetUserAgent('Naraeon SSD Tools');
 end;
 
@@ -33,31 +41,29 @@ function TUAWebBrowser.Invoke(DispID: Integer; const IID: TGUID;
                               LocaleID: Integer; Flags: Word; var Params;
                               VarResult, ExcepInfo, ArgErr: Pointer): HRESULT;
 begin
-  //check if the DISPID_AMBIENT_USERAGENT flag is being processed and
-  //if the User Agent to set is not empty
-  if (FUserAgent <> '') and
+  if (UserAgent <> '') and
      (Flags and DISPATCH_PROPERTYGET <> 0) and
      (DispId = DISPID_AMBIENT_USERAGENT) and
      (Assigned(VarResult)) then
   begin
-    //set the user agent
-    POleVariant(VarResult)^ := FUserAgent + #13#10;
-    Result := S_OK; //return S_OK
-  end
-  else
-    Result :=
-      inherited Invoke(DispID, IID, LocaleID, Flags, Params,
-        VarResult, ExcepInfo, ArgErr); //call the default Invoke method
+    POleVariant(VarResult)^ := UserAgent + #13#10;
+    exit(S_OK);
+  end;
+  
+  result :=
+    inherited Invoke(DispID, IID, LocaleID, Flags, Params,
+      VarResult, ExcepInfo, ArgErr);
 end;
 
-procedure TUAWebBrowser.SetUserAgent(const Value: string);
-var
-  Control: IOleControl;
+function TUAWebBrowser.QueryBrowserAmbientAndIfAvailableSetIt: Boolean;
 begin
-  FUserAgent := Value;
-  //the current interface supports IOleControl?
-  if DefaultInterface.QueryInterface(IOleControl, Control) = 0 then
-    Control.OnAmbientPropertyChange(DISPID_AMBIENT_USERAGENT);
-    //call the OnAmbientPropertyChange event
+  result := DefaultInterface.QueryInterface(IOleControl, BrowserAmbient) = 0;
+end;
+
+procedure TUAWebBrowser.SetUserAgent(const UserAgentToSet: string);
+begin
+  FUserAgent := UserAgentToSet;
+  if QueryBrowserAmbientAndIfAvailableSetIt then
+    BrowserAmbient.OnAmbientPropertyChange(DISPID_AMBIENT_USERAGENT);
 end;
 end.

@@ -1,4 +1,4 @@
-unit uMotherDriveGetter;
+unit uPartitionExtentGetter;
 
 interface
 
@@ -7,32 +7,32 @@ uses
   uOSFileWithHandle, uIoControlFile;
 
 type
-  TMotherDriveEntry = record
+  TPartitionExtentEntry = record
     DriveNumber: DWORD;
     StartingOffset: TLargeInteger;
     ExtentLength: TLargeInteger;
   end;
 
-  TMotherDriveList = TList<TMotherDriveEntry>;
+  TPartitionExtentList = TList<TPartitionExtentEntry>;
 
-  TMotherDriveGetter = class sealed(TIoControlFile)
+  TPartitionExtentGetter = class sealed(TIoControlFile)
   public
     constructor Create(FileToGetAccess: String); override;
 
-    function GetMotherDriveList: TMotherDriveList;
+    function GetPartitionExtentList: TPartitionExtentList;
 
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; reintroduce;
 
   private
-    MotherDriveList: TMotherDriveList;
+    PartitionExtentList: TPartitionExtentList;
     VolumeName: String;
-    function TryToGetMotherDriveList: TMotherDriveList;
+    function TryToGetPartitionExtentList: TPartitionExtentList;
 
     type
       TVolumeNameBuffer = Array[0..MAX_PATH] of Char;
 
-      DISK_EXTENT = TMotherDriveEntry;
+      DISK_EXTENT = TPartitionExtentEntry;
 
       VOLUME_DISK_EXTENTS = record
         NumberOfDiskExtents: DWORD;
@@ -41,12 +41,12 @@ type
 
     function IsRAMDrive: Boolean;
     procedure IfRAMDriveRaiseException;
-    function GetMotherDrive: TMotherDriveList;
-    procedure GetMotherDriveAndIfNotReturnedRaiseException(
+    function GetPartitionExtent: TPartitionExtentList;
+    procedure GetPartitionExtentAndIfNotReturnedRaiseException(
       IOBuffer: TIoControlIOBuffer);
-    function SetIOBufferToGetMotherDrive(
+    function SetIOBufferToGetPartitionExtent(
       OutputBufferPointer: Pointer): TIoControlIOBuffer;
-    procedure ExtentsToTMotherDriveList(DiskExtents: VOLUME_DISK_EXTENTS);
+    procedure ExtentsToTPartitionExtentList(DiskExtents: VOLUME_DISK_EXTENTS);
 
     procedure SetVolumeNameBuffer;
     function QueryDosDeviceSystemCall
@@ -57,14 +57,14 @@ type
 
 implementation
 
-{ TMotherDrive }
+{ TPartitionExtent }
 
-constructor TMotherDriveGetter.Create(FileToGetAccess: String);
+constructor TPartitionExtentGetter.Create(FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess, GetMinimumPrivilege);
 end;
 
-function TMotherDriveGetter.QueryDosDeviceSystemCall
+function TPartitionExtentGetter.QueryDosDeviceSystemCall
   (VolumePath: String; VolumeNameBuffer: TVolumeNameBuffer): String;
 begin
   QueryDosDevice(PChar(VolumePath), VolumeNameBuffer, MAX_PATH);
@@ -72,7 +72,7 @@ begin
   result := String(PChar(@VolumeName));
 end;
 
-procedure TMotherDriveGetter.SetVolumeNameBuffer;
+procedure TPartitionExtentGetter.SetVolumeNameBuffer;
 var
   VolumePath: String;
   VolumeNameBuffer: TVolumeNameBuffer;
@@ -87,20 +87,20 @@ begin
   result := DesiredReadOnly;
 end;
 
-function TMotherDriveGetter.IsRAMDrive: Boolean;
+function TPartitionExtentGetter.IsRAMDrive: Boolean;
 const
   QSoftRamdriveVolumeName = 'ramdriv';
 begin
   result := Pos(QSoftRamdriveVolumeName, lowercase(VolumeName)) > 0;
 end;
 
-procedure TMotherDriveGetter.IfRAMDriveRaiseException;
+procedure TPartitionExtentGetter.IfRAMDriveRaiseException;
 begin
   if IsRAMDrive then
-    raise ERAMDrive.Create('RAMDrive: MotherDrive can''t target RAMDrive.');
+    raise ERAMDrive.Create('RAMDrive: PartitionExtent can''t target RAMDrive.');
 end;
 
-function TMotherDriveGetter.SetIOBufferToGetMotherDrive
+function TPartitionExtentGetter.SetIOBufferToGetPartitionExtent
   (OutputBufferPointer: Pointer): TIoControlIOBuffer;
 const
   NullInputBuffer = nil;
@@ -113,7 +113,7 @@ begin
   result.OutputBuffer.Size := SizeOf(VOLUME_DISK_EXTENTS);
 end;
 
-procedure TMotherDriveGetter.GetMotherDriveAndIfNotReturnedRaiseException
+procedure TPartitionExtentGetter.GetPartitionExtentAndIfNotReturnedRaiseException
   (IOBuffer: TIoControlIOBuffer);
 var
   ReturnedBytes: Cardinal;
@@ -124,45 +124,45 @@ begin
       ('NoDataReturnedFromIO: No data returned from GetVolumeDiskExtents');
 end;
 
-procedure TMotherDriveGetter.ExtentsToTMotherDriveList
+procedure TPartitionExtentGetter.ExtentsToTPartitionExtentList
   (DiskExtents: VOLUME_DISK_EXTENTS);
 var
   CurrentExtent: Integer;
 begin
-  MotherDriveList := TMotherDriveList.Create;
+  PartitionExtentList := TPartitionExtentList.Create;
   for CurrentExtent := 0 to DiskExtents.NumberOfDiskExtents - 1 do
-    MotherDriveList.Add(DiskExtents.Extents[CurrentExtent]);
+    PartitionExtentList.Add(DiskExtents.Extents[CurrentExtent]);
 end;
 
-function TMotherDriveGetter.GetMotherDrive: TMotherDriveList;
+function TPartitionExtentGetter.GetPartitionExtent: TPartitionExtentList;
 var
   IOBuffer: TIoControlIOBuffer;
   OSVolumeDiskExtents: VOLUME_DISK_EXTENTS;
 begin
-  IOBuffer := SetIOBufferToGetMotherDrive(@OSVolumeDiskExtents);
-  GetMotherDriveAndIfNotReturnedRaiseException(IOBuffer);
-  ExtentsToTMotherDriveList(OSVolumeDiskExtents);
-  exit(MotherDriveList);
+  IOBuffer := SetIOBufferToGetPartitionExtent(@OSVolumeDiskExtents);
+  GetPartitionExtentAndIfNotReturnedRaiseException(IOBuffer);
+  ExtentsToTPartitionExtentList(OSVolumeDiskExtents);
+  exit(PartitionExtentList);
 end;
 
-function TMotherDriveGetter.TryToGetMotherDriveList: TMotherDriveList;
+function TPartitionExtentGetter.TryToGetPartitionExtentList: TPartitionExtentList;
 begin
   SetVolumeNameBuffer;
   IfRAMDriveRaiseException;
-  result := GetMotherDrive;
+  result := GetPartitionExtent;
 end;
 
-function TMotherDriveGetter.GetMotherDriveList: TMotherDriveList;
+function TPartitionExtentGetter.GetPartitionExtentList: TPartitionExtentList;
 begin
   try
-    result := TryToGetMotherDriveList;
+    result := TryToGetPartitionExtentList;
   except
-    FreeAndNil(MotherDriveList);
+    FreeAndNil(PartitionExtentList);
     result := nil;
   end;
 end;
 
-function TMotherDriveGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
+function TPartitionExtentGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
 begin
   exit(DesiredReadOnly);
 end;
