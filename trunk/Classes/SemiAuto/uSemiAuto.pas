@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   uTrimThread, uTrimList, uDiskFunctions, uStrFunctions,
-  uSSDInfo, uPhysicalDriveList, uSSDSupport, uLanguageSettings,
+  uPhysicalDriveList, uLanguageSettings,
   uPhysicalDrive, uPartitionListGetter;
 
 type

@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Classes, ClipBrd, Windows,
-  uSSDInfo, uPhysicalDriveList, uPhysicalDrive, uSSDSupport, uLanguageSettings;
+  uPhysicalDriveList, uPhysicalDrive, uLanguageSettings,
+  uGlobalSettings;
 
 type
   TDiag = class
@@ -45,38 +46,37 @@ class procedure TDiag.Body(Contents: TStringList);
 var
   SSDList: TPhysicalDriveList;
   CurrEntry: TPhysicalDrive;
-  CurrSSDInfo: TSSDInfo_NST;
 begin
   SSDList := TPhysicalDriveList.Create;
-  CurrSSDInfo := TSSDInfo_NST.Create;
 
   TraverseDevice(false, false, SSDList);
   for CurrEntry in SSDList do
   begin
     Contents.Add('Probe, ' + CurrEntry.GetPathOfFileAccessing + ', ');
-    CurrSSDInfo.SetDeviceName(
-      StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix));
 
     Contents[Contents.Count - 1] :=
       Contents[Contents.Count - 1] +
-      CurrSSDInfo.Model + ', ' +
-      CurrSSDInfo.Firmware + ', ';
+      CurrEntry.IdentifyDeviceResult.Model + ', ' +
+      CurrEntry.IdentifyDeviceResult.Firmware + ', ';
 
-    case CurrSSDInfo.SupportedDevice of
-    SUPPORT_FULL:
+    if CurrEntry.SupportStatus.FirmwareUpdate then
+    begin
       Contents[Contents.Count - 1] :=
         Contents[Contents.Count - 1] + 'Full';
-    SUPPORT_SEMI:
+    end
+    else if CurrEntry.SupportStatus.Supported then
+    begin
       Contents[Contents.Count - 1] :=
         Contents[Contents.Count - 1] + 'Semi';
-    SUPPORT_NONE:
+    end
+    else
+    begin
       Contents[Contents.Count - 1] :=
         Contents[Contents.Count - 1] + 'None';
     end;
   end;
 
   FreeAndNil(SSDList);
-  FreeAndNil(CurrSSDInfo);
 end;
 
 class procedure TDiag.Footer(Contents: TStringList);

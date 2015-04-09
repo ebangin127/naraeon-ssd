@@ -9,12 +9,13 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uLogSystem, uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
+  uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
   uDiskFunctions, uPartitionFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
-  uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList;
+  uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
+  uFirmwareGetter, uGlobalSettings;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -155,7 +156,6 @@ type
     Aborted: Boolean;
 
     //표시 정보 관련
-    PhysicalDrive: TPhysicalDrive;
     ShowSerial: Boolean;
     ListEnter: Integer;
 
@@ -165,12 +165,15 @@ type
     //최적화 관련
     Optimizer: TNSTOptimizer;
 
+
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     CurrDrive: String;
     SSDLabel: TSSDLabelList;
     PhysicalDriveList: TPhysicalDriveList;
+    PhysicalDrive: TPhysicalDrive;
+    FirmwareGetter: TFirmwareGetter;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -248,7 +251,7 @@ end;
 
 procedure TfMain.bFirmStartClick(Sender: TObject);
 var
-  ChkFrmResult: FirmCheck;
+  DownloadedFirmware: TDownloadedFirmware;
   ifConnected: DWORD;
 begin
   InternetGetConnectedState(@ifConnected, 0);
@@ -266,19 +269,18 @@ begin
 
   tRefresh.Enabled := false;
 
-  ChkFrmResult.FirmExists := false;
-  ChkFrmResult := DownloadFirmware(TPathManager.AppPath, PhysicalDrive);
+  DownloadedFirmware := DownloadLatestFirmware(PhysicalDrive, FirmwareGetter);
 
-  if (ChkFrmResult.FirmExists = false) or
+  if (DownloadedFirmware.IsFirmwareExists = false) or
      ((TRufus.CheckRufus = false) and (DownloadRufus = false)) then
   begin
     tRefresh.Enabled := true;
     exit;
   end;
 
-  if (ExtractFileExt(ChkFrmResult.FirmPath) = '.exe') then
+  if (ExtractFileExt(DownloadedFirmware.FirmwarePath) = '.exe') then
   begin
-    ShellExecute(0, 'open', PChar(ChkFrmResult.FirmPath), nil, nil,
+    ShellExecute(0, 'open', PChar(DownloadedFirmware.FirmwarePath), nil, nil,
       SW_SHOW);
     iFirmUp.OnClick(nil);
   end
@@ -286,10 +288,10 @@ begin
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
     TRufus.RunRufus(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
-      ChkFrmResult.FirmPath);
+      DownloadedFirmware.FirmwarePath);
     AlertCreate(Self, AlrtFirmEnd[CurrLang]);
-    DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));
-    DeleteDirectory(ChkFrmResult.TempFolder);
+    DeleteDirectory(ExtractFilePath(DownloadedFirmware.FirmwarePath));
+    DeleteDirectory(DownloadedFirmware.UsedTempFolder);
   end;
 
   tRefresh.Enabled := true;
@@ -405,6 +407,7 @@ begin
   Optimizer := TNSTOptimizer.Create;
   SSDLabel := TSSDLabelList.Create;
   PhysicalDriveList := TPhysicalDriveList.Create;
+  FirmwareGetter := TFirmwareGetter.Create;
 
   CurrDrive := '';
   ShowSerial := false;
@@ -423,7 +426,7 @@ end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
-  TGetFirm.DestroyCache;
+  FreeAndNil(FirmwareGetter);
 
   if PhysicalDrive <> nil then
     FreeAndNil(PhysicalDrive);
@@ -494,6 +497,8 @@ end;
 procedure TfMain.iFirmUpClick(Sender: TObject);
 var
   ifConnected: DWORD;
+  Query: TFirmwareQuery;
+  QueryResult: TFirmwareQueryResult;
 begin
   CloseDriveList;
 
@@ -529,7 +534,10 @@ begin
   lNewFirm.Font.Style := [];
   ButtonGroup.Click(iFirmUp);
 
-  if IsNewVersion(PhysicalDrive.Model, PhysicalDrive.Firmware) = NEW_VERSION then
+  Query.Model := PhysicalDrive.IdentifyDeviceResult.Model;
+  Query.Firmware := PhysicalDrive.IdentifyDeviceResult.Firmware;
+  QueryResult := FirmwareGetter.CheckFirmware(Query);
+  if QueryResult.CurrentVersion = TFirmwareVersion.NewVersion then
   begin
     if lNewFirm.Font.Color <> clRed then
     begin
@@ -617,7 +625,9 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-  GetChildDrives(ExtractDeviceNum(PhysicalDrive.DeviceName), cTrimList.Items);
+
+  GetChildDrives(PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
+    cTrimList.Items);
   for CheckedDrives := 0 to cTrimList.Count - 1 do
     cTrimList.Checked[CheckedDrives] := true;
 end;
@@ -630,13 +640,15 @@ begin
   begin
     ShowSerial := false;
     lSerial.Caption := CapSerial[CurrLang];
-    for CurrNum := 0 to Length(PhysicalDrive.Serial) - 1 do
-      lSerial.Caption := lSerial.Caption + 'X';
+    for CurrNum := 0 to
+      Length(PhysicalDrive.IdentifyDeviceResult.Serial) - 1 do
+        lSerial.Caption := lSerial.Caption + 'X';
   end
   else
   begin
     ShowSerial := true;
-    lSerial.Caption := CapSerial[CurrLang] + PhysicalDrive.Serial;
+    lSerial.Caption := CapSerial[CurrLang] +
+      PhysicalDrive.IdentifyDeviceResult.Serial;
   end;
 end;
 
@@ -839,9 +851,11 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
-          '/tn "MANTRIM' + PhysicalDrive.Serial + '" ' +  //이름
+          '/tn "MANTRIM' +                          //이름
+          PhysicalDrive.IdentifyDeviceResult.Serial +
+          '" ' +
           '/tr "\" ' + Application.ExeName + '\" ' +//경로
-            PhysicalDrive.Serial + '" ' +
+            PhysicalDrive.IdentifyDeviceResult.Serial + '" ' +
           '/ru system'));                           //작업할 계정
     end
     else
@@ -851,16 +865,21 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
-          '/tn "MANTRIM' + PhysicalDrive.Serial + '" ' +  //이름
+          '/tn "MANTRIM' +                          //이름
+          PhysicalDrive.IdentifyDeviceResult.Serial +
+          '" ' +
           '/tr "''' + Application.ExeName +         //경로
-            ''' ''' + PhysicalDrive.Serial + '''" ' +
+            ''' ''' +
+          PhysicalDrive.IdentifyDeviceResult.Serial + '''" ' +
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
       string(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
-        '/TN "MANTRIM' + PhysicalDrive.Serial + '" ' +    //작업 이름
+        '/TN "MANTRIM' +                            //작업 이름
+        PhysicalDrive.IdentifyDeviceResult.Serial +
+        '" ' +
         '/F'));                                     //강제 삭제
 end;
 
@@ -949,7 +968,7 @@ begin
   FreeAndNil(DriveList);
 
   cTrimRunning.Checked :=
-    Pos('MANTRIM' + PhysicalDrive.Serial,
+    Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
       UnicodeString(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;

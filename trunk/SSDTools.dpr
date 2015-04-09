@@ -76,7 +76,6 @@ uses
   uPhysicalDriveListGetter in 'WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas',
   uCommandSet in 'WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas',
   uWeb in 'Web\Abstraction\uWeb.pas',
-  uGetFirm in 'Classes\GetFirm\uGetFirm.pas',
   uHTTPWeb in 'Web\Getter\uHTTPWeb.pas',
   uHTTPSWeb in 'Web\Getter\uHTTPSWeb.pas',
   uFirmwareGetter in 'Objects\uFirmwareGetter.pas';
@@ -100,7 +99,7 @@ begin
   Application.Initialize;
   Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
 
-  TPathManager.GetPath(Application);
+  TPathManager.SetPath(Application);
   DetermineLanguage;
 
   ParamInUpper := UpperCase(ParamStr(1));
@@ -117,7 +116,6 @@ begin
 
   MutexAppear := 0;
 
-  TGetFirm.CreateCache;
   case RunMode of
   RM_NORMAL:
   begin
@@ -159,11 +157,9 @@ begin
   RM_SEMIAUTO:
   begin
     TSemiAuto.SemiAutoTrim(ParamStr(1), ParamStr(2));
-    TGetFirm.DestroyCache;
   end;
 
   end;
-  TGetFirm.DestroyCache;
 
   if MutexAppear <> 0 then
   begin

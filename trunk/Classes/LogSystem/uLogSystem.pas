@@ -26,7 +26,7 @@ type
     LastConnFolder: String;
     OnlyCount: Boolean;
     //1. 창조자와 파괴자
-    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean; isLiteon85: Boolean);
+    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean);
     destructor Destroy; override;
     //2. 끊고 재연결하기
     procedure Disconnect;
@@ -42,7 +42,7 @@ procedure MigrateOldLog(OldPath, NewPath: String);
 
 implementation
 
-constructor TNSTLog.Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean; isLiteon85: Boolean);
+constructor TNSTLog.Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean);
 var
   CurrAvgDays: Integer;
 begin
@@ -60,8 +60,6 @@ begin
   OneGigList := TStringList.Create;
   ReadableList := TStringList.Create;
   OnlyCount := isCount;
-  if isLiteon85 then
-    Serial := Serial + '85';
   try
     //1기가 파일 로딩
     if FileExists(Folder + 'WriteLog' + Serial + '.txt') = false then

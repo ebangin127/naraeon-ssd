@@ -3,8 +3,8 @@ unit uPartition;
 interface
 
 uses
-  uOSFile,
-  uPartitionExtentGetter;
+  Windows, SysUtils,
+  uOSFile, uPartitionExtentGetter;
 
 type
   TPartition = class(TOSFile)
@@ -13,6 +13,13 @@ type
     PartitionLengthReadWrite: TLargeInteger;
     
     function GetPartitionLengthOrRequestAndReturn: TLargeInteger;
+    procedure AddThisEntryToPartitionLength(
+      PartitionExtentEntry: TPartitionExtentEntry);
+
+    procedure SetPartitionLengthFromPartitionExtentList;
+    function RequestPartitionExtentList: TPartitionExtentList;
+    procedure RequestPartitionLength;
+
   public
     property PartitionLength: TLargeInteger 
       read GetPartitionLengthOrRequestAndReturn;
@@ -22,7 +29,7 @@ type
 
 implementation
 
-function TPartition.RequestPartitionExtentList: PartitionExtentList;
+function TPartition.RequestPartitionExtentList: TPartitionExtentList;
 var
   PartitionExtentGetter: TPartitionExtentGetter;
 begin
@@ -40,7 +47,7 @@ begin
     PartitionExtentEntry.ExtentLength;
 end;
 
-procedure TPartition.GetPartitionLengthFromPartitionExtentList;
+procedure TPartition.SetPartitionLengthFromPartitionExtentList;
 var
   PartitionExtentEntry: TPartitionExtentEntry;
   PartitionExtentListToGetLength: TPartitionExtentList;
@@ -54,7 +61,7 @@ end;
 
 procedure TPartition.RequestPartitionLength;
 begin
-  PartitionLengthReadWrite := GetPartitionLengthFromPartitionExtentList;
+  SetPartitionLengthFromPartitionExtentList;
 end;
 
 function TPartition.GetPartitionLengthOrRequestAndReturn: TLargeInteger;

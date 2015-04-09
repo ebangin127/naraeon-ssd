@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
-  uAlert, uButtonGroup, uGetFirm, uPathManager, uLanguageSettings;
+  uAlert, uButtonGroup, uPathManager, uLanguageSettings;
 
 procedure InitializeMainForm;
 procedure RefreshOptimizeList;

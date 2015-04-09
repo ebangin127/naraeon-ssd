@@ -5,9 +5,9 @@ interface
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
   uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
-  uDiskFunctions, uPartitionFunctions, uRegFunctions,
-  uDatasizeUnit, uStrFunctions, uLogSystem, uGetFirm,
-  uPhysicalDriveList, uBufferInterpreter,
+  uDiskFunctions, uPartitionFunctions, uRegistryHelper,
+  uDatasizeUnit, uStrFunctions, uLogSystem, uNSTSupport,
+  uPhysicalDriveList, uBufferInterpreter, uFirmwareGetter,
   uPathManager, uPhysicalDrive, uPartitionListGetter;
 
 function RefreshTimer(PhysicalDrive: TPhysicalDrive;
@@ -50,6 +50,8 @@ var
   DenaryUserSizeInKB: Double;
   KBtoMB: DatasizeUnitChangeSetting;
   DenaryInteger: FormatSizeSetting;
+  Query: TFirmwareQuery;
+  QueryResult: TFirmwareQueryResult;
 begin
   with fMain do
   begin
@@ -66,35 +68,30 @@ begin
     DenaryInteger.FPrecision := 0;
 
     lName.Caption :=
-      PhysicalDrive.Model + ' ' +
+      PhysicalDrive.IdentifyDeviceResult.Model + ' ' +
       FormatSizeInMB(DenaryUserSizeInKB, DenaryInteger);
 
     lFirmware.Caption :=
-      CapFirmware[CurrLang] + PhysicalDrive.Firmware;
+      CapFirmware[CurrLang] + PhysicalDrive.IdentifyDeviceResult.Firmware;
 
     lConnState.Caption := CapConnState[CurrLang];
-    if (PhysicalDrive.IdentifyDeviceResult.SATASpeed = TSATASpeed.Unknown) or
-       (PhysicalDrive.IdentifyDeviceResult.SATASpeed > SPEED_SATA600) then
+    if (PhysicalDrive.IdentifyDeviceResult.SATASpeed <=
+        TSATASpeed.UnknownSATASpeed) then
       lConnState.Caption := lConnState.Caption + CapUnknown[CurrLang]
-    else if PhysicalDrive.USBMode then
-      lConnState.Caption := lConnState.Caption + ConnState[3]
     else
     begin
       lConnState.Caption := lConnState.Caption +
-        ConnState[Integer(PhysicalDrive.SATASpeed) - 1];
-      case PhysicalDrive.NCQSupport of
-      0: lConnState.Caption :=
-          lConnState.Caption + CapUnknown[CurrLang];
-      1: lConnState.Caption :=
-          lConnState.Caption + CapNonSupNCQ[CurrLang];
-      2: lConnState.Caption :=
-          lConnState.Caption + CapSupportNCQ[CurrLang];
-      end;
+        ConnState[Integer(PhysicalDrive.IdentifyDeviceResult.SATASpeed) - 1];
       lConnState.Caption := lConnState.Caption + ')';
     end;
 
-    lNewFirm.Caption := NewFirmCaption(PhysicalDrive.Model, PhysicalDrive.Firmware);
-    if IsNewVersion(PhysicalDrive.Model, PhysicalDrive.Firmware) = OLD_VERSION then
+    Query.Model := PhysicalDrive.IdentifyDeviceResult.Model;
+    Query.Firmware := PhysicalDrive.IdentifyDeviceResult.Firmware;
+    QueryResult := fMain.FirmwareGetter.CheckFirmware(Query);
+
+    lNewFirm.Caption :=
+      CapNewFirm[CurrLang] + QueryResult.LatestVersion;
+    if QueryResult.CurrentVersion = TFirmwareVersion.OldVersion then
     begin
       lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
       lFirmware.Font.Color := clRed;
@@ -111,26 +108,28 @@ begin
 
     lSerial.Caption := CapSerial[CurrLang];
     if not ShowSerial then
-      for CurrNum := 0 to Length(PhysicalDrive.Serial) - 1 do
-        lSerial.Caption := lSerial.Caption + 'X'
+      for CurrNum := 0 to
+        Length(PhysicalDrive.IdentifyDeviceResult.Serial) - 1 do
+          lSerial.Caption := lSerial.Caption + 'X'
     else
-      lSerial.Caption := lSerial.Caption + PhysicalDrive.Serial;
+      lSerial.Caption := lSerial.Caption +
+        PhysicalDrive.IdentifyDeviceResult.Serial;
   end;
 end;
 
-procedure ApplyHostWrite(SSDInfo: TSSDInfo_NST);
+procedure ApplyHostWrite(PhysicalDrive: TPhysicalDrive);
 var
-  HostWriteInMB, HostWriteInLiteONUnit: UInt64;
+  HostWriteInMiB: UInt64;
   CurrWritLog: TNSTLog;
   AvgDays, CurrAvgDay: Integer;
   BinaryPointOne: FormatSizeSetting;
 begin
-  SSDInfo.CollectAllSmartData;
-  HostWriteInLiteONUnit := SSDInfo.HostWriteInLiteONUnit;
+  HostWriteInMiB := PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB;
 
   //통계 미지원 걸러냄
-  if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
-    exit;
+  if PhysicalDrive.SupportStatus.TotalWriteType =
+    TTotalWriteType.WriteNotSupported then
+      exit;
 
   with fMain do
   begin
@@ -142,28 +141,28 @@ begin
       l1Month.Visible := true;
     end;
 
-    case SSDInfo.SSDSupport.SupportHostWrite of
+    case PhysicalDrive.SupportStatus.TotalWriteType of
 
     //Case 1 : 호스트 쓰기 지원
-    HSUPPORT_FULL:
+    TTotalWriteType.WriteSupportedAsValue:
     begin
-      if SSDInfo.IsHostWrite then
-        lHost.Caption := CapHostWrite[CurrLang]
+      if PhysicalDrive.SMARTInterpreted.
+         TotalWrite.TrueHostWriteFalseNANDWrite then
+          lHost.Caption := CapHostWrite[CurrLang]
       else
         lHost.Caption := CapNandWrite[CurrLang];
 
-      HostWriteInMB := LiteONUnitToMB(HostWriteInLiteONUnit);
       BinaryPointOne.FNumeralSystem := Binary;
       BinaryPointOne.FPrecision := 1;
 
       lHost.Caption :=
         lHost.Caption
-        + FormatSizeInMB(HostWriteInMB, BinaryPointOne);
+        + FormatSizeInMB(HostWriteInMiB, BinaryPointOne);
 
       CurrWritLog :=
         TNSTLog.Create(
-          TPathManager.AppPath, SSDInfo.Serial,
-          UIntToStr(HostWriteInLiteONUnit), false, SSDInfo.S10085);
+          TPathManager.AppPath, PhysicalDrive.IdentifyDeviceResult.Serial,
+          UIntToStr(MBToLiteONUnit(HostWriteInMiB)), false);
 
       AvgDays := -1;
       for CurrAvgDay := AvgMax downto 0 do
@@ -189,36 +188,11 @@ begin
       FreeAndNil(CurrWritLog);
     end;
 
-    HSUPPORT_COUNT:
-      begin
-        lHost.Caption := CapSSDLifeLeft[CurrLang]
-          + UIntToStr(
-              ExtractSMARTPercent(SSDInfo.SMARTData, 1)) + '%';
-        lTodayUsage.Caption := CapWearLevel[CurrLang]
-          + UIntToStr(ExtractSMART(SSDInfo.SMARTData, 'AD'));
-
-        l1Month.Visible := false;
-        lHost.Top := lHost.Top + 25;
-        lTodayUsage.Top := lTodayUsage.Top + 15;
-        lOntime.Top := lOntime.Top + 10;
-      end;
-    end;
-
-    if SSDInfo.S10085 then
-    begin
-      lHost.Caption := lHost.Caption + CapCannotTrust[CurrLang];
-      lHost.Font.Color := clRed;
-      lHost.Font.Style := [fsBold];
-    end
-    else
-    begin
-      lHost.Font.Color := clWindowText;
-      lHost.Font.Style := [];
     end;
   end;
 end;
 
-procedure ApplySectLog(SSDInfo: TSSDInfo_NST);
+procedure ApplySectLog(PhysicalDrive: TPhysicalDrive);
 var
   CurrSectLog: TNSTLog;
   ReplacedSectors: UInt64;
@@ -226,17 +200,18 @@ var
 begin
   try
     // 섹터 치환
-    ReplacedSectors := SSDInfo.ReplacedSectors;
+    ReplacedSectors := PhysicalDrive.SMARTInterpreted.ReplacedSectors;
 
     CurrSectLog :=
       TNSTLog.Create(
-        TPathManager.AppPath, SSDInfo.Serial + 'RSLog',
-        UIntToStr(ReplacedSectors), true, false);
+        TPathManager.AppPath, PhysicalDrive.IdentifyDeviceResult.Serial +
+        'RSLog', UIntToStr(ReplacedSectors), true);
 
     with fMain do
     begin
       //섹터 치환만 지원하는 모델들
-      if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
+      if PhysicalDrive.SupportStatus.TotalWriteType =
+       TTotalWriteType.WriteNotSupported then
       begin
         lHost.Caption :=
           CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
@@ -275,7 +250,7 @@ begin
     with fMain do
     begin
       // 수명 상황 안 좋을때 오류 - 지우기 에러가 더 심각하므로 밑으로 배치.
-      if SSDInfo.RepSectorAlert then
+      if PhysicalDrive.SMARTInterpreted.SMARTAlert.ReplacedSector then
       begin
         lSectors.Font.Color := clRed;
         lNotsafe.Font.Color := clRed;
@@ -295,35 +270,25 @@ begin
   end;
 end;
 
-procedure ApplySMARTInfo(SSDInfo: TSSDInfo_NST);
+procedure ApplySMARTInfo(PhysicalDrive: TPhysicalDrive);
 var
-  PhysicalDrive: TPhysicalDrive;
   CurrDrvPartitions: TPartitionList;
   EraseErrors: UInt64;
   CurrPartition: Integer;
 begin
-  PhysicalDrive := TPhysicalDrive.Create(SSDInfo.DeviceName);
   with fMain do
   begin
     lOntime.Caption :=
       CapPowerTime[CurrLang] +
-      UIntToStr(ExtractSMART(SSDInfo.SMARTData, 9) and $FFFFFFFF) +
+      UIntToStr(PhysicalDrive.SMARTInterpreted.UsedHour) +
       CapHour[CurrLang];
 
     // 지우기 에러
-    EraseErrors := SSDInfo.EraseError;
-    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_NONE then
-    begin
-      lPError.Caption := CapReadError[CurrLang] + UIntToStr(EraseErrors) +
-        CapCount[CurrLang];
-    end
-    else
-    begin
-      lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) +
-        CapCount[CurrLang];
-    end;
+    EraseErrors := PhysicalDrive.SMARTInterpreted.EraseError;
+    lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) +
+      CapCount[CurrLang];
 
-    if SSDInfo.EraseErrorAlert then
+    if PhysicalDrive.SMARTInterpreted.SMARTAlert.EraseError then
     begin
       lPError.Font.Color := clRed;
       lNotsafe.Font.Color := clRed;
@@ -359,10 +324,9 @@ begin
     end;
     FreeAndNil(CurrDrvPartitions);
   end;
-  FreeAndNil(PhysicalDrive);
 end;
 
-procedure ApplyGeneralUISetting(SSDInfo: TSSDInfo_NST);
+procedure ApplyGeneralUISetting(PhysicalDrive: TPhysicalDrive);
 begin
   with fMain do
   begin
@@ -371,13 +335,13 @@ begin
     iFirmUp.Visible := false;
     lFirmUp.Visible := false;
 
-    if SSDInfo.ATAorSCSI = MODEL_ATA then
+    if PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported then
     begin
       lTrim.Visible := true;
       iTrim.Visible := true;
     end;
 
-    if (SSDInfo.SSDSupport.SupportFirmUp = false) and
+    if (PhysicalDrive.SupportStatus.FirmwareUpdate = false) and
        (iTrim.Visible = false) and
        (iOptimize.Left = FirstiOptLeft) then
     begin
@@ -450,7 +414,7 @@ var
   NewLen: Integer;
   CurrPartition: Integer;
 
-  CurrSSDInfo: TSSDInfo;
+  CurrPhysicalDrive: TPhysicalDrive;
   DenaryInteger: FormatSizeSetting;
   DenaryByteToMB: DatasizeUnitChangeSetting;
   DiskSizeInMB: Double;
@@ -472,9 +436,8 @@ begin
     SSDLabel[NewLen].OnMouseEnter := SSDSelLblMouseEnter;
     SSDLabel[NewLen].OnMouseLeave := SSDSelLblMouseLeave;
 
-    CurrSSDInfo := TSSDInfo.Create;
-    CurrSSDInfo.SetDeviceName(
-      StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
+    CurrPhysicalDrive := TPhysicalDrive.Create
+      (StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
 
     if NewLen > 9 then
     begin
@@ -497,13 +460,14 @@ begin
     DenaryByteToMB.FToUnit := MegaUnit;
 
     DiskSizeInMB :=
-      ChangeDatasizeUnit(SSDEntry.GetDiskSize, DenaryByteToMB);
+      ChangeDatasizeUnit(SSDEntry.DiskSizeInByte, DenaryByteToMB);
 
     DenaryInteger.FNumeralSystem := Denary;
     DenaryInteger.FPrecision := 0;
 
     SSDLabel[NewLen].Caption :=
-      SSDLabel[NewLen].Caption + CurrSSDInfo.Model + ' ' +
+      SSDLabel[NewLen].Caption +
+      CurrPhysicalDrive.IdentifyDeviceResult.Model + ' ' +
       FormatSizeInMB(DiskSizeInMB, DenaryInteger);
 
     for CurrPartition := 0 to (CurrDrvPartitions.Count - 1) do
@@ -525,7 +489,7 @@ begin
     end;
 
     FreeAndNil(CurrDrvPartitions);
-    FreeAndNil(CurrSSDInfo);
+    FreeAndNil(CurrPhysicalDrive);
   end;
 
   SetLabelPosition;
@@ -547,7 +511,7 @@ begin
     DelDevice(CurrEntry);
 end;
 
-function RefreshTimer(PhysicalDrive: TSSDInfo_NST;
+function RefreshTimer(PhysicalDrive: TPhysicalDrive;
                       ShowSerial: Boolean;
                       FirstiOptLeft: Integer): Boolean;
 begin
@@ -560,7 +524,6 @@ begin
 
   FreeAndNil(fMain.PhysicalDrive);
   fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
-  PhysicalDrive.SetDeviceName(StrToInt(fMain.CurrDrive));
 
   ApplyBasicInfo(PhysicalDrive, ShowSerial);
   ApplyHostWrite(PhysicalDrive);
@@ -569,13 +532,13 @@ begin
   ApplyGeneralUISetting(PhysicalDrive);
 end;
 
-procedure RefreshDrives(PhysicalDrive: TSSDInfo_NST);
+procedure RefreshDrives(PhysicalDrive: TPhysicalDrive);
 var
   TrvResult: TDiffResult;
 begin
-  TrvResult := TraverseDevice(true, true, fMain.SSDList);
+  TrvResult := TraverseDevice(true, true, fMain.PhysicalDriveList);
 
-  if fMain.SSDList.Count = 0 then
+  if fMain.PhysicalDriveList.Count = 0 then
   begin
     AlertCreate(fMain, AlrtNoSupport[CurrLang]);
     ShellExecute(fMain.Handle, 'open',
@@ -593,7 +556,7 @@ begin
   if TrvResult.AddList.Count > 0 then
     AddByList(TrvResult.AddList);
 
-  if (fMain.SSDList.Count > 0) and
+  if (fMain.PhysicalDriveList.Count > 0) and
      (fMain.CurrDrive = '') then
     fMain.SSDLabel[0].OnClick(fMain.SSDLabel[0]);
 

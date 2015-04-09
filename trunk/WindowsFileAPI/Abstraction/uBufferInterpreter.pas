@@ -8,9 +8,9 @@ uses
 type
   T512Buffer = Array[0..511] of Byte;
   TStorageInterface =
-    (INTERFACE_PROBING, INTERFACE_ATA, INTERFACE_SAT, INTERFACE_UNKNOWN);
+    (Probing, ATA, SAT, UnknownInterface);
   TSATASpeed =
-    (NOT_SATA, SATA_UNKNOWN, SATA_150, SATA_300, SATA_600);
+    (NotSATA, UnknownSATASpeed, SATA150, SATA300, SATA600);
   TIdentifyDeviceResult = record
     Model: String;
     Firmware: String;

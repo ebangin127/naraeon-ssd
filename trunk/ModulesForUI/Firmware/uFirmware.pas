@@ -4,19 +4,19 @@ interface
 
 uses
   Windows, SysUtils, IdURI, Dialogs,
-  uAlert, uLanguageSettings,
-  uStrFunctions, uExeFunctions, uGetFirm, uSevenZip, uPhysicalDrive,
-  uFileFunctions, uDownloadPath, uPathManager;
+  uAlert, uLanguageSettings, uPathManager,
+  uStrFunctions, uExeFunctions, uSevenZip, uPhysicalDrive,
+  uFileFunctions, uDownloadPath, uFirmwareGetter;
 
 type
-  FirmCheck = record
-    FirmExists: Boolean;
-    FirmPath: String;
-    TempFolder: String;
+  TDownloadedFirmware = record
+    IsFirmwareExists: Boolean;
+    FirmwarePath: String;
+    UsedTempFolder: String;
   end;
 
-function DownloadFirmware(AppPath: String;
-  PhysicalDrive: TPhysicalDrive): FirmCheck;
+function DownloadLatestFirmware(PhysicalDrive: TPhysicalDrive;
+  FirmwareGetter: TFirmwareGetter): TDownloadedFirmware;
 
 implementation
 
@@ -43,22 +43,23 @@ begin
   FindClose(FirmSR);
 end;
 
-function DownloadFirmware(AppPath: String;
-  PhysicalDrive: TPhysicalDrive): FirmCheck;
+function DownloadLatestFirmware(PhysicalDrive: TPhysicalDrive;
+  FirmwareGetter: TFirmwareGetter): TDownloadedFirmware;
 var
   FirmPath: String;
   FileEx1, FileEx2, DirEx: Boolean;
   Src, Dest: TDownloadFile;
   DownloadResult: Boolean;
   TempFolder: String;
-  GetFirm: TGetFirm;
+  Query: TFirmwareQuery;
+  QueryResult: TFirmwareQueryResult;
 begin
   Randomize;
 
   TempFolder := TPathManager.TempFolder;
   CreateDir(TempFolder);
-  result.TempFolder := TempFolder;
-  result.FirmExists := false;
+  result.UsedTempFolder := TempFolder;
+  result.IsFirmwareExists := false;
 
   FileEx1 := FileExists(TempFolder +
     PhysicalDrive.IdentifyDeviceResult.Model + '.exe');
@@ -79,10 +80,6 @@ begin
 
   AlertCreate(fMain, AlrtFirmStart[CurrLang]);
 
-  GetFirm := TGetFirm.Create(
-    PhysicalDrive.IdentifyDeviceResult.Model,
-    PhysicalDrive.IdentifyDeviceResult.Firmware);
-
   Src.FBaseAddress := '';
   Src.FFileAddress := TIdURI.URLEncode(
     'http://nstfirmware.naraeon.net/nst_firmdown.php?' +
@@ -92,8 +89,12 @@ begin
       PhysicalDrive.IdentifyDeviceResult.Firmware);
   Src.FType := dftPlain;
 
+  Query.Model := PhysicalDrive.IdentifyDeviceResult.Model;
+  Query.Firmware := PhysicalDrive.IdentifyDeviceResult.Firmware;
+  QueryResult := FirmwareGetter.CheckFirmware(Query);
+
   Dest.FBaseAddress := TempFolder;
-  Dest.FFileAddress := GetFirm.GetVersion.FirmFileName;
+  Dest.FFileAddress := QueryResult.FirmwarePath;
   Dest.FPostAddress := '_tmp';
   Dest.FType := dftPlain;
 
@@ -111,16 +112,14 @@ begin
     AlertCreate(fMain, AlrtFirmCanc[CurrLang]);
     exit;
   end;
-  FirmPath := TempFolder + GetFirm.GetVersion.FirmFileName;
+  FirmPath := TempFolder + QueryResult.FirmwarePath;
   RenameFile(FirmPath + '_tmp', FirmPath);
-
-  FreeAndNil(GetFirm);
 
   if (ExtractFileExt(FirmPath) = '.zip') or
      (ExtractFileExt(FirmPath) = '.7z') then
   begin
     TSevenZip.Extract(
-      AppPath + '7z\7z.exe',
+      TPathManager.AppPath + '7z\7z.exe',
       FirmPath,
       ExtractFilePath(FirmPath) + PhysicalDrive.IdentifyDeviceResult.Model
     );
@@ -142,23 +141,23 @@ begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
   end
   else
-    result.FirmExists := true;
+    result.IsFirmwareExists := true;
 
-  if result.FirmExists then
+  if result.IsFirmwareExists then
     if FileExists(
       TempFolder +
       PhysicalDrive.IdentifyDeviceResult.Model +
       '.iso') then
-        result.FirmPath := TempFolder +
+        result.FirmwarePath := TempFolder +
           PhysicalDrive.IdentifyDeviceResult.Model + '.iso'
     else if FileExists(
       TempFolder +
       PhysicalDrive.IdentifyDeviceResult.Model + '.exe') then
-        result.FirmPath :=
+        result.FirmwarePath :=
           TempFolder +
           PhysicalDrive.IdentifyDeviceResult.Model + '.exe'
     else
-      result.FirmPath :=
+      result.FirmwarePath :=
         FindFirmware(TempFolder +
           PhysicalDrive.IdentifyDeviceResult.Model);
 end;

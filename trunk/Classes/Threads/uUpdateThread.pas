@@ -2,10 +2,11 @@ unit uUpdateThread;
 
 interface
 
-uses Classes, SysUtils, Math, Dialogs, Windows,
-    IdBaseComponent, IdRawBase, IdRawClient, idHttp,
-    uDiskFunctions, IdIcmpClient, uLanguageSettings,
-    uVersion;
+uses
+  Classes, SysUtils, Math, Dialogs, Windows,
+  IdBaseComponent, IdRawBase, IdRawClient, idHttp,
+  uDiskFunctions, IdIcmpClient, uLanguageSettings,
+  uVersion, uGlobalSettings;
 
 type
   TUpdateThread = class(TThread)
@@ -26,7 +27,7 @@ var
 implementation
 
 uses
-  uMain, uSSDInfo;
+  uMain;
 
 
 destructor TUpdateThread.Destroy;

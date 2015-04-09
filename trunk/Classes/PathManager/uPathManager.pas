@@ -14,7 +14,7 @@ type
     class var FTempFolder: String;
 
   public
-    class procedure GetPath(Application: TApplication);
+    class procedure SetPath(Application: TApplication);
 
     class function AppPath: String;
     class function WinDir: String;
@@ -24,7 +24,7 @@ type
 
 implementation
 
-class procedure TPathManager.GetPath(Application: TApplication);
+class procedure TPathManager.SetPath(Application: TApplication);
 begin
   Randomize;
   FAppPath := ExtractFilePath(Application.ExeName);

@@ -9,8 +9,8 @@ type
   TRegistryRootKey = (
     ClassesRoot,
     CurrentUser,
-    LocalMachine
-    Users
+    LocalMachine,
+    Users,
     PerformanceData,
     CurrentConfig,
     DynData

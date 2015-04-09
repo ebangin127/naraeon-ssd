@@ -36,6 +36,7 @@ function GetDevideUnitSize(DivideUnitType: NumeralSystem): Integer;
 function ChangeDatasizeUnit
   (Size: Double; Setting: DatasizeUnitChangeSetting): Double;
 function LiteONUnitToMB(Size: UInt64): UInt64;
+function MBToLiteONUnit(Size: UInt64): UInt64;
 
 implementation
 
@@ -67,5 +68,12 @@ const
   LiteONUnitInMB = 64;
 begin
   result := Size * LiteONUnitInMB;
+end;
+
+function MBToLiteONUnit(Size: UInt64): UInt64;
+const
+  LiteONUnitInMB = 64;
+begin
+  result := Size div LiteONUnitInMB;
 end;
 end.
