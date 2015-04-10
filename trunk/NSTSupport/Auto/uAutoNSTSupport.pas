@@ -12,7 +12,6 @@ type
   TAutoNSTSupport = class sealed(TNSTSupport)
   private
     NSTSupport: TNSTSupport;
-    InterpretingSMARTValueList: TSMARTValueList;
     function TestNSTSupportCompatibilityAndReturnSupportStatus
       <T: TNSTSupport, constructor> (LastResult: TSupportStatus):
       TSupportStatus;

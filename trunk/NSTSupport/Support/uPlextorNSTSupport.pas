@@ -84,8 +84,9 @@ function TPlextorNSTSupport.IsM3WithOldUnit: Boolean;
 begin
   result :=
     IsM3AndNotM3P and
-    (IsM364WithOldUnit  or IsM3256WithOldUnit or
-     IsM3512WithOldUnit or IsM3512WithOldUnit);
+    (IsM364WithOldUnit  or IsM3128WithOldUnit or
+     IsM3256WithOldUnit or IsM3512WithOldUnit or
+     IsM3512WithOldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3PWithOldUnit: Boolean;

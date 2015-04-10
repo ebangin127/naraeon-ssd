@@ -30,6 +30,7 @@ begin
   for CurrentEntryNumber := 0 to (Self.Count - 1) do
     if Self[CurrentEntryNumber].ID = ID then
       exit(CurrentEntryNumber);
+  result := 0;
 end;
 
 function TSMARTValueList.GetRAWByID(ID: Byte): UInt64;
@@ -39,6 +40,7 @@ begin
   for CurrentEntryNumber := 0 to (Self.Count - 1) do
     if Self[CurrentEntryNumber].ID = ID then
       exit(Self[CurrentEntryNumber].RAW);
+  result := 0;
 end;
 
 end.

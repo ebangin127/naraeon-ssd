@@ -221,7 +221,7 @@ var
   ATABufferInterpreter: TATABufferInterpreter;
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  ATABufferInterpreter.BufferToSMARTValueList(IoInnerBuffer.Buffer);
+  result := ATABufferInterpreter.BufferToSMARTValueList(IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
 

@@ -7,8 +7,8 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs,
   Vcl.ExtCtrls, WinInet, Registry, IdHttp, SHFolder, ShellAPI, ShlObj,
   TlHelp32, WinSvc,
-  uDiskFunctions, uExeFunctions, uLogSystem, uSSDInfo, uLanguageSettings,
-  uRegFunctions, uSSDSupport, uGetFirm,
+  uDiskFunctions, uExeFunctions, uLogSystem, uLanguageSettings,
+  uRegFunctions, uNSTSupport, uDatasizeUnit,
   uPhysicalDrive, uPartitionListGetter;
 
 type
@@ -41,7 +41,7 @@ type
     procedure CheckDrives;
     procedure CreateLogger(CurrDrv: Integer);
     procedure DestroyLogger(CurrDrv: Integer);
-    procedure MainWorks(SSDInfo: TSSDInfo_NST);
+    procedure MainWorks;
     procedure DestroyDrives;
     procedure LoadDrives;
   public
@@ -144,10 +144,8 @@ end;
 
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
 var
-  SSDInfo: TSSDInfo_NST;
   DesktopPath: array[0..MAX_PATH] of char;
 begin
-  TGetFirm.CreateCache;
   RefreshDrives;
   OnceSMARTInvestigated := 0;
 
@@ -161,16 +159,12 @@ begin
   else
     CurrLang := LANG_ENGLISH;
 
-  SSDInfo := TSSDInfo_NST.Create;
   RefreshDrives;
   SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
   DeskPath := DesktopPath;
 
   while not Terminated do
-    MainWorks(SSDInfo);
-
-  FreeAndNil(SSDInfo);
-  TGetFirm.DestroyCache;
+    MainWorks;
 end;
 
 function GetLogLine(MsgTime: TDateTime; MsgContents: String): String;
@@ -178,11 +172,10 @@ begin
   result := FormatDateTime('[yy/mm/dd hh:nn:ss]', Now) + MsgContents;
 end;
 
-procedure TNaraeonSSDToolsDiag.MainWorks(SSDInfo: TSSDInfo_NST);
+procedure TNaraeonSSDToolsDiag.MainWorks;
 var
   CurrDrive, CurrPart: Integer;
   ReplacedSectors: UInt64;
-  PhysicalDrive: TPhysicalDrive;
   CurrDrvPartitions: TPartitionList;
   AllReadablePartition: String;
   SaveLog: TStringList;
@@ -191,6 +184,7 @@ var
   CurrLine: Integer;
   MessageCount: Integer;
   ErrFilePath: String;
+  PhysicalDrive: TPhysicalDrive;
 const
   MessageWaitingTime = 500;
   SecondsPerHour = 3600;
@@ -244,22 +238,21 @@ begin
   for CurrDrive := 0 to DriveCount - 1 do
   begin
     //HostWrite 贸府
-    SSDInfo.ATAorSCSI := MODEL_DETERMINE;
-    SSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrive]));
-    SSDInfo.CollectAllSmartData;
+    PhysicalDrive := TPhysicalDrive.Create(StrToInt(DriveList[CurrDrive]));
+    HostWrites := MBToLiteONUnit(
+      PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB);
 
-    HostWrites := SSDInfo.HostWriteInLiteONUnit;
-
-    if SSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
-      DriveWritInfoList[CurrDrive].ReadBothFiles(UIntToStr(HostWrites));
+    if PhysicalDrive.SupportStatus.TotalWriteType =
+      TTotalWriteType.WriteSupportedAsValue then
+        DriveWritInfoList[CurrDrive].ReadBothFiles(UIntToStr(HostWrites));
 
     //ReplacedSectors 贸府
-    ReplacedSectors := SSDInfo.ReplacedSectors;
+    ReplacedSectors := PhysicalDrive.SMARTInterpreted.ReplacedSectors;
     DriveSectInfoList[CurrDrive].ReadBothFiles(
       UIntToStr(ReplacedSectors));
 
     //ReplacedSectors 版绊巩
-    if (SSDInfo.RepSectorAlert = false) or
+    if (PhysicalDrive.SMARTInterpreted.SMARTAlert.ReplacedSector = false) or
        (DriveSectInfoList[CurrDrive].LastOneGig = ReplacedSectors) then
        Continue;
 
@@ -284,6 +277,7 @@ begin
 
     SaveLog.SaveToFile(ErrFilePath);
     FreeAndNil(SaveLog);
+    FreeAndNil(PhysicalDrive);
   end;
 end;
 
@@ -344,61 +338,56 @@ end;
 
 procedure TNaraeonSSDToolsDiag.CheckDrives;
 var
-  TempSSDInfo: TSSDInfo_NST;
+  PhysicalDrive: TPhysicalDrive;
   CurrDrv: Integer;
-  hdrive: Integer;
 begin
   NeedRefresh := false;
-  TempSSDInfo := TSSDInfo_NST.Create;
   for CurrDrv := 0 to DriveCount - 1 do
   begin
-    hdrive := CreateFile(PChar('\\.\PhysicalDrive' + DriveList[CurrDrv]),
-                                GENERIC_READ or GENERIC_WRITE,
-                                FILE_SHARE_READ or FILE_SHARE_WRITE,
-                                nil, OPEN_EXISTING, 0, 0);
-    TempSSDInfo.SetDeviceName(StrToInt(DriveList[CurrDrv]));
-    if (GetLastError <> 0) or
-       (TempSSDInfo.SupportedDevice = SUPPORT_NONE) then
+    try
+      PhysicalDrive := TPhysicalDrive.Create(StrToInt(DriveList[CurrDrv]));
+    except
       NeedRefresh := true;
-    CloseHandle(hDrive);
+      FreeAndNil(PhysicalDrive);
+    end;
   end;
-  FreeAndNil(TempSSDInfo);
 end;
 
 procedure TNaraeonSSDToolsDiag.CreateLogger(CurrDrv: Integer);
 var
-  TempSSDInfo: TSSDInfo_NST;
+  PhysicalDrive: TPhysicalDrive;
 begin
   if GetLastError <> 0 then
     exit;
 
   try
-    TempSSDInfo := TSSDInfo_NST.Create;
-    TempSSDInfo.ATAorSCSI := MODEL_DETERMINE;
-    TempSSDInfo.SetDeviceName(StrToInt(IntToStr(CurrDrv)));
+    PhysicalDrive := TPhysicalDrive.Create(CurrDrv);
 
-    if TempSSDInfo.SupportedDevice <> SUPPORT_NONE then
+    if PhysicalDrive.SupportStatus.Supported then
     begin
-      TempSSDInfo.CollectAllSmartData;
-      if TempSSDInfo.SSDSupport.SupportHostWrite = HSUPPORT_FULL then
+      if PhysicalDrive.SupportStatus.TotalWriteType <>
+        TTotalWriteType.WriteNotSupported then
       begin
         DriveWritInfoList[DriveCount] :=
-          TNSTLog.Create(AppPath, TempSSDInfo.Serial,
-            UIntToStr(TempSSDInfo.HostWriteInLiteONUnit),
-            false, TempSSDInfo.S10085);
+          TNSTLog.Create(AppPath, PhysicalDrive.IdentifyDeviceResult.Serial,
+            UIntToStr(
+              MBToLiteONUnit(
+                PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB)),
+            false);
       end
       else
         DriveWritInfoList[DriveCount] := nil;
 
       DriveSectInfoList[DriveCount] :=
-        TNSTLog.Create(AppPath, TempSSDInfo.Serial + 'RSLog',
-          UIntToStr(TempSSDInfo.ReplacedSectors), true, false);
+        TNSTLog.Create(AppPath, PhysicalDrive.IdentifyDeviceResult.Serial +
+          'RSLog', UIntToStr(PhysicalDrive.SMARTInterpreted.ReplacedSectors),
+          true);
 
       DriveList[DriveCount] := IntToStr(CurrDrv);
       DriveCount := DriveCount + 1;
     end;
   finally
-    FreeAndNil(TempSSDInfo);
+    FreeAndNil(PhysicalDrive);
   end;
 end;
 
