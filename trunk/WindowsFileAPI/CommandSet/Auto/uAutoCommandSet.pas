@@ -3,7 +3,7 @@ unit uAutoCommandSet;
 interface
 
 uses
-  Windows, SysUtils,
+  Windows, SysUtils, Dialogs,
   uIoControlFile, uOSFile, uCommandSet,
   uBufferInterpreter, uSMARTValueList,
   uATACommandSet, uSATCommandSet;
@@ -14,8 +14,8 @@ type
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
-
     function IsDataSetManagementSupported: Boolean; override;
+    destructor Destroy; override;
 
   private
     CommandSet: TCommandSet;
@@ -38,6 +38,7 @@ begin
   begin
     FreeAndNil(CommandSetToTry);
     result := LastResult;
+    exit;
   end;
 
   result := CommandSetToTry.IdentifyDevice;
@@ -51,21 +52,33 @@ begin
 end;
 
 function TAutoCommandSet.DefaultIdentifyDevice: TIdentifyDeviceResult;
+var
+  TestingCommandSet: TCommandSet;
 begin
-  result :=
-    TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TATACommandSet.Create(GetPathOfFileAccessing),
-       result);
-  result :=
-    TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TSATCommandSet.Create(GetPathOfFileAccessing),
-       result);
+  try
+    TestingCommandSet := TATACommandSet.Create(GetPathOfFileAccessing);
+    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+      (TestingCommandSet, result);
+
+    TestingCommandSet := TSATCommandSet.Create(GetPathOfFileAccessing);
+    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+      (TestingCommandSet, result);
+  except
+    FreeAndNil(TestingCommandSet);
+  end;
+end;
+
+destructor TAutoCommandSet.Destroy;
+begin
+  if CommandSet <> nil then
+    FreeAndNil(CommandSet);
+  inherited;
 end;
 
 function TAutoCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   if CommandSet = nil then
-    result := DefaultIdentifyDevice;
+    exit(DefaultIdentifyDevice);
   result := CommandSet.IdentifyDevice;
   result.IsDataSetManagementSupported :=
     CommandSet.IsDataSetManagementSupported;

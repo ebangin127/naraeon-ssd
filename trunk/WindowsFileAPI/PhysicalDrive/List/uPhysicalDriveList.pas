@@ -125,18 +125,22 @@ begin
 
     if (not IsOnlySupported) or
        (CurrEntry.SupportStatus.Supported) then
+    begin
       CurrList.Add(
         TPhysicalDrive.Create
           (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
+    end;
 
     if not IsDiffNeeded then
       Continue;
 
     if (CurrEntry.SupportStatus.Supported) and
        (CurrAvail = false) then
+    begin
       result.AddList.Add(
         TPhysicalDrive.Create
           (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
+    end;
   end;
 
   if not IsDiffNeeded then

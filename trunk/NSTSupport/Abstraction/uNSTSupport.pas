@@ -41,7 +41,11 @@ type
     property Model: String read FModel;
     property Firmware: String read FFirmware;
   public
-    constructor Create(Model, Firmware: String);
+    constructor Create; overload;
+    constructor Create(ModelToCheck, FirmwareToCheck: String); overload;
+
+    procedure SetModelAndFirmware(ModelToCheck, FirmwareToCheck: String);
+
     function GetSupportStatus: TSupportStatus; virtual; abstract;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
       TSMARTInterpreted; virtual; abstract;
@@ -51,10 +55,20 @@ implementation
 
 { TNSTSupport }
 
-constructor TNSTSupport.Create(Model, Firmware: String);
+constructor TNSTSupport.Create;
 begin
-  FModel := UpperCase(Model);
-  FFirmware := UpperCase(Firmware);
+end;
+
+constructor TNSTSupport.Create(ModelToCheck, FirmwareToCheck: String);
+begin
+  SetModelAndFirmware(ModelToCheck, FirmwareToCheck);
+end;
+
+procedure TNSTSupport.SetModelAndFirmware(ModelToCheck,
+  FirmwareToCheck: String);
+begin
+  FModel := UpperCase(ModelToCheck);
+  FFirmware := UpperCase(FirmwareToCheck);
 end;
 
 end.

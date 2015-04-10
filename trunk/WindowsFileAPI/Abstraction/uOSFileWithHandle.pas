@@ -34,7 +34,7 @@ type
     function GetDesiredAccessFromTCreateFileDesiredAccess
       (Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-      DesiredAccess: DWORD): THandle;
+      DesiredAccessInDWORD: DWORD): THandle;
     function IsPrivilegeValid(PrivilegeToTest: TCreateFileDesiredAccess):
       Boolean;
   end;
@@ -86,7 +86,7 @@ begin
 end;
 
 function TOSFileWithHandle.CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-  DesiredAccess: DWORD): THandle;
+  DesiredAccessInDWORD: DWORD): THandle;
 const
   OtherHandlesCanReadWrite = FILE_SHARE_WRITE or FILE_SHARE_READ;
   NoSecurityDescriptor = nil;
@@ -96,7 +96,7 @@ begin
   result :=
     Windows.CreateFile
       (FileToGetAccess,
-       DesiredAccess,
+       DesiredAccessInDWORD,
        OtherHandlesCanReadWrite,
        NoSecurityDescriptor,
        OPEN_EXISTING,

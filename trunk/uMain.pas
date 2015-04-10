@@ -720,7 +720,7 @@ begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
 
-  if RefreshTimer(PhysicalDrive, ShowSerial, firstiOptLeft) = false then
+  if RefreshTimer(ShowSerial, firstiOptLeft) = false then
     Application.Terminate;
 end;
 

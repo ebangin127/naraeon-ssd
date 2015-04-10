@@ -42,10 +42,10 @@ type
 
   private
     function DeviceIoControlSystemCall(
-      OSControlCode: Cardinal;
+      OSControlCode: Integer;
       IOBuffer: TIoControlIOBuffer): Cardinal;
     function TDeviceIoControlCodeToOSControlCode
-      (ControlCode: TIoControlCode): Cardinal;
+      (ControlCode: TIoControlCode): Integer;
   end;
 
   ENoDataReturnedFromIO = class(Exception);
@@ -57,7 +57,7 @@ implementation
 function TIoControlFile.IoControl(ControlCode: TIoControlCode;
   IOBuffer: TIoControlIOBuffer): Cardinal;
 var
-  OSControlCode: Cardinal;
+  OSControlCode: Integer;
 begin
   OSControlCode := TDeviceIoControlCodeToOSControlCode(ControlCode);
   result := DeviceIoControlSystemCall(OSControlCode, IOBuffer);
@@ -65,7 +65,7 @@ begin
 end;
 
 function TIoControlFile.DeviceIoControlSystemCall(
-  OSControlCode: Cardinal;
+  OSControlCode: Integer;
   IOBuffer: TIoControlIOBuffer): Cardinal;
 const
   NotOverlappedIO = nil;
@@ -78,7 +78,7 @@ begin
 end;
 
 function TIoControlFile.TDeviceIoControlCodeToOSControlCode
-  (ControlCode: TIoControlCode): Cardinal;
+  (ControlCode: TIoControlCode): Integer;
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
   IOCTL_ATA_PASS_THROUGH = 
@@ -88,7 +88,7 @@ const
   IOCTL_ATA_PASS_THROUGH_DIRECT = $4D030;
   IOCTL_SCSI_PASS_THROUGH      =  $0004D004;
   
-  OSControlCodeOfIoControlCode: Array[TIoControlCode] of Cardinal =
+  OSControlCodeOfIoControlCode: Array[TIoControlCode] of Integer =
     (IOCTL_ATA_PASS_THROUGH,
      IOCTL_ATA_PASS_THROUGH_DIRECT,
      IOCTL_SCSI_PASS_THROUGH,

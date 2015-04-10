@@ -10,8 +10,7 @@ uses
   uPhysicalDriveList, uBufferInterpreter, uFirmwareGetter,
   uPathManager, uPhysicalDrive, uPartitionListGetter;
 
-function RefreshTimer(PhysicalDrive: TPhysicalDrive;
-  ShowSerial: Boolean;
+function RefreshTimer(ShowSerial: Boolean;
   FirstiOptLeft: Integer): Boolean;
 procedure RefreshDrives(PhysicalDrive: TPhysicalDrive);
 
@@ -511,8 +510,7 @@ begin
     DelDevice(CurrEntry);
 end;
 
-function RefreshTimer(PhysicalDrive: TPhysicalDrive;
-                      ShowSerial: Boolean;
+function RefreshTimer(ShowSerial: Boolean;
                       FirstiOptLeft: Integer): Boolean;
 begin
   result := true;
@@ -525,11 +523,11 @@ begin
   FreeAndNil(fMain.PhysicalDrive);
   fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
 
-  ApplyBasicInfo(PhysicalDrive, ShowSerial);
-  ApplyHostWrite(PhysicalDrive);
-  ApplySectLog(PhysicalDrive);
-  ApplySMARTInfo(PhysicalDrive);
-  ApplyGeneralUISetting(PhysicalDrive);
+  ApplyBasicInfo(fMain.PhysicalDrive, ShowSerial);
+  ApplyHostWrite(fMain.PhysicalDrive);
+  ApplySectLog(fMain.PhysicalDrive);
+  ApplySMARTInfo(fMain.PhysicalDrive);
+  ApplyGeneralUISetting(fMain.PhysicalDrive);
 end;
 
 procedure RefreshDrives(PhysicalDrive: TPhysicalDrive);

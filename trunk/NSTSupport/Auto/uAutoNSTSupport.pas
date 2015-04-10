@@ -11,14 +11,16 @@ uses
 type
   TAutoNSTSupport = class sealed(TNSTSupport)
   private
+    NSTSupport: TNSTSupport;
     InterpretingSMARTValueList: TSMARTValueList;
     function TestNSTSupportCompatibilityAndReturnSupportStatus
-      <T: TNSTSupport> (LastResult: TSupportStatus): TSupportStatus;
+      <T: TNSTSupport, constructor> (LastResult: TSupportStatus):
+      TSupportStatus;
   public
-    NSTSupport: TNSTSupport;
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
       TSMARTInterpreted; override;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -33,7 +35,8 @@ begin
   if LastResult.Supported then
     exit(LastResult);
 
-  NSTSupportToTry := T(TNSTSupport(T).Create(Model, Firmware));
+  NSTSupportToTry := T.Create;
+  NSTSupportToTry.SetModelAndFirmware(Model, Firmware);
   result := NSTSupportToTry.GetSupportStatus;
 
   if result.Supported then
@@ -44,6 +47,10 @@ end;
 
 function TAutoNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  result.Supported := false;
+  if NSTSupport <> nil then
+    FreeAndNil(NSTSupport);
+
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TCrucialNSTSupport>(result);
@@ -64,9 +71,18 @@ begin
       <TToshibaNSTSupport>(result);
 end;
 
+destructor TAutoNSTSupport.Destroy;
+begin
+  if NSTSupport <> nil then
+    FreeAndNil(NSTSupport);
+  inherited;
+end;
+
 function TAutoNSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 begin
+  if NSTSupport = nil then
+    GetSupportStatus;
   result := NSTSupport.GetSMARTInterpreted(SMARTValueList);
 end;
 

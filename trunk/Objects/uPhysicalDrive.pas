@@ -15,9 +15,8 @@ type
     SupportStatusReadWrite: TSupportStatus;
     SMARTInterpretedReadWrite: TSMARTInterpreted;
     DriveAvailabilityGetter: TDriveAvailabilityGetter;
-    
     SMARTValueListReadWrite: TSMARTValueList;
-    AutoNSTSupportReadWrite: TAutoNSTSupport;
+
     AutoCommandSet: TAutoCommandSet;
     AutoNSTSupport: TAutoNSTSupport;
 
@@ -34,6 +33,7 @@ type
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
     function TryToGetIsDriveAvailable: Boolean;
+    procedure TryToCreateAndSetAutoNSTSupport;
 
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
@@ -52,6 +52,7 @@ type
     procedure ClearIdentifyDeviceResultCache;
     procedure ClearCache;
 
+    constructor Create(FileToGetAccess: String); reintroduce; overload;
     constructor Create(DriveNumber: Cardinal); reintroduce; overload;
     destructor Destroy; override;
 
@@ -61,19 +62,27 @@ implementation
 
 { TPhysicalDrive }
 
-constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
+constructor TPhysicalDrive.Create(FileToGetAccess: String);
 begin
-  inherited
-    Create(ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber));
-  AutoCommandSet := TAutoCommandSet.Create(GetPathOfFileAccessing);
+  inherited Create(FileToGetAccess);
+  AutoCommandSet := TAutoCommandSet.Create(FileToGetAccess);
+end;
+
+constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
+var
+  PathToAccess: String;
+begin
+  PathToAccess :=
+    ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber);
+  Create(PathToAccess);
 end;
 
 destructor TPhysicalDrive.Destroy;
 begin
   if AutoCommandSet <> nil then
     FreeAndNil(AutoCommandSet);
-  if AutoNSTSupportReadWrite <> nil then
-    FreeAndNil(AutoNSTSupportReadWrite);
+  if AutoNSTSupport <> nil then
+    FreeAndNil(AutoNSTSupport);
   if SMARTValueListReadWrite <> nil then
     FreeAndNil(SMARTValueListReadWrite);
   inherited;
@@ -129,7 +138,7 @@ end;
 function TPhysicalDrive.GetSupportStatusOrRequestAndReturn:
   TSupportStatus;
 begin
-  if SupportStatus.Supported = false then
+  if SupportStatusReadWrite.Supported = false then
     RequestSupportStatus;
   result := SupportStatusReadWrite;
 end;
@@ -137,15 +146,15 @@ end;
 function TPhysicalDrive.GetSMARTInterpretedOrRequestAndReturn:
   TSMARTInterpreted;
 begin
-  if SMARTInterpreted.UsedHour = 0 then
+  if SMARTInterpretedReadWrite.UsedHour = 0 then
     RequestSMARTInterpreted;
-  result := SMARTInterpreted;
+  result := SMARTInterpretedReadWrite;
 end;
 
 function TPhysicalDrive.GetSMARTValueListOrRequestAndReturn:
   TSMARTValueList;
 begin
-  if SMARTValueListReadWrite <> nil then
+  if SMARTValueListReadWrite = nil then
     RequestSMARTReadData;
   result := SMARTValueListReadWrite;
 end;
@@ -178,25 +187,35 @@ end;
   SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
 end;
 
-procedure TPhysicalDrive.RequestSupportStatus;
+procedure TPhysicalDrive.TryToCreateAndSetAutoNSTSupport;
 begin
-  if AutoNSTSupport = nil then
-    AutoNSTSupport := 
+  try
+    AutoNSTSupport :=
       TAutoNSTSupport.Create(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
-  SupportStatusReadWrite := AutoNSTSupport.GetSupportStatus;
+  except
+    FreeAndNil(AutoNSTSupport);
+  end;
+end;
+
+procedure TPhysicalDrive.RequestSupportStatus;
+begin
+  if AutoNSTSupport = nil then
+    TryToCreateAndSetAutoNSTSupport;
+  if AutoNSTSupport <> nil then
+    SupportStatusReadWrite := AutoNSTSupport.GetSupportStatus
+  else
+    SupportStatusReadWrite.Supported := false;
 end;
 
 procedure TPhysicalDrive.RequestSMARTInterpreted;
 begin
   if AutoNSTSupport = nil then
-    AutoNSTSupport := 
-      TAutoNSTSupport.Create(
-        IdentifyDeviceResult.Model,
-        IdentifyDeviceResult.Firmware);
-  SMARTInterpretedReadWrite := AutoNSTSupport.GetSMARTInterpreted(
-    GetSMARTValueListOrRequestAndReturn);
+    TryToCreateAndSetAutoNSTSupport;
+  if AutoNSTSupport <> nil then
+    SMARTInterpretedReadWrite := AutoNSTSupport.GetSMARTInterpreted(
+      GetSMARTValueListOrRequestAndReturn);
 end;
 
 end.

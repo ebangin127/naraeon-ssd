@@ -26,6 +26,7 @@ type
         LBAHiCycleHi: UCHAR;
         DeviceHead: UCHAR;
         Command: UCHAR;
+        Reserved: UCHAR;
       end;
       ATA_TASK_FILES = packed record
         PreviousTaskFile: ATA_SINGLE_TASK_FILE;
@@ -99,6 +100,7 @@ procedure TATACommandSet.SetInnerBufferAsFlagsAndTaskFile
   (Flags: ULONG; TaskFile: ATA_TASK_FILES);
 begin
   IoInnerBuffer := GetCommonBuffer;
+  IoInnerBuffer.Parameter.AtaFlags := Flags;
   IoInnerBuffer.Parameter.TaskFile := TaskFile;
   IoInnerBuffer.Parameter.DataBuffer := @IoInnerBuffer.Buffer;
 end;
@@ -136,7 +138,8 @@ var
   ATABufferInterpreter: TATABufferInterpreter;
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  ATABufferInterpreter.BufferToIdentifyDeviceResult(IoInnerBuffer.Buffer);
+  result :=
+    ATABufferInterpreter.BufferToIdentifyDeviceResult(IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
 
@@ -176,7 +179,7 @@ var
   ATABufferInterpreter: TATABufferInterpreter;
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  ATABufferInterpreter.BufferToSMARTValueList(IoInnerBuffer.Buffer);
+  result := ATABufferInterpreter.BufferToSMARTValueList(IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
 
