@@ -128,7 +128,6 @@
         <DCCReference Include="..\Modules\Etc\uIntFunctions.pas"/>
         <DCCReference Include="..\Modules\Etc\uStrFunctions.pas"/>
         <DCCReference Include="..\Classes\LogSystem\uLogSystem.pas"/>
-        <DCCReference Include="..\Classes\GetFirm\uGetFirm.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uDatasizeUnit.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
@@ -161,31 +160,6 @@
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uWMIPhysicalDriveListGetter.pas"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\default.txaPackage"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uSSDInfo\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uIntFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uDiskFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uRegFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uPartitionFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uStrFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uGetFirm\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uTimeUnit\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\NSTDiagSvc_Patch\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uMain\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uLanguageSettings\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uSSDSupport\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uDatasizeUnit\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uSMARTFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uSSDList\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uATALowOps\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uLogSystem\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uExeFunctions\default.txvpck"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uMain\default.txaPackage"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uAutoNSTSupport\default.txaPackage"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\NSTDiagSvc_Patch\default.txaPackage"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uSATCommandSet\default.txaPackage"/>
-        <None Include="ModelSupport_NSTDiagSvc_Patch\uPlextorNSTSupport\default.txaPackage"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -730,7 +704,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>
-            <ModelSupport>True</ModelSupport>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

@@ -12,7 +12,6 @@ uses
   uIntFunctions in '..\Modules\Etc\uIntFunctions.pas',
   uStrFunctions in '..\Modules\Etc\uStrFunctions.pas',
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
-  uGetFirm in '..\Classes\GetFirm\uGetFirm.pas',
   uDatasizeUnit in '..\Classes\MeasureUnit\uDatasizeUnit.pas',
   uTimeUnit in '..\Classes\MeasureUnit\uTimeUnit.pas',
   uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',

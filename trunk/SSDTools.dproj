@@ -223,112 +223,6 @@
         <DCCReference Include="Web\Getter\uHTTPSWeb.pas"/>
         <DCCReference Include="Objects\uFirmwareGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas"/>
-        <None Include="ModelSupport_SSDTools\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\SSDTools\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\SSDTools\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uAlert\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uAlert\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uATALowOps\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uATALowOps\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uDiskFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDiskFunctions\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uSSDInfo\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSSDInfo\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPartitionFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uTrimThread\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPartition\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSErrorToException\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uNTFSStruct\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFile\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uIoControlFile\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPartitionListGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uFixedDriveListGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFile\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uDiskGeometryGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDrive\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPhysicalDrive\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uAutoNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uAutoNSTSupport\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uUSBDrive\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uUSBDrive\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uTrimList\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uTrimList\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uTimeUnit\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uTimeUnit\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uAutoCommandSet\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uLocaleApplier\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uStrFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uIoControlFile\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uMain\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uCrucialNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSemiAuto\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uIntFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSeagateNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uOptimizer\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSevenZip\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uATABufferInterpreter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uRegFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSATCommandSet\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uToshibaNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPartitionListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uLanguageSettings\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uBruteForcePhysicalDriveListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uRefresh\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uNCQAvailabilityGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uErase\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uHTTPSWeb\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPartitionExtentGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSMARTValueList\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDiag\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uRufus\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uUAWebbrowser\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uLiteonNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPhysicalDriveListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uWMIPhysicalDriveListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPhysicalDriveList\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uBufferInterpreter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uRegistryHelper\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uUpdateThread\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uFirmware\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uBrowser\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDownloadPath\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uAutoPhysicalDriveListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uLogSystem\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPlugAndPlay\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uFirmwareGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPlextorNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPhysicalDrive\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uGlobalSettings\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSandiskNSTSupport\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uWeb\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uHTTPWeb\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uInit\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uCommandSet\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uVersion\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDiskGeometryGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uButtonGroup\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uInitializer\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uExeFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPathManager\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uFixedDriveListGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPartition\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uNTFSStruct\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uATACommandSet\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uFileFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDatasizeUnit\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uMessage\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uUAWebbrowser\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uHTTPSWeb\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uWeb\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uSMARTValueList\default.txaPackage"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -742,7 +636,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uStrFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uUAWebbrowser\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -760,7 +654,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uUAWebbrowser\default.txvpck" Configuration="Release" Class="ProjectFile">
+                <DeployFile LocalName="ModelSupport_SSDTools\uStrFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -1545,7 +1439,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>
-            <ModelSupport>True</ModelSupport>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
