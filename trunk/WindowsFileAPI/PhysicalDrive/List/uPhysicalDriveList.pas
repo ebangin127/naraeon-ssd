@@ -158,7 +158,7 @@ begin
       PrevList.IndexOf(CurrEntry) > -1;
 
     if (not CurrAvail) or
-       (CurrEntry.SupportStatus.Supported) then
+       (not CurrEntry.SupportStatus.Supported) then
       result.DelList.Add(
         TPhysicalDrive.Create
           (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));

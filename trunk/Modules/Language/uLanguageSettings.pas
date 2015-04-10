@@ -29,7 +29,7 @@ const
     CapAlign: Array[0..1] of String = ('파티션 배열 (중요) : ', 'Partition Align (Important) : ');
     CapStatus: Array[0..1] of String = ('상태 : ', 'Status : ');
     CapUnknown: Array[0..1] of String = ('알 수 없음', 'Unknown');
-    ConnState: Array[0..3] of String = ('SATA 1.5Gb/s (', 'SATA 3.0Gb/s (', 'SATA 6.0Gb/s (', 'USB');
+    CapConnSpeed: Array[0..3] of String = ('SATA 1.5Gb/s (', 'SATA 3.0Gb/s (', 'SATA 6.0Gb/s (', 'USB');
     CapSupportNCQ: Array[0..1] of String = ('AHCI 사용', 'AHCI Working');
     CapNonSupNCQ: Array[0..1] of String = ('AHCI 꺼짐', 'AHCI Off');
 

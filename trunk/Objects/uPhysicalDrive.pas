@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, uOSFile, uCommandSet,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
   uBufferInterpreter, uSMARTValueList, uAutoCommandSet, uAutoNSTSupport,
-  uNSTSupport;
+  uNSTSupport, uNCQAvailabilityGetter;
 
 type
   TPhysicalDrive = class(TOSFile)
@@ -16,6 +16,7 @@ type
     SMARTInterpretedReadWrite: TSMARTInterpreted;
     DriveAvailabilityGetter: TDriveAvailabilityGetter;
     SMARTValueListReadWrite: TSMARTValueList;
+    NCQAvailabilityReadWrite: TNCQAvailability;
 
     AutoCommandSet: TAutoCommandSet;
     AutoNSTSupport: TAutoNSTSupport;
@@ -24,11 +25,13 @@ type
     procedure RequestSMARTReadData;
     procedure RequestSMARTInterpreted;
     procedure RequestSupportStatus;
+    procedure RequestNCQAvailability;
 
     function GetIdentifyDeviceResultOrRequestAndReturn: TIdentifyDeviceResult;
     function GetSupportStatusOrRequestAndReturn: TSupportStatus;
     function GetSMARTInterpretedOrRequestAndReturn: TSMARTInterpreted;
     function GetSMARTValueListOrRequestAndReturn: TSMARTValueList;
+    function GetNCQAvailabilityOrRequestAndReturn: TNCQAvailability;
 
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
@@ -46,6 +49,8 @@ type
       read GetDiskSizeInByte;
     property IsDriveAvailable: Boolean
       read GetIsDriveAvailable;
+    property NCQAvailability: TNCQAvailability
+      read GetNCQAvailabilityOrRequestAndReturn;
       
     function GetPartitionList: TPartitionList;
     procedure ClearSMARTCache;
@@ -159,6 +164,23 @@ begin
   result := SMARTValueListReadWrite;
 end;
 
+function TPhysicalDrive.GetNCQAvailabilityOrRequestAndReturn: TNCQAvailability;
+begin
+  if NCQAvailabilityReadWrite = TNCQAvailability.Unknown then
+    RequestNCQAvailability;
+  result := NCQAvailabilityReadWrite;
+end;
+
+procedure TPhysicalDrive.RequestNCQAvailability;
+var
+  NCQAvailabilityGetter: TNCQAvailabilityGetter;
+begin
+  NCQAvailabilityGetter := TNCQAvailabilityGetter.Create
+    (GetPathOfFileAccessing);
+  NCQAvailabilityReadWrite := NCQAvailabilityGetter.GetNCQStatus;
+  FreeAndNil(NCQAvailabilityGetter);
+end;
+
 function TPhysicalDrive.GetIsDriveAvailable: Boolean;
 begin
   try
@@ -182,7 +204,7 @@ begin
   IdentifyDeviceResultReadWrite := AutoCommandSet.IdentifyDevice;
 end;
 
-procedure TPhysicalDrive.RequestSMARTReadData;
+procedure TPhysicalDrive.RequestSMARTReadData;
 begin
   SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
 end;

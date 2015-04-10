@@ -69,7 +69,7 @@ begin
   RAWEnd := RAWStart + RAWValueLength - 1;
 
   result := 0;
-  for CurrentRAW := RAWStart to RAWEnd do
+  for CurrentRAW := RAWEnd downto RAWStart do
   begin
     result := result shl 8;
     result :=

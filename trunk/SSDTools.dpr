@@ -78,7 +78,8 @@ uses
   uWeb in 'Web\Abstraction\uWeb.pas',
   uHTTPWeb in 'Web\Getter\uHTTPWeb.pas',
   uHTTPSWeb in 'Web\Getter\uHTTPSWeb.pas',
-  uFirmwareGetter in 'Objects\uFirmwareGetter.pas';
+  uFirmwareGetter in 'Objects\uFirmwareGetter.pas',
+  uNCQAvailabilityGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);

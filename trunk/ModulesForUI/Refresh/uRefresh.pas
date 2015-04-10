@@ -8,7 +8,7 @@ uses
   uDiskFunctions, uPartitionFunctions, uRegistryHelper,
   uDatasizeUnit, uStrFunctions, uLogSystem, uNSTSupport,
   uPhysicalDriveList, uBufferInterpreter, uFirmwareGetter,
-  uPathManager, uPhysicalDrive, uPartitionListGetter;
+  uPathManager, uPhysicalDrive, uPartitionListGetter, uNCQAvailabilityGetter;
 
 function RefreshTimer(ShowSerial: Boolean;
   FirstiOptLeft: Integer): Boolean;
@@ -51,6 +51,7 @@ var
   DenaryInteger: FormatSizeSetting;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
+  NCQAvailability: TNCQAvailability;
 begin
   with fMain do
   begin
@@ -80,7 +81,23 @@ begin
     else
     begin
       lConnState.Caption := lConnState.Caption +
-        ConnState[Integer(PhysicalDrive.IdentifyDeviceResult.SATASpeed) - 1];
+        CapConnSpeed[Integer(PhysicalDrive.IdentifyDeviceResult.SATASpeed) - 1];
+      NCQAvailability := PhysicalDrive.NCQAvailability;
+      case NCQAvailability of
+
+      TNCQAvailability.Unknown:
+        lConnState.Caption := lConnState.Caption +
+          CapUnknown[CurrLang];
+
+      TNCQAvailability.Disabled:
+        lConnState.Caption := lConnState.Caption +
+          CapNonSupNCQ[CurrLang];
+
+      TNCQAvailability.Enabled:
+        lConnState.Caption := lConnState.Caption +
+          CapSupportNCQ[CurrLang];
+
+      end;
       lConnState.Caption := lConnState.Caption + ')';
     end;
 
@@ -421,15 +438,14 @@ begin
   with fMain do
   begin
     NewLen := SSDLabel.Count;
-
-    SSDLabel.Add(TSSDLabel.Create(GSSDSel));
-
-    SSDLabel[NewLen].Parent := GSSDSel;
-    SSDLabel[NewLen].Font.Name := Font.Name;
-    SSDLabel[NewLen].Font.Size := 10;
+    SSDLabel.Add(TSSDLabel.Create(gSSDSel));
+    SSDLabel[NewLen].Parent := gSSDSel;
     SSDLabel[NewLen].DeviceInfo :=
       TPhysicalDrive.Create(
         StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
+
+    SSDLabel[NewLen].Font.Name := Font.Name;
+    SSDLabel[NewLen].Font.Size := 10;
     SSDLabel[NewLen].Cursor := crHandPoint;
     SSDLabel[NewLen].OnClick := SSDLabelClick;
     SSDLabel[NewLen].OnMouseEnter := SSDSelLblMouseEnter;
@@ -450,9 +466,6 @@ begin
     end;
 
     CurrDrvPartitions := SSDEntry.GetPartitionList;
-
-    SSDLabel[NewLen].Font.Style := [fsBold];
-    SSDLabel[NewLen].Font.Style := [];
 
     DenaryByteToMB.FNumeralSystem := Denary;
     DenaryByteToMB.FFromUnit := ByteUnit;

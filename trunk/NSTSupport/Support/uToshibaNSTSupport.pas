@@ -82,7 +82,7 @@ begin
   result.TrueHostWriteFalseNANDWrite := true;
 
   RAWValue :=
-    InterpretingSMARTValueList.IndexByID(IDOfHostWrite);
+    InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
 
   result.ValueInMiB := RAWValue * GiBToMiB;
 end;
@@ -94,17 +94,17 @@ const
 begin
   if IsTHNSNS then 
     result :=
-      InterpretingSMARTValueList.IndexByID(IDOfEraseErrorTHNSNS)
+      InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorTHNSNS)
   else
     result :=
-      InterpretingSMARTValueList.IndexByID(IDOfEraseErrorElse);
+      InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorElse);
 end;
 
 function TToshibaNSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 const
   IDOfReplacedSector = 5;
-  IDOfUsedHour = 1;
+  IDofUsedHour = 9;
   ReplacedSectorThreshold = 50;
   EraseErrorThreshold = 10;
 begin
@@ -112,13 +112,13 @@ begin
   result.TotalWrite := GetTotalWrite;
 
   result.UsedHour := 
-    InterpretingSMARTValueList.IndexByID(IDOfUsedHour);
+    InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.EraseError := GetEraseError;
   result.SMARTAlert.EraseError :=
     result.EraseError >= EraseErrorThreshold;
 
   result.ReplacedSectors :=
-    InterpretingSMARTValueList.IndexByID(IDOfReplacedSector);
+    InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);
   result.SMARTAlert.ReplacedSector :=
     result.ReplacedSectors >= ReplacedSectorThreshold;
 end;

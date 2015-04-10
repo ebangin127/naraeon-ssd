@@ -42,7 +42,7 @@ type
       end;
 
     function GetDiskGeometry: TDiskGeometryResult;
-    function SetIOBufferToGetGeometry(
+    function GetIOBufferToGetGeometry(
       OutputBufferPointer: Pointer): TIoControlIOBuffer;
     procedure GetDiskGeometryAndIfNotReturnedRaiseException(
       IOBuffer: TIoControlIOBuffer);
@@ -59,7 +59,7 @@ begin
   inherited Create(FileToGetAccess, GetMinimumPrivilege);
 end;
 
-function TDiskGeometryGetter.SetIOBufferToGetGeometry
+function TDiskGeometryGetter.GetIOBufferToGetGeometry
   (OutputBufferPointer: Pointer): TIoControlIOBuffer;
 const
   NullInputBuffer = nil;
@@ -107,7 +107,7 @@ var
   IOBuffer: TIoControlIOBuffer;
   OSGeometryResult: DISK_GEOMETRY_EX;
 begin
-  IOBuffer := SetIOBufferToGetGeometry(@OSGeometryResult);
+  IOBuffer := GetIOBufferToGetGeometry(@OSGeometryResult);
   GetDiskGeometryAndIfNotReturnedRaiseException(IOBuffer);
 
   result.DiskSizeInByte := OSGeometryResult.DiskSize;

@@ -137,7 +137,7 @@ begin
   result.TrueHostWriteFalseNANDWrite := false;
 
   RAWValue :=
-    InterpretingSMARTValueList.IndexByID(IDOfPlextorNANDWrite);
+    InterpretingSMARTValueList.GetRAWByID(IDOfPlextorNANDWrite);
 
   if IsM3SeriesWithOldUnit then
     result.ValueInMiB := RAWValue * OldPlextorUnit
@@ -150,7 +150,7 @@ function TPlextorNSTSupport.GetSMARTInterpreted(
 const
   IDOfEraseError = 182;
   IDOfReplacedSector = 5;
-  IDOfUsedHour = 1;
+  IDofUsedHour = 9;
   ReplacedSectorThreshold = 25;
   EraseErrorThreshold = 10;
 begin
@@ -158,14 +158,14 @@ begin
   result.TotalWrite := GetTotalWrite;
 
   result.UsedHour := 
-    InterpretingSMARTValueList.IndexByID(IDOfUsedHour);
+    InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.EraseError :=
-    InterpretingSMARTValueList.IndexByID(IDOfEraseError);
+    InterpretingSMARTValueList.GetRAWByID(IDOfEraseError);
   result.SMARTAlert.EraseError :=
     result.EraseError >= EraseErrorThreshold;
 
   result.ReplacedSectors :=
-    InterpretingSMARTValueList.IndexByID(IDOfReplacedSector);
+    InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);
   result.SMARTAlert.ReplacedSector :=
     result.ReplacedSectors >= ReplacedSectorThreshold;
 end;

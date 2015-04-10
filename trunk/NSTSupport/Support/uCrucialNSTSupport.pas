@@ -69,9 +69,7 @@ end;
 
 function TCrucialNSTSupport.GetTotalWrite: TTotalWrite;
 const
-  LBAtoKiB = 1/2;
-  KiBToMiB = 1/1024;
-  LBAtoMiB = LBAtoKiB * KiBToMiB;
+  LBAtoMiB: Double = 1/2 * 1/1024;
   IDOfHostWrite = 246;
 var
   RAWValue: UInt64;
@@ -79,7 +77,7 @@ begin
   result.TrueHostWriteFalseNANDWrite := true;
 
   RAWValue :=
-    InterpretingSMARTValueList.IndexByID(IDOfHostWrite);
+    InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
 
   result.ValueInMiB := Floor(RAWValue * LBAtoMiB);
 end;
@@ -89,7 +87,7 @@ function TCrucialNSTSupport.GetSMARTInterpreted(
 const
   IDOfEraseError = 172;
   IDOfReplacedSector = 5;
-  IDofUsedHour = 1;
+  IDofUsedHour = 9;
   ReplacedSectorThreshold = 50;
   EraseErrorThreshold = 10;
 begin
@@ -97,14 +95,14 @@ begin
   result.TotalWrite := GetTotalWrite;
 
   result.UsedHour := 
-    InterpretingSMARTValueList.IndexByID(IDOfUsedHour);
+    InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.EraseError :=
-    InterpretingSMARTValueList.IndexByID(IDOfEraseError);
+    InterpretingSMARTValueList.GetRAWByID(IDOfEraseError);
   result.SMARTAlert.EraseError :=
     result.EraseError >= EraseErrorThreshold;
 
   result.ReplacedSectors :=
-    InterpretingSMARTValueList.IndexByID(IDOfReplacedSector);
+    InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);
   result.SMARTAlert.ReplacedSector :=
     result.ReplacedSectors >= ReplacedSectorThreshold;
 end;
