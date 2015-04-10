@@ -625,7 +625,6 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-
   GetChildDrives(PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
     cTrimList.Items);
   for CheckedDrives := 0 to cTrimList.Count - 1 do

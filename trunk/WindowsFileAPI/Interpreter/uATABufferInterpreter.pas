@@ -174,6 +174,7 @@ begin
       BufferInterpreting[CurrentByte * 2 + 1]  shl
         ((((CurrentByte - UserSizeStart) * 2) + 1) * 8);
   end;
+  result := result div 2;
 end;
 
 function TATABufferInterpreter.GetLBASizeFromBuffer: Cardinal;

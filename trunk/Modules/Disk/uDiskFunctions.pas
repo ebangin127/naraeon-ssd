@@ -108,7 +108,7 @@ end;
 function GetVolumeLabel(AltName: String; DriveName: String): string;
 const
   VolumeLabelSetting: FormatSizeSetting =
-    (FNumeralSystem: Binary; FPrecision: 0);
+    (FNumeralSystem: Denary; FPrecision: 0);
 var
   NotUsed: DWORD;
   VolumeFlags: DWORD;
