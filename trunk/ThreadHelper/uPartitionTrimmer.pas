@@ -21,9 +21,9 @@ type
       TCurrentPoint = record
         PartitionStartLBA: UInt64;
         OffsetInCluster: LARGE_INTEGER;
-        ByteLength, BitLengthOfLastByte: Integer;
-        BitLengthOfCurrentByte: Integer;
-        CurrentByteInBuffer, CurrentBitInByte: Integer;
+        CardinalLength, BitLengthOfLastCardinal: Integer;
+        BitLengthOfCurrentCardinal: Integer;
+        CurrentCardinalInBuffer, CurrentBitInCardinal: Integer;
       end;
 
       TPendingTrimOperation = record
@@ -31,8 +31,12 @@ type
         StartLBA: UInt64;
         LengthInLBA: UInt64;
       end;
+
     const
-      BufferSizeInCluster = BitmapSizePerBuffer shl 3;
+      BitsPerByte = 8;
+      BitsPerCardinal = 32;
+      VolumeBitmapBufferSizeInBit = SizeOf(TBitmapBuffer) * BitsPerByte;
+      BufferSizeInCluster = BitmapSizePerBuffer * BitsPerCardinal;
 
   private
     TrimSynchronization: TTrimSynchronization;
@@ -50,14 +54,14 @@ type
     procedure InitializeTrim;
     procedure ProcessTrim;
     function IsMoreTrimNeeded: Boolean;
-    procedure TrimNextPartOfPartition; inline;
-    procedure TrimCurrentByte; inline;
-    procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean); inline;
+    procedure TrimNextPartOfPartition;
+    procedure TrimCurrentCardinal;
+    procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean);
     procedure SetNextPartPosition;
     function IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
-    procedure IfLastPartSetByteBitLength;
-    function GetBitLengthOfLastByte(BitmapSizeInBit: LARGE_INTEGER): Integer;
-    procedure InitializeBitByteLength;
+    procedure IfLastPartSetCardinalBitLength;
+    function GetBitLengthOfLastCardinal(BitmapSizeInBit: LARGE_INTEGER): Integer;
+    procedure InitializeBitCardinalLength;
     procedure InitializeStartLBA;
     procedure CalculateProgress;
     procedure SetBaseProgress;
@@ -66,7 +70,7 @@ type
     function GetCurrentPositionInLBA: UInt64;
     function IsTrimNeeded(IsCurrentClusterUnused: Boolean): Boolean;
     function FoundUsedSpaceOrLastPart(IsCurrentClusterUnused: Boolean): Boolean;
-    function IsLastPartOfByte: Boolean;
+    function IsLastPartOfBuffer: Boolean;
     function IsLBACountOverLimit: Boolean;
     procedure ProcessAndClearPendingTrim;
     procedure ClearPendingTrim;
@@ -82,11 +86,7 @@ type
     procedure InitializeModel;
     function GetMotherDrivePath: String;
     procedure SetVolumeBitmapBuffer(StartingLCN: LARGE_INTEGER);
-
-    const
-      BitsPerByte = 8;
-      VolumeBitmapBufferSizeInBit =
-        SizeOf(TBitmapBuffer) * BitsPerByte;
+    procedure IfLastCardinalInBufferSetBitLength;
 
   public
     destructor Destroy; override;
@@ -155,7 +155,7 @@ begin
   VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
   SetVolumeBitmapBuffer(CurrentPoint.OffsetInCluster);
   SetVolumeSizeInCluster;
-  InitializeBitByteLength;
+  InitializeBitCardinalLength;
 end;
 
 procedure TPartitionTrimmer.InitializeModel;
@@ -217,22 +217,22 @@ begin
   end;
 end;
 
-function TPartitionTrimmer.GetBitLengthOfLastByte
+function TPartitionTrimmer.GetBitLengthOfLastCardinal
   (BitmapSizeInBit: LARGE_INTEGER): Integer;
 begin
-  result := BitmapSizeInBit.QuadPart and (BitsPerByte - 1);
+  result := BitmapSizeInBit.QuadPart and (BitsPerCardinal - 1);
 end;
 
-procedure TPartitionTrimmer.IfLastPartSetByteBitLength;
+procedure TPartitionTrimmer.IfLastPartSetCardinalBitLength;
 begin
   if VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize.QuadPart <
      VolumeBitmapBufferSizeInBit then
   begin
-    CurrentPoint.ByteLength :=
+    CurrentPoint.CardinalLength :=
       ceil(VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize.QuadPart /
-        BitsPerByte);
-    CurrentPoint.BitLengthOfLastByte :=
-      GetBitLengthOfLastByte(
+        BitsPerCardinal);
+    CurrentPoint.BitLengthOfLastCardinal :=
+      GetBitLengthOfLastCardinal(
         VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize);
   end;
 end;
@@ -240,8 +240,8 @@ end;
 function TPartitionTrimmer.GetCurrentPositionInLBA: UInt64;
 begin
   result := VolumeBitmapBufferWithErrorCode.PositionSize.StartingLCN.QuadPart;
-  result := result + CurrentPoint.CurrentByteInBuffer shl 3;
-  result := result + CurrentPoint.CurrentBitInByte;
+  result := result + CurrentPoint.CurrentCardinalInBuffer shl 3;
+  result := result + CurrentPoint.CurrentBitInCardinal;
   result := result * TrimBasicsToInitialize.LBAPerCluster;
 end;
 
@@ -278,11 +278,12 @@ begin
   result := PendingTrimOperation.LengthInLBA > LimitLengthInLBA;
 end;
 
-function TPartitionTrimmer.IsLastPartOfByte: Boolean;
+function TPartitionTrimmer.IsLastPartOfBuffer: Boolean;
 begin
   result :=
-    (CurrentPoint.CurrentByteInBuffer = CurrentPoint.ByteLength) and
-    (CurrentPoint.CurrentBitInByte = CurrentPoint.BitLengthOfCurrentByte);
+    (CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength) and
+    (CurrentPoint.CurrentBitInCardinal =
+     CurrentPoint.BitLengthOfCurrentCardinal);
 end;
 
 function TPartitionTrimmer.FoundUsedSpaceOrLastPart(
@@ -291,7 +292,7 @@ begin
   result :=
     (not IsCurrentClusterUnused) or
     IsLBACountOverLimit or
-    IsLastPartOfByte;
+    IsLastPartOfBuffer;
 end;
 
 function TPartitionTrimmer.IsTrimNeeded(IsCurrentClusterUnused: Boolean):
@@ -319,12 +320,14 @@ const
   Threshold = 1000;
   Overflow = 0;
 var
-  CurrentTick: Int64;
+  CurrentTick: DWORD;
+  Difference: Int64;
 begin
   CurrentTick := GetTickCount;
-  CurrentTick := LastTick - CurrentTick;
-  if (CurrentTick < Overflow) or (CurrentTick > Threshold) then
+  Difference := Int64(LastTick) - Int64(CurrentTick);
+  if (Difference < Overflow) or (Difference > Threshold) then
   begin
+    LastTick := CurrentTick;
     CalculateProgress;
     TrimThreadToModel.ApplyProgressToUI(CurrentPartitionTrimProgress.Progress);
   end;
@@ -345,35 +348,43 @@ begin
     ProcessAndClearPendingTrim;
 end;
 
-procedure TPartitionTrimmer.TrimCurrentByte;
-var
-  CurrentByte: Integer;
-  CurrentBitInByte: Integer;
+procedure TPartitionTrimmer.IfLastCardinalInBufferSetBitLength;
 begin
-  if CurrentPoint.CurrentByteInBuffer = CurrentPoint.ByteLength then
-    CurrentPoint.BitLengthOfCurrentByte := CurrentPoint.BitLengthOfLastByte;
+  if CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength then
+    CurrentPoint.BitLengthOfCurrentCardinal :=
+      CurrentPoint.BitLengthOfLastCardinal;
+end;
 
-  CurrentByte :=
-    VolumeBitmapBufferWithErrorCode.Buffer[CurrentPoint.CurrentByteInBuffer];
-  for CurrentBitInByte := 0 to CurrentPoint.BitLengthOfCurrentByte - 1 do
+procedure TPartitionTrimmer.TrimCurrentCardinal;
+var
+  CurrentCardinal: Cardinal;
+  CurrentBitInCardinal: Integer;
+begin
+  IfLastCardinalInBufferSetBitLength;
+
+  CurrentCardinal :=
+    VolumeBitmapBufferWithErrorCode.Buffer[
+      CurrentPoint.CurrentCardinalInBuffer];
+  for CurrentBitInCardinal :=
+    0 to CurrentPoint.BitLengthOfCurrentCardinal - 1 do
   begin
-    CurrentPoint.CurrentBitInByte := CurrentBitInByte;
-    TrimCurrentBit((CurrentByte and 1) = 0);
-    CurrentByte := CurrentByte shr 1;
+    CurrentPoint.CurrentBitInCardinal := CurrentBitInCardinal;
+    TrimCurrentBit((CurrentCardinal and 1) = 0);
+    CurrentCardinal := CurrentCardinal shr 1;
   end;
 end;
 
 procedure TPartitionTrimmer.TrimNextPartOfPartition;
 var
-  CurrentByteInBuffer: Integer;
+  CurrentCardinalInBuffer: Integer;
 begin
-  IfLastPartSetByteBitLength;
+  IfLastPartSetCardinalBitLength;
 
-  CurrentPoint.BitLengthOfCurrentByte := BitsPerByte;
-  for CurrentByteInBuffer := 0 to CurrentPoint.ByteLength - 1 do
+  CurrentPoint.BitLengthOfCurrentCardinal := BitsPerCardinal;
+  for CurrentCardinalInBuffer := 0 to CurrentPoint.CardinalLength - 1 do
   begin
-    CurrentPoint.CurrentByteInBuffer := CurrentByteInBuffer;
-    TrimCurrentByte;
+    CurrentPoint.CurrentCardinalInBuffer := CurrentCardinalInBuffer;
+    TrimCurrentCardinal;
   end;
 
   if not IsMorePartLeftSetVolumeBitmapBuffer then
@@ -388,12 +399,12 @@ begin
     (VolumeBitmapBufferWithErrorCode.LastError = ERROR_SUCCESS);
 end;
 
-procedure TPartitionTrimmer.InitializeBitByteLength;
+procedure TPartitionTrimmer.InitializeBitCardinalLength;
 begin
-  CurrentPoint.ByteLength := SizeOf(VolumeBitmapBufferWithErrorCode.Buffer);
-  CurrentPoint.BitLengthOfLastByte := BitsPerByte;
+  CurrentPoint.CardinalLength := Length(VolumeBitmapBufferWithErrorCode.Buffer);
+  CurrentPoint.BitLengthOfLastCardinal := BitsPerCardinal;
 end;
-
+ 
 procedure TPartitionTrimmer.InitializeStartLBA;
 begin
   CurrentPoint.PartitionStartLBA :=

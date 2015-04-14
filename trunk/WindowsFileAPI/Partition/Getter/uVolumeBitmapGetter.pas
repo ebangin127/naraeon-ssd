@@ -7,10 +7,10 @@ uses
   uOSFileWithHandle, uIoControlFile;
 
 const
-  BitmapSizePerBuffer = 4096;
+  BitmapSizePerBuffer = 16384;
 
 type
-  TBitmapBuffer = Array[0..BitmapSizePerBuffer - 1] of Byte;
+  TBitmapBuffer = Array[0..BitmapSizePerBuffer - 1] of Cardinal;
 
   TBitmapPositionSize = record
     StartingLCN: LARGE_INTEGER;
@@ -66,14 +66,10 @@ end;
 function TVolumeBitmapGetter.GetVolumeBitmap(
   StartingLCN: LARGE_INTEGER): TVolumeBitmapBufferWithErrorCode;
 begin
-  result.LastError := ERROR_SUCCESS;
-  try
-    InnerInput.StartingLCN := StartingLCN;
-    IoControl(TIoControlCode.GetVolumeBitmap, GetIOBuffer(@result));
-  except
-    on E: EOSError do
-      result.LastError := E.ErrorCode;
-  end;
+  InnerInput.StartingLCN := StartingLCN;
+  result.LastError :=
+    ExceptionFreeIoControl(
+      TIoControlCode.GetVolumeBitmap, GetIOBuffer(@result));
 end;
 
 function TVolumeBitmapGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;

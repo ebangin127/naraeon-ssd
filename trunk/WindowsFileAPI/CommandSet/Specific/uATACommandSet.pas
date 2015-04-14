@@ -250,7 +250,8 @@ function TATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
   SetInnerBufferToDataSetManagement(StartLBA, LBACount);
   SetOSBufferByInnerBuffer;
-  result := IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+  result := ExceptionFreeIoControl
+    (TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
 end;
 
 end.

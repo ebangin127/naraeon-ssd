@@ -40,6 +40,9 @@ type
     function IoControl(
       ControlCode: TIoControlCode;
       IOBuffer: TIoControlIOBuffer): Cardinal;
+    function ExceptionFreeIoControl(
+      ControlCode: TIoControlCode;
+      IOBuffer: TIoControlIOBuffer): Cardinal;
 
   private
     function DeviceIoControlSystemCall(
@@ -54,6 +57,17 @@ type
 implementation
 
 { TDeviceFile }
+
+function TIoControlFile.ExceptionFreeIoControl(ControlCode: TIoControlCode;
+  IOBuffer: TIoControlIOBuffer): Cardinal;
+var
+  OSControlCode: Integer;
+begin
+  OSControlCode := TDeviceIoControlCodeToOSControlCode(ControlCode);
+  SetLastError(ERROR_SUCCESS);
+  DeviceIoControlSystemCall(OSControlCode, IOBuffer);
+  result := GetLastError;
+end;
 
 function TIoControlFile.IoControl(ControlCode: TIoControlCode;
   IOBuffer: TIoControlIOBuffer): Cardinal;
