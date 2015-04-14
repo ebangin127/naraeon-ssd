@@ -226,7 +226,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas"/>
-        <DCCReference Include="Classes\Threads\uTrimLowOps.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas"/>
         <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>

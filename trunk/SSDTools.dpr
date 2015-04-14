@@ -85,7 +85,6 @@ uses
   uTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas',
   uNTFSTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas',
   uFATTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas',
-  uTrimLowOps in 'Classes\Threads\uTrimLowOps.pas',
   uVolumeBitmapGetter in 'WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas',
   uAutoTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas',
   uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
