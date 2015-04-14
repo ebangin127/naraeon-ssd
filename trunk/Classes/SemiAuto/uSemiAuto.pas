@@ -64,16 +64,13 @@ class procedure TSemiAuto.ExecuteTrim(TrimList: TTrimList);
 var
   TrimThread: TTrimThread;
 begin
-  TTrimThread.IsSemiAuto := true;
-  TTrimThread.TrimStage := TRIMSTAGE_NONE;
   if TrimThread <> Nil then FreeAndNil(TrimThread);
-  TrimThread := TTrimThread.Create(true);
-  TrimThread.ApplyPartList(TrimList);
+  TrimThread := TTrimThread.Create(true, false);
+  TrimThread.SetPartitionList(TrimList);
   TrimThread.Priority := tpLower;
   TrimThread.Start;
-  while TTrimThread.TrimStage < TRIMSTAGE_END do Sleep(10);
+  while TTrimThread.TrimStage < TTrimStage.Finished do Sleep(10);
   Sleep(10);
-  FreeAndNil(TrimThread);
 end;
 
 end.

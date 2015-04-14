@@ -21,7 +21,7 @@ type
     procedure RequestPartitionLength;
 
   public
-    property PartitionLength: TLargeInteger 
+    property PartitionLengthInByte: TLargeInteger
       read GetPartitionLengthOrRequestAndReturn;
     
     function GetPartitionExtentList: TPartitionExtentList;

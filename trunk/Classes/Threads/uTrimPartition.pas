@@ -1,4 +1,4 @@
-unit uTrimThread;
+﻿unit uTrimPartition;
 
 interface
 

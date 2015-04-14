@@ -12,7 +12,9 @@ type
       (GetFunctionResult: Boolean; InternetConnectedState: DWORD): Boolean;
     function IsWebAccessConfigured(InternetConnectedState: DWORD): Boolean;
   public
-    function Get(PathToGet: String): TStringList; virtual; abstract;
+    function GetToStringList(PathToGet: String): TStringList; virtual; abstract;
+    function GetToStringStream(PathToGet: String): TStringStream;
+      virtual; abstract;
     function IsWebAccessible: Boolean;
   protected
     const
@@ -28,8 +30,8 @@ function TWeb.IsWebAccessConfigured
   (InternetConnectedState: DWORD): Boolean;
 begin
   result :=
-    (InternetConnectedState and INTERNET_CONNECTION_CONFIGURED) =
-    INTERNET_CONNECTION_CONFIGURED;
+    ((InternetConnectedState and INTERNET_CONNECTION_OFFLINE) = 0) and
+    (InternetConnectedState <> 0);
 end;
 
 function TWeb.IsWebAccessibleInConnectedState

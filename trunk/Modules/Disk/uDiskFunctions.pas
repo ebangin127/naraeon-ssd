@@ -24,57 +24,6 @@ type
   end;
   //---Trim Command--//
 
-  //---NCQ---//
-  STORAGE_QUERY_TYPE = (PropertyStandardQuery = 0, PropertyExistsQuery,
-                        PropertyMaskQuery, PropertyQueryMaxDefined);
-  TStorageQueryType = STORAGE_QUERY_TYPE;
-
-  STORAGE_PROPERTY_ID = (StorageDeviceProperty = 0, StorageAdapterProperty);
-  TStoragePropertyID = STORAGE_PROPERTY_ID;
-
-  STORAGE_PROPERTY_QUERY = packed record
-    PropertyId: DWORD;
-    QueryType: DWORD;
-    AdditionalParameters: array[0..3] of Byte;
-  end;
-
-  STORAGE_BUS_TYPE = (BusTypeUnknown = 0, BusTypeScsi, BusTypeAtapi,
-    BusTypeAta, BusType1394, BusTypeSsa, BusTypeFibre,
-    BusTypeUsb, BusTypeRAID, BusTypeiScsi, BusTypeSas,
-    BusTypeSata, BusTypeMaxReserved = $7F);
-
-  STORAGE_DEVICE_DESCRIPTOR = packed record
-    Version: DWORD;
-    Size: DWORD;
-    DeviceType: Byte;
-    DeviceTypeModifier: Byte;
-    RemovableMedia: Boolean;
-    CommandQueueing: Boolean;
-    VendorIdOffset: DWORD;
-    ProductIdOffset: DWORD;
-    ProductRevisionOffset: DWORD;
-    SerialNumberOffset: DWORD;
-    BusType: STORAGE_BUS_TYPE;
-    RawPropertiesLength: DWORD;
-    RawDeviceProperties: PChar;
-  end;
-
-  STORAGE_ADAPTOR_DESCRIPTOR = packed record
-    Version: DWORD;
-    Size: DWORD;
-    MaximumTransferLength: DWORD;
-    MaximumPhysicalPages: DWORD;
-    AlignmentMask: DWORD;
-    AdaptorUsesPio: Boolean;
-    AdaptorScansDown: Boolean;
-    CommandQueueing: Boolean;
-    AccelatedTransfer: Boolean;
-    BusType: STORAGE_BUS_TYPE;
-    BusMajorVersion: WORD;
-    BusMinorVersion: WORD;
-  end;
-  //---NCQ---//
-
 //�뷮, ���� �̸� �� ���� ���� ��������
 function GetVolumeLabel(AltName: String; DriveName: String): string;
 

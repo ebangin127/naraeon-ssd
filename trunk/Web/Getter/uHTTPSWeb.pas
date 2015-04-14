@@ -4,22 +4,20 @@ interface
 
 uses
   SysUtils, Classes, IdHttp, IdURI, IdSSLOpenSSL,
-  uWeb;
+  uHTTPWeb;
 
 type
-  THTTPSWeb = class(TWeb)
+  THTTPSWeb = class(THTTPWeb)
   private
     SSLIoHandler: TIdSSLIOHandlerSocketOpenSSL;
-    Connector: TIdHttp;
-    EncodedURI: String;
-    procedure SetEncodedURIByPath(PathToGet: String);
-    function GetFromEncodedURI: TStringList;
-    procedure SetRequestHeader;
     procedure SetSSLIoHandler;
   public
     constructor Create;
     destructor Destroy; override;
-    function Get(PathToGet: String): TStringList; override;
+    function GetToStringList(PathToGet: String): TStringList;
+      reintroduce; virtual;
+    function GetToStringStream(PathToGet: String): TStringStream;
+      reintroduce; virtual;
   end;
 
 implementation
@@ -28,32 +26,13 @@ implementation
 
 constructor THTTPSWeb.Create;
 begin
-  Connector := TIdHttp.Create(nil);
   SSLIoHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
 end;
 
 destructor THTTPSWeb.Destroy;
 begin
-  FreeAndNil(Connector);
   FreeAndNil(SSLIoHandler);
   inherited;
-end;
-
-procedure THTTPSWeb.SetEncodedURIByPath(PathToGet: String);
-begin
-  EncodedURI := TIdURI.URLEncode(PathToGet);
-end;
-
-function THTTPSWeb.GetFromEncodedURI: TStringList;
-begin
-  result := TStringList.Create;
-  result.Text := Connector.Get(EncodedURI);
-end;
-
-procedure THTTPSWeb.SetRequestHeader;
-begin
-  Connector.Request.UserAgent := UserAgent;
-  Connector.Request.CharSet := CharacterSet;
 end;
 
 procedure THTTPSWeb.SetSSLIoHandler;
@@ -61,13 +40,16 @@ begin
   Connector.IOHandler := SSLIoHandler;
 end;
 
-function THTTPSWeb.Get(PathToGet: String): TStringList;
+function THTTPSWeb.GetToStringList(PathToGet: String): TStringList;
 begin
   SetSSLIoHandler;
-  SetRequestHeader;
+  result := inherited GetToStringList(PathToGet);
+end;
 
-  SetEncodedURIByPath(PathToGet);
-  result := GetFromEncodedURI;
+function THTTPSWeb.GetToStringStream(PathToGet: String): TStringStream;
+begin
+  SetSSLIoHandler;
+  result := inherited GetToStringStream(PathToGet);
 end;
 
 end.

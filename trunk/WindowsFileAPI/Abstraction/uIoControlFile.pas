@@ -34,6 +34,7 @@ type
          GetVolumeDiskExtents,
          GetNTFSVolumeData,
          GetDriveGeometryEX,
+         QueryFileSystemName,
          Unknown);
 
     function IoControl(
@@ -98,6 +99,7 @@ const
      IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
      FSCTL_GET_NTFS_VOLUME_DATA,
      IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
+     FSCTL_QUERY_FILE_SYSTEM_RECOGNITION,
      0);
 begin
   if ControlCode = TIoControlCode.Unknown then

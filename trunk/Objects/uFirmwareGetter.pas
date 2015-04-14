@@ -88,6 +88,10 @@ function TFirmwareGetter.StringListToQueryResult(StringList: TStringList):
 var
   CurrentVersionInInteger: Integer;
 begin
+  ZeroMemory(@result, SizeOf(result));
+  if StringList.Count < 3 then
+    exit;
+
   if not TryStrToInt(StringList[0], CurrentVersionInInteger) then
   begin
     result.CurrentVersion := TFirmwareVersion.NotMine;
@@ -108,7 +112,7 @@ var
   ReturnedResultFromGet: TStringList;
 begin
   try
-    ReturnedResultFromGet := HTTPWeb.Get(BuildURIByQuery(Query));
+    ReturnedResultFromGet := HTTPWeb.GetToStringList(BuildURIByQuery(Query));
     result := StringListToQueryResult(ReturnedResultFromGet);
   finally
     FreeAndNil(ReturnedResultFromGet);
@@ -119,13 +123,9 @@ function TFirmwareGetter.CheckFirmwareByWebAndApplyToCache
   (Query: TFirmwareQuery): TFirmwareQueryResult;
 begin
   ZeroMemory(@result, SizeOf(result));
-  if not HTTPWeb.IsWebAccessible then
-    exit
-  else
-  begin
-    result := SendQueryToServerAndGetResult(Query);
+  result := SendQueryToServerAndGetResult(Query);
+  if result.LatestVersion <> '' then
     FirmwareCache.ApplyQueryResult(Query, result);
-  end;
 end;
 
 function TFirmwareGetter.CheckFirmware(Query: TFirmwareQuery):

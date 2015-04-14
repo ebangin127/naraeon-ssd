@@ -46,9 +46,15 @@ begin
 end;
 
 procedure TOSFile.IfOSErrorRaiseException;
+var
+  OSErrorException: EOSError;
 begin
   if not IsLastSystemCallSucceed then
-    raise EOSError.Create(GetOSErrorString(GetLastError));
+  begin
+    OSErrorException := EOSError.Create(GetOSErrorString(GetLastError));
+    OSErrorException.ErrorCode := GetLastError;
+    raise OSErrorException;
+  end;
 end;
 
 function TOSFile.GetPathOfFileAccessing: String;
