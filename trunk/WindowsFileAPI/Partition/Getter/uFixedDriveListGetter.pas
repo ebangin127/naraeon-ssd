@@ -109,7 +109,7 @@ var
   CurrentDrive: Cardinal;
 begin
   CurrentDrive := 0;
-  while CurrentDrive <= FixedDriveList.Count - 1 do
+  while CurrentDrive <= Cardinal(FixedDriveList.Count) - 1 do
     IfNotFixedDelete(CurrentDrive);
 end;
 
