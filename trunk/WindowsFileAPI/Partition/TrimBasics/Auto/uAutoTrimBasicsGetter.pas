@@ -10,6 +10,7 @@ uses
 type
   TAutoTrimBasicsGetter = class(TTrimBasicsGetter)
   public
+    destructor Destroy; override;
     function IsPartitionMyResponsibility: Boolean; override;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize; override;
 
@@ -36,9 +37,9 @@ begin
   IsResponsible := TrimBasicsGetterToCheck.IsPartitionMyResponsibility;
 
   if IsResponsible then
-    FreeAndNil(TrimBasicsGetterToCheck)
+    TrimBasicsGetter := TrimBasicsGetterToCheck
   else
-    TrimBasicsGetter := TrimBasicsGetterToCheck;
+    FreeAndNil(TrimBasicsGetterToCheck);
 end;
 
 procedure TAutoTrimBasicsGetter.RequestTrimBasicsGetter;
@@ -65,6 +66,12 @@ begin
   if TrimBasicsGetter = nil then
     RequestTrimBasicsGetter;
   result := TrimBasicsGetter <> nil;
+end;
+
+destructor TAutoTrimBasicsGetter.Destroy;
+begin
+  FreeAndNil(TrimBasicsGetter);
+  inherited;
 end;
 
 function TAutoTrimBasicsGetter.GetStartLBA: UInt64;

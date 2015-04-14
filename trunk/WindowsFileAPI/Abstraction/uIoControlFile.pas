@@ -61,6 +61,7 @@ var
   OSControlCode: Integer;
 begin
   OSControlCode := TDeviceIoControlCodeToOSControlCode(ControlCode);
+  SetLastError(ERROR_SUCCESS);
   result := DeviceIoControlSystemCall(OSControlCode, IOBuffer);
   IfOSErrorRaiseException;
 end;

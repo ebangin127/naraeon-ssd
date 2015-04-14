@@ -3,7 +3,7 @@ unit uVolumeBitmapGetter;
 interface
 
 uses
-  Windows,
+  SysUtils, Windows,
   uOSFileWithHandle, uIoControlFile;
 
 const
@@ -12,16 +12,22 @@ const
 type
   TBitmapBuffer = Array[0..BitmapSizePerBuffer - 1] of Byte;
 
-  TVolumeBitmapBuffer = record
+  TBitmapPositionSize = record
     StartingLCN: LARGE_INTEGER;
     BitmapSize: LARGE_INTEGER;
+  end;
+
+  TVolumeBitmapBufferWithErrorCode = record
+    PositionSize: TBitmapPositionSize;
     Buffer: TBitmapBuffer;
+    LastError: Cardinal;
   end;
 
   TVolumeBitmapGetter = class(TIoControlFile)
   public
     constructor Create(FileToGetAccess: String); override;
-    function GetVolumeBitmap(StartingLCN: LARGE_INTEGER): TVolumeBitmapBuffer;
+    function GetVolumeBitmap(StartingLCN: LARGE_INTEGER):
+      TVolumeBitmapBufferWithErrorCode;
 
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
@@ -53,14 +59,21 @@ begin
   result.InputBuffer.Size := SizeOf(InnerInput);
 
   result.OutputBuffer.Buffer := ResultBufferPointer;
-  result.OutputBuffer.Size := SizeOf(TVolumeBitmapBuffer);
+  result.OutputBuffer.Size := SizeOf(TBitmapPositionSize) +
+    SizeOf(TBitmapBuffer);
 end;
 
 function TVolumeBitmapGetter.GetVolumeBitmap(
-  StartingLCN: LARGE_INTEGER): TVolumeBitmapBuffer;
+  StartingLCN: LARGE_INTEGER): TVolumeBitmapBufferWithErrorCode;
 begin
-  InnerInput.StartingLCN := StartingLCN;
-  IoControl(TIoControlCode.GetVolumeBitmap, GetIOBuffer(@result));
+  result.LastError := ERROR_SUCCESS;
+  try
+    InnerInput.StartingLCN := StartingLCN;
+    IoControl(TIoControlCode.GetVolumeBitmap, GetIOBuffer(@result));
+  except
+    on E: EOSError do
+      result.LastError := E.ErrorCode;
+  end;
 end;
 
 function TVolumeBitmapGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;

@@ -31,24 +31,28 @@ type
         StartLBA: UInt64;
         LengthInLBA: UInt64;
       end;
+    const
+      BufferSizeInCluster = BitmapSizePerBuffer shl 3;
+
   private
     TrimSynchronization: TTrimSynchronization;
     AutoTrimBasicsGetter: TAutoTrimBasicsGetter;
     VolumeBitmapGetter: TVolumeBitmapGetter;
-    VolumeBitmapBuffer: TVolumeBitmapBuffer;
+    VolumeBitmapBufferWithErrorCode: TVolumeBitmapBufferWithErrorCode;
     CurrentPartitionTrimProgress: TCurrentPartitionTrimProgress;
     TrimBasicsToInitialize: TTrimBasicsToInitialize;
     PendingTrimOperation: TPendingTrimOperation;
     CurrentPoint: TCurrentPoint;
     AutoCommandSet: TAutoCommandSet;
     TrimThreadToModel: TTrimThreadToModel;
-    LastError: Integer;
+    VolumeSizeInCluster: LARGE_INTEGER;
     LastTick: Cardinal;
     procedure InitializeTrim;
     procedure ProcessTrim;
     function IsMoreTrimNeeded: Boolean;
-    procedure TrimNextPartOfPartition;
-    procedure SetVolumeBitmapAndSetLastError(StartingLCN: LARGE_INTEGER);
+    procedure TrimNextPartOfPartition; inline;
+    procedure TrimCurrentByte; inline;
+    procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean); inline;
     procedure SetNextPartPosition;
     function IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
     procedure IfLastPartSetByteBitLength;
@@ -57,8 +61,6 @@ type
     procedure InitializeStartLBA;
     procedure CalculateProgress;
     procedure SetBaseProgress;
-    procedure TrimCurrentByte;
-    procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean);
     procedure IncreaseOrSetTrimPosition;
     procedure SetThisPositionAsStart;
     function GetCurrentPositionInLBA: UInt64;
@@ -72,6 +74,14 @@ type
     procedure InitializeCommandSet;
     procedure FreeClassesForTrim;
     procedure IfNeedToRestApplyToUI;
+    procedure TryToTrimPartition(
+      TrimSynchronizationToApply: TTrimSynchronization);
+    procedure SetVolumeSizeInCluster;
+    procedure InitializeTrimBasicsGetter;
+    procedure InitializeVolumeBitmap;
+    procedure InitializeModel;
+    function GetMotherDrivePath: String;
+    procedure SetVolumeBitmapBuffer(StartingLCN: LARGE_INTEGER);
 
     const
       BitsPerByte = 8;
@@ -81,6 +91,7 @@ type
   public
     destructor Destroy; override;
     procedure TrimPartition(TrimSynchronizationToApply: TTrimSynchronization);
+    function GetPathOfFileAccessing: String; override;
   end;
 
 implementation
@@ -94,54 +105,74 @@ begin
   inherited;
 end;
 
-procedure TPartitionTrimmer.SetVolumeBitmapAndSetLastError
+procedure TPartitionTrimmer.SetVolumeBitmapBuffer
   (StartingLCN: LARGE_INTEGER);
 begin
-  LastError := ERROR_SUCCESS;
-  try
-    VolumeBitmapBuffer := VolumeBitmapGetter.GetVolumeBitmap(StartingLCN);
-  except
-    on E: EOSError do
-      LastError := E.ErrorCode;
-  end;
+  VolumeBitmapBufferWithErrorCode :=
+    VolumeBitmapGetter.GetVolumeBitmap(StartingLCN);
 end;
 
-procedure TPartitionTrimmer.InitializeCommandSet;
+function TPartitionTrimmer.GetMotherDrivePath: String;
 var
   PartitionExtentGetter: TPartitionExtentGetter;
   PartitionExtentList: TPartitionExtentList;
-  PhysicalDriveName: String;
 begin
   PartitionExtentGetter :=
     TPartitionExtentGetter.Create(GetPathOfFileAccessing);
   PartitionExtentList := PartitionExtentGetter.GetPartitionExtentList;
-  PhysicalDriveName :=
+  result :=
     ThisComputerPrefix +
     PhysicalDrivePrefix +
     IntToStr(PartitionExtentList[0].DriveNumber);
-  AutoCommandSet := TAutoCommandSet.Create(PhysicalDriveName);
-  FreeAndNil(PartitionExtentGetter);
   FreeAndNil(PartitionExtentList);
+  FreeAndNil(PartitionExtentGetter);
 end;
 
-procedure TPartitionTrimmer.InitializeTrim;
+procedure TPartitionTrimmer.InitializeCommandSet;
 begin
-  VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
-  TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
+  AutoCommandSet := TAutoCommandSet.Create(GetMotherDrivePath);
+  AutoCommandSet.IdentifyDevice;
+end;
+
+procedure TPartitionTrimmer.SetVolumeSizeInCluster;
+begin
+  VolumeSizeInCluster :=
+    VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize;
+end;
+
+procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
+begin
   AutoTrimBasicsGetter := TAutoTrimBasicsGetter.Create(GetPathOfFileAccessing);
   if not AutoTrimBasicsGetter.IsPartitionMyResponsibility then
     raise EUnknownPartition.Create
       ('Unknown Partiton: Use with known partition');
-
-  CurrentPoint.OffsetInCluster.QuadPart := 0;
   TrimBasicsToInitialize := AutoTrimBasicsGetter.GetTrimBasicsToInitialize;
-  SetVolumeBitmapAndSetLastError(CurrentPoint.OffsetInCluster);
-  InitializeBitByteLength;
   InitializeStartLBA;
-  InitializeCommandSet;
+end;
+
+procedure TPartitionTrimmer.InitializeVolumeBitmap;
+begin
+  VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
+  SetVolumeBitmapBuffer(CurrentPoint.OffsetInCluster);
+  SetVolumeSizeInCluster;
+  InitializeBitByteLength;
+end;
+
+procedure TPartitionTrimmer.InitializeModel;
+begin
   CalculateProgress;
+  TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
   TrimThreadToModel.ApplyNextDriveStartToUI(
     CurrentPartitionTrimProgress.Progress);
+end;
+
+procedure TPartitionTrimmer.InitializeTrim;
+begin
+  CurrentPoint.OffsetInCluster.QuadPart := 0;
+  InitializeTrimBasicsGetter;
+  InitializeVolumeBitmap;
+  InitializeCommandSet;
+  InitializeModel;
 end;
 
 procedure TPartitionTrimmer.SetBaseProgress;
@@ -156,7 +187,7 @@ begin
 
   CurrentPartitionTrimProgress.BaseProgress :=
     round(CurrentPartitionTrimProgress.ProgressPerPartition *
-      TrimSynchronization.Progress.CurrentPartition);
+      (TrimSynchronization.Progress.CurrentPartition - 1));
 end;
 
 procedure TPartitionTrimmer.CalculateProgress;
@@ -165,24 +196,24 @@ begin
   CurrentPartitionTrimProgress.Progress :=
     CurrentPartitionTrimProgress.BaseProgress +
     round(CurrentPartitionTrimProgress.ProgressPerPartition *
-      (VolumeBitmapBuffer.BitmapSize.QuadPart /
-       VolumeBitmapBuffer.StartingLCN.QuadPart));
+      (VolumeBitmapBufferWithErrorCode.PositionSize.StartingLCN.QuadPart /
+       VolumeSizeInCluster.QuadPart));
 end;
 
 procedure TPartitionTrimmer.SetNextPartPosition;
 begin
   CurrentPoint.OffsetInCluster.QuadPart :=
-    VolumeBitmapBuffer.StartingLCN.QuadPart +
-    (Length(VolumeBitmapBuffer.Buffer) shl 3);
+    VolumeBitmapBufferWithErrorCode.PositionSize.StartingLCN.QuadPart +
+    BufferSizeInCluster;
 end;
 
 function TPartitionTrimmer.IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
 begin
-  result := LastError = ERROR_MORE_DATA;
+  result := VolumeBitmapBufferWithErrorCode.LastError = ERROR_MORE_DATA;
   if result then
   begin
     SetNextPartPosition;
-    SetVolumeBitmapAndSetLastError(CurrentPoint.OffsetInCluster);
+    SetVolumeBitmapBuffer(CurrentPoint.OffsetInCluster);
   end;
 end;
 
@@ -194,21 +225,30 @@ end;
 
 procedure TPartitionTrimmer.IfLastPartSetByteBitLength;
 begin
-  if VolumeBitmapBuffer.BitmapSize.QuadPart < VolumeBitmapBufferSizeInBit then
+  if VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize.QuadPart <
+     VolumeBitmapBufferSizeInBit then
   begin
     CurrentPoint.ByteLength :=
-      ceil(VolumeBitmapBuffer.BitmapSize.QuadPart / BitsPerByte);
+      ceil(VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize.QuadPart /
+        BitsPerByte);
     CurrentPoint.BitLengthOfLastByte :=
-      GetBitLengthOfLastByte(VolumeBitmapBuffer.BitmapSize);
+      GetBitLengthOfLastByte(
+        VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize);
   end;
 end;
 
 function TPartitionTrimmer.GetCurrentPositionInLBA: UInt64;
 begin
-  result := VolumeBitmapBuffer.StartingLCN.QuadPart;
+  result := VolumeBitmapBufferWithErrorCode.PositionSize.StartingLCN.QuadPart;
   result := result + CurrentPoint.CurrentByteInBuffer shl 3;
   result := result + CurrentPoint.CurrentBitInByte;
   result := result * TrimBasicsToInitialize.LBAPerCluster;
+end;
+
+function TPartitionTrimmer.GetPathOfFileAccessing: String;
+begin
+  result := inherited GetPathOfFileAccessing;
+  result := ThisComputerPrefix + result;
 end;
 
 procedure TPartitionTrimmer.SetThisPositionAsStart;
@@ -313,7 +353,8 @@ begin
   if CurrentPoint.CurrentByteInBuffer = CurrentPoint.ByteLength then
     CurrentPoint.BitLengthOfCurrentByte := CurrentPoint.BitLengthOfLastByte;
 
-  CurrentByte := VolumeBitmapBuffer.Buffer[CurrentPoint.CurrentByteInBuffer];
+  CurrentByte :=
+    VolumeBitmapBufferWithErrorCode.Buffer[CurrentPoint.CurrentByteInBuffer];
   for CurrentBitInByte := 0 to CurrentPoint.BitLengthOfCurrentByte - 1 do
   begin
     CurrentPoint.CurrentBitInByte := CurrentBitInByte;
@@ -336,20 +377,20 @@ begin
   end;
 
   if not IsMorePartLeftSetVolumeBitmapBuffer then
-    LastError := ERROR_NO_MORE_ITEMS;
+    VolumeBitmapBufferWithErrorCode.LastError := ERROR_NO_MORE_ITEMS;
 end;
 
 function TPartitionTrimmer.IsMoreTrimNeeded: Boolean;
 begin
   result :=
-    (LastError = ERROR_MORE_DATA) or
-    (LastError = ERROR_INVALID_PARAMETER) or
-    (LastError = ERROR_SUCCESS);
+    (VolumeBitmapBufferWithErrorCode.LastError = ERROR_MORE_DATA) or
+    (VolumeBitmapBufferWithErrorCode.LastError = ERROR_INVALID_PARAMETER) or
+    (VolumeBitmapBufferWithErrorCode.LastError = ERROR_SUCCESS);
 end;
 
 procedure TPartitionTrimmer.InitializeBitByteLength;
 begin
-  CurrentPoint.ByteLength := SizeOf(VolumeBitmapBuffer.Buffer);
+  CurrentPoint.ByteLength := SizeOf(VolumeBitmapBufferWithErrorCode.Buffer);
   CurrentPoint.BitLengthOfLastByte := BitsPerByte;
 end;
 
@@ -378,13 +419,19 @@ begin
     FreeAndNil(TrimThreadToModel);
 end;
 
+procedure TPartitionTrimmer.TryToTrimPartition(
+  TrimSynchronizationToApply: TTrimSynchronization);
+begin
+  TrimSynchronization := TrimSynchronizationToApply;
+  InitializeTrim;
+  ProcessTrim;
+end;
+
 procedure TPartitionTrimmer.TrimPartition(
   TrimSynchronizationToApply: TTrimSynchronization);
 begin
   try
-    TrimSynchronization := TrimSynchronizationToApply;
-    InitializeTrim;
-    ProcessTrim;
+    TryToTrimPartition(TrimSynchronizationToApply);
   finally
     FreeClassesForTrim;
   end;

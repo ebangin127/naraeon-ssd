@@ -46,14 +46,14 @@ end;
 
 function TTrimList.ChangePointerToNextPartitionAndGet: TTrimListEntry;
 begin
-  CurrentPartitionReadWrite := CurrentPartitionReadWrite + 1;
   result.Status := TNextPartitionStatus.Success;
   result.PartitionPath := self[CurrentPartitionReadWrite];
+  CurrentPartitionReadWrite := CurrentPartitionReadWrite + 1;
 end;
 
 function TTrimList.GetNextPartitionInCriticalSection: TTrimListEntry;
 begin
-  if IsLastPartitionCompletedProperly then
+  if not IsLastPartitionCompletedProperly then
   begin
     result.Status := TNextPartitionStatus.CompleteLastPartitionFirst;
     exit;

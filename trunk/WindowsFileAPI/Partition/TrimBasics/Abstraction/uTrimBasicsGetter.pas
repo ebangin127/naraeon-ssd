@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFileWithHandle, uIoControlFile;
+  uOSFile, uIoControlFile, uOSFileWithHandle;
 
 type
   TTrimBasicsToInitialize = record
@@ -15,17 +15,7 @@ type
 
   TTrimBasicsGetter = class abstract(TIoControlFile)
   private
-    const
-      FileSystemLength = 9;
-
-    type
-      TFileSystemName = record
-        FileSystem: Array[0..FileSystemLength - 1] of Char;
-      end;
-
-  private
-    InnerBuffer: TFileSystemName;
-    function GetIOBuffer: TIoControlIOBuffer;
+    FileSystemNameInCharArray: Array[0..MAX_PATH - 1] of Char;
 
   protected
     function GetFileSystemName: String;
@@ -47,13 +37,18 @@ implementation
 
 { TTrimBasicsGetter }
 
-function TTrimBasicsGetter.GetIOBuffer: TIoControlIOBuffer;
+function TTrimBasicsGetter.GetFileSystemName: String;
+var
+  Useless: DWORD;
+  PathToGetFileSystemName: String;
 begin
-  result.InputBuffer.Buffer := nil;
-  result.InputBuffer.Size := 0;
-
-  result.OutputBuffer.Buffer := @InnerBuffer;
-  result.OutputBuffer.Size := SizeOf(InnerBuffer);
+  Useless := 0;
+  PathToGetFileSystemName :=
+    Copy(GetPathOfFileAccessing, Length(ThisComputerPrefix) + 1,
+      Length(GetPathOfFileAccessing) - Length(ThisComputerPrefix));
+  GetVolumeInformation(PChar(PathToGetFileSystemName), nil, 0, nil, Useless,
+    Useless, FileSystemNameInCharArray, SizeOf(FileSystemNameInCharArray));
+  result := PChar(@FileSystemNameInCharArray[0]);
 end;
 
 function TTrimBasicsGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
@@ -64,17 +59,6 @@ end;
 constructor TTrimBasicsGetter.Create(FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess, DesiredReadOnly);
-end;
-
-function TTrimBasicsGetter.GetFileSystemName: String;
-const
-  FromFirst = 1;
-begin
-  IoControl(TIoControlCode.QueryFileSystemName, GetIOBuffer);
-  result :=
-    Copy(PChar(@InnerBuffer.FileSystem[0]),
-      FromFirst,
-      Length(PChar(@InnerBuffer.FileSystem[0])));
 end;
 
 end.

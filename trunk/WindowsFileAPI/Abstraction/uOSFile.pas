@@ -14,8 +14,8 @@ type
   public
     constructor Create(FileToGetAccess: String); virtual;
 
-    function GetPathOfFileAccessing: String;
-    function GetPathOfFileAccessingWithoutPrefix: String;
+    function GetPathOfFileAccessing: String; virtual;
+    function GetPathOfFileAccessingWithoutPrefix: String; virtual;
 
   protected
     procedure IfOSErrorRaiseException;

@@ -46,7 +46,8 @@ begin
   VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
   FirstPointLCN.QuadPart := 0;
   result :=
-    VolumeBitmapGetter.GetVolumeBitmap(FirstPointLCN).BitmapSize.QuadPart;
+    VolumeBitmapGetter.GetVolumeBitmap(FirstPointLCN).PositionSize.
+    BitmapSize.QuadPart;
   FreeAndNil(VolumeBitmapGetter);
 end;
 

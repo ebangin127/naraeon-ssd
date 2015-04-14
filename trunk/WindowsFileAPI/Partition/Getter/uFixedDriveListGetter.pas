@@ -26,7 +26,7 @@ type
     function GoToNextCharIfInDriveOrFalse: Boolean;
     function IsThisCharNullChar: Boolean;
     function IsThisPointOverLimit: Boolean;
-    procedure IfNotFixedDelete(CurrentDrive: Cardinal);
+    procedure IfNotFixedDelete(var CurrentDrive: Cardinal);
     procedure LeaveOnlyFixedDrives;
     procedure TryToGetFixedDriveList;
   end;
@@ -96,17 +96,20 @@ begin
       AddNextDrive;
 end;
 
-procedure TFixedDriveListGetter.IfNotFixedDelete(CurrentDrive: Cardinal);
+procedure TFixedDriveListGetter.IfNotFixedDelete(var CurrentDrive: Cardinal);
 begin
   if GetDriveType(PChar(FixedDriveList[CurrentDrive])) <> DRIVE_FIXED then
-    FixedDriveList.Delete(CurrentDrive);
+    FixedDriveList.Delete(CurrentDrive)
+  else
+    CurrentDrive := CurrentDrive + 1;
 end;
 
 procedure TFixedDriveListGetter.LeaveOnlyFixedDrives;
 var
   CurrentDrive: Cardinal;
 begin
-  for CurrentDrive := 0 to (FixedDriveList.Count - 1) do
+  CurrentDrive := 0;
+  while CurrentDrive <= FixedDriveList.Count - 1 do
     IfNotFixedDelete(CurrentDrive);
 end;
 
