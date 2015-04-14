@@ -363,7 +363,6 @@ begin
     end;
   end;
 
-  if TrimThread <> Nil then FreeAndNil(TrimThread);
   TrimThread := TTrimThread.Create(true, true);
   TrimThread.SetPartitionList(PartToTrim);
   TrimThread.Priority := tpLower;

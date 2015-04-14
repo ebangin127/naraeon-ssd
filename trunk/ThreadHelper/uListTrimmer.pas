@@ -14,6 +14,7 @@ type
     IsUIInteractionNeededReadWrite: Boolean;
     ProgressReadWrite: Integer;
     TrimStageReadWrite: TTrimStage;
+    TrimThreadToModel: TTrimThreadToModel;
 
     PartitionsToTrim: TTrimList;
     ThreadToSynchronize: TThread;
@@ -26,6 +27,9 @@ type
     procedure TrimPartition(PartitionPathToTrim: String);
     procedure CheckEntryAndTrimPartition(PartitionToTrim: TTrimListEntry);
     function GetTrimSynchronization: TTrimSynchronization;
+    procedure IfNeedUICreateModelController;
+    procedure IfNeedUIFreeModelController;
+    procedure IfPartitionListExistsFreeAndNil;
 
   public
     property IsUIInteractionNeeded:
@@ -81,11 +85,18 @@ begin
       ('Null Argument: Call with proper partition list to trim');
 end;
 
+procedure TListTrimmer.IfPartitionListExistsFreeAndNil;
+begin
+  if PartitionsToTrim <> nil then
+    FreeAndNil(PartitionsToTrim);
+end;
+
 procedure TListTrimmer.TrimAppliedPartitionsWithUI(ThreadToSynchronize: TThread);
 begin
   try
     self.ThreadToSynchronize := ThreadToSynchronize;
     CheckIssueAndTrimAppliedPartitions;
+    IfPartitionListExistsFreeAndNil;
   except
     TrimStageReadWrite := TTrimStage.Error;
   end;
@@ -100,12 +111,29 @@ begin
   TrimStageReadWrite := TTrimStage.Finished;
 end;
 
+procedure TListTrimmer.IfNeedUICreateModelController;
+begin
+  if ThreadToSynchronize <> nil then
+    TrimThreadToModel := TTrimThreadToModel.Create(GetTrimSynchronization);
+end;
+
+procedure TListTrimmer.IfNeedUIFreeModelController;
+begin
+  if TrimThreadToModel <> nil then
+  begin
+    TrimThreadToModel.ApplyOriginalUI;
+    FreeAndNil(TrimThreadToModel);
+  end;
+end;
+
 procedure TListTrimmer.TrimAppliedPartitions;
 var
   CurrentPartition: Integer;
 begin
+  IfNeedUICreateModelController;
   for CurrentPartition := 0 to PartitionsToTrim.Count - 1 do
     CheckEntryAndTrimPartition(PartitionsToTrim.GetNextPartition);
+  IfNeedUIFreeModelController;
 end;
 
 constructor TListTrimmer.Create(IsUIInteractionNeeded: Boolean);

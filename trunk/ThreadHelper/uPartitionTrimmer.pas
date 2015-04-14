@@ -140,6 +140,8 @@ begin
   InitializeStartLBA;
   InitializeCommandSet;
   CalculateProgress;
+  TrimThreadToModel.ApplyNextDriveStartToUI(
+    CurrentPartitionTrimProgress.Progress);
 end;
 
 procedure TPartitionTrimmer.SetBaseProgress;
@@ -362,7 +364,6 @@ procedure TPartitionTrimmer.ProcessTrim;
 begin
   while IsMoreTrimNeeded do
     TrimNextPartOfPartition;
-  TrimThreadToModel.ApplyOriginalUI(CurrentPartitionTrimProgress.Progress);
 end;
 
 procedure TPartitionTrimmer.FreeClassesForTrim;
