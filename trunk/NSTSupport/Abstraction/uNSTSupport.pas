@@ -16,9 +16,19 @@ type
     TotalWriteType: TTotalWriteType;
   end;
 
-  TTotalWrite = record
+  TTotalWriteInCount = record
+    ValueInCount: UInt64
+  end;
+
+  TTotalWriteInValue = record
     TrueHostWriteFalseNANDWrite: Boolean;
     ValueInMiB: UInt64;
+  end;
+
+  TTotalWrite = record
+  case Integer of
+    0: (InCount: TTotalWriteInCount);
+    1: (InValue: TTotalWriteInValue);
   end;
 
   TReadEraseError = record

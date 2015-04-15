@@ -80,15 +80,15 @@ const
 var
   RAWValue: UInt64;
 begin
-  result.TrueHostWriteFalseNANDWrite := false;
+  result.InValue.TrueHostWriteFalseNANDWrite := false;
 
   RAWValue :=
     InterpretingSMARTValueList.GetRAWByID(IDOfLiteONNANDWrite);
 
   if IsS100WithNewUnit then
-    result.ValueInMiB := RAWValue * NewLiteONUnit
+    result.InValue.ValueInMiB := RAWValue * NewLiteONUnit
   else
-    result.ValueInMiB := RAWValue * OldLiteONUnit;
+    result.InValue.ValueInMiB := RAWValue * OldLiteONUnit;
 end;
 
 function TLiteonNSTSupport.GetSMARTInterpreted(

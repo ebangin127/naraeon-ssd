@@ -13,7 +13,7 @@ type
     FUnitName: String;
   end;
 
-  DatasizeUnitChangeSetting = record
+  TDatasizeUnitChangeSetting = record
     FNumeralSystem: NumeralSystem;
     FFromUnit: DatasizeUnit;
     FToUnit: DatasizeUnit;
@@ -32,15 +32,15 @@ const
   KiloUnit: DatasizeUnit = (FPowerOfKUnit: 0; FUnitName: 'KB');
   ByteUnit: DatasizeUnit = (FPowerOfKUnit: -1; FUnitName: 'B');
 
-function GetDevideUnitSize(DivideUnitType: NumeralSystem): Integer;
+function GetDivideUnitSize(DivideUnitType: NumeralSystem): Integer;
 function ChangeDatasizeUnit
-  (Size: Double; Setting: DatasizeUnitChangeSetting): Double;
+  (Size: Double; Setting: TDatasizeUnitChangeSetting): Double;
 function LiteONUnitToMB(Size: UInt64): UInt64;
 function MBToLiteONUnit(Size: UInt64): UInt64;
 
 implementation
 
-function GetDevideUnitSize(DivideUnitType: NumeralSystem): Integer;
+function GetDivideUnitSize(DivideUnitType: NumeralSystem): Integer;
 const
   DenaryKilo = 1000;
   BinaryKibi = 1024;
@@ -55,10 +55,10 @@ begin
 end;
 
 function ChangeDatasizeUnit
-  (Size: Double; Setting: DatasizeUnitChangeSetting): Double;
+  (Size: Double; Setting: TDatasizeUnitChangeSetting): Double;
 begin
   result := Size *
-    Power(GetDevideUnitSize(Setting.FNumeralSystem),
+    Power(GetDivideUnitSize(Setting.FNumeralSystem),
       Setting.FFromUnit.FPowerOfKUnit -
       Setting.FToUnit.FPowerOfKUnit);
 end;

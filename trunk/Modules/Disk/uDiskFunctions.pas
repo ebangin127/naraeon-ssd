@@ -43,7 +43,7 @@ implementation
 function GetSizeOfDiskInMB(DriveName: String): Double;
 var
   SizeOfDiskInByte: Int64;
-  ByteToMega: DatasizeUnitChangeSetting;
+  ByteToMega: TDatasizeUnitChangeSetting;
 begin
   SizeOfDiskInByte := DiskSize(Pos(DriveName[1], VolumeNames));
 

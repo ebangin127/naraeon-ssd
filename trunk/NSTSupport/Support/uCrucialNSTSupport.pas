@@ -74,12 +74,12 @@ const
 var
   RAWValue: UInt64;
 begin
-  result.TrueHostWriteFalseNANDWrite := true;
+  result.InValue.TrueHostWriteFalseNANDWrite := true;
 
   RAWValue :=
     InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
 
-  result.ValueInMiB := Floor(RAWValue * LBAtoMiB);
+  result.InValue.ValueInMiB := Floor(RAWValue * LBAtoMiB);
 end;
 
 function TCrucialNSTSupport.GetSMARTInterpreted(

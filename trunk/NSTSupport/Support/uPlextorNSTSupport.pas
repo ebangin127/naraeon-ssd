@@ -135,15 +135,15 @@ const
 var
   RAWValue: UInt64;
 begin
-  result.TrueHostWriteFalseNANDWrite := false;
+  result.InValue.TrueHostWriteFalseNANDWrite := false;
 
   RAWValue :=
     InterpretingSMARTValueList.GetRAWByID(IDOfPlextorNANDWrite);
 
   if IsM3SeriesWithOldUnit then
-    result.ValueInMiB := RAWValue * OldPlextorUnit
+    result.InValue.ValueInMiB := RAWValue * OldPlextorUnit
   else
-    result.ValueInMiB := RAWValue * NewPlextorUnit;
+    result.InValue.ValueInMiB := RAWValue * NewPlextorUnit;
 end;
 
 function TPlextorNSTSupport.GetSMARTInterpreted(
