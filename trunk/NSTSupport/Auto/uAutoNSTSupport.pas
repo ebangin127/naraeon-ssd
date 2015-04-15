@@ -6,7 +6,9 @@ uses
   SysUtils, Math,
   uNSTSupport, uSMARTValueList,
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
-  uSeagateNSTSupport, uToshibaNSTSupport;
+  uSeagateNSTSupport, uToshibaNSTSupport,
+  uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
+  uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport;
 
 type
   TAutoNSTSupport = class sealed(TNSTSupport)
@@ -68,6 +70,18 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TToshibaNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TToshibaSandforceNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <THynixSandforceNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TOCZSandforceNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TPatriotSandforceNSTSupport>(result);
 end;
 
 destructor TAutoNSTSupport.Destroy;

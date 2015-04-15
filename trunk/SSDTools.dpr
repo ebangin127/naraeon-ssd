@@ -89,7 +89,11 @@ uses
   uAutoTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas',
   uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
   uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas',
-  uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas';
+  uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas',
+  uToshibaSandforceNSTSupport in 'NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
+  uHynixSandforceNSTSupport in 'NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas',
+  uOCZSandforceNSTSupport in 'NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
+  uPatriotSandforceNSTSupport in 'NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);

@@ -13,7 +13,7 @@ type
     function GetTotalWrite: TTotalWrite;
 
   protected
-    function GetFullSupport: TSupportStatus;
+    function GetSemiSupport: TSupportStatus;
 
   public
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -24,7 +24,7 @@ implementation
 
 { TSandforceNSTSupport }
 
-function TSandforceNSTSupport.GetFullSupport: TSupportStatus;
+function TSandforceNSTSupport.GetSemiSupport: TSupportStatus;
 begin
   result.Supported := true;
   result.FirmwareUpdate := false;
