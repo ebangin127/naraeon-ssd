@@ -84,7 +84,7 @@ end;
 
 function TTrimThreadToModel.IsTrimInProgress: Boolean;
 begin
-  result := TrimSynchronization.Progress.CurrentPartition <
+  result := TrimSynchronization.Progress.CurrentPartition <=
     TrimSynchronization.Progress.PartitionCount;
 end;
 
@@ -92,8 +92,8 @@ procedure TTrimThreadToModel.SynchronizedApplyProgressToLabel;
 begin
   fMain.lProgress.Caption :=
     CapProg1[CurrLang] +
-    IntToStr(TrimSynchronization.Progress.CurrentPartition + 1) + '/' +
-    IntToStr(TrimSynchronization.Progress.PartitionCount) + ')';
+    IntToStr(TrimSynchronization.Progress.CurrentPartition) + ' / ' +
+    IntToStr(TrimSynchronization.Progress.PartitionCount);
 end;
 
 procedure TTrimThreadToModel.SynchronizedApplyOriginalUI;

@@ -336,8 +336,7 @@ begin
       PartCount := PartCount + 1;
 
   lDownload.Caption := CapTrimName[CurrLang];
-  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartCount) + ' '
-                        + CapProg2[CurrLang];
+  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartCount);
   bCancel.Visible := false;
   lSpeed.Visible := true;
 
