@@ -47,7 +47,7 @@ procedure ApplyBasicInfo(PhysicalDrive: TPhysicalDrive;
 var
   CurrNum: Integer;
   DenaryUserSizeInKB: Double;
-  KBtoMB: DatasizeUnitChangeSetting;
+  KBtoMB: TDatasizeUnitChangeSetting;
   DenaryInteger: FormatSizeSetting;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
@@ -139,9 +139,8 @@ var
   CurrWritLog: TNSTLog;
   AvgDays, CurrAvgDay: Integer;
   BinaryPointOne: FormatSizeSetting;
+  DatasizeUnitChangeSetting: TDatasizeUnitChangeSetting;
 begin
-  HostWriteInMiB := PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB;
-
   //통계 미지원 걸러냄
   if PhysicalDrive.SupportStatus.TotalWriteType =
     TTotalWriteType.WriteNotSupported then
@@ -162,8 +161,10 @@ begin
     //Case 1 : 호스트 쓰기 지원
     TTotalWriteType.WriteSupportedAsValue:
     begin
+      HostWriteInMiB :=
+        PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB;
       if PhysicalDrive.SMARTInterpreted.
-         TotalWrite.TrueHostWriteFalseNANDWrite then
+         TotalWrite.InValue.TrueHostWriteFalseNANDWrite then
           lHost.Caption := CapHostWrite[CurrLang]
       else
         lHost.Caption := CapNandWrite[CurrLang];
@@ -202,6 +203,29 @@ begin
       lTodayUsage.Caption := CapToday[CurrLang] +
         CurrWritLog.TodayUsage + 'GB';
       FreeAndNil(CurrWritLog);
+    end;
+
+    TTotalWriteType.WriteSupportedAsCount:
+    begin
+      DatasizeUnitChangeSetting.FNumeralSystem := Binary;
+      DatasizeUnitChangeSetting.FFromUnit := KiloUnit;
+      DatasizeUnitChangeSetting.FFromUnit := MegaUnit;
+      HostWriteInMiB :=
+        PhysicalDrive.SMARTInterpreted.TotalWrite.InCount.ValueInCount *
+        round(
+          ChangeDatasizeUnit(
+            PhysicalDrive.IdentifyDeviceResult.UserSizeInKB,
+            DatasizeUnitChangeSetting));
+      lHost.Caption := CapNandWrite[CurrLang] + UIntToStr(HostWriteInMiB);
+      lTodayUsage.Caption :=
+        CapWearLevel[CurrLang] +
+        UIntToStr(PhysicalDrive.SMARTInterpreted.
+          TotalWrite.InCount.ValueInCount);
+
+      l1Month.Visible := false;
+      lHost.Top := lHost.Top + 25;
+      lTodayUsage.Top := lTodayUsage.Top + 15;
+      lOntime.Top := lOntime.Top + 10;
     end;
 
     end;
@@ -436,7 +460,7 @@ var
 
   CurrPhysicalDrive: TPhysicalDrive;
   DenaryInteger: FormatSizeSetting;
-  DenaryByteToMB: DatasizeUnitChangeSetting;
+  DenaryByteToMB: TDatasizeUnitChangeSetting;
   DiskSizeInMB: Double;
 begin
   with fMain do
