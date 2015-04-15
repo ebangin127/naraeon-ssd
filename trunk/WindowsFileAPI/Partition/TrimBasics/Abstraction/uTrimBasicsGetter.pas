@@ -43,9 +43,7 @@ var
   PathToGetFileSystemName: String;
 begin
   Useless := 0;
-  PathToGetFileSystemName :=
-    Copy(GetPathOfFileAccessing, Length(ThisComputerPrefix) + 1,
-      Length(GetPathOfFileAccessing) - Length(ThisComputerPrefix));
+  PathToGetFileSystemName := GetPathOfFileAccessing + '\';
   GetVolumeInformation(PChar(PathToGetFileSystemName), nil, 0, nil, Useless,
     Useless, FileSystemNameInCharArray, SizeOf(FileSystemNameInCharArray));
   result := PChar(@FileSystemNameInCharArray[0]);

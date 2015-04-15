@@ -15,12 +15,11 @@ type
 
   private
     FixedDriveList: TFixedDriveList;
-    FixedDriveListInConcatString: String;
-    ConcatStringArray: Array of WideChar;
+    LogicalDriveString: Array of WideChar;
 
     CurrentCharPosition: Cardinal;
 
-    function GetLogicalDriveInConcatString: String;
+    procedure SetLogicalDriveInConcatString;
     procedure ConcatStringToTFixedDriveList;
     procedure AddNextDrive;
     function GoToNextCharIfInDriveOrFalse: Boolean;
@@ -33,27 +32,26 @@ type
 
 implementation
 
-function TFixedDriveListGetter.GetLogicalDriveInConcatString: String;
+procedure TFixedDriveListGetter.SetLogicalDriveInConcatString;
 var
   LengthOfLogicalDriveString: Cardinal;
 begin
-  SetLength(ConcatStringArray, 1);
+  SetLength(LogicalDriveString, 1);
   LengthOfLogicalDriveString :=
-    GetLogicalDriveStrings(0, @ConcatStringArray[0]);
-  SetLength(ConcatStringArray, LengthOfLogicalDriveString);
-  GetLogicalDriveStrings(LengthOfLogicalDriveString, @ConcatStringArray[0]);
-  exit(String(ConcatStringArray));
+    GetLogicalDriveStrings(0, @LogicalDriveString[0]);
+  SetLength(LogicalDriveString, LengthOfLogicalDriveString);
+  GetLogicalDriveStrings(LengthOfLogicalDriveString, @LogicalDriveString[0]);
 end;
 
 function TFixedDriveListGetter.IsThisPointOverLimit: Boolean;
 begin
   result :=
-    CurrentCharPosition = Cardinal(Length(FixedDriveListInConcatString));
+    CurrentCharPosition = Cardinal(Length(LogicalDriveString));
 end;
 
 function TFixedDriveListGetter.IsThisCharNullChar: Boolean;
 begin
-  result := FixedDriveListInConcatString[CurrentCharPosition] = #0;
+  result := LogicalDriveString[CurrentCharPosition] = #0;
 end;
 
 function TFixedDriveListGetter.GoToNextCharIfInDriveOrFalse: Boolean;
@@ -81,8 +79,7 @@ begin
     Nothing;
   if CurrentCharPosition <> StartingPoint then
     FixedDriveList.Add(
-      Copy(FixedDriveListInConcatString, StartingPoint,
-        CurrentCharPosition - StartingPoint));
+      PChar(@LogicalDriveString[StartingPoint]));
   Inc(CurrentCharPosition, 1);
 end;
 
@@ -90,9 +87,9 @@ procedure TFixedDriveListGetter.ConcatStringToTFixedDriveList;
 begin
   FixedDriveList := TFixedDriveList.Create;
 
-  CurrentCharPosition := 1;
+  CurrentCharPosition := 0;
   while CurrentCharPosition <
-    Cardinal(Length(FixedDriveListInConcatString)) do
+    Cardinal(Length(LogicalDriveString)) do
       AddNextDrive;
 end;
 
@@ -115,7 +112,7 @@ end;
 
 procedure TFixedDriveListGetter.TryToGetFixedDriveList;
 begin
-  FixedDriveListInConcatString := GetLogicalDriveInConcatString;
+  SetLogicalDriveInConcatString;
   ConcatStringToTFixedDriveList;
   LeaveOnlyFixedDrives;
 end;

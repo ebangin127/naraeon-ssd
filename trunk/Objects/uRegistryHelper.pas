@@ -25,7 +25,7 @@ type
       (Root: TRegistryRootKey; Path: String): Boolean;
   private
     const
-      TOSRegistryRootKey: Array[TRegistryRootKey] of Cardinal =
+      TOSRegistryRootKey: Array[TRegistryRootKey] of HKEY =
         (HKEY_CLASSES_ROOT,
          HKEY_CURRENT_USER,
          HKEY_LOCAL_MACHINE,
