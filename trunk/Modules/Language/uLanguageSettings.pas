@@ -179,6 +179,7 @@ const
 
     AlrtUpdateExit: Array[0..1] of String = ('본 프로그램의 판올림을 위해 프로그램을 종료합니다.', 'Closing program to do update.');
     AlrtVerCanc: Array[0..1] of String = ('판올림 다운로드가 취소되었습니다.', 'Update download has been canceled.');
+    AlrtWrongCodesign: Array[0..1] of String = ('판올림이 잘못된 코드사인을 포함하고 있습니다.' + Chr(13) + Chr(10) + '개발자에게 알려주세요.', 'Update download has wrong codesign.' + Chr(13) + Chr(10) + 'Please report it to developer.');
     AlrtVerTraff: Array[0..1] of String = ('트래픽이 초과되었으므로, 직접 다운받아주세요.' + Chr(13) + Chr(10) + '죄송합니다.',
                                             'The update server is over its quota. Try later.' + Chr(13) + Chr(10) + 'Sorry for inconvenience.');
     AlrtNewVer: Array[0..1] of String = ('새로운 판 발견' , 'Update available');

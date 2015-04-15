@@ -15,7 +15,7 @@ uses
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
-  uFirmwareGetter, uGlobalSettings;
+  uFirmwareGetter, uGlobalSettings, uCodesignVerifier;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -904,6 +904,7 @@ const
   CancelButton = 1;
 var
   Src, Dest: TDownloadFile;
+  CodesignVerifier: TCodesignVerifier;
 begin
   if Application.MessageBox(
     PChar(UpdateThread.UpdateNotice),
@@ -926,10 +927,21 @@ begin
   end;
 
   ButtonGroup.Close;
-  AlertCreate(Self, AlrtUpdateExit[CurrLang]);
-  ShellExecute(0, nil,
-    PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
-  Application.Terminate;
+
+  CodesignVerifier := TCodesignVerifier.Create;
+  if not CodesignVerifier.IsCodeSigned(TPathManager.AppPath + 'Setup.exe') then
+  begin
+    AlertCreate(Self, AlrtWrongCodesign[CurrLang]);
+    DeleteFile(TPathManager.AppPath + 'Setup.exe');
+  end
+  else
+  begin
+    AlertCreate(Self, AlrtUpdateExit[CurrLang]);
+    ShellExecute(0, nil,
+      PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
+    Application.Terminate;
+  end;
+  FreeAndNil(CodesignVerifier);
 end;
 
 procedure TfMain.bScheduleClick(Sender: TObject);

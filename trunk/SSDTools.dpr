@@ -96,92 +96,79 @@ uses
   uPatriotSandforceNSTSupport in 'NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
   uSamsungNSTSupport in 'NSTSupport\Support\uSamsungNSTSupport.pas',
   uMachXtremeSandforceNSTSupport in 'NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
-  uMachXtremeNSTSupport in 'NSTSupport\Support\uMachXtremeNSTSupport.pas';
-
-type
-  TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);
+  uMachXtremeNSTSupport in 'NSTSupport\Support\uMachXtremeNSTSupport.pas',
+  uCodesignVerifier in 'Objects\uCodesignVerifier.pas',
+  uNSToolsMutex in 'Objects\uNSToolsMutex.pas';
 
 {$R *.res}
 var
-  //캡션 생성 및 뮤텍스 찾기
-  Cap: String;
+  MainformCaption: String;
+  NSToolsMutex: TNSToolsMutex;
+  Parameter: TParameter;
 
-  //명령행 해석
-  ParamInUpper: String;
-  RunMode: TRunMode;
+const
+  NormallyOpenedMutex = 'NSToolsOpened';
 
-  //현재 프로세스 뮤텍스 관리
-  MutexAppear: LongInt;
+procedure SetForegroundOfExistingInstance;
+var
+  ExistingInstanceWindow: THandle;
+begin
+  ExistingInstanceWindow := FindWindow(PChar('TfMain'), PChar(MainformCaption));
+  if (ExistingInstanceWindow <> 0) and
+     (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  begin
+    ShowWindow(ExistingInstanceWindow, SW_RESTORE);
+    SetForegroundWindow(ExistingInstanceWindow);
+    CloseHandle(ExistingInstanceWindow);
+  end;
+end;
+
+procedure StartNSToolsInstance;
+begin
+  NSToolsMutex.CreateMutex;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfMain, fMain);
+  fMain.Caption := MainformCaption;
+  Application.Run;
+end;
+
+procedure InitializePath;
+begin
+  TPathManager.SetPath(Application);
+end;
+
+procedure SetLanguageSettings;
+begin
+  DetermineLanguage;
+  MainformCaption :=
+    'Naraeon SSD Tools ' +
+    CurrentVersion +
+    CapToSeeSerial[CurrLang];
+end;
+
+procedure IfAnotherInstanceExistsExitElseStartThisInstance;
+begin
+  if NSToolsMutex.OpenMutex then
+    SetForegroundOfExistingInstance
+  else
+    StartNSToolsInstance;
+end;
+
+procedure ReadParameterAndDoAsInstructed;
+begin
+  Parameter := TParameter.Create;
+  NSToolsMutex := TNSToolsMutex.Create(NormallyOpenedMutex);
+
+  if Parameter.ProcessParameterAndIfNormalReturnTrue(ParamStr(1)) then
+    IfAnotherInstanceExistsExitElseStartThisInstance;
+
+  FreeAndNil(NSToolsMutex);
+  FreeAndNil(Parameter);
+end;
 
 begin
   Application.Initialize;
-  Cap := 'Naraeon SSD Tools ' + CurrentVersion + CapToSeeSerial[CurrLang];
-
-  TPathManager.SetPath(Application);
-  DetermineLanguage;
-
-  ParamInUpper := UpperCase(ParamStr(1));
-
-  SimulationMode := ParamInUpper = '/SIMULMODE';
-  RunMode := RM_NORMAL;
-
-  if ParamInUpper = '/DIAG' then
-    RunMode := RM_DIAG
-  else if ParamInUpper = '/UNINSTALL' then
-    RunMode := RM_UNINSTALL
-  else if (not SimulationMode) and (ParamInUpper <> '') then
-    RunMode := RM_SEMIAUTO;
-
-  MutexAppear := 0;
-
-  case RunMode of
-  RM_NORMAL:
-  begin
-    SimulationMode := ParamInUpper = '/SIMULMODE';
-
-    MutexAppear := OpenMutex(MUTEX_ALL_ACCESS, False, 'NSToolsOpened');
-
-    if MutexAppear <> 0 then
-    begin
-      MutexAppear := FindWindow(PChar('TfMain'), PChar(Cap));
-      if (MutexAppear <> 0)
-      and (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
-      begin
-        ShowWindow(MutexAppear, SW_RESTORE);
-        SetForegroundWindow(MutexAppear);
-        CloseHandle(MutexAppear);
-      end;
-    end
-    else
-    begin
-      MutexAppear := CreateMutex(Nil, True, 'NSToolsOpened');
-      Application.MainFormOnTaskbar := True;
-      Application.CreateForm(TfMain, fMain);
-  fMain.Caption := Cap;
-      Application.Run;
-    end;
-  end;
-
-  RM_UNINSTALL:
-  begin
-    DeletePrevSvc;
-  end;
-
-  RM_DIAG:
-  begin
-    TDiag.Diagnosis;
-  end;
-
-  RM_SEMIAUTO:
-  begin
-    TSemiAuto.SemiAutoTrim(ParamStr(1), ParamStr(2));
-  end;
-
-  end;
-
-  if MutexAppear <> 0 then
-  begin
-    ReleaseMutex(MutexAppear);
-    CloseHandle(MutexAppear);
-  end;
+  InitializePath;
+  SetLanguageSettings;
+  ReadParameterAndDoAsInstructed;
 end.
