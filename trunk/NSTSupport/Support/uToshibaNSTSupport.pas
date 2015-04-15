@@ -10,7 +10,7 @@ type
   TToshibaNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
-    function GetEraseError: UInt64;
+    function GetEraseError: TReadEraseError;
     function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsModelHasToshibaString: Boolean;
@@ -87,16 +87,17 @@ begin
   result.ValueInMiB := RAWValue * GiBToMiB;
 end;
 
-function TToshibaNSTSupport.GetEraseError: UInt64; 
+function TToshibaNSTSupport.GetEraseError: TReadEraseError;
 const
   IDOfEraseErrorTHNSNS = 172;
   IDOfEraseErrorElse = 182;
 begin
+  result.TrueReadErrorFalseEraseError := false;
   if IsTHNSNS then 
-    result :=
+    result.Value :=
       InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorTHNSNS)
   else
-    result :=
+    result.Value :=
       InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorElse);
 end;
 
@@ -113,9 +114,9 @@ begin
 
   result.UsedHour := 
     InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
-  result.EraseError := GetEraseError;
-  result.SMARTAlert.EraseError :=
-    result.EraseError >= EraseErrorThreshold;
+  result.ReadEraseError := GetEraseError;
+  result.SMARTAlert.ReadEraseError :=
+    result.ReadEraseError.Value >= EraseErrorThreshold;
 
   result.ReplacedSectors :=
     InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);

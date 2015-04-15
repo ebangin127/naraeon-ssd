@@ -399,6 +399,8 @@ begin
   PhysicalDriveList := TPhysicalDriveList.Create;
   FirmwareGetter := TFirmwareGetter.Create;
 
+  iLogo.Proportional := true;
+
   CurrDrive := '';
   ShowSerial := false;
   ListEnter := 0;

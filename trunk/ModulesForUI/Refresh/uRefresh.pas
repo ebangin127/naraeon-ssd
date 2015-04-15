@@ -289,7 +289,7 @@ end;
 procedure ApplySMARTInfo(PhysicalDrive: TPhysicalDrive);
 var
   CurrDrvPartitions: TPartitionList;
-  EraseErrors: UInt64;
+  ReadEraseError: TReadEraseError;
   CurrPartition: Integer;
 begin
   with fMain do
@@ -299,12 +299,16 @@ begin
       UIntToStr(PhysicalDrive.SMARTInterpreted.UsedHour) +
       CapHour[CurrLang];
 
-    // 지우기 에러
-    EraseErrors := PhysicalDrive.SMARTInterpreted.EraseError;
-    lPError.Caption := CapWriteError[CurrLang] + UIntToStr(EraseErrors) +
+    // 읽기/지우기 에러
+    ReadEraseError := PhysicalDrive.SMARTInterpreted.ReadEraseError;
+    if ReadEraseError.TrueReadErrorFalseEraseError then
+      lPError.Caption := CapReadError[CurrLang]
+    else
+      lPError.Caption := CapWriteError[CurrLang];
+    lPError.Caption := lPError.Caption + UIntToStr(ReadEraseError.Value) +
       CapCount[CurrLang];
 
-    if PhysicalDrive.SMARTInterpreted.SMARTAlert.EraseError then
+    if PhysicalDrive.SMARTInterpreted.SMARTAlert.ReadEraseError then
     begin
       lPError.Font.Color := clRed;
       lNotsafe.Font.Color := clRed;

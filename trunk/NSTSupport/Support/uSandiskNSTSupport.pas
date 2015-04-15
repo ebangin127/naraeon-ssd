@@ -79,10 +79,11 @@ begin
 
   result.UsedHour := 
     InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
-  result.EraseError :=
+  result.ReadEraseError.TrueReadErrorFalseEraseError := false;
+  result.ReadEraseError.Value :=
     InterpretingSMARTValueList.GetRAWByID(IDOfEraseError);
-  result.SMARTAlert.EraseError :=
-    result.EraseError >= EraseErrorThreshold;
+  result.SMARTAlert.ReadEraseError :=
+    result.ReadEraseError.Value >= EraseErrorThreshold;
 
   result.ReplacedSectors :=
     InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);

@@ -21,15 +21,20 @@ type
     ValueInMiB: UInt64;
   end;
 
+  TReadEraseError = record
+    TrueReadErrorFalseEraseError: Boolean;
+    Value: UInt64;
+  end;
+
   TSMARTAlert = record
     ReplacedSector: Boolean;
-    EraseError: Boolean;
+    ReadEraseError: Boolean;
   end;
 
   TSMARTInterpreted = record
     UsedHour: UInt64;
     TotalWrite: TTotalWrite;
-    EraseError: UInt64;
+    ReadEraseError: TReadEraseError;
     ReplacedSectors: UInt64;
     SMARTAlert: TSMARTAlert;
   end;
