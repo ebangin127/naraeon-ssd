@@ -114,14 +114,14 @@ const
   ModelStart = 27;
   ModelEnd = 46;
 var
-  CurrentByte: Integer;
+  CurrentWord: Integer;
 begin
   result := '';
-  for CurrentByte := ModelStart to ModelEnd do
+  for CurrentWord := ModelStart to ModelEnd do
     result :=
       result +
-      Chr(BufferInterpreting[CurrentByte * 2 + 1]) +
-      Chr(BufferInterpreting[CurrentByte * 2]);
+      Chr(BufferInterpreting[CurrentWord * 2 + 1]) +
+      Chr(BufferInterpreting[CurrentWord * 2]);
   result := Trim(result);
 end;
 
@@ -130,14 +130,14 @@ const
   FirmwareStart = 23;
   FirmwareEnd = 26;
 var
-  CurrentByte: Integer;
+  CurrentWord: Integer;
 begin
   result := '';
-  for CurrentByte := FirmwareStart to FirmwareEnd do
+  for CurrentWord := FirmwareStart to FirmwareEnd do
     result :=
       result +
-      Chr(BufferInterpreting[CurrentByte * 2 + 1]) +
-      Chr(BufferInterpreting[CurrentByte * 2]);
+      Chr(BufferInterpreting[CurrentWord * 2 + 1]) +
+      Chr(BufferInterpreting[CurrentWord * 2]);
   result := Trim(result);
 end;
 
@@ -146,14 +146,14 @@ const
   SerialStart = 10;
   SerialEnd = 19;
 var
-  CurrentByte: Integer;
+  CurrentWord: Integer;
 begin
   result := '';
-  for CurrentByte := SerialStart to SerialEnd do
+  for CurrentWord := SerialStart to SerialEnd do
     result :=
       result +
-      Chr(BufferInterpreting[CurrentByte * 2 + 1]) +
-      Chr(BufferInterpreting[CurrentByte * 2]);
+      Chr(BufferInterpreting[CurrentWord * 2 + 1]) +
+      Chr(BufferInterpreting[CurrentWord * 2]);
   result := Trim(result);
 end;
 
@@ -162,17 +162,17 @@ const
   UserSizeStart = 100;
   UserSizeEnd = 103;
 var
-  CurrentByte: Integer;
+  CurrentWord: Integer;
 begin
   result := 0;
-  for CurrentByte := UserSizeStart to UserSizeEnd do
+  for CurrentWord := UserSizeStart to UserSizeEnd do
   begin
     result :=
       result +
-      BufferInterpreting[CurrentByte * 2] shl
-        (((CurrentByte - UserSizeStart) * 2) * 8) +
-      BufferInterpreting[CurrentByte * 2 + 1]  shl
-        ((((CurrentByte - UserSizeStart) * 2) + 1) * 8);
+      BufferInterpreting[CurrentWord * 2] shl
+        (((CurrentWord - UserSizeStart) * 2) * 8) +
+      BufferInterpreting[CurrentWord * 2 + 1]  shl
+        ((((CurrentWord - UserSizeStart) * 2) + 1) * 8);
   end;
   result := result div 2;
 end;
