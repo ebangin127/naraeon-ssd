@@ -232,6 +232,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas"/>
         <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>
         <DCCReference Include="ThreadToModel\uTrimThreadToModel.pas"/>
+        <DCCReference Include="NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

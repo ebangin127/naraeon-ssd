@@ -88,7 +88,8 @@ uses
   uVolumeBitmapGetter in 'WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas',
   uAutoTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas',
   uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
-  uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas';
+  uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas',
+  uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);
