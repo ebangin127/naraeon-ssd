@@ -98,7 +98,8 @@ uses
   uMachXtremeSandforceNSTSupport in 'NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
   uMachXtremeNSTSupport in 'NSTSupport\Support\uMachXtremeNSTSupport.pas',
   uCodesignVerifier in 'Objects\uCodesignVerifier.pas',
-  uNSToolsMutex in 'Objects\uNSToolsMutex.pas';
+  uNSToolsMutex in 'Objects\uNSToolsMutex.pas',
+  uServiceController in 'Objects\uServiceController.pas';
 
 {$R *.res}
 var

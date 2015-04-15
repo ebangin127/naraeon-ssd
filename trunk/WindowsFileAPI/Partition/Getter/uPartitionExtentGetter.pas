@@ -42,7 +42,7 @@ type
     function IsRAMDrive: Boolean;
     procedure IfRAMDriveRaiseException;
     function GetPartitionExtent: TPartitionExtentList;
-    procedure GetPartitionExtentAndIfNotReturnedRaiseException(
+    procedure GetPartitionExtentAndIfFailedRaiseException(
       IOBuffer: TIoControlIOBuffer);
     function SetIOBufferToGetPartitionExtent(
       OutputBufferPointer: Pointer): TIoControlIOBuffer;
@@ -113,7 +113,7 @@ begin
   result.OutputBuffer.Size := SizeOf(VOLUME_DISK_EXTENTS);
 end;
 
-procedure TPartitionExtentGetter.GetPartitionExtentAndIfNotReturnedRaiseException
+procedure TPartitionExtentGetter.GetPartitionExtentAndIfFailedRaiseException
   (IOBuffer: TIoControlIOBuffer);
 var
   ReturnedBytes: Cardinal;
@@ -140,12 +140,13 @@ var
   OSVolumeDiskExtents: VOLUME_DISK_EXTENTS;
 begin
   IOBuffer := SetIOBufferToGetPartitionExtent(@OSVolumeDiskExtents);
-  GetPartitionExtentAndIfNotReturnedRaiseException(IOBuffer);
+  GetPartitionExtentAndIfFailedRaiseException(IOBuffer);
   ExtentsToTPartitionExtentList(OSVolumeDiskExtents);
   exit(PartitionExtentList);
 end;
 
-function TPartitionExtentGetter.TryToGetPartitionExtentList: TPartitionExtentList;
+function TPartitionExtentGetter.TryToGetPartitionExtentList:
+  TPartitionExtentList;
 begin
   SetVolumeNameBuffer;
   IfRAMDriveRaiseException;
