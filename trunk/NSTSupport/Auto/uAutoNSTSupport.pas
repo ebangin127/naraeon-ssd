@@ -6,7 +6,7 @@ uses
   SysUtils, Math,
   uNSTSupport, uSMARTValueList,
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
-  uSeagateNSTSupport, uToshibaNSTSupport,
+  uSeagateNSTSupport, uToshibaNSTSupport, uSamsungNSTSupport,
   uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
   uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport;
 
@@ -70,6 +70,9 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TToshibaNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TSamsungNSTSupport>(result);
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TToshibaSandforceNSTSupport>(result);

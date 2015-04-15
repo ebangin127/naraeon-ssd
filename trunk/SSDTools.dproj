@@ -237,6 +237,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uSamsungNSTSupport.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
