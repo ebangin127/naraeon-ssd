@@ -94,7 +94,9 @@ uses
   uHynixSandforceNSTSupport in 'NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas',
   uOCZSandforceNSTSupport in 'NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
   uPatriotSandforceNSTSupport in 'NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
-  uSamsungNSTSupport in 'NSTSupport\Support\uSamsungNSTSupport.pas';
+  uSamsungNSTSupport in 'NSTSupport\Support\uSamsungNSTSupport.pas',
+  uMachXtremeSandforceNSTSupport in 'NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
+  uMachXtremeNSTSupport in 'NSTSupport\Support\uMachXtremeNSTSupport.pas';
 
 type
   TRunMode = (RM_NORMAL, RM_DIAG, RM_UNINSTALL, RM_SEMIAUTO);

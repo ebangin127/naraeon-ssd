@@ -10,7 +10,7 @@ type
   TSamsungNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
-    function GetFullSupport: TSupportStatus;
+    function GetSemiSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSamsung: Boolean;
 
@@ -31,10 +31,10 @@ begin
     (Pos('SSD', UpperCase(Model)) > 0);
 end;
 
-function TSamsungNSTSupport.GetFullSupport: TSupportStatus;
+function TSamsungNSTSupport.GetSemiSupport: TSupportStatus;
 begin
   result.Supported := true;
-  result.FirmwareUpdate := true;
+  result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
@@ -42,7 +42,7 @@ function TSamsungNSTSupport.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
   if IsProductOfSamsung then
-    result := GetFullSupport;
+    result := GetSemiSupport;
 end;
 
 function TSamsungNSTSupport.GetTotalWrite: TTotalWrite;

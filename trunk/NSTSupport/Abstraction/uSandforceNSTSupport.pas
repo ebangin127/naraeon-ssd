@@ -58,8 +58,9 @@ begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;
 
+  //Sandforce uses only 4 bytes for UsedHour RAW
   result.UsedHour :=
-    InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
+    InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour) and $FFFFFFFF;
   result.ReadEraseError.TrueReadErrorFalseEraseError := false;
   result.ReadEraseError.Value :=
     InterpretingSMARTValueList.GetRAWByID(IDOfEraseError);

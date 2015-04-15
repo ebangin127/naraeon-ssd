@@ -81,7 +81,8 @@ begin
     else
     begin
       lConnState.Caption := lConnState.Caption +
-        CapConnSpeed[Integer(PhysicalDrive.IdentifyDeviceResult.SATASpeed) - 1];
+        CapConnSpeed[Integer(PhysicalDrive.IdentifyDeviceResult.SATASpeed) - 2];
+
       NCQAvailability := PhysicalDrive.NCQAvailability;
       case NCQAvailability of
 

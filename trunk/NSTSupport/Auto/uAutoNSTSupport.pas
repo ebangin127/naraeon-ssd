@@ -5,10 +5,14 @@ interface
 uses
   SysUtils, Math,
   uNSTSupport, uSMARTValueList,
+  //General//
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
   uSeagateNSTSupport, uToshibaNSTSupport, uSamsungNSTSupport,
+  uMachXtremeNSTSupport,
+  //Sandforce//
   uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
-  uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport;
+  uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport,
+  uMachXtremeSandforceNSTSupport;
 
 type
   TAutoNSTSupport = class sealed(TNSTSupport)
@@ -75,6 +79,9 @@ begin
       <TSamsungNSTSupport>(result);
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TMachXtremeNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
       <TToshibaSandforceNSTSupport>(result);
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
@@ -85,6 +92,9 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TPatriotSandforceNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TMachXtremeSandforceNSTSupport>(result);
 end;
 
 destructor TAutoNSTSupport.Destroy;
