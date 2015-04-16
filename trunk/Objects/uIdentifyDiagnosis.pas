@@ -1,4 +1,4 @@
-unit uDiag;
+unit uIdentifyDiagnosis;
 
 interface
 
@@ -8,41 +8,41 @@ uses
   uGlobalSettings;
 
 type
-  TDiag = class
+  TIdentifyDiagnosis = class
   public
-    class procedure Diagnosis;
+    procedure DiagnoseAndSetClipboardResult;
   private
-    class procedure Header(Contents: TStringList);
-    class procedure Body(Contents: TStringList);
-    class procedure Footer(Contents: TStringList);
+    procedure Header(Contents: TStringList);
+    procedure Body(Contents: TStringList);
+    procedure Footer(Contents: TStringList);
   end;
 
 implementation
 
-class procedure TDiag.Diagnosis;
+procedure TIdentifyDiagnosis.DiagnoseAndSetClipboardResult;
 var
-  DiagClipBrd: TStringList;
+  DiagnosisResult: TStringList;
 begin
-  DiagClipBrd := TStringList.Create;
+  DiagnosisResult := TStringList.Create;
 
-  Header(DiagClipBrd);
-  Body(DiagClipBrd);
-  Footer(DiagClipBrd);
+  Header(DiagnosisResult);
+  Body(DiagnosisResult);
+  Footer(DiagnosisResult);
 
-  Clipboard.AsText := DiagClipBrd.Text;
+  Clipboard.AsText := DiagnosisResult.Text;
   MessageBox(0, PChar(DiagContents[CurrLang]), PChar(DiagName[CurrLang]),
     MB_OK or MB_IConInformation);
 
-  FreeAndNil(DiagClipBrd);
+  FreeAndNil(DiagnosisResult);
 end;
 
-class procedure TDiag.Header(Contents: TStringList);
+procedure TIdentifyDiagnosis.Header(Contents: TStringList);
 begin
   Contents.Add('DiagStart, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
   Contents.Add('Version, ' + CurrentVersion);
 end;
 
-class procedure TDiag.Body(Contents: TStringList);
+procedure TIdentifyDiagnosis.Body(Contents: TStringList);
 var
   SSDList: TPhysicalDriveList;
   CurrEntry: TPhysicalDrive;
@@ -79,7 +79,7 @@ begin
   FreeAndNil(SSDList);
 end;
 
-class procedure TDiag.Footer(Contents: TStringList);
+procedure TIdentifyDiagnosis.Footer(Contents: TStringList);
 begin
   Contents.Add('DiagEnd, ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now));
 end;

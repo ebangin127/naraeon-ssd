@@ -240,7 +240,7 @@ begin
     //HostWrite Ã³¸®
     PhysicalDrive := TPhysicalDrive.Create(StrToInt(DriveList[CurrDrive]));
     HostWrites := MBToLiteONUnit(
-      PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB);
+      PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB);
 
     if PhysicalDrive.SupportStatus.TotalWriteType =
       TTotalWriteType.WriteSupportedAsValue then
@@ -372,7 +372,7 @@ begin
           TNSTLog.Create(AppPath, PhysicalDrive.IdentifyDeviceResult.Serial,
             UIntToStr(
               MBToLiteONUnit(
-                PhysicalDrive.SMARTInterpreted.TotalWrite.ValueInMiB)),
+                PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)),
             false);
       end
       else

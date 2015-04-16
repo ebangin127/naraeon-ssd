@@ -4,15 +4,12 @@ interface
 
 uses
   SysUtils, Classes, Windows, Dialogs,
-  uRegFunctions, WinSvc, Registry,
-  uServiceController;
+  uRegFunctions, Registry;
 
 function WriteBufferCheck: TStringList; //쓰기 버퍼 체크되어있나 확인
 function OpenProcWithOutput(Path: String; Command: String): AnsiString; //프로그램 열기
 procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
-
-procedure DeletePrevSvc;
 
 implementation
 
@@ -172,19 +169,5 @@ begin
   finally
     FreeLibrary(vKernel32Handle);
   end;
-end;
-
-procedure DeletePrevSvc;
-var
-  ServiceController: TServiceController;
-begin
-  ServiceController := TServiceController.Create;
-  ServiceController.OpenService('NareonSSDToolsDiag');
-  ServiceController.StopService;
-  ServiceController.DeleteAndCloseService;
-  ServiceController.OpenService('NaraeonSSDToolsDiag');
-  ServiceController.StopService;
-  ServiceController.DeleteAndCloseService;
-  FreeAndNil(ServiceController);
 end;
 end.

@@ -1,4 +1,4 @@
-unit uSemiAuto;
+unit uSemiAutoTrimmer;
 
 interface
 
@@ -9,18 +9,19 @@ uses
   uPhysicalDrive, uPartitionListGetter;
 
 type
-  TSemiAuto = class
+  TSemiAutoTrimmer = class
   public
-    class procedure SemiAutoTrim(Model, Serial: String);
+    procedure SemiAutoTrim(Model, Serial: String);
+
   private
-    class function GetDeviceEntry(Model, Serial: String): TPhysicalDrive;
-    class function GetTrimList(SSDEntry: TPhysicalDrive): TTrimList;
-    class procedure ExecuteTrim(TrimList: TTrimList);
+    function GetDeviceEntry(Model, Serial: String): TPhysicalDrive;
+    function GetTrimList(SSDEntry: TPhysicalDrive): TTrimList;
+    procedure ExecuteTrim(TrimList: TTrimList);
   end;
 
 implementation
 
-class procedure TSemiAuto.SemiAutoTrim(Model, Serial: String);
+procedure TSemiAutoTrimmer.SemiAutoTrim(Model, Serial: String);
 var
   SSDEntry: TPhysicalDrive;
   PartToTrim: TTrimList;
@@ -31,7 +32,7 @@ begin
   FreeAndNil(PartToTrim);
 end;
 
-class function TSemiAuto.GetDeviceEntry(Model, Serial: String):
+function TSemiAutoTrimmer.GetDeviceEntry(Model, Serial: String):
   TPhysicalDrive;
 var
   SSDList: TPhysicalDriveList;
@@ -42,7 +43,7 @@ begin
   FreeAndNil(SSDList);
 end;
 
-class function TSemiAuto.GetTrimList(SSDEntry: TPhysicalDrive):
+function TSemiAutoTrimmer.GetTrimList(SSDEntry: TPhysicalDrive):
   TTrimList;
 var
   PhysicalDrive: TPhysicalDrive;
@@ -60,7 +61,7 @@ begin
   FreeAndNil(PhysicalDrive);
 end;
 
-class procedure TSemiAuto.ExecuteTrim(TrimList: TTrimList);
+procedure TSemiAutoTrimmer.ExecuteTrim(TrimList: TTrimList);
 var
   TrimThread: TTrimThread;
 begin
