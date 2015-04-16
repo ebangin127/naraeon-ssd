@@ -40,7 +40,7 @@ object fMain: TfMain
   end
   object iLogo: TImage
     Left = 10
-    Top = 1
+    Top = 2
     Width = 320
     Height = 40
   end

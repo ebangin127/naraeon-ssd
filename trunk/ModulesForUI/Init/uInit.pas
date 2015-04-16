@@ -4,6 +4,7 @@ interface
 
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
+  WinCodec,
   uAlert, uButtonGroup, uPathManager, uLanguageSettings;
 
 procedure InitializeMainForm;
@@ -33,6 +34,9 @@ type
     procedure SetMessageFontAsApplicationFont;
     procedure FixFontToApplicationFont;
     procedure FixMainformSize;
+    procedure LoadLogoImage;
+    procedure LoadAndProportionalStretchLogoXP;
+    procedure LoadAndProportionalStretchLogo;
   end;
 
 procedure InitializeMainForm;
@@ -65,6 +69,7 @@ begin
   CreateButtonGroup;
   AddButtonsToButtonGroup;
   LoadBGImage;
+  LoadLogoImage;
   SetFormSize;
   SetIcon;
   RefreshOptimizeList;
@@ -161,13 +166,52 @@ end;
 
 procedure TMainformInitializer.LoadBGImage;
 begin
-  with fMain do
-  begin
-    if FileExists(TPathManager.AppPath + 'Image\bg.png') then
-      iBG.Picture.LoadFromFile(TPathManager.AppPath + 'Image\bg.png');
-    if FileExists(TPathManager.AppPath + 'Image\logo.png') then
-      iLogo.Picture.LoadFromFile(TPathManager.AppPath + 'Image\logo.png');
-  end;
+  if FileExists(TPathManager.AppPath + 'Image\bg.png') then
+    fMain.iBG.Picture.LoadFromFile(TPathManager.AppPath + 'Image\bg.png');
+end;
+
+procedure TMainformInitializer.LoadAndProportionalStretchLogo;
+var
+  ImageToStretch: TWICImage;
+  Scaler: IWICBitmapScaler;
+  ScaledImage: IWICBitmap;
+begin
+  if fMain.WICImage <> nil then
+    ImageToStretch := fMain.WICImage
+  else
+    ImageToStretch := TWICImage.Create;
+
+  ImageToStretch.LoadFromFile(TPathManager.AppPath + 'Image\logo.png');
+  ImageToStretch.ImagingFactory.CreateBitmapScaler
+    (Scaler);
+  Scaler.Initialize(ImageToStretch.Handle,
+    fMain.iLogo.Width,
+    fMain.iLogo.Height,
+    WICBitmapInterpolationModeFant);
+  ImageToStretch.ImagingFactory.CreateBitmapFromSourceRect(
+    Scaler, 0, 0,
+    fMain.iLogo.Width,
+    fMain.iLogo.Height,
+    ScaledImage);
+  ImageToStretch.Handle := ScaledImage;
+  fMain.iLogo.Picture.Bitmap.Assign(ImageToStretch);
+
+  fMain.WICImage := ImageToStretch;
+end;
+
+procedure TMainformInitializer.LoadAndProportionalStretchLogoXP;
+begin
+  fMain.iLogo.Proportional := true;
+  if FileExists(TPathManager.AppPath + 'Image\logo.png') then
+    fMain.iLogo.Picture.LoadFromFile(TPathManager.AppPath + 'Image\logo.png');
+end;
+
+procedure TMainformInitializer.LoadLogoImage;
+begin
+  if Win32MajorVersion = 5 then
+    LoadAndProportionalStretchLogoXP
+  else
+    LoadAndProportionalStretchLogo;
 end;
 
 end.

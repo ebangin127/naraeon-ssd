@@ -172,6 +172,7 @@ type
     PhysicalDriveList: TPhysicalDriveList;
     PhysicalDrive: TPhysicalDrive;
     FirmwareGetter: TFirmwareGetter;
+    WICImage: TWICImage;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -421,11 +422,13 @@ begin
 
   if PhysicalDrive <> nil then
     FreeAndNil(PhysicalDrive);
+
   FreeAndNil(PhysicalDriveList);
   FreeAndNil(SSDLabel);
   FreeAndNil(PhysicalDrive);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
+  FreeAndNil(WICImage);
 end;
 
 procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
