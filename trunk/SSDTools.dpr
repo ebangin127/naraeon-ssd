@@ -102,6 +102,8 @@ uses
   uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas';
 
 {$R *.res}
+{$SetPEOptFlags $140}
+
 var
   MainformCaption: String;
   NSToolsMutex: TNSToolsMutex;
