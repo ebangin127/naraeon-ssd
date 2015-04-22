@@ -102,7 +102,12 @@ uses
   uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas';
 
 {$R *.res}
-{$SetPEOptFlags $140}
+{$SetPEOptFlags 
+  IMAGE_FILE_RELOCS_STRIPPED or
+  IMAGE_DLLCHARACTERISTICS_NX_COMPAT or
+  IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE}
+{$RANGECHECKS ON}
+{$OVERFLOWCHECKS ON}
 
 var
   MainformCaption: String;

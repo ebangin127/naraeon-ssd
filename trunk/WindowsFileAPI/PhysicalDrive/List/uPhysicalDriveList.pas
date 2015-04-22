@@ -15,20 +15,11 @@ type
     function IndexOf(Model, Serial: String): Integer; overload;
     function IndexOf(Entry: TPhysicalDrive): Integer; overload;
     function IndexOf(DeviceName: String): Integer; overload;
+    
+    function IsExists(Entry: TPhysicalDrive): Boolean;
   end;
-
-  TDiffResult = record
-    DelList: TPhysicalDriveList;
-    AddList: TPhysicalDriveList;
-  end;
-
-function TraverseDevice
-  (IsDiffNeeded: Boolean; IsOnlySupported: Boolean;
-   var PrevList: TPhysicalDriveList): TDiffResult;
 
 implementation
-
-uses uAutoPhysicalDriveListGetter;
 
 function TPhysicalDriveList.IndexOf(Model, Serial: String): Integer;
 var
@@ -92,81 +83,13 @@ begin
     exit(-1);
 end;
 
-function TraverseDevice
-  (IsDiffNeeded: Boolean; IsOnlySupported: Boolean;
-   var PrevList: TPhysicalDriveList): TDiffResult;
-var
-  CurrList: TPhysicalDriveList;
-  CurrEntry: TPhysicalDrive;
-
-  CurrDrv: Integer;
-  CurrAvail: Boolean;
-
-  AutoPhysicalDriveListGetter: TAutoPhysicalDriveListGetter;
-  CurrSSDList: TPhysicalDriveList;
-begin
-  AutoPhysicalDriveListGetter := TAutoPhysicalDriveListGetter.Create;
-  CurrSSDList := AutoPhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(AutoPhysicalDriveListGetter);
-  CurrList := TPhysicalDriveList.Create;
-
-  if IsDiffNeeded then
-  begin
-    result.AddList := TPhysicalDriveList.Create;
-    result.DelList := TPhysicalDriveList.Create;
+function TPhysicalDriveList.IsExists(Entry: TPhysicalDrive): Boolean;
+begin 
+  try
+    result := true;
+    IndexOf(Entry);
+  except
+    result := false;
   end;
-
-  for CurrDrv := 0 to CurrSSDList.Count - 1 do
-  begin
-    CurrEntry := CurrSSDList[CurrDrv];
-
-    CurrAvail :=
-      PrevList.IndexOf(CurrEntry) > -1;
-
-    if (not IsOnlySupported) or
-       (CurrEntry.SupportStatus.Supported) then
-    begin
-      CurrList.Add(
-        TPhysicalDrive.Create
-          (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
-    end;
-
-    if not IsDiffNeeded then
-      Continue;
-
-    if (CurrEntry.SupportStatus.Supported) and
-       (CurrAvail = false) then
-    begin
-      result.AddList.Add(
-        TPhysicalDrive.Create
-          (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
-    end;
-  end;
-
-  if not IsDiffNeeded then
-  begin
-    FreeAndNil(CurrSSDList);
-    PrevList := CurrList;
-    exit;
-  end;
-
-  for CurrDrv := 0 to PrevList.Count - 1 do
-  begin
-    CurrEntry := PrevList[CurrDrv];
-
-    CurrAvail :=
-      PrevList.IndexOf(CurrEntry) > -1;
-
-    if (not CurrAvail) or
-       (not CurrEntry.SupportStatus.Supported) then
-      result.DelList.Add(
-        TPhysicalDrive.Create
-          (StrToInt(CurrEntry.GetPathOfFileAccessingWithoutPrefix)));
-  end;
-
-  FreeAndNil(CurrSSDList);
-  FreeAndNil(PrevList);
-
-  PrevList := CurrList;
 end;
 end.
