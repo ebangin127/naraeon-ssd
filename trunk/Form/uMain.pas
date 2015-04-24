@@ -712,12 +712,21 @@ end;
 procedure TfMain.tRefreshTimer(Sender: TObject);
 const
   ORIGINAL_INTERVAL = 60000;
+var
+  MainformPhysicalDriveApplier: TMainformPhysicalDriveApplier;
 begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
 
-  if RefreshTimer(ShowSerial, firstiOptLeft) = false then
-    Application.Terminate;
+  if Length(fMain.CurrDrive) = 0 then
+    exit;
+
+  FreeAndNil(fMain.PhysicalDrive);
+  fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
+  
+  MainformPhysicalDriveApplier := TMainformPhysicalDriveApplier.Create;
+  MainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(ShowSerial);
+  FreeAndNil(MainformPhysicalDriveApplier);
 end;
 
 procedure TfMain.WmAfterShow(var Msg: TMessage);

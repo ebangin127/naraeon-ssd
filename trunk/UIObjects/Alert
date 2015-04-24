@@ -1,0 +1,32 @@
+
+        if lNotsafe.Caption = CapStatus[CurrLang] + CapSafe[CurrLang] then
+        begin
+          lNotSafe.Font.Color := clRed;
+          lNotsafe.Caption := CapStatus[CurrLang] + CapBadPartition[CurrLang];
+        end;
+        
+  with fMain do
+  begin
+    // 수명 상황 안 좋을때 오류 - 지우기 에러가 더 심각하므로 밑으로 배치.
+    if PhysicalDrive.SMARTInterpreted.SMARTAlert.ReplacedSector then
+    begin
+      lSectors.Font.Color := clRed;
+      lNotsafe.Font.Color := clRed;
+      lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang];
+      lNotsafe.Caption := CapStatus[CurrLang] + CapNotSafeRepSect[CurrLang];
+    end
+    else
+    begin
+      lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
+        CapCount[CurrLang];
+    end;
+  end;
+
+    if PhysicalDrive.SMARTInterpreted.SMARTAlert.ReadEraseError then
+    begin
+      lPError.Font.Color := clRed;
+      lNotsafe.Font.Color := clRed;
+      lNotsafe.Caption := CapNotSafeEraseErrors[CurrLang] +
+        CapNotSafeRepSect[CurrLang];
+    end;
