@@ -15,7 +15,9 @@ SetCompressor /solid lzma
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
-!include "Version.nsh"
+!include "include\Version.nsh"
+!include "include\Service.nsh"
+!include "include\ErrorFile.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -87,12 +89,9 @@ Section "MainSection" SEC01
 
   File "..\Exe\NSTDiagSvc_Patch.exe"
 
-  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +6
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
-  ExecWait '"$SYSDIR\sc.exe" stop NareonSSDToolsDiag'
-  ExecWait '"$SYSDIR\sc.exe" stop NaraeonSSDToolsDiag'
-  ExecWait '"$SYSDIR\sc.exe" delete NareonSSDToolsDiag'
-  ExecWait '"$SYSDIR\sc.exe" delete NaraeonSSDToolsDiag'
+  call DeleteNaraeonSSDToolsService
 
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
   ExecWait '"$SYSDIR\sc.exe" create NaraeonSSDToolsDiag binPath= "$INSTDIR\SSDTools\NSTDiagSvc_New.exe" DisplayName= "Naraeon SSD Tools - SSD life alerter" start= auto'
@@ -101,6 +100,8 @@ Section "MainSection" SEC01
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall.lnk"
   Delete "$DESKTOP\Naraeon SSD Tools.lnk"
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk"
+
+  call SetErrFile
 
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
@@ -161,7 +162,8 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
-  ExecWait '"$INSTDIR\NSTDiagSvc_New.exe" /uninstall /silent'
+  call un.DeleteNaraeonSSDToolsService
+  call un.DeleteErrFile
 
   SetShellVarContext all
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Parted Magic).lnk"

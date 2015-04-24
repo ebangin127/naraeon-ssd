@@ -36,7 +36,7 @@ type
   public
     property IsOnlyGetSupportedDrives: Boolean
       read InnerIsOnlyGetSupportedDrives write InnerIsOnlyGetSupportedDrives;
-    procedure RefeshListWithoutResultFrom(
+    procedure RefreshListWithoutResultFrom(
       var ListToRefresh: TPhysicalDriveList);
     function RefreshListWithResultFrom(
       var ListToRefresh: TPhysicalDriveList): TChangesList;
@@ -54,7 +54,7 @@ begin
     (not IsOnlyGetSupportedDrives);
 end;
   
-procedure TListChangeGetter.RefeshListWithoutResultFrom(
+procedure TListChangeGetter.RefreshListWithoutResultFrom(
   var ListToRefresh: TPhysicalDriveList);
 begin
   IsResultNeeded := false;

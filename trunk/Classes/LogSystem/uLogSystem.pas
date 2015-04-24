@@ -26,12 +26,15 @@ type
     LastConnFolder: String;
     OnlyCount: Boolean;
     //1. 창조자와 파괴자
-    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean);
+    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String;
+      IsCount: Boolean); overload;
+    constructor Create(Folder: String; Serial: String; IsCount: Boolean);
+      overload;
     destructor Destroy; override;
     //2. 끊고 재연결하기
     procedure Disconnect;
     //3. 읽고 쓰기
-    procedure ReadBothFiles(CurrGig: String);
+    function ReadBothFiles(CurrGig: String): Boolean;
     procedure ReleaseEqualGig;
     procedure ReleaseOneGig(CurrGig: String);
     protected
@@ -42,7 +45,14 @@ procedure MigrateOldLog(OldPath, NewPath: String);
 
 implementation
 
-constructor TNSTLog.Create(Folder: String; Serial: String; CurrSMARTGig: String; isCount: Boolean);
+constructor TNSTLog.Create(Folder: String; Serial: String; CurrSMARTGig: String;
+  IsCount: Boolean);
+begin
+  Create(Folder, Serial, IsCount);
+  ReadBothFiles(CurrSMARTGig);
+end;
+
+constructor TNSTLog.Create(Folder, Serial: String; IsCount: Boolean);
 var
   CurrAvgDays: Integer;
 begin
@@ -59,7 +69,7 @@ begin
   LastFiveGig := 0;
   OneGigList := TStringList.Create;
   ReadableList := TStringList.Create;
-  OnlyCount := isCount;
+  OnlyCount := IsCount;
   try
     //1기가 파일 로딩
     if FileExists(Folder + 'WriteLog' + Serial + '.txt') = false then
@@ -75,7 +85,6 @@ begin
     OneGigList.LoadFromFile(Folder + 'WriteLog' + Serial +'.txt');
     ConnSerial := Serial;
     ConnFolder := Folder;
-    ReadBothFiles(CurrSMARTGig);
   except
     ConnFolder := '';
   end;
@@ -95,12 +104,13 @@ begin
   FreeAndNil(ReadableList);
 end;
 
-procedure TNSTLog.ReadBothFiles(CurrGig: String);
+function TNSTLog.ReadBothFiles(CurrGig: String): Boolean;
 var
   CurrDay: Integer;
   FSet: TFormatSettings;
   CurrAvgDay: Integer;
 begin
+  result := false;
   Average[Avg30] := '0.0';
   TodayUsage := '0.0';
   DayCount := 0;
@@ -140,8 +150,9 @@ begin
   end;
   if LastDay <> FormatDateTime('yy/mm/dd', Now) then
   begin
-    if (StrToUInt64(CurrGig) = LastOneGig) and (CurrGig <> '0') then ReleaseEqualGig
-    else ReleaseOneGig(CurrGig);
+    result := not ((StrToUInt64(CurrGig) = LastOneGig) and (CurrGig <> '0'));
+    if result then ReleaseOneGig(CurrGig)
+    else ReleaseEqualGig;
   end;
 end;
 

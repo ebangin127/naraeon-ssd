@@ -41,7 +41,7 @@ begin
   SSDList := TPhysicalDriveList.Create;
   ListChangeGetter := TListChangeGetter.Create;
   ListChangeGetter.IsOnlyGetSupportedDrives := true;
-  ListChangeGetter.RefeshListWithoutResultFrom(SSDList);
+  ListChangeGetter.RefreshListWithoutResultFrom(SSDList);
   result := SSDList[SSDList.IndexOf(Model, Serial)];
   FreeAndNil(ListChangeGetter);
   FreeAndNil(SSDList);

@@ -15,7 +15,6 @@ uses
   uDatasizeUnit in '..\Classes\MeasureUnit\uDatasizeUnit.pas',
   uTimeUnit in '..\Classes\MeasureUnit\uTimeUnit.pas',
   uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',
-  uPhysicalDriveList in '..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas',
   uBufferInterpreter in '..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
   uIoControlFile in '..\WindowsFileAPI\Abstraction\uIoControlFile.pas',
   uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
@@ -51,7 +50,11 @@ uses
   uOCZSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
   uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
-  uSandforceNSTSupport in '..\NSTSupport\Abstraction\uSandforceNSTSupport.pas';
+  uSandforceNSTSupport in '..\NSTSupport\Abstraction\uSandforceNSTSupport.pas',
+  uDiagnosisService in 'Objects\uDiagnosisService.pas',
+  uPathManager in '..\Classes\PathManager\uPathManager.pas',
+  uPhysicalDriveList in '..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas',
+  uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

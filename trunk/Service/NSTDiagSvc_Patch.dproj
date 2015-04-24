@@ -93,11 +93,15 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <PostBuildEvent><![CDATA[signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode "$(OUTPUTPATH)"
+$(PostBuildEvent)]]></PostBuildEvent>
+        <VerInfo_MajorVer>5</VerInfo_MajorVer>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
         <DCC_ExeOutput>..\..\Exe</DCC_ExeOutput>
-        <Manifest_File>None</Manifest_File>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Locale>1042</VerInfo_Locale>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -131,7 +135,6 @@
         <DCCReference Include="..\Classes\MeasureUnit\uDatasizeUnit.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
@@ -168,6 +171,10 @@
         <DCCReference Include="..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
+        <DCCReference Include="Objects\uDiagnosisService.pas"/>
+        <DCCReference Include="..\Classes\PathManager\uPathManager.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -216,8 +223,8 @@
                     <Source Name="MainSource">NSTDiagSvc_Patch.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k180.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp180.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
@@ -569,4 +576,20 @@
     <Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
     <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
+    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
 </Project>

@@ -52,7 +52,7 @@ begin
 
   ListChangeGetter := TListChangeGetter.Create;
   ListChangeGetter.IsOnlyGetSupportedDrives := false;
-  ListChangeGetter.RefeshListWithoutResultFrom(SSDList);
+  ListChangeGetter.RefreshListWithoutResultFrom(SSDList);
   FreeAndNil(ListChangeGetter);
   for CurrEntry in SSDList do
   begin
