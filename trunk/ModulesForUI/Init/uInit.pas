@@ -81,8 +81,8 @@ end;
 procedure TMainformInitializer.CreateButtonGroup;
 begin
   Mainform.ButtonGroup :=
-      TButtonGroup.Create(fMain, MaximumSize, MinimumSize,
-        Mainform.ClientWidth, Mainform.ClientWidth);
+    TButtonGroup.Create(fMain, MaximumSize, MinimumSize,
+      Mainform.ClientWidth, Mainform.ClientWidth);
 end;
 
 procedure TMainformInitializer.AddButtonsToButtonGroup;

@@ -2,29 +2,10 @@
 
 interface
 
-uses Windows, SysUtils, Dialogs, Math, Classes,
-     ComObj, ShellAPI, Variants, ActiveX,
-     uRegFunctions, uPartitionFunctions, uStrFunctions, uDatasizeUnit,
-     uPhysicalDriveList;
+uses
+  Windows, SysUtils,
+  uStrFunctions, uDatasizeUnit;
 
-type
-  //---Trim Command--//
-  PSTARTING_LCN_INPUT_BUFFER = ^STARTING_LCN_INPUT_BUFFER;
-  {$EXTERNALSYM PSTARTING_LCN_INPUT_BUFFER}
-  STARTING_LCN_INPUT_BUFFER = record
-    StartingLcn: LARGE_INTEGER;
-  end;
-
-  PVOLUME_BITMAP_BUFFER = ^VOLUME_BITMAP_BUFFER;
-  {$EXTERNALSYM PVOLUME_BITMAP_BUFFER}
-  VOLUME_BITMAP_BUFFER = record
-    StartingLcn: LARGE_INTEGER;
-    BitmapSize: LARGE_INTEGER;
-    Buffer: array [0..4095] of Byte;
-  end;
-  //---Trim Command--//
-
-//�뷮, ���� �̸� �� ���� ���� ��������
 function GetVolumeLabel(AltName: String; DriveName: String): string;
 
 const

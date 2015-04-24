@@ -7,7 +7,6 @@ uses
   Classes,
   ShellAPI,
   uDiskFunctions in 'Modules\Disk\uDiskFunctions.pas',
-  uPartitionFunctions in 'Modules\Disk\uPartitionFunctions.pas',
   uIntFunctions in 'Modules\Etc\uIntFunctions.pas',
   uLanguageSettings in 'Modules\Language\uLanguageSettings.pas',
   uRegFunctions in 'Modules\Windows\uRegFunctions.pas',
@@ -99,7 +98,8 @@ uses
   uSamsungNSTSupport in 'NSTSupport\Support\uSamsungNSTSupport.pas',
   uSandiskNSTSupport in 'NSTSupport\Support\uSandiskNSTSupport.pas',
   uSeagateNSTSupport in 'NSTSupport\Support\uSeagateNSTSupport.pas',
-  uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas';
+  uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas',
+  uProgressSection in 'Model\uProgressSection.pas';
 
 {$R *.res}
 var

@@ -10,7 +10,7 @@ uses
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
   uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
-  uDiskFunctions, uPartitionFunctions, uExeFunctions,
+  uDiskFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
   uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
@@ -157,9 +157,6 @@ type
     ShowSerial: Boolean;
     ListEnter: Integer;
 
-    //창 관리자
-    ButtonGroup: TButtonGroup;
-
     //최적화 관련
     Optimizer: TNSTOptimizer;
 
@@ -173,6 +170,7 @@ type
     PhysicalDrive: TPhysicalDrive;
     FirmwareGetter: TFirmwareGetter;
     WICImage: TWICImage;
+    ButtonGroup: TButtonGroup;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -349,9 +347,6 @@ begin
   ShowProgress;
   Application.ProcessMessages;
 
-  pDownload.Height := pDownload.Height + 10;
-  pDownload.Top := pDownload.Top + 5;
-
   CurrDrive := '';
   PartToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
@@ -398,8 +393,6 @@ begin
   SSDLabel := TSSDLabelList.Create;
   PhysicalDriveList := TPhysicalDriveList.Create;
   FirmwareGetter := TFirmwareGetter.Create;
-
-  iLogo.Proportional := true;
 
   CurrDrive := '';
   ShowSerial := false;

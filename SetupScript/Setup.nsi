@@ -80,17 +80,21 @@ Section "MainSection" SEC01
   File "..\Exe\SSDTools.exe"
 
   File "..\Exe\NSTDiagSvc_Patch.exe"
-  ExecWait '"$INSTDIR\SSDTools\SSDTools.exe" /uninstall'
-  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
+
+  IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +6
   Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  ExecWait '"$SYSDIR\sc.exe" stop NareonSSDToolsDiag'
+  ExecWait '"$SYSDIR\sc.exe" stop NaraeonSSDToolsDiag'
+  ExecWait '"$SYSDIR\sc.exe" delete NareonSSDToolsDiag'
+  ExecWait '"$SYSDIR\sc.exe" delete NaraeonSSDToolsDiag'
+
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  ExecWait '"$SYSDIR\sc.exe" create NaraeonSSDToolsDiag binPath= "$INSTDIR\SSDTools\NSTDiagSvc_New.exe" DisplayName= "Naraeon SSD Tools - SSD life alerter" start= auto'
 
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
-
-  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd
 
 Section -AdditionalIcons

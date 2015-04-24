@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, Math, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls, Windows,
   uAlert, uLanguageSettings, ShellApi, Dialogs, Generics.Collections,
-  uDiskFunctions, uPartitionFunctions, uRegistryHelper,
+  uDiskFunctions, uRegistryHelper,
   uDatasizeUnit, uStrFunctions, uLogSystem, uNSTSupport,
   uPhysicalDriveList, uBufferInterpreter, uFirmwareGetter,
   uPathManager, uPhysicalDrive, uPartitionListGetter, uNCQAvailabilityGetter;

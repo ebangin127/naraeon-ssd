@@ -3,8 +3,8 @@
 interface
 
 uses
-  Classes, SysUtils, uDiskFunctions, Math, Dialogs, Windows,
-  uLanguageSettings, uPartitionFunctions, uTrimList, uListTrimmer;
+  Classes, SysUtils,
+  uTrimList, uListTrimmer;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);

@@ -24,6 +24,7 @@ type
     procedure ApplyOriginalUI;
     procedure ApplyProgressToUI(ProgressToApply: Integer);
     procedure ApplyNextDriveStartToUI(ProgressToApply: Integer);
+
   private
     Progress: Integer;
     TrimSynchronization: TTrimSynchronization;
@@ -98,8 +99,6 @@ end;
 
 procedure TTrimThreadToModel.SynchronizedApplyOriginalUI;
 begin
-  fMain.pDownload.Height := fMain.pDownload.Height - 10;
-  fMain.pDownload.Top := fMain.pDownload.Top - 5;
   fMain.pDownload.Position := 0;
   fMain.gTrim.Visible := true;
   fMain.HideProgress;

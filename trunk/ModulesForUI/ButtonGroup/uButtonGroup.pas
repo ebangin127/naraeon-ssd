@@ -16,7 +16,6 @@ type
     GroupBox: TGroupBox;
     ClickEventProcedure: TClickEventProcedure;
   end;
-  PTButtonGroupEntry = ^TButtonGroupEntry;
 
   TClickResult = (clkError, clkOpen, clkClose);
 

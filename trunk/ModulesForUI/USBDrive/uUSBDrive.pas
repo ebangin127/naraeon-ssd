@@ -5,8 +5,7 @@ interface
 uses
   Windows, Classes, SysUtils,
   uLanguageSettings,
-  uDiskFunctions, uPartitionFunctions,
-  uPhysicalDrive, uPartitionListGetter;
+  uDiskFunctions, uPhysicalDrive, uPartitionListGetter;
 
 
 //자식 드라이브 가져오기
