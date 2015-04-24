@@ -102,6 +102,13 @@ uses
   uProgressSection in 'Model\uProgressSection.pas';
 
 {$R *.res}
+{$SetPEOptFlags 
+  IMAGE_FILE_RELOCS_STRIPPED or
+  IMAGE_DLLCHARACTERISTICS_NX_COMPAT or
+  IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE}
+{$RANGECHECKS ON}
+{$OVERFLOWCHECKS ON}
+
 var
   MainformCaption: String;
   NSToolsMutex: TNSToolsMutex;

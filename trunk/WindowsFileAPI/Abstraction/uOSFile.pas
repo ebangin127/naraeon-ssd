@@ -14,6 +14,7 @@ type
   public
     constructor Create(FileToGetAccess: String); virtual;
 
+    function IsPathEqual(OSFileToCompare: TOSFile): Boolean;
     function GetPathOfFileAccessing: String; virtual;
     function GetPathOfFileAccessingWithoutPrefix: String; virtual;
 
@@ -31,6 +32,13 @@ type
   EInsufficientPrivilege = class(Exception);
 
 implementation
+
+function IsPathEqual(OSFileToCompare: TOSFile): Boolean;
+begin
+  result :=
+    GetPathOfFileAccessing =
+    OSFileToCompare.GetPathOfFileAccessing;
+end;
 
 function IsLastSystemCallSucceed: Boolean;
 begin

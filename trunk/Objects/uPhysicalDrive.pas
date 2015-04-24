@@ -171,15 +171,17 @@ begin
   result := NCQAvailabilityReadWrite;
 end;
 
-procedure TPhysicalDrive.RequestNCQAvailability;
-var
+
+procedure TPhysicalDrive.RequestNCQAvailability;
+
+var
   NCQAvailabilityGetter: TNCQAvailabilityGetter;
 begin
   NCQAvailabilityGetter := TNCQAvailabilityGetter.Create
     (GetPathOfFileAccessing);
   NCQAvailabilityReadWrite := NCQAvailabilityGetter.GetNCQStatus;
   FreeAndNil(NCQAvailabilityGetter);
-end;
+end;
 
 function TPhysicalDrive.GetIsDriveAvailable: Boolean;
 begin
@@ -205,7 +207,8 @@ begin
 end;
 
 procedure TPhysicalDrive.RequestSMARTReadData;
-begin
+
+begin
   SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
 end;
 
@@ -240,5 +243,6 @@ begin
       GetSMARTValueListOrRequestAndReturn);
 end;
 
-end.
-
+
+end.
+
