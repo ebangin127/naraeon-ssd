@@ -4,10 +4,7 @@ interface
 
 uses
   SysUtils, Generics.Collections,
-  uSSDLabel;
-
-const
-  EIndexOfNotFound = class(Exception);
+  uSSDLabel, uPhysicalDrive;
 
 type
   TSSDLabelList = class(TList<TSSDLabel>)
@@ -16,12 +13,26 @@ type
       LabelPerLine = 10;
       HorizontalPadding = 10;
       VerticalPadding = 10;
+    function GetMaxHeight: Integer;
+    function GetMaxWidth: Integer;
+    procedure SetFirstLabelLeft(Index: Integer);
+    procedure SetFirstLabelTop(Index: Integer);
+    procedure SetGroupboxSize;
+    procedure SetLabelPosition;
+    procedure SetMidLabelLeft(Index: Integer);
+    procedure SetMidLabelTop(Index: Integer);
+    procedure SetSingleLabelLeft(Index: Integer);
+    procedure SetSingleLabelPosition(Index: Integer);
+    procedure SetSingleLabelTop(Index: Integer);
   public
     destructor Destroy; override;
-    procedure Delete(Index: Integer); override;
-    procedure Add(SSDLabel: TSSDLabel); override;
+    procedure Delete(Index: Integer);
+    procedure Add(SSDLabel: TSSDLabel);
     function IndexOf(Entry: TPhysicalDrive): Integer;
+    function IsExists(Entry: TPhysicalDrive): Boolean;
   end;
+
+  EIndexOfNotFound = class(Exception);
   
 implementation
 
@@ -35,20 +46,22 @@ end;
 
 procedure TSSDLabelList.Add(SSDLabel: TSSDLabel);
 begin
-  inherited Add(Index);
+  inherited Add(SSDLabel);
   SetLabelPosition;
   SetGroupboxSize;
 end;
 
 function TSSDLabelList.GetMaxWidth: Integer;
+var
+  CurrentEntry: TSSDLabel;
 begin
   if Self.Count = 0 then
     exit(0);
 
-  result :=
-    Self[Self.Count - 1].Left +
-    Self[Self.Count - 1].Width +
-    HorizontalPadding;
+  result := 0;
+  for CurrentEntry in Self do
+    if result < CurrentEntry.Left + CurrentEntry.Width then
+      result := CurrentEntry.Left + CurrentEntry.Width;
 end;
 
 function TSSDLabelList.GetMaxHeight: Integer;
@@ -60,26 +73,22 @@ begin
     
   result := 0;
   for CurrentEntry in Self do
-    if result < CurrentEntry.Left + CurrentEntry.Width then
-      result := CurrentEntry.Left + CurrentEntry.Width;
+    if result < CurrentEntry.Top + CurrentEntry.Height then
+      result := CurrentEntry.Top + CurrentEntry.Height;
 end;
 
 procedure TSSDLabelList.SetGroupboxSize;
 begin
-  fMain.gSSDSel.Width := GetMaxWidth; 
-  fMain.gSSDSel.Height := GetMaxHeight;
+  fMain.gSSDSel.Width := GetMaxWidth + (HorizontalPadding * 2);
+  fMain.gSSDSel.Height := GetMaxHeight + (VerticalPadding * 2);
 end;
 
 procedure TSSDLabelList.SetLabelPosition;
 var
   CurrentLabel: Integer;
 begin
-  for CurrentLabel := 0 to SSDLabel.Count - 1 do
+  for CurrentLabel := 0 to fMain.SSDLabel.Count - 1 do
     SetSingleLabelPosition(CurrentLabel);
-
-  gSSDSel.Height :=
-    SSDLabel[SSDLabel.Count - 1].Top +
-    SSDLabel[SSDLabel.Count - 1].Height + 5;
 end;
 
 procedure TSSDLabelList.SetFirstLabelTop(Index: Integer);
@@ -88,7 +97,6 @@ begin
 end;
 
 procedure TSSDLabelList.SetFirstLabelLeft(Index: Integer);
-const
 begin
   Self[Index].Left := HorizontalPadding;
 end;
@@ -109,7 +117,7 @@ end;
 
 procedure TSSDLabelList.SetSingleLabelTop(Index: Integer);
 begin
-  if ((CurrLabel + 1) mod (LabelPerLine)) = 0 then
+  if ((Index + 1) mod (LabelPerLine)) = 1 then
     SetFirstLabelTop(Index)
   else
     SetMidLabelTop(Index);
@@ -117,7 +125,7 @@ end;
 
 procedure TSSDLabelList.SetSingleLabelLeft(Index: Integer);
 begin
-  if ((CurrLabel + 1) div (LabelPerLine)) = 0 then
+  if ((Index + 1) div (LabelPerLine)) = 0 then
     SetFirstLabelLeft(Index)
   else
     SetMidLabelLeft(Index);
@@ -148,6 +156,16 @@ begin
       
   raise EIndexOfNotFound.Create('EIndexOfNotFound: This list does not contain' +
     ' that item');
+end;
+
+function TSSDLabelList.IsExists(Entry: TPhysicalDrive): Boolean;
+begin
+  try
+    result := true;
+    IndexOf(Entry);
+  except
+    result := false;
+  end;
 end;
 
 end.

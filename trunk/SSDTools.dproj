@@ -154,7 +154,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\Windows\uPlugAndPlay.pas"/>
         <DCCReference Include="ModulesForUI\Firmware\uFirmware.pas"/>
         <DCCReference Include="ModulesForUI\USBDrive\uUSBDrive.pas"/>
-        <DCCReference Include="ModulesForUI\Refresh\uRefresh.pas"/>
         <DCCReference Include="Classes\UAWebbrowser\uUAWebbrowser.pas"/>
         <DCCReference Include="ModulesForUI\ButtonGroup\uButtonGroup.pas"/>
         <DCCReference Include="ModulesForUI\Init\uInit.pas"/>
@@ -243,6 +242,16 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\Support\uSeagateNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\Support\uToshibaNSTSupport.pas"/>
         <DCCReference Include="Model\uProgressSection.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformMainpartApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformPartitionAlignApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformReplacedSectorApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformSMARTApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformTotalWriteApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PhysicalDriveApplier\uMainformPhysicalDriveApplier.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabel.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabelListRefresher.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabelList.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

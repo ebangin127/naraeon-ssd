@@ -3,9 +3,11 @@ unit uMainformPhysicalDriveApplier;
 interface
 
 uses
+  SysUtils, Graphics,
+  uLanguageSettings,
   uMainformMainpartApplier, uMainformPartitionAlignApplier,
   uMainformReplacedSectorApplier, uMainformSMARTApplier,
-  uMainformTotalWriteApplier;
+  uMainformTotalWriteApplier, uNSTSupport;
 
 type
   TMainformAlert = record
@@ -17,6 +19,18 @@ type
   private
     MainformAlert: TMainformAlert;
     IsSerialOpened: Boolean;
+    procedure ApplyAlert;
+    procedure ApplyDataSetManagementSetting;
+    procedure ApplyMainpart;
+    procedure ApplyPartitionAlign;
+    procedure ApplyReplacedSector;
+    procedure ApplySMARTAndSetSMARTAlert;
+    procedure ApplyTotalWrite;
+    procedure RevertLastChangesOfMainform;
+    procedure SetAlertLabelBadPartition;
+    procedure SetAlertLabelBadReadWriteError;
+    procedure SetAlertLabelBadReplacedSector;
+    procedure SetSMARTAlert;
   public
     procedure ApplyMainformPhysicalDrive(IsSerialOpened: Boolean);
   end;
@@ -82,8 +96,6 @@ procedure TMainformPhysicalDriveApplier.SetAlertLabelBadReplacedSector;
 begin
   fMain.lSectors.Font.Color := clRed;
   fMain.lNotsafe.Font.Color := clRed;
-  fMain.lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
-    CapCount[CurrLang];
   fMain.lNotsafe.Caption := CapStatus[CurrLang] + CapNotSafeRepSect[CurrLang];
 end;
 
@@ -123,16 +135,16 @@ end;
 
 procedure TMainformPhysicalDriveApplier.RevertLastChangesOfMainform;
 begin
-  if (not gFirmware.Visible) and
-     (not gDownload.Visible) then
-    lFirmware.Font.Style := [];
-    
-  lSectors.Font.Color := clWindowText;
-  lPError.Font.Color := clWindowText;
-  lNotsafe.Font.Color := clWindowText;
-  lPartitionAlign.Font.Color := clWindowText;
-  
-  lNotsafe.Caption := CapStatus[CurrLang] + CapSafe[CurrLang];
+  if (not fMain.gFirmware.Visible) and
+     (not fMain.gDownload.Visible) then
+    fMain.lFirmware.Font.Style := [];
+
+  fMain.lSectors.Font.Color := clWindowText;
+  fMain.lPError.Font.Color := clWindowText;
+  fMain.lNotsafe.Font.Color := clWindowText;
+  fMain.lPartitionAlign.Font.Color := clWindowText;
+
+  fMain.lNotsafe.Caption := CapStatus[CurrLang] + CapSafe[CurrLang];
 end;
 
 procedure TMainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(

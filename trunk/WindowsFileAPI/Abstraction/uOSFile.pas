@@ -27,26 +27,28 @@ type
     function DeletePrefix(PrefixToDelete: String): String;
     function IsPathOfFileAccessingHavePrefix
       (PrefixToCheck: String): Boolean;
+    function GetOSErrorString(OSErrorCode: Integer): String;
+    function IsLastSystemCallSucceed: Boolean;
   end;
 
   EInsufficientPrivilege = class(Exception);
 
 implementation
 
-function IsPathEqual(OSFileToCompare: TOSFile): Boolean;
+function TOSFile.IsPathEqual(OSFileToCompare: TOSFile): Boolean;
 begin
   result :=
     GetPathOfFileAccessing =
     OSFileToCompare.GetPathOfFileAccessing;
 end;
 
-function IsLastSystemCallSucceed: Boolean;
+function TOSFile.IsLastSystemCallSucceed: Boolean;
 begin
   result :=
     GetLastError = ERROR_SUCCESS;
 end;
 
-function GetOSErrorString(OSErrorCode: Integer): String;
+function TOSFile.GetOSErrorString(OSErrorCode: Integer): String;
 begin
   result :=
     'OS Error: ' +

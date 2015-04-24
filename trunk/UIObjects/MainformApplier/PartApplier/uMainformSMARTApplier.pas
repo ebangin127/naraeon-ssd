@@ -3,12 +3,17 @@ unit uMainformSMARTApplier;
 interface
 
 uses
-  uPhysicalDrive, uListChangeGetter;
+  SysUtils,
+  uLanguageSettings, uPhysicalDrive, uNSTSupport, uListChangeGetter;
 
 type
   TMainformSMARTApplier = class
   private
-    ReadEraseError: UInt64;
+    ReadEraseError: TReadEraseError;
+    procedure ApplyOnTime;
+    procedure ApplyReadEraseError;
+    procedure SetLabelByTrueReadErrorFalseEraseError(
+      TrueReadErrorFalseEraseError: Boolean);
   public
     procedure ApplyMainformSMART;
   end;

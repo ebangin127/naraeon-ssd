@@ -3,12 +3,22 @@ unit uMainformPartitionAlignApplier;
 interface
 
 uses
-  uPhysicalDrive, uListChangeGetter;
+  SysUtils, Windows, Classes, Graphics,
+  uLanguageSettings, uPhysicalDrive, uListChangeGetter, uPartitionListGetter;
 
 type
   TMainformPartitionAlignApplier = class
   private
     PartitionList: TPartitionList;
+    procedure AppendThisEntryAsInvalid(CurrentEntry: TPartitionEntry);
+    procedure AppendThisEntryAsValid(CurrentEntry: TPartitionEntry);
+    function ApplyAndGetPartitionAlignStatus: Boolean;
+    procedure FreePartitionList;
+    function IsThisStartingOffsetInvalid(
+      StartingOffset: TLargeInteger): Boolean;
+    procedure SetPartitionList;
+    function AppendThisEntryToAlignLabel(
+      CurrentEntry: TPartitionEntry): Boolean;
   public
     function ApplyAlignAndGetMisalignedExists: Boolean;
   end;
@@ -19,7 +29,7 @@ uses uMain;
 
 procedure TMainformPartitionAlignApplier.SetPartitionList;
 begin
-  PartitionList := PhysicalDrive.GetPartitionList;
+  PartitionList := fMain.PhysicalDrive.GetPartitionList;
 end;
 
 procedure TMainformPartitionAlignApplier.FreePartitionList;
@@ -55,7 +65,7 @@ begin
     CurrentEntry.Letter + CapGood[CurrLang];
 end;
 
-function TMainformPartitionAlignApplier.ApplyAndGetPartitionAlignStatus(
+function TMainformPartitionAlignApplier.AppendThisEntryToAlignLabel(
   CurrentEntry: TPartitionEntry): Boolean;
 begin
   result := IsThisStartingOffsetInvalid(CurrentEntry.StartingOffset);

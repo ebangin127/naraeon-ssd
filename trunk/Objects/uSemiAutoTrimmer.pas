@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, ClipBrd, Windows,
   uTrimThread, uTrimList, uDiskFunctions, uStrFunctions,
   uPhysicalDriveList, uLanguageSettings,
-  uPhysicalDrive, uPartitionListGetter;
+  uPhysicalDrive, uPartitionListGetter, uListChangeGetter;
 
 type
   TSemiAutoTrimmer = class
@@ -36,10 +36,14 @@ function TSemiAutoTrimmer.GetDeviceEntry(Model, Serial: String):
   TPhysicalDrive;
 var
   SSDList: TPhysicalDriveList;
+  ListChangeGetter: TListChangeGetter;
 begin
   SSDList := TPhysicalDriveList.Create;
-  TraverseDevice(false, false, SSDList);
+  ListChangeGetter := TListChangeGetter.Create;
+  ListChangeGetter.IsOnlyGetSupportedDrives := true;
+  ListChangeGetter.RefeshListWithoutResultFrom(SSDList);
   result := SSDList[SSDList.IndexOf(Model, Serial)];
+  FreeAndNil(ListChangeGetter);
   FreeAndNil(SSDList);
 end;
 

@@ -3,13 +3,27 @@ unit uSSDLabelListRefresher;
 interface
 
 uses
-  SysUtils, Generics.Collections,
-  uPhysicalDrive, uListChangeGetter;
+  Forms, SysUtils, Generics.Collections, Windows, ShellAPI,
+  uLanguageSettings, uPathManager, uAlert, uPhysicalDrive, uListChangeGetter,
+  uSSDLabel;
 
 type
   TSSDLabelListRefresher = class
   private
     ChangesList: TChangesList;
+    procedure AddByAddedList;
+    procedure AddDevice(Entry: TPhysicalDrive);
+    procedure AlertAndExecuteNewDiagnosisInstance;
+    procedure DeleteAndAddDevicesByResultList;
+    procedure DeleteByDeletedList;
+    procedure DeleteDevice(Entry: TPhysicalDrive);
+    procedure FreeChangesList;
+    function IsNoDeviceSelected: Boolean;
+    function IsNoSupportedDriveExists: Boolean;
+    procedure RefreshMainFormAndSetNewSelection;
+    procedure SetChangesList;
+    procedure SetFirstDeviceAsSelected;
+    procedure SetFirstDeviceAsSelectedIfNoDeviceSelected;
   public
     procedure RefreshDrives;  
   end;
@@ -18,10 +32,13 @@ implementation
 
 uses uMain;
 
+type
+  THackMainform = TForm;
+
 procedure TSSDLabelListRefresher.AlertAndExecuteNewDiagnosisInstance;
 begin
   AlertCreate(fMain, AlrtNoSupport[CurrLang]);
-  ShellExecute(fMain.Handle, 'open',
+  ShellExecute(0, 'open',
     PChar(TPathManager.AppPath + 'SSDTools.exe'),
     PChar('/diag'), nil, SW_SHOW);
 end;
@@ -34,7 +51,7 @@ end;
 
 procedure TSSDLabelListRefresher.SetChangesList;
 var
-  ListChangeGetter: TListChangesGetter;
+  ListChangeGetter: TListChangeGetter;
 begin
   ListChangeGetter := TListChangeGetter.Create;
   ListChangeGetter.IsOnlyGetSupportedDrives := true;
@@ -58,7 +75,7 @@ procedure TSSDLabelListRefresher.DeleteByDeletedList;
 var
   CurrentEntry: TPhysicalDrive;
 begin
-  for CurrentEntry in SSDList do
+  for CurrentEntry in ChangesList.Deleted do
     DeleteDevice(CurrentEntry);
 end;
 
@@ -66,7 +83,7 @@ procedure TSSDLabelListRefresher.AddByAddedList;
 var
   CurrentEntry: TPhysicalDrive;
 begin
-  for CurrentEntry in SSDList do
+  for CurrentEntry in ChangesList.Added do
     AddDevice(CurrentEntry);
 end;
 
@@ -80,7 +97,7 @@ end;
 
 procedure TSSDLabelListRefresher.AddDevice(Entry: TPhysicalDrive);
 begin
-  fMain.SSDLabel.Add(Entry);
+  fMain.SSDLabel.Add(TSSDLabel.Create(Entry));
 end;
 
 function TSSDLabelListRefresher.IsNoDeviceSelected: Boolean;
@@ -88,28 +105,28 @@ begin
   result := fMain.CurrDrive = '';
 end;
 
-procedure TSSDLabelListRefresher.SetFirstDeviceAsSelcted;
+procedure TSSDLabelListRefresher.SetFirstDeviceAsSelected;
 begin
   fMain.SSDLabel[0].OnClick(fMain.SSDLabel[0]);
 end;
 
 procedure TSSDLabelListRefresher.SetFirstDeviceAsSelectedIfNoDeviceSelected;
 begin
-  if IsNoDriveSelectedYet then
-    SetFirstDeviceAsSelcted;
+  if IsNoDeviceSelected then
+    SetFirstDeviceAsSelected;
 end;
 
 procedure TSSDLabelListRefresher.RefreshMainFormAndSetNewSelection;
 begin
   DeleteAndAddDevicesByResultList;
-  SetFirstDeviceAsSelected;
+  SetFirstDeviceAsSelectedIfNoDeviceSelected;
 end;
 
 procedure TSSDLabelListRefresher.RefreshDrives;
 begin
   SetChangesList;
   if IsNoSupportedDriveExists then
-    AlertAndExecuteNewDiagnosisInstance;
+    AlertAndExecuteNewDiagnosisInstance
   else
     RefreshMainFormAndSetNewSelection;
   FreeChangesList;

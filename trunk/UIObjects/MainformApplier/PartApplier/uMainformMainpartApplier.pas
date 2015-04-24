@@ -1,12 +1,30 @@
-unit uMainformReplacedSectorApplier;
+unit uMainformMainpartApplier;
 
 interface
 
 uses
-  uPhysicalDrive, uListChangeGetter;
+  Graphics,
+  uLanguageSettings, uPhysicalDrive, uSSDLabelListRefresher, uFirmwareGetter,
+  uDatasizeUnit, uStrFunctions, uBufferInterpreter, uNCQAvailabilityGetter;
 
 type
-  TMainformReplacedSectorApplier = class
+  TMainformMainpartApplier = class
+  private
+    procedure ApplyConnectionState;
+    procedure ApplyFirmware;
+    procedure ApplyModelAndSize;
+    procedure ApplySerial(IsSerialOpened: Boolean);
+    function BinaryKiBToDenaryKB(Size: Double): Double;
+    function FormatSizeInDenaryIntegerMB(SizeInDenaryMB: Double): String;
+    function GetConnectionSpeedString: String;
+    function GetConnectionStateString: String;
+    function GetFirmwareQueryResult: TFirmwareQueryResult;
+    function GetNCQAvailabilityString: String;
+    procedure IfOldFirmwareSetLabelBoldAndRed(IsOldFirmware: Boolean);
+    function IsUnknownConnection: Boolean;
+    function KiBtoDenaryMB(SizeInBinaryKiB: Double): Double;
+    procedure SetFirmwareLabel;
+    procedure SetNewFirmwareCaption(LatestVersion: String);
   public
     procedure ApplyMainformMainpart(
       IsSerialOpened: Boolean);
@@ -16,13 +34,13 @@ implementation
 
 uses uMain;
 
-function TMainformReplacedSectorApplier.BinaryKiBToDenaryKB(Size: Double):
+function TMainformMainpartApplier.BinaryKiBToDenaryKB(Size: Double):
   Double;
 begin
   exit(Size * (1024 / 1000));
 end;
 
-function TMainformReplacedSectorApplier.KiBtoDenaryMB(SizeInBinaryKiB: Double):
+function TMainformMainpartApplier.KiBtoDenaryMB(SizeInBinaryKiB: Double):
   Double;
 var
   KBtoMB: TDatasizeUnitChangeSetting;
@@ -37,7 +55,7 @@ begin
       KBtoMB);
 end;
 
-function TMainformReplacedSectorApplier.FormatSizeInDenaryIntegerMB(
+function TMainformMainpartApplier.FormatSizeInDenaryIntegerMB(
   SizeInDenaryMB: Double): String;
 var
   DenaryInteger: FormatSizeSetting;
@@ -48,7 +66,7 @@ begin
   result := FormatSizeInMB(SizeInDenaryMB, DenaryInteger);
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyModelAndSize;
+procedure TMainformMainpartApplier.ApplyModelAndSize;
 var
   DenaryUserSizeInMB: Double;
 begin
@@ -60,31 +78,31 @@ begin
     FormatSizeInDenaryIntegerMB(DenaryUserSizeInMB);
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyFirmware;
+procedure TMainformMainpartApplier.SetFirmwareLabel;
 begin
   fMain.lFirmware.Caption :=
     CapFirmware[CurrLang] + fMain.PhysicalDrive.IdentifyDeviceResult.Firmware;
 end;
 
-function TMainformReplacedSectorApplier.IsUnknownConnection: Boolean;
+function TMainformMainpartApplier.IsUnknownConnection: Boolean;
 begin
   result := 
     fMain.PhysicalDrive.IdentifyDeviceResult.SATASpeed <=
     TSATASpeed.UnknownSATASpeed;
 end;
 
-function TMainformReplacedSectorApplier.GetConnectionSpeedString: String;
+function TMainformMainpartApplier.GetConnectionSpeedString: String;
 var
   SpeedStarts: Integer;
 begin
   SpeedStarts :=
     Integer(TSATASpeed.UnknownSATASpeed) + 1;
-  lConnState.Caption := lConnState.Caption +
-    CapConnSpeed[Integer(fMain.PhysicalDrive.IdentifyDeviceResult.SATASpeed) 
-      - SpeedStarts];
+  result :=
+    CapConnSpeed[Integer(fMain.PhysicalDrive.IdentifyDeviceResult.SATASpeed) -
+      SpeedStarts];
 end;
 
-function TMainformReplacedSectorApplier.GetNCQAvailabilityString: String;
+function TMainformMainpartApplier.GetNCQAvailabilityString: String;
 var
   NCQAvailability: TNCQAvailability;
 begin  
@@ -101,7 +119,7 @@ begin
   end;
 end;
 
-procedure TMainformReplacedSectorApplier.GetConnectionStateString: String;
+function TMainformMainpartApplier.GetConnectionStateString: String;
 const
   CloseState = ')';
 begin
@@ -111,13 +129,13 @@ begin
     result := GetConnectionSpeedString + GetNCQAvailabilityString + CloseState;
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyConnectionState;
+procedure TMainformMainpartApplier.ApplyConnectionState;
 begin
-  lConnState.Caption := CapConnState[CurrLang] +
+  fMain.lConnState.Caption := CapConnState[CurrLang] +
     GetConnectionStateString;
 end;
 
-procedure TMainformReplacedSectorApplier.ApplySerial(
+procedure TMainformMainpartApplier.ApplySerial(
   IsSerialOpened: Boolean);
 var
   CurrentSerial: Integer;
@@ -132,7 +150,7 @@ begin
       fMain.PhysicalDrive.IdentifyDeviceResult.Serial;
 end;
 
-function TMainformReplacedSectorApplier.GetFirmwareQueryResult: 
+function TMainformMainpartApplier.GetFirmwareQueryResult:
   TFirmwareQueryResult;
 var
   Query: TFirmwareQuery;
@@ -143,35 +161,37 @@ begin
   result := fMain.FirmwareGetter.CheckFirmware(Query);
 end;
 
-procedure TMainformReplacedSectorApplier.IfOldFirmwareSetLabelBoldAndRed(
+procedure TMainformMainpartApplier.IfOldFirmwareSetLabelBoldAndRed(
   IsOldFirmware: Boolean);
 begin    
-  if  then
+  if IsOldFirmware then
   begin
-    lFirmware.Caption := lFirmware.Caption + CapOldVersion[CurrLang];
-    lFirmware.Font.Color := clRed;
-    lFirmware.Font.Style := [fsBold];
+    fMain.lFirmware.Caption := fMain.lFirmware.Caption +
+      CapOldVersion[CurrLang];
+    fMain.lFirmware.Font.Color := clRed;
+    fMain.lFirmware.Font.Style := [fsBold];
   end;
 end;
 
-procedure TMainformReplacedSectorApplier.SetFirmwareCaption(
+procedure TMainformMainpartApplier.SetNewFirmwareCaption(
   LatestVersion: String);
 begin
-  lNewFirm.Caption :=
+  fMain.lNewFirm.Caption :=
     CapNewFirm[CurrLang] + LatestVersion;
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyFirmware;
+procedure TMainformMainpartApplier.ApplyFirmware;
 var
   QueryResult: TFirmwareQueryResult;
 begin
-  QueryResult := GetFirmwareQueryResult
-  SetFirmwareCaption(QueryResult.LatestVersion);
+  QueryResult := GetFirmwareQueryResult;
+  SetFirmwareLabel;
+  SetNewFirmwareCaption(QueryResult.LatestVersion);
   IfOldFirmwareSetLabelBoldAndRed(
     QueryResult.CurrentVersion = TFirmwareVersion.OldVersion);
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyMainformMainpart(
+procedure TMainformMainpartApplier.ApplyMainformMainpart(
   IsSerialOpened: Boolean);
 begin
   ApplyModelAndSize;

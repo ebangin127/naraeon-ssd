@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   uPhysicalDriveList, uPhysicalDrive, uLanguageSettings,
-  uGlobalSettings;
+  uGlobalSettings, uListChangeGetter;
 
 type
   TIdentifyDiagnosis = class
@@ -45,11 +45,15 @@ end;
 procedure TIdentifyDiagnosis.Body(Contents: TStringList);
 var
   SSDList: TPhysicalDriveList;
+  ListChangeGetter: TListChangeGetter;
   CurrEntry: TPhysicalDrive;
 begin
   SSDList := TPhysicalDriveList.Create;
 
-  TraverseDevice(false, false, SSDList);
+  ListChangeGetter := TListChangeGetter.Create;
+  ListChangeGetter.IsOnlyGetSupportedDrives := false;
+  ListChangeGetter.RefeshListWithoutResultFrom(SSDList);
+  FreeAndNil(ListChangeGetter);
   for CurrEntry in SSDList do
   begin
     Contents.Add('Probe, ' + CurrEntry.GetPathOfFileAccessing + ', ');

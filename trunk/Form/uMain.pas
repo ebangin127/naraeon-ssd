@@ -12,10 +12,12 @@ uses
   uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
   uDiskFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
-  uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
+  uFirmware, uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
-  uFirmwareGetter, uGlobalSettings, uCodesignVerifier;
+  uFirmwareGetter, uGlobalSettings, uCodesignVerifier,
+  uSSDLabelList, uSSDLabel, uMainformPhysicalDriveApplier,
+  uSSDLabelListRefresher;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -94,7 +96,6 @@ type
 
     //생성자와 파괴자
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
     //드라이브 리스트 관련 함수
@@ -142,6 +143,10 @@ type
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    procedure RefreshByPhysicalDrive;
+    procedure RefreshDrives;
   protected
     //쓰레드 관련
     TrimThread: TTrimThread;
@@ -404,7 +409,7 @@ begin
 
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
-  RefreshDrives(PhysicalDrive);
+  RefreshDrives;
 
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
@@ -429,6 +434,15 @@ procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_F1 then
     iHelp.OnClick(nil);
+end;
+
+procedure TfMain.RefreshDrives;
+var
+  SSDLabelListRefresher: TSSDLabelListRefresher;
+begin
+  SSDLabelListRefresher := TSSDLabelListRefresher.Create;
+  SSDLabelListRefresher.RefreshDrives;
+  FreeAndNil(SSDLabelListRefresher);
 end;
 
 procedure TfMain.FormShow(Sender: TObject);
@@ -648,7 +662,7 @@ begin
   CloseDriveList;
 
   if CurrDrive =
-    TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessingWithoutPrefix then
+    TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix then
   begin
     gSSDSel.Visible := false;
     exit;
@@ -658,12 +672,12 @@ begin
   ButtonGroup.CloseAll;
 
   CurrDrive :=
-    TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessingWithoutPrefix;
+    TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix;
   tRefreshTimer(Self);
 
   for CurrIndex := 0 to SSDLabel.Count - 1 do
-    if SSDLabel[CurrIndex].DeviceInfo.GetPathOfFileAccessing =
-       TSSDLabel(Sender).DeviceInfo.GetPathOfFileAccessing then
+    if SSDLabel[CurrIndex].PhysicalDrive.GetPathOfFileAccessing =
+       TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessing then
       SSDLabel[CurrIndex].Font.Style := [fsBold]
     else
       SSDLabel[CurrIndex].Font.Style := [];
@@ -705,8 +719,6 @@ end;
 procedure TfMain.tRefreshTimer(Sender: TObject);
 const
   ORIGINAL_INTERVAL = 60000;
-var
-  MainformPhysicalDriveApplier: TMainformPhysicalDriveApplier;
 begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
@@ -716,7 +728,14 @@ begin
 
   FreeAndNil(fMain.PhysicalDrive);
   fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
-  
+
+  RefreshByPhysicalDrive;
+end;
+
+procedure TfMain.RefreshByPhysicalDrive;
+var
+  MainformPhysicalDriveApplier: TMainformPhysicalDriveApplier;
+begin
   MainformPhysicalDriveApplier := TMainformPhysicalDriveApplier.Create;
   MainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(ShowSerial);
   FreeAndNil(MainformPhysicalDriveApplier);
@@ -748,7 +767,7 @@ begin
   end;
 
   tRefresh.Enabled := false;
-  RefreshDrives(PhysicalDrive);
+  RefreshByPhysicalDrive;
   tRefresh.Enabled := true;
 
   SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);

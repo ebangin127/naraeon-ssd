@@ -3,17 +3,30 @@ unit uSSDLabel;
 interface
 
 uses
-  SysUtils, Windows,
-  uPhysicalDrive;
+  Classes, Controls, SysUtils, Windows, StdCtrls,
+  uDatasizeUnit, uStrFunctions, uPartitionListGetter, uPhysicalDrive;
 
 type
   TSSDLabel = class(TLabel)
   private
     type
       TPartitionPosition = (First, Last, Mid);
+    procedure AppendCurrentPartitionToCaption(Position: TPartitionPosition;
+      Letter: String);
+    procedure AppendPartitionListToCaption(PartitionList: TPartitionList);
+    procedure SetCaption;
+    procedure SetCaptionAsModelAndDiskSizeInMB;
+    procedure SetCaptionByPartitionList(PartitionList: TPartitionList);
+    procedure SetCursorAsHandPoint;
+    procedure SetEvent;
+    procedure SetFontAsInherited;
+    procedure SetParentAsgSSDSel;
+    procedure SetPhysicalDrive(PhysicalDriveToReplicate: TPhysicalDrive);
+    procedure SetProperty;
   public
     PhysicalDrive: TPhysicalDrive;
-    constructor Create; reintroduce; overload;
+    constructor Create(PhysicalDriveToReplicate: TPhysicalDrive); reintroduce;
+    destructor Destroy; override;
   end;
   
 implementation
@@ -50,7 +63,7 @@ end;
 
 procedure TSSDLabel.SetParentAsgSSDSel;
 begin
-  Parent := gSSDSel;
+  Parent := fMain.gSSDSel;
 end;
 
 procedure TSSDLabel.SetCursorAsHandPoint;
@@ -67,9 +80,9 @@ end;
 
 procedure TSSDLabel.SetEvent;
 begin
-  OnClick := SSDLabelClick;
-  OnMouseEnter := SSDSelLblMouseEnter;
-  OnMouseLeave := SSDSelLblMouseLeave;
+  OnClick := fMain.SSDLabelClick;
+  OnMouseEnter := fMain.SSDSelLblMouseEnter;
+  OnMouseLeave := fMain.SSDSelLblMouseLeave;
 end;
 
 function DenaryByteToMB(SizeInByte: Double): Double;
@@ -104,21 +117,21 @@ begin
     FormatSizeInMBAsDenaryInteger(DiskSizeInMB);
 end;
 
-procedure TSSDLabel.AppendPartitionToCaption(Position: TPartitionPosition;
-  Letter: String);
+procedure TSSDLabel.AppendCurrentPartitionToCaption(
+  Position: TPartitionPosition; Letter: String);
 begin
-  if Position := TPartitionPosition.First then
+  if Position = TPartitionPosition.First then
     Caption := Caption + '(';
 
   Caption := Caption + Letter;
 
-  if Position := TPartitionPosition.Mid then
+  if Position = TPartitionPosition.Mid then
     Caption := Caption + ' '
   else
     Caption := Caption + ') ';
 end;
 
-procedure TSSDLabel.AppendPartitionToCaption(PartitionList: TPartitionList);
+procedure TSSDLabel.AppendPartitionListToCaption(PartitionList: TPartitionList);
 var
   PartitionEntryNumber: Integer;
 begin
@@ -133,11 +146,11 @@ begin
       AppendCurrentPartitionToCaption(TPartitionPosition.Mid,
         PartitionList[PartitionEntryNumber].Letter);
 end;
-  
+
 procedure TSSDLabel.SetCaptionByPartitionList(PartitionList: TPartitionList);
 begin
   SetCaptionAsModelAndDiskSizeInMB;
-  AppendPartitionToCaption(PartitionList);
+  AppendPartitionListToCaption(PartitionList);
 end;
 
 procedure TSSDLabel.SetCaption;

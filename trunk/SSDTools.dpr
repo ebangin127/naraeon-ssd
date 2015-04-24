@@ -23,7 +23,6 @@ uses
   uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas',
   uFirmware in 'ModulesForUI\Firmware\uFirmware.pas',
   uUSBDrive in 'ModulesForUI\USBDrive\uUSBDrive.pas',
-  uRefresh in 'ModulesForUI\Refresh\uRefresh.pas',
   uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas',
   uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
   uInit in 'ModulesForUI\Init\uInit.pas',
@@ -99,13 +98,20 @@ uses
   uSandiskNSTSupport in 'NSTSupport\Support\uSandiskNSTSupport.pas',
   uSeagateNSTSupport in 'NSTSupport\Support\uSeagateNSTSupport.pas',
   uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas',
-  uProgressSection in 'Model\uProgressSection.pas';
+  uProgressSection in 'Model\uProgressSection.pas',
+  uMainformMainpartApplier in 'UIObjects\MainformApplier\PartApplier\uMainformMainpartApplier.pas',
+  uMainformPartitionAlignApplier in 'UIObjects\MainformApplier\PartApplier\uMainformPartitionAlignApplier.pas',
+  uMainformReplacedSectorApplier in 'UIObjects\MainformApplier\PartApplier\uMainformReplacedSectorApplier.pas',
+  uMainformSMARTApplier in 'UIObjects\MainformApplier\PartApplier\uMainformSMARTApplier.pas',
+  uMainformTotalWriteApplier in 'UIObjects\MainformApplier\PartApplier\uMainformTotalWriteApplier.pas',
+  uMainformPhysicalDriveApplier in 'UIObjects\MainformApplier\PhysicalDriveApplier\uMainformPhysicalDriveApplier.pas',
+  uSSDLabel in 'UIObjects\uSSDLabel.pas',
+  uSSDLabelListRefresher in 'UIObjects\uSSDLabelListRefresher.pas',
+  uSSDLabelList in 'UIObjects\uSSDLabelList.pas',
+  uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
 
 {$R *.res}
-{$SetPEOptFlags 
-  IMAGE_FILE_RELOCS_STRIPPED or
-  IMAGE_DLLCHARACTERISTICS_NX_COMPAT or
-  IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE}
+{$SetPEOptFlags $140}
 {$RANGECHECKS ON}
 {$OVERFLOWCHECKS ON}
 

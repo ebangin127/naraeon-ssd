@@ -84,12 +84,7 @@ begin
 end;
 
 function TPhysicalDriveList.IsExists(Entry: TPhysicalDrive): Boolean;
-begin 
-  try
-    result := true;
-    IndexOf(Entry);
-  except
-    result := false;
-  end;
+begin
+  result := IndexOf(Entry) > -1;
 end;
 end.

@@ -3,13 +3,29 @@ unit uMainformReplacedSectorApplier;
 interface
 
 uses
-  uPhysicalDrive, uListChangeGetter;
+  SysUtils,
+  uPathManager, uLanguageSettings, uPhysicalDrive, uListChangeGetter,
+  uLogSystem, uNSTSupport;
 
 type
   TMainformReplacedSectorApplier = class
   private
     ReplacedSectorLog: TNSTLog;
     ReplacedSectors: UInt64;
+    procedure ApplyReplacedSectorsAsTotalWrite;
+    procedure ApplyTodayUsageByLog;
+    procedure SetUsageLabelByLogAndAvailableType(WriteLog: TNSTLog;
+      AvailableAverageType: Integer);
+    procedure CreateReplacedSectorLog;
+    procedure FreeReplacedSectorLog;
+    function GetAvailableAverageType: Integer;
+    function IsTotalWriteNotSupported: Boolean;
+    procedure SetHostWriteLabelAsReplacedSectors;
+    procedure SetReplacedSectors;
+    procedure SetUsageLabelAsUnknown;
+    procedure RecoverAnalyticsLabel;
+    procedure SetAnalyticsLabelAsLifeAnalysis;
+    procedure ApplyUsageByLog;
   public
     procedure ApplyMainformReplacedSector;
   end;
@@ -28,7 +44,7 @@ end;
 procedure TMainformReplacedSectorApplier.CreateReplacedSectorLog;
 begin
   ReplacedSectorLog := TNSTLog.Create(
-    TPathManager.AppPath, PhysicalDrive.IdentifyDeviceResult.Serial +
+    TPathManager.AppPath, fMain.PhysicalDrive.IdentifyDeviceResult.Serial +
     'RSLog', UIntToStr(ReplacedSectors), true);
 end;
 
@@ -51,12 +67,12 @@ var
 begin
   result := -1;
   for CurrentAverageType := AvgMax downto 0 do
-    if Length(WriteLog.Average[IntToAvg[CurrentAverageType]]) > 0 then
+    if Length(ReplacedSectorLog.Average[IntToAvg[CurrentAverageType]]) > 0 then
       exit(CurrentAverageType);
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyUsageByLog(WriteLog: TNSTLog;
-  AvailableAverageType: Integer);
+procedure TMainformReplacedSectorApplier.SetUsageLabelByLogAndAvailableType(
+  WriteLog: TNSTLog; AvailableAverageType: Integer);
 begin
   if Length(ReplacedSectorLog.Average[IntToAvg[AvailableAverageType]]) > 0 then
     fMain.l1Month.Caption :=
@@ -74,8 +90,8 @@ end;
 
 procedure TMainformReplacedSectorApplier.ApplyTodayUsageByLog;
 begin
-  fMain.lTodayUsage.Caption := CapToday[CurrLang] + ReplacedSectorLog.TodayUsage +
-    CapCount[CurrLang];
+  fMain.lTodayUsage.Caption := CapToday[CurrLang] +
+    ReplacedSectorLog.TodayUsage + CapCount[CurrLang];
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyUsageByLog;
@@ -102,19 +118,19 @@ begin
   fMain.lHost.Caption :=
     CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
     CapCount[CurrLang];
-begin;
+end;
 
 procedure TMainformReplacedSectorApplier.SetAnalyticsLabelAsLifeAnalysis;
 begin
   fMain.lAnalytics.Caption := BtLifeAnaly[CurrLang];
   fMain.lAnaly.Caption := CapLifeAnaly[CurrLang];
-begin;
+end;
 
 procedure TMainformReplacedSectorApplier.RecoverAnalyticsLabel;
 begin
   fMain.lAnalytics.Caption := BtAnaly[CurrLang];
   fMain.lAnaly.Caption := CapAnaly[CurrLang];
-begin;
+end;
 
 procedure TMainformReplacedSectorApplier.ApplyMainformReplacedSector;
 begin

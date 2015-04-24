@@ -3,10 +3,31 @@ unit uMainformTotalWriteApplier;
 interface
 
 uses
-  uPhysicalDrive, uListChangeGetter;
+  SysUtils,
+  uLanguageSettings, uPhysicalDrive, uListChangeGetter, uNSTSupport, uLogSystem,
+  uPathManager, uStrFunctions, uDatasizeUnit;
 
 type
   TMainformTotalWriteApplier = class
+  private
+    procedure AppendWriteToWriteLabel;
+    procedure ApplyTodayUsageByLog(WriteLog: TNSTLog);
+    procedure ApplyTotalWriteAsCount;
+    procedure ApplyTotalWriteAsValue;
+    procedure ApplyTotalWriteByWriteType;
+    procedure ApplyTotalWriteConvertedToMiB;
+    procedure ApplyTotalWriteInCount;
+    procedure SetUsageLabelByLogAndAvailableType(WriteLog: TNSTLog;
+      AvailableAverageType: Integer);
+    function GetAvailableAverageType(WriteLog: TNSTLog): Integer;
+    function IsTotalWriteNotSupported: Boolean;
+    function KiBtoMiB(SizeInKiB: UInt64): Double;
+    procedure RefreshWriteLogAndApplyUsageByLog;
+    procedure RestoreComponentsFromCountIfSet;
+    procedure SetComponentsForCount;
+    procedure SetUsageLabelAsUnknown;
+    procedure SetWriteLabelByHostNANDInformation;
+    procedure ApplyUsageByLog(WriteLog: TNSTLog);
   public
     procedure ApplyMainformTotalWrite;
   end;
@@ -23,21 +44,21 @@ end;
 
 procedure TMainformTotalWriteApplier.RestoreComponentsFromCountIfSet;
 begin
-  if l1Month.Visible = false then
+  if fMain.l1Month.Visible = false then
   begin
-    l1Month.Visible := false;
-    lHost.Top := lHost.Top + 25;
-    lTodayUsage.Top := lTodayUsage.Top + 15;
-    lOntime.Top := lOntime.Top + 10;
+    fMain.l1Month.Visible := false;
+    fMain.lHost.Top := fMain.lHost.Top + 25;
+    fMain.lTodayUsage.Top := fMain.lTodayUsage.Top + 15;
+    fMain.lOntime.Top := fMain.lOntime.Top + 10;
   end;
 end;
 
 procedure TMainformTotalWriteApplier.SetComponentsForCount;
 begin
-  l1Month.Visible := false;
-  lHost.Top := lHost.Top + 25;
-  lTodayUsage.Top := lTodayUsage.Top + 15;
-  lOntime.Top := lOntime.Top + 10;
+  fMain.l1Month.Visible := false;
+  fMain.lHost.Top := fMain.lHost.Top + 25;
+  fMain.lTodayUsage.Top := fMain.lTodayUsage.Top + 15;
+  fMain.lOntime.Top := fMain.lOntime.Top + 10;
 end;
 
 procedure TMainformTotalWriteApplier.SetWriteLabelByHostNANDInformation;
@@ -56,14 +77,15 @@ begin
   BinaryPointOne.FNumeralSystem := Binary;
   BinaryPointOne.FPrecision := 1;
 
-  lHost.Caption :=
-    lHost.Caption +
+  fMain.lHost.Caption :=
+    fMain.lHost.Caption +
     FormatSizeInMB(
       fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB,
       BinaryPointOne);
 end;
 
-function TMainformTotalWriteApplier.GetAvailableAverageType: Integer;
+function TMainformTotalWriteApplier.GetAvailableAverageType(WriteLog: TNSTLog):
+  Integer;
 var
   CurrentAverageType: Integer;
 begin
@@ -73,11 +95,11 @@ begin
       exit(CurrentAverageType);
 end;
 
-procedure TMainformTotalWriteApplier.ApplyUsageByLog(WriteLog: TNSTLog;
-  AvailableAverageType: Integer);
+procedure TMainformTotalWriteApplier.SetUsageLabelByLogAndAvailableType(
+  WriteLog: TNSTLog; AvailableAverageType: Integer);
 begin
   if Length(WriteLog.Average[IntToAvg[AvailableAverageType]]) > 0 then
-    l1Month.Caption :=
+    fMain.l1Month.Caption :=
       CapAvg[AvailableAverageType][CurrLang] +
       WriteLog.Average[IntToAvg[AvailableAverageType]] + 'GB/' +
       CapDay[CurrLang];
@@ -85,13 +107,13 @@ end;
 
 procedure TMainformTotalWriteApplier.SetUsageLabelAsUnknown;
 begin
-  l1Month.Caption :=
+  fMain.l1Month.Caption :=
     CapAvg[0][CurrLang] + '0 GB/' + CapDay[CurrLang];
 end;
 
 procedure TMainformTotalWriteApplier.ApplyTodayUsageByLog(WriteLog: TNSTLog);
 begin
-  lTodayUsage.Caption := CapToday[CurrLang] +
+  fMain.lTodayUsage.Caption := CapToday[CurrLang] +
     WriteLog.TodayUsage + 'GB';
 end;
 
@@ -99,7 +121,7 @@ procedure TMainformTotalWriteApplier.ApplyUsageByLog(WriteLog: TNSTLog);
 var
   AvailableAverageType: Integer;
 begin
-  AvailableAverageType := GetAvailableAverageType;
+  AvailableAverageType := GetAvailableAverageType(WriteLog);
   if AvailableAverageType >= 0 then
     SetUsageLabelByLogAndAvailableType(WriteLog, AvailableAverageType)
   else
@@ -113,8 +135,10 @@ var
 begin   
   WriteLog :=
     TNSTLog.Create(
-      TPathManager.AppPath, PhysicalDrive.IdentifyDeviceResult.Serial,
-      UIntToStr(MBToLiteONUnit(HostWriteInMiB)), false);
+      TPathManager.AppPath, fMain.PhysicalDrive.IdentifyDeviceResult.Serial,
+      UIntToStr(MBToLiteONUnit(
+        fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)),
+        false);
   ApplyUsageByLog(WriteLog);
   FreeAndNil(WriteLog);
 end;
@@ -143,19 +167,17 @@ var
   HostWriteInMiB: UInt64;
 begin
   HostWriteInMiB :=
-    PhysicalDrive.SMARTInterpreted.TotalWrite.InCount.ValueInCount *
-    round(KiBtoMiB(PhysicalDrive.IdentifyDeviceResult.UserSizeInKB));
+    fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InCount.ValueInCount *
+    round(KiBtoMiB(fMain.PhysicalDrive.IdentifyDeviceResult.UserSizeInKB));
         
-  lHost.Caption := CapNandWrite[CurrLang] + UIntToStr(HostWriteInMiB);
+  fMain.lHost.Caption := CapNandWrite[CurrLang] + UIntToStr(HostWriteInMiB);
 end;
 
 procedure TMainformTotalWriteApplier.ApplyTotalWriteInCount;
-var
-  HostWriteInMiB: UInt64;
 begin
-  lTodayUsage.Caption :=
+  fMain.lTodayUsage.Caption :=
     CapWearLevel[CurrLang] +
-    UIntToStr(PhysicalDrive.SMARTInterpreted.
+    UIntToStr(fMain.PhysicalDrive.SMARTInterpreted.
       TotalWrite.InCount.ValueInCount);
 end;
 
@@ -168,9 +190,9 @@ end;
 
 procedure TMainformTotalWriteApplier.ApplyTotalWriteByWriteType;
 begin
-  case PhysicalDrive.SupportStatus.TotalWriteType of
+  case fMain.PhysicalDrive.SupportStatus.TotalWriteType of
     TTotalWriteType.WriteSupportedAsValue:
-      ApplyTotalWriteAsCount;
+      ApplyTotalWriteAsValue;
     TTotalWriteType.WriteSupportedAsCount:
       ApplyTotalWriteAsCount;
   end;
