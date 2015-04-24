@@ -49,8 +49,6 @@ type
     { Public declarations }
   end;
 
-function GetServiceExecutablePath(strServiceName: string): String;
-
 var
   NaraeonSSDToolsDiag: TNaraeonSSDToolsDiag;
   WinDir, WinDrive: String;
@@ -397,82 +395,5 @@ begin
     FreeAndNil(DriveWritInfoList[CurrDrv]);
   if DriveSectInfoList[CurrDrv] <> nil then
     FreeAndNil(DriveSectInfoList[CurrDrv]);
-end;
-
-function GetServiceExecutablePath(strServiceName: string): String;
-var
-  hSCManager, hSCService: SC_Handle;
-  lpServiceConfig: LPQUERY_SERVICE_CONFIGW;
-  nSize, nBytesNeeded: DWord;
-begin
-  Result := '';
-  hSCManager := OpenSCManager(nil, nil, SC_MANAGER_CONNECT);
-  if (hSCManager > 0) then
-  begin
-    hSCService := OpenService(hSCManager, PChar(strServiceName),
-                              SERVICE_QUERY_CONFIG);
-    if (hSCService > 0) then
-    begin
-      QueryServiceConfig(hSCService, nil, 0, nSize);
-      lpServiceConfig := AllocMem(nSize);
-      try
-        if not QueryServiceConfig(
-          hSCService, lpServiceConfig, nSize, nBytesNeeded) Then Exit;
-          Result := lpServiceConfig^.lpBinaryPathName;
-      finally
-        Dispose(lpServiceConfig);
-      end;
-      CloseServiceHandle(hSCService);
-    end;
-  end;
-end;
-
-function KillSelf: Boolean;
-var
-  hProcess: THandle;
-begin
-  Result := True;
-
-  hProcess := OpenProcess(PROCESS_TERMINATE, True, GetCurrentProcessId());
-  if not TerminateProcess(hProcess, 0) then Result := False;
-  CloseHandle(hProcess);
-end;
-
-function KillProcess(const ProcName: String; Suicide: Boolean): Boolean;
-var
-  Process32: TProcessEntry32;
-  SHandle: THandle;
-  Next: Boolean;
-  hProcess: THandle;
-begin
-  Result := True;
-
-  Process32.dwSize := SizeOf(TProcessEntry32);
-  Process32.th32ProcessID := 0;
-  SHandle := CreateToolHelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-
-  if Process32First(SHandle, Process32) then begin
-    repeat
-      Next := Process32Next(SHandle, Process32);
-      if ((AnsiCompareText(Process32.szExeFile, Trim(ProcName)) = 0) and
-          ((GetCurrentProcessId() <> Process32.th32ProcessID) or
-            (Suicide))) then
-      begin
-        if Process32.th32ProcessID <> 0 then
-        begin
-          hProcess := OpenProcess(PROCESS_TERMINATE, True,
-                                  Process32.th32ProcessID);
-          if hProcess <> 0 then begin
-            if not TerminateProcess(hProcess, 0) then Result := False;
-          end
-          else Result := False;
-
-          CloseHandle(hProcess);
-        end
-        else Result := False;
-      end;
-    until not Next;
-  end;
-  CloseHandle(SHandle);
 end;
 end.

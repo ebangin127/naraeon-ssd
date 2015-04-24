@@ -111,9 +111,7 @@ uses
   uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
 
 {$R *.res}
-{$SetPEOptFlags $140}
-{$RANGECHECKS ON}
-{$OVERFLOWCHECKS ON}
+{$SETPEOPTFLAGS $140}
 
 var
   MainformCaption: String;

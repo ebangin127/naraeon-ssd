@@ -54,6 +54,7 @@ uses
   uSandforceNSTSupport in '..\NSTSupport\Abstraction\uSandforceNSTSupport.pas';
 
 {$R *.RES}
+{$SETPEOPTFLAGS $140}
 
 begin
   // Windows 2003 Server requires StartServiceCtrlDispatcher to be
