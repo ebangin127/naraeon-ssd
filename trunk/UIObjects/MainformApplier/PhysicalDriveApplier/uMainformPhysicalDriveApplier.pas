@@ -121,7 +121,7 @@ begin
     fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
 end;
 
-procedure TMainformPhysicalDriveApplier.RevertLastChangesToMainform;
+procedure TMainformPhysicalDriveApplier.RevertLastChangesOfMainform;
 begin
   if (not gFirmware.Visible) and
      (not gDownload.Visible) then
@@ -140,7 +140,7 @@ procedure TMainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(
 begin
   self.IsSerialOpened := IsSerialOpened;
   
-  RevertLastChangesToMainform;
+  RevertLastChangesOfMainform;
   ApplyMainpart;
   ApplyPartitionAlign;
   ApplyReplacedSector;
