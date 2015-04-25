@@ -30,6 +30,8 @@ type
     procedure Add(SSDLabel: TSSDLabel);
     function IndexOf(Entry: TPhysicalDrive): Integer;
     function IsExists(Entry: TPhysicalDrive): Boolean;
+    function IndexOfByPath(Path: String): Integer;
+    function IsExistsByPath(Path: String): Boolean;
   end;
 
   EIndexOfNotFound = class(Exception);
@@ -42,6 +44,11 @@ procedure TSSDLabelList.Delete(Index: Integer);
 begin
   Self[Index].Free;
   inherited Delete(Index);
+  if fMain.SSDLabel <> nil then
+  begin
+    SetLabelPosition;
+    SetGroupboxSize;
+  end;
 end;
 
 procedure TSSDLabelList.Add(SSDLabel: TSSDLabel);
@@ -89,6 +96,9 @@ procedure TSSDLabelList.SetGroupboxSize;
 begin
   fMain.gSSDSel.Width := GetMaxWidth + HorizontalPadding;
   fMain.gSSDSel.Height := GetMaxHeight + VerticalPadding;
+  if fMain.gSSDSel.Left + fMain.gSSDSel.Width > fMain.ClientWidth then
+    fMain.gSSDSel.Left := fMain.ClientWidth - fMAin.gSSDSel.Width -
+      HorizontalPadding;
 end;
 
 procedure TSSDLabelList.SetLabelPosition;
@@ -117,7 +127,7 @@ end;
 
 procedure TSSDLabelList.SetMidLabelLeft(Index: Integer);
 begin
-  Self[Index].Left := 
+  Self[Index].Left :=
     Self[Index - LabelPerLine].Left +
     Self[Index - LabelPerLine].Width +
     HorizontalPadding;
@@ -125,7 +135,7 @@ end;
 
 procedure TSSDLabelList.SetSingleLabelTop(Index: Integer);
 begin
-  if ((Index + 1) mod (LabelPerLine)) = 1 then
+  if (Index mod LabelPerLine) = 0 then
     SetFirstLabelTop(Index)
   else
     SetMidLabelTop(Index);
@@ -133,7 +143,7 @@ end;
 
 procedure TSSDLabelList.SetSingleLabelLeft(Index: Integer);
 begin
-  if ((Index + 1) div (LabelPerLine)) = 0 then
+  if (Index div LabelPerLine) = 0 then
     SetFirstLabelLeft(Index)
   else
     SetMidLabelLeft(Index);
@@ -171,6 +181,28 @@ begin
   try
     result := true;
     IndexOf(Entry);
+  except
+    result := false;
+  end;
+end;
+
+function TSSDLabelList.IndexOfByPath(Path: String): Integer;
+var
+  CurrentEntry: Integer;
+begin
+  for CurrentEntry := 0 to Count - 1 do
+    if Self[CurrentEntry].PhysicalDrive.IsPathEqual(Path) then
+      exit(CurrentEntry);
+
+  raise EIndexOfNotFound.Create('EIndexOfNotFound: This list does not contain' +
+    ' that item');
+end;
+
+function TSSDLabelList.IsExistsByPath(Path: String): Boolean;
+begin
+  try
+    result := true;
+    IndexOfByPath(Path);
   except
     result := false;
   end;

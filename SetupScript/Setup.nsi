@@ -62,6 +62,8 @@ Function .onInit
 FunctionEnd
 
 Section "MainSection" SEC01
+  SetOverwrite on
+
   SetOutPath "$INSTDIR\SSDTools\Rufus"
   File "..\Exe\Rufus\rufus.exe"
 
@@ -71,8 +73,6 @@ Section "MainSection" SEC01
   CreateDirectory "$INSTDIR\SSDTools\Erase"
   CreateDirectory "$INSTDIR\SSDTools\Firmware"
 
-  SetOverwrite on
-
   SetOutPath "$INSTDIR\SSDTools\Image"
   File "..\Exe\Image\logo.png"
   File "..\Exe\Image\bg.png"
@@ -80,7 +80,6 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
-
   File "..\Exe\NSTDiagSvc_Patch.exe"
 
   IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2

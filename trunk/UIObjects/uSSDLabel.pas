@@ -58,7 +58,7 @@ end;
 procedure TSSDLabel.SetFontAsInherited;
 begin
   Font.Name := fMain.Font.Name;
-  Font.Size := 10;
+  Font.Size := fMain.SSDSelLbl.Font.Size;
 end;
 
 procedure TSSDLabel.SetParentAsgSSDSel;

@@ -14,7 +14,8 @@ type
   public
     constructor Create(FileToGetAccess: String); virtual;
 
-    function IsPathEqual(OSFileToCompare: TOSFile): Boolean;
+    function IsPathEqual(OSFileToCompare: TOSFile): Boolean; overload;
+    function IsPathEqual(PathToCompare: String): Boolean; overload;
     function GetPathOfFileAccessing: String; virtual;
     function GetPathOfFileAccessingWithoutPrefix: String; virtual;
 
@@ -37,9 +38,12 @@ implementation
 
 function TOSFile.IsPathEqual(OSFileToCompare: TOSFile): Boolean;
 begin
-  result :=
-    GetPathOfFileAccessing =
-    OSFileToCompare.GetPathOfFileAccessing;
+  result := IsPathEqual(OSFileToCompare.GetPathOfFileAccessing);
+end;
+
+function TOSFile.IsPathEqual(PathToCompare: String): Boolean;
+begin
+  result := GetPathOfFileAccessing = PathToCompare;
 end;
 
 function TOSFile.IsLastSystemCallSucceed: Boolean;

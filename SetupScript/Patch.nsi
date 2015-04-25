@@ -86,8 +86,12 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
-
   File "..\Exe\NSTDiagSvc_Patch.exe"
+
+  SetOutPath "$INSTDIR\SSDTools\Image"
+  File "..\Exe\Image\logo.png"
+  File "..\Exe\Image\bg.png"
+  File "..\Exe\Image\warning.ico"
 
   IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"

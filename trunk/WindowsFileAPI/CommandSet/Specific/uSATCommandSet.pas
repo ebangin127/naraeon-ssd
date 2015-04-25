@@ -18,7 +18,7 @@ type
 
   private
     type
-      SCSI_COMMAND_DESCRIPTOR_BLOCK = packed record
+      SCSI_COMMAND_DESCRIPTOR_BLOCK = record
         SCSICommand: UCHAR;
         MultiplecountProtocolExtend: UCHAR;
         OfflineCkcondDirectionByteblockLength: UCHAR;
@@ -31,6 +31,7 @@ type
         ATACommand: UCHAR;
         Reserved: UCHAR;
         Control: UCHAR;
+        ReservedToFill16B: Array[0..3] of Byte;
       end;
       SCSI_PASS_THROUGH = record
         Length: USHORT;
@@ -156,6 +157,7 @@ var
 begin
   CommandDescriptorBlock := GetCommonCommandDescriptorBlock;
   CommandDescriptorBlock.ATACommand := IdentifyDeviceCommand;
+  CommandDescriptorBlock.SectorCount := 1;
   SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_IN, CommandDescriptorBlock);
 end;
 
@@ -181,7 +183,8 @@ var
   ATABufferInterpreter: TATABufferInterpreter;
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  ATABufferInterpreter.BufferToIdentifyDeviceResult(IoInnerBuffer.Buffer);
+  result :=
+    ATABufferInterpreter.BufferToIdentifyDeviceResult(IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
 

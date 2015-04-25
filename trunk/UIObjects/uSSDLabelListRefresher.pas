@@ -16,7 +16,7 @@ type
     procedure AlertAndExecuteNewDiagnosisInstance;
     procedure DeleteAndAddDevicesByResultList;
     procedure DeleteByDeletedList;
-    procedure DeleteDevice(Entry: TPhysicalDrive);
+    procedure DeleteDevice(Path: String);
     procedure FreeChangesList;
     function IsNoDeviceSelected: Boolean;
     function IsNoSupportedDriveExists: Boolean;
@@ -73,7 +73,7 @@ end;
 
 procedure TSSDLabelListRefresher.DeleteByDeletedList;
 var
-  CurrentEntry: TPhysicalDrive;
+  CurrentEntry: String;
 begin
   for CurrentEntry in ChangesList.Deleted do
     DeleteDevice(CurrentEntry);
@@ -87,12 +87,12 @@ begin
     AddDevice(CurrentEntry);
 end;
 
-procedure TSSDLabelListRefresher.DeleteDevice(Entry: TPhysicalDrive);
+procedure TSSDLabelListRefresher.DeleteDevice(Path: String);
 begin
-  if not fMain.SSDLabel.IsExists(Entry) then
+  if not fMain.SSDLabel.IsExistsByPath(Path) then
     exit;
     
-  fMain.SSDLabel.Delete(fMain.SSDLabel.IndexOf(Entry));
+  fMain.SSDLabel.Delete(fMain.SSDLabel.IndexOfByPath(Path));
 end;
 
 procedure TSSDLabelListRefresher.AddDevice(Entry: TPhysicalDrive);

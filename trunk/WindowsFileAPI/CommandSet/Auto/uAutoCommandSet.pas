@@ -41,9 +41,14 @@ begin
     exit;
   end;
 
-  result := CommandSetToTry.IdentifyDevice;
-  result.IsDataSetManagementSupported :=
-    CommandSetToTry.IsDataSetManagementSupported;
+  try
+    result := CommandSetToTry.IdentifyDevice;
+    result.IsDataSetManagementSupported :=
+      CommandSetToTry.IsDataSetManagementSupported;
+  except
+    result.Model := '';
+    result.IsDataSetManagementSupported := false;
+  end;
 
   if result.Model = '' then
     FreeAndNil(CommandSetToTry)

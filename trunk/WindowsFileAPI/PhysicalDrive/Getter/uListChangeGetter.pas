@@ -3,13 +3,13 @@ unit uListChangeGetter;
 interface
 
 uses
-  SysUtils, 
+  SysUtils, Classes,
   uPhysicalDrive, uPhysicalDriveList;
 
 type
   TChangesList = record
     Added: TPhysicalDriveList;
-    Deleted: TPhysicalDriveList;
+    Deleted: TStringList;
   end;
   
   TListChangeGetter = class
@@ -30,9 +30,9 @@ type
     function IsSupportedOrNotNeededToCheck(
       IsSupported: Boolean): Boolean;
     function ReturnAddedListAndRefreshList(
-      var ListToRefresh: TPhysicalDriveList): TPhysicalDriveList;
+      var NewList: TPhysicalDriveList): TPhysicalDriveList;
     function ReturnDeletedListAndRefreshList(
-      var ListToRefresh: TPhysicalDriveList): TPhysicalDriveList;
+      var NewList: TPhysicalDriveList): TStringList;
   public
     property IsOnlyGetSupportedDrives: Boolean
       read InnerIsOnlyGetSupportedDrives write InnerIsOnlyGetSupportedDrives;
@@ -87,7 +87,7 @@ begin
 end;
   
 function TListChangeGetter.ReturnAddedListAndRefreshList(
-  var ListToRefresh: TPhysicalDriveList): TPhysicalDriveList;
+  var NewList: TPhysicalDriveList): TPhysicalDriveList;
 var
   CurrentEntry: TPhysicalDrive;
   IsExistsInPreviousList: Boolean;
@@ -99,7 +99,7 @@ begin
     IsExistsInPreviousList := ListToRefresh.IsExists(CurrentEntry);
 
     if IsSupportedOrNotNeededToCheck(CurrentEntry.SupportStatus.Supported) then
-      ListToRefresh.Add(TPhysicalDrive.Create
+      NewList.Add(TPhysicalDrive.Create
         (StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix)));
 
     if not IsResultNeeded then
@@ -114,27 +114,25 @@ begin
 end;
   
 function TListChangeGetter.ReturnDeletedListAndRefreshList(
-  var ListToRefresh: TPhysicalDriveList): TPhysicalDriveList;
+  var NewList: TPhysicalDriveList): TStringList;
 var
   ItemIndexOfListToRefresh: Integer;
-  IsExistsInCurrentList: Boolean;
+  IsExistsInNewList: Boolean;
 begin
   result := nil;
   if not IsResultNeeded then
     exit;
     
-  result := TPhysicalDriveList.Create;
+  result := TStringList.Create;
 
   for ItemIndexOfListToRefresh := 0 to ListToRefresh.Count - 1 do
   begin
-    IsExistsInCurrentList :=
-      ListToRefresh.IsExists(ListToRefresh[ItemIndexOfListToRefresh]);
+    IsExistsInNewList :=
+      NewList.IsExists(ListToRefresh[ItemIndexOfListToRefresh]);
 
-    if not IsExistsInCurrentList then
-      result.Add(TPhysicalDrive.Create
-        (StrToInt(
-          ListToRefresh[ItemIndexOfListToRefresh].
-            GetPathOfFileAccessingWithoutPrefix)));
+    if not IsExistsInNewList then
+      result.Add(ListToRefresh[ItemIndexOfListToRefresh].
+        GetPathOfFileAccessing);
   end;
 end;
   

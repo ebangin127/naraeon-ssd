@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.CheckLst, WinInet,
+  Vcl.StdCtrls, Vcl.CheckLst, WinInet, UITypes,
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
@@ -147,6 +147,11 @@ type
   private
     procedure RefreshByPhysicalDrive;
     procedure RefreshDrives;
+    function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
+    procedure CreateNewPhysicalDrive;
+    procedure IfThisDriveNotValidSelectOther;
+    procedure FindAndSelectValidDrive;
+    procedure SetSelectedDriveLabelBold;
   protected
     //쓰레드 관련
     TrimThread: TTrimThread;
@@ -443,6 +448,8 @@ begin
   SSDLabelListRefresher := TSSDLabelListRefresher.Create;
   SSDLabelListRefresher.RefreshDrives;
   FreeAndNil(SSDLabelListRefresher);
+  RefreshByPhysicalDrive;
+  SetSelectedDriveLabelBold;
 end;
 
 procedure TfMain.FormShow(Sender: TObject);
@@ -656,8 +663,6 @@ begin
 end;
 
 procedure TfMain.SSDLabelClick(Sender: TObject);
-var
-  CurrIndex: Integer;
 begin
   CloseDriveList;
 
@@ -674,13 +679,6 @@ begin
   CurrDrive :=
     TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix;
   tRefreshTimer(Self);
-
-  for CurrIndex := 0 to SSDLabel.Count - 1 do
-    if SSDLabel[CurrIndex].PhysicalDrive.GetPathOfFileAccessing =
-       TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessing then
-      SSDLabel[CurrIndex].Font.Style := [fsBold]
-    else
-      SSDLabel[CurrIndex].Font.Style := [];
 
   gSSDSel.Visible := false;
 end;
@@ -716,6 +714,46 @@ begin
   CloseDriveList;
 end;
 
+function TfMain.TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer):
+  Boolean;
+begin
+  try
+    result := true;
+    fMain.PhysicalDrive := TPhysicalDrive.Create(DeviceNumber);
+  except
+    result := false;
+    FreeAndNil(fMain.PhysicalDrive);
+  end;
+end;
+
+procedure TfMain.FindAndSelectValidDrive;
+var
+  CurrentEntry: TSSDLabel;
+begin
+  for CurrentEntry in SSDLabel do
+  begin
+    if TryToCreatePhysicalDriveWithEntry(
+      StrToInt(
+        CurrentEntry.PhysicalDrive.GetPathOfFileAccessingWithoutPrefix)) then
+    begin
+      CurrentEntry.OnClick(CurrentEntry);
+      exit;
+    end;
+  end;
+end;
+
+procedure TfMain.IfThisDriveNotValidSelectOther;
+begin
+  if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrDrive)) = false then
+    FindAndSelectValidDrive;
+end;
+
+procedure TfMain.CreateNewPhysicalDrive;
+begin
+  FreeAndNil(fMain.PhysicalDrive);
+  IfThisDriveNotValidSelectOther;
+end;
+
 procedure TfMain.tRefreshTimer(Sender: TObject);
 const
   ORIGINAL_INTERVAL = 60000;
@@ -726,10 +764,25 @@ begin
   if Length(fMain.CurrDrive) = 0 then
     exit;
 
-  FreeAndNil(fMain.PhysicalDrive);
-  fMain.PhysicalDrive := TPhysicalDrive.Create(StrToInt(fMain.CurrDrive));
+  CreateNewPhysicalDrive;
+  RefreshDrives;
+end;
 
-  RefreshByPhysicalDrive;
+procedure TfMain.SetSelectedDriveLabelBold;
+var
+  CurrIndex: Integer;
+begin
+  for CurrIndex := 0 to SSDLabel.Count - 1 do
+  begin
+    if SSDLabel[CurrIndex].PhysicalDrive.GetPathOfFileAccessing =
+       PhysicalDrive.GetPathOfFileAccessing then
+    begin
+      if SSDLabel[CurrIndex].Font.Style <> [fsBold] then
+        SSDLabel[CurrIndex].Font.Style := [fsBold];
+    end
+    else
+      SSDLabel[CurrIndex].Font.Style := [];
+  end;
 end;
 
 procedure TfMain.RefreshByPhysicalDrive;
@@ -767,7 +820,7 @@ begin
   end;
 
   tRefresh.Enabled := false;
-  RefreshByPhysicalDrive;
+  RefreshDrives;
   tRefresh.Enabled := true;
 
   SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
