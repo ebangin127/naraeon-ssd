@@ -144,6 +144,7 @@ end;
 procedure TSATCommandSet.SetInnerBufferAsFlagsAndCdb
   (Flags: ULONG; CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK);
 begin
+  CommandDescriptorBlock.SectorCount := 1;
   IoInnerBuffer := GetCommonBuffer;
 	IoInnerBuffer.Parameter.DataIn := Flags;
   IoInnerBuffer.Parameter.CommandDescriptorBlock := CommandDescriptorBlock;

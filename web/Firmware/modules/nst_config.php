@@ -3,6 +3,6 @@
     return "naraeonn_nstools";
   }
   function db_pass() {
-    return "tzKg1I4o]2uW";
+    return "4v)=hegc1,vPMo(_MZ";
   }
 ?>
