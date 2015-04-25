@@ -74,7 +74,6 @@ var
   Publisher: String;
   PublisherLength: DWORD;
 begin
-  result := false;
   PublisherLength := CertGetNameStringW(ValidContext,
     CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nil, nil, 0);
   SetLength(Publisher, PublisherLength - 1);
