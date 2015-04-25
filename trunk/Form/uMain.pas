@@ -235,7 +235,7 @@ begin
       CapLocalDisk[LANG_ENGLISH] +
       CapRemvDisk[LANG_ENGLISH] +
       CapProg1[LANG_ENGLISH] +
-      CapProg2[LANG_ENGLISH] +
+      CapProg3[LANG_ENGLISH] +
       CapProg2[LANG_ENGLISH]
     );
 
@@ -406,9 +406,6 @@ begin
   ShowSerial := false;
   ListEnter := 0;
   FirstiOptLeft := iOptimize.Left;
-
-  if Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) = '.err' then
-    exit;
 
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
@@ -803,9 +800,6 @@ const
   INTERNET_CONNECTION_LAN = 2;
 var
   ifConnected: DWORD;
-  DesktopPath: array[0..MAX_PATH] of char;
-  DeskPath: String;
-  ErrList: TStringList;
 begin
   if lName.Caption = '' then
   begin
@@ -822,21 +816,6 @@ begin
     UpdateThread.Priority := tpLower;
     UpdateThread.Start;
   end;
-
-  tRefresh.Enabled := false;
-  RefreshDrives;
-  tRefresh.Enabled := true;
-
-  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
-  DeskPath := DesktopPath;
-
-  if FileExists(DeskPath + '\!!!SSDError!!!.err') then
-    MsgboxCreate(Self, DeskPath + '\!!!SSDError!!!.err');
-
-  ErrList := WriteBufferCheck;
-  if ErrList.Count > 0 then
-    AlertCreate(Self, ErrCache[CurrLang] + Chr(13) + Chr(10) +  ErrList.Text);
-  FreeAndNil(ErrList);
 end;
 
 procedure TfMain.WMDeviceChange(var Msg: TMessage);

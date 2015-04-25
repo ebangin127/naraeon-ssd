@@ -3,18 +3,21 @@ unit uPathManager;
 interface
 
 uses
-  Forms, Windows, SysUtils, Classes, ShlObj,
+  Forms, Windows, SysUtils, Classes, ShlObj, Character,
   uRegFunctions;
 
 type
   TPathManager = class
-  protected
+  private
+    class function AppendRandomNSTFooter(BasePath: String): String; static;
+    class function RootTempFolder: String; static;
+
     class var FAppPath: String;
     class var FWinDir: String;
     class var FWinDrive: String;
-    class var FTempFolder: String;
     class var FAllDesktopPath: String;
     class var FDesktopPathInChar: array[0..MAX_PATH] of char;
+    class function IsValidPath(PathToValidate: String): Boolean; static;
 
   public
     class procedure SetPath(Application: TApplication);
@@ -64,15 +67,47 @@ begin
   exit(FWinDrive);
 end;
 
-class function TPathManager.TempFolder: String;
+class function TPathManager.AppendRandomNSTFooter(BasePath: String): String;
+var
+  OptionalBackslash: String;
 begin
-  result :=
-    FWinDrive +
-    '\NST' + IntToStr(Random(2147483647)) + '\';
+  OptionalBackslash := '';
+  if BasePath[Length(BasePath)] <> '\'  then
+    OptionalBackslash := '\';
+
+  result := BasePath + OptionalBackslash +
+    'NST' + IntToStr(Random(2147483647)) + '\';
   while DirectoryExists(result) do
     result :=
-      FWinDrive +
-      '\NST' + IntToStr(Random(2147483647)) + '\';
+      BasePath + OptionalBackslash +
+      'NST' + IntToStr(Random(2147483647)) + '\';
+end;
+
+class function TPathManager.RootTempFolder: String;
+begin
+  result := AppendRandomNSTFooter(FWinDrive);
+end;
+
+class function TPathManager.IsValidPath(PathToValidate: String): Boolean;
+var
+  CurrentCharacter: Char;
+begin
+  result := true;
+  for CurrentCharacter in PathToValidate do
+    if Ord(CurrentCharacter) > Byte.MaxValue then
+      exit(false);
+end;
+
+class function TPathManager.TempFolder: String;
+var
+  TempPath: String;
+begin
+  SetLength(TempPath, MAX_PATH + 1);
+  SetLength(TempPath, GetTempPath(MAX_PATH, PChar(TempPath)));
+  if IsValidPath(TempPath) then
+    result := AppendRandomNSTFooter(TempPath)
+  else
+    result := RootTempFolder;
 end;
 
 end.

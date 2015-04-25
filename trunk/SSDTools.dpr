@@ -128,8 +128,7 @@ var
   ExistingInstanceWindow: THandle;
 begin
   ExistingInstanceWindow := FindWindow(PChar('TfMain'), PChar(MainformCaption));
-  if (ExistingInstanceWindow <> 0) and
-     (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  if ExistingInstanceWindow <> 0 then
   begin
     ShowWindow(ExistingInstanceWindow, SW_RESTORE);
     SetForegroundWindow(ExistingInstanceWindow);

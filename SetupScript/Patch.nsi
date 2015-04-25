@@ -84,6 +84,9 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\SSDTools\Rufus"
   File "..\Exe\Rufus\rufus.exe"
 
+  SetOutPath "$INSTDIR\SSDTools\7z"
+  File "..\Exe\7z\7z.exe"
+
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
   File "..\Exe\NSTDiagSvc_Patch.exe"

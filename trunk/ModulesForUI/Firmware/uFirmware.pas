@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, SysUtils, IdURI, Dialogs,
-  uAlert, uLanguageSettings, uPathManager,
+  uAlert, uLanguageSettings, uPathManager, uGlobalSettings,
   uStrFunctions, uExeFunctions, uSevenZip, uPhysicalDrive,
-  uFileFunctions, uDownloadPath, uFirmwareGetter;
+  uFileFunctions, uDownloadPath, uFirmwareGetter, uCodesignVerifier;
 
 type
   TDownloadedFirmware = record
@@ -51,8 +51,10 @@ var
   Src, Dest: TDownloadFile;
   DownloadResult: Boolean;
   TempFolder: String;
+  DestPath: String;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
+  CodesignVerifier: TCodesignVerifier;
 begin
   Randomize;
 
@@ -82,7 +84,7 @@ begin
 
   Src.FBaseAddress := '';
   Src.FFileAddress := TIdURI.URLEncode(
-    'http://nstfirmware.naraeon.net/nst_firmdown.php?' +
+    'http://nstfirmware.naraeon.net/NSTFirmwareDownload.php?' +
     'Model=' +
       PhysicalDrive.IdentifyDeviceResult.Model + '&' +
     'Firmware=' +
@@ -115,14 +117,27 @@ begin
   FirmPath := TempFolder + QueryResult.FirmwarePath;
   RenameFile(FirmPath + '_tmp', FirmPath);
 
-  if (ExtractFileExt(FirmPath) = '.zip') or
-     (ExtractFileExt(FirmPath) = '.7z') then
+  if ExtractFileExt(FirmPath) = '.is_' then
   begin
-    TSevenZip.Extract(
-      TPathManager.AppPath + '7z\7z.exe',
-      FirmPath,
-      ExtractFilePath(FirmPath) + PhysicalDrive.IdentifyDeviceResult.Model
-    );
+    DestPath := Copy(FirmPath, 1, Length(FirmPath) -
+        Length(ExtractFileExt(FirmPath))) + '.iso';
+    OpenProcWithOutput(TPathManager.WinDir,
+      'expand.exe ' + FirmPath + ' ' + DestPath);
+  end;
+
+  if ExtractFileExt(FirmPath)[Length(ExtractFileExt(FirmPath))] = '_' then
+  begin
+    CodesignVerifier := TCodesignVerifier.Create;
+    if not CodesignVerifier.VerifySignByPublisher(FirmPath,
+      NaraeonPublisher) then
+    begin
+      AlertCreate(fMain, AlrtWrongCodesign[CurrLang]);
+      DeleteFile(DestPath);
+      DeleteDirectory(ExtractFilePath(DestPath));
+      result.IsFirmwareExists := false;
+      exit;
+    end;
+    FreeAndNil(CodesignVerifier);
     DeleteFile(FirmPath);
   end;
 

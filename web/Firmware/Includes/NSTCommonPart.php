@@ -1,6 +1,6 @@
 <?php
-  require './modules/NSTAccount.php';
-  require './modules/NSTGetIP.php';
+  require './Includes/NSTAccount.php';
+  require './Includes/NSTGetIP.php';
 
   class Stages {
     var $Conn;

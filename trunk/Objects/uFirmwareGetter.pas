@@ -78,7 +78,7 @@ function TFirmwareGetter.BuildURIByQuery(Query: TFirmwareQuery):
   String;
 begin
   exit(
-    'http://nstfirmware.naraeon.net/nst_firmchk.php?' +
+    'http://nstfirmware.naraeon.net/NSTFirmwareCheck.php?' +
     'Model=' + Query.Model + '&' +
     'Firmware=' + Query.Firmware);
 end;

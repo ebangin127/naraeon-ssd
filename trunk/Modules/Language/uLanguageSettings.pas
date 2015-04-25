@@ -127,6 +127,7 @@ const
     CapRemvDisk: Array[0..1] of String = ('이동식 디스크', 'Removable Disk');
     CapProg1: Array[0..1] of String = ('진행 상황 : ', 'Progress : ');
     CapProg2: Array[0..1] of String = ('트림 도중 자료 유실 우려가 있으니, 쓰기 작업 병행을 최소화해주세요', 'DO NOT DO WRITE-INTENSIVE OPERATION DURING MANUAL TRIM.');
+    CapProg3: Array[0..1] of String = ('드라이브 트림 진행중', 'Drive trimming');
 
 
   //반자동 트림
