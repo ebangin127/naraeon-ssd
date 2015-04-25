@@ -152,6 +152,7 @@ type
     procedure IfThisDriveNotValidSelectOther;
     procedure FindAndSelectValidDrive;
     procedure SetSelectedDriveLabelBold;
+    function FirmwareUpdateNotAvailable: Boolean;
   protected
     //쓰레드 관련
     TrimThread: TTrimThread;
@@ -170,7 +171,6 @@ type
     //최적화 관련
     Optimizer: TNSTOptimizer;
 
-
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
@@ -181,6 +181,7 @@ type
     FirmwareGetter: TFirmwareGetter;
     WICImage: TWICImage;
     ButtonGroup: TButtonGroup;
+    OnlineFirmwareUpdateAvailable: Boolean;
 
     //현재 드라이브 관련
     FirstiOptLeft: Integer;
@@ -505,6 +506,12 @@ begin
   ButtonGroup.Click(iAnalytics);
 end;
 
+function TfMain.FirmwareUpdateNotAvailable: Boolean;
+begin
+  result := (not PhysicalDrive.SupportStatus.FirmwareUpdate) or
+    (not OnlineFirmwareUpdateAvailable);
+end;
+
 procedure TfMain.iFirmUpClick(Sender: TObject);
 var
   ifConnected: DWORD;
@@ -513,7 +520,7 @@ var
 begin
   CloseDriveList;
 
-  if PhysicalDrive.SupportStatus.FirmwareUpdate = false then
+  if FirmwareUpdateNotAvailable then
   begin
     AlertCreate(Self, AlrtNoFirmSupport[CurrLang]);
     exit;

@@ -155,6 +155,7 @@ function TFirmwareGetter.TFirmwareCache.CheckFirmware(Query: TFirmwareQuery):
 var
   CurrentCacheLine: TCacheLine;
 begin
+  result.CurrentVersion := TFirmwareVersion.NotMine;
   for CurrentCacheLine in Cache do
     if CurrentCacheLine.Query = Query then
       exit(CurrentCacheLine.Result);
