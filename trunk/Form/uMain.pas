@@ -448,6 +448,9 @@ begin
   SSDLabelListRefresher := TSSDLabelListRefresher.Create;
   SSDLabelListRefresher.RefreshDrives;
   FreeAndNil(SSDLabelListRefresher);
+
+  if PhysicalDriveList.Count = 0 then
+    exit;
   RefreshByPhysicalDrive;
   SetSelectedDriveLabelBold;
 end;
