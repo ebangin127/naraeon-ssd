@@ -46,7 +46,7 @@ object fMain: TfMain
   end
   object SSDSelLbl: TLabel
     Left = 346
-    Top = 10
+    Top = 13
     Width = 5
     Height = 20
     Cursor = crHandPoint

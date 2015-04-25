@@ -18,6 +18,7 @@ type
     function IsTHNSNF: Boolean;
     function IsTHNSNH: Boolean;
     function IsTHNSNS: Boolean;
+    function IsTHNSNJ: Boolean;
 
   public
     function GetSupportStatus: TSupportStatus; override;
@@ -44,6 +45,11 @@ begin
   result := Pos('THNSNH', Model) > 0;
 end;
 
+function TToshibaNSTSupport.IsTHNSNJ: Boolean;
+begin
+  result := Pos('THNSNJ', Model) > 0;
+end;
+
 function TToshibaNSTSupport.IsTHNSNS: Boolean;
 begin
   result := Pos('THNSNS', Model) > 0;
@@ -51,7 +57,8 @@ end;
 
 function TToshibaNSTSupport.IsProductOfToshiba: Boolean;
 begin
-  result := IsModelHasToshibaString and (IsTHNSNF or IsTHNSNH or IsTHNSNS);
+  result := IsModelHasToshibaString and
+    (IsTHNSNF or IsTHNSNH or IsTHNSNJ or IsTHNSNS);
 end;
 
 function TToshibaNSTSupport.GetFullSupport: TSupportStatus;

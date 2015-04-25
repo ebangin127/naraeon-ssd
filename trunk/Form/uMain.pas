@@ -608,22 +608,19 @@ begin
   CloseDriveList;
 
   if ButtonGroup.FindEntry(iFirmUp).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/131', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/firmupdate/', '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iErase).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/144', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/erase-pm/', '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iTrim).Selected then
-  begin
-    if gTrim.Visible then
-      ShellExecute(0, 'open', 'http://naraeon.tistory.com/142', '',
-        nil, SW_NORMAL)
-    else
-      ShellExecute(0, 'open', 'http://naraeon.tistory.com/143', '',
-        nil, SW_NORMAL);
-  end
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/mantrim/', '',
+      nil, SW_NORMAL)
+  else if ButtonGroup.FindEntry(iOptimize).Selected then
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/optimize/', '',
+      nil, SW_NORMAL)
   else
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/132', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/', '',
       nil, SW_NORMAL);
 end;
 
