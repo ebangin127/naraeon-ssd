@@ -3,7 +3,7 @@ unit uSSDLabelList;
 interface
 
 uses
-  SysUtils, Generics.Collections,
+  SysUtils, Generics.Collections, Graphics,
   uSSDLabel, uPhysicalDrive;
 
 type
@@ -60,8 +60,12 @@ begin
 
   result := 0;
   for CurrentEntry in Self do
+  begin
+    CurrentEntry.Font.Style := [fsBold];
     if result < CurrentEntry.Left + CurrentEntry.Width then
       result := CurrentEntry.Left + CurrentEntry.Width;
+    CurrentEntry.Font.Style := [];
+  end;
 end;
 
 function TSSDLabelList.GetMaxHeight: Integer;
@@ -73,14 +77,18 @@ begin
     
   result := 0;
   for CurrentEntry in Self do
+  begin
+    CurrentEntry.Font.Style := [fsBold];
     if result < CurrentEntry.Top + CurrentEntry.Height then
       result := CurrentEntry.Top + CurrentEntry.Height;
+    CurrentEntry.Font.Style := [];
+  end;
 end;
 
 procedure TSSDLabelList.SetGroupboxSize;
 begin
-  fMain.gSSDSel.Width := GetMaxWidth + (HorizontalPadding * 2);
-  fMain.gSSDSel.Height := GetMaxHeight + (VerticalPadding * 2);
+  fMain.gSSDSel.Width := GetMaxWidth + HorizontalPadding;
+  fMain.gSSDSel.Height := GetMaxHeight + VerticalPadding;
 end;
 
 procedure TSSDLabelList.SetLabelPosition;
