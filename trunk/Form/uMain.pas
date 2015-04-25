@@ -137,9 +137,6 @@ type
       AWorkCount: Int64);
     procedure ProgressDownload;
 
-    //펌웨어/Rufus 다운로드
-    function DownloadRufus: Boolean;
-
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -280,7 +277,7 @@ begin
   DownloadedFirmware := DownloadLatestFirmware(PhysicalDrive, FirmwareGetter);
 
   if (DownloadedFirmware.IsFirmwareExists = false) or
-     ((TRufus.CheckRufus = false) and (DownloadRufus = false)) then
+     (TRufus.CheckRufus = false) then
   begin
     tRefresh.Enabled := true;
     exit;
@@ -952,40 +949,6 @@ begin
         '/F'));                                     //강제 삭제
 end;
 
-function TfMain.DownloadRufus: Boolean;
-var
-  Src, Dest: TDownloadFile;
-  DownloadResult: Boolean;
-begin
-  result := false;
-
-  AlertCreate(Self, AlrtBootInStart[CurrLang]);
-
-  Src.FBaseAddress := '';
-  Src.FFileAddress :=
-    'http://nstfirmware.naraeon.net/nst_rufus.htm';
-  Src.FType := dftGetFromWeb;
-
-  Dest.FBaseAddress := TPathManager.AppPath;
-  Dest.FFileAddress := 'Rufus\rufus.exe_tmp';
-  Dest.FType := dftPlain;
-
-  gFirmware.Visible := false;
-  DownloadResult :=
-    DownloadFile(Src, Dest, CapBootInDwld[CurrLang], bCancel.Caption);
-  gFirmware.Visible := true;
-
-  if DownloadResult = false then
-  begin
-    AlertCreate(Self, AlrtFirmCanc[CurrLang]);
-    exit;
-  end;
-  RenameFile(TPathManager.AppPath + 'Rufus\rufus.exe_tmp',
-             TPathManager.AppPath + 'Rufus\rufus.exe');
-
-  result := TRufus.CheckRufus;
-end;
-
 procedure TfMain.ProgressDownload;
 const
   CancelButton = 1;
@@ -1016,7 +979,9 @@ begin
   ButtonGroup.Close;
 
   CodesignVerifier := TCodesignVerifier.Create;
-  if not CodesignVerifier.IsCodeSigned(TPathManager.AppPath + 'Setup.exe') then
+  if not CodesignVerifier.VerifySignByPublisher(
+    TPathManager.AppPath + 'Setup.exe',
+    NaraeonPublisher) then
   begin
     AlertCreate(Self, AlrtWrongCodesign[CurrLang]);
     DeleteFile(TPathManager.AppPath + 'Setup.exe');

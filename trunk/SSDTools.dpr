@@ -108,7 +108,9 @@ uses
   uSSDLabel in 'UIObjects\uSSDLabel.pas',
   uSSDLabelListRefresher in 'UIObjects\uSSDLabelListRefresher.pas',
   uSSDLabelList in 'UIObjects\uSSDLabelList.pas',
-  uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
+  uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
+  uCodesignPublisherVerifier in 'Objects\uCodesignPublisherVerifier.pas',
+  uCodesignExtern in 'Modules\Windows\uCodesignExtern.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

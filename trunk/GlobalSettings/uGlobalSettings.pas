@@ -11,6 +11,8 @@ const
 
   CurrentVersion = '5.0.0';
 
+  NaraeonPublisher = 'Minkyu Kim';
+
 implementation
 
 end.

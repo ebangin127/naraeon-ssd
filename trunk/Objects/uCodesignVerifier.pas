@@ -3,7 +3,8 @@ unit uCodesignVerifier;
 interface
 
 uses
-  Windows;
+  SysUtils, Windows,
+  uCodesignPublisherVerifier;
 
 type
   TCodesignVerifier = class
@@ -58,9 +59,12 @@ type
     procedure SetWinTrustData;
     procedure SetWinTrustFileInfo(PathToVerify: String);
     function VerifyAndReturnResult: Boolean;
+    function IsCodeSigned(PathToVerify: String): Boolean;
+    function VerifyPublisher(PathToVerify, ExpectedPublisher: string): Boolean;
 
   public
-    function IsCodeSigned(PathToVerify: String): Boolean;
+    function VerifySignByPublisher(PathToVerify,
+      ExpectedPublisher: string): Boolean;
   end;
 
 implementation
@@ -89,6 +93,27 @@ begin
   result :=
     WinVerifyTrust(INVALID_HANDLE_VALUE, WINTRUST_ACTION_GENERIC_VERIFY_V2,
       @WinTrustData) = ERROR_SUCCESS;
+end;
+
+function TCodesignVerifier.VerifyPublisher(PathToVerify,
+  ExpectedPublisher: string): Boolean;
+var
+  CodesignPublisherVerifier: TCodesignPublisherVerifier;
+begin
+  CodesignPublisherVerifier := TCodesignPublisherVerifier.Create;
+  result := CodesignPublisherVerifier.VerifySignByPublisher(PathToVerify,
+    ExpectedPublisher);
+  FreeAndNil(CodesignPublisherVerifier);
+end;
+
+function TCodesignVerifier.VerifySignByPublisher(PathToVerify,
+  ExpectedPublisher: string): Boolean;
+begin
+  result := false;
+  if not IsCodeSigned(PathToVerify) then
+    exit
+  else
+    result := VerifyPublisher(PathToVerify, ExpectedPublisher);
 end;
 
 function TCodesignVerifier.IsCodeSigned(PathToVerify: String): Boolean;
