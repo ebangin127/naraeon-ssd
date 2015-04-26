@@ -349,6 +349,10 @@ object fMain: TfMain
       Font.Style = []
       ParentFont = False
       TabOrder = 1
+<<<<<<< HEAD
+=======
+      OnClick = bCancelClick
+>>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
     end
   end
   object gSSDSel: TGroupBox

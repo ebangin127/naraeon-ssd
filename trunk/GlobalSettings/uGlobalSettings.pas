@@ -13,6 +13,8 @@ const
 
   NaraeonPublisher = 'Minkyu Kim';
 
+  NaraeonPublisher = 'Minkyu Kim';
+
 implementation
 
 end.

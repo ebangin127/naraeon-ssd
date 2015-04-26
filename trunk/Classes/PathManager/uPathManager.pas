@@ -98,13 +98,21 @@ begin
       exit(false);
 end;
 
+<<<<<<< HEAD
 class function TPathManager.TempFolder(AnsiOnly: Boolean): String;
+=======
+class function TPathManager.TempFolder: String;
+>>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
 var
   TempPath: String;
 begin
   SetLength(TempPath, MAX_PATH + 1);
   SetLength(TempPath, GetTempPath(MAX_PATH, PChar(TempPath)));
+<<<<<<< HEAD
   if (not AnsiOnly) or (IsValidPath(TempPath)) then
+=======
+  if IsValidPath(TempPath) then
+>>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
     result := AppendRandomNSTFooter(TempPath)
   else
     result := RootTempFolder;

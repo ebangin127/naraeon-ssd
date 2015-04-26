@@ -110,10 +110,14 @@ uses
   uSSDLabelList in 'UIObjects\uSSDLabelList.pas',
   uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
   uCodesignPublisherVerifier in 'Objects\uCodesignPublisherVerifier.pas',
+<<<<<<< HEAD
   uCodesignExtern in 'Modules\Windows\uCodesignExtern.pas',
   uDownloadThread in 'Classes\Threads\uDownloadThread.pas',
   uDownloader in 'ThreadHelper\uDownloader.pas',
   uFirmwareDownloader in 'Objects\uFirmwareDownloader.pas';
+=======
+  uCodesignExtern in 'Modules\Windows\uCodesignExtern.pas';
+>>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}
