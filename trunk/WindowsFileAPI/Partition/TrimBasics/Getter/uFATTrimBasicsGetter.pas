@@ -25,7 +25,7 @@ implementation
 
 function TFATTrimBasicsGetter.IsPartitionMyResponsibility: Boolean;
 const
-  FromFirst = 0;
+  FromFirst = 1;
   NotFound = 0;
 begin
   result := Pos('FAT', GetFileSystemName, FromFirst) > NotFound;
@@ -64,7 +64,7 @@ function TFATTrimBasicsGetter.GetLBAPerCluster: Cardinal;
 var
   NotUsed: Array[0..2] of Cardinal;
 begin
-  GetDiskFreeSpace(PChar(GetPathOfFileAccessing), result,
+  GetDiskFreeSpace(PChar(GetPathOfFileAccessing + '\'), result,
     NotUsed[0], NotUsed[1], NotUsed[2]);
 end;
 

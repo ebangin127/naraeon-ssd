@@ -78,7 +78,7 @@ function TFirmwareGetter.BuildURIByQuery(Query: TFirmwareQuery):
   String;
 begin
   exit(
-    'http://nstfirmware.naraeon.net/nst_firmchk.php?' +
+    'http://nstfirmware.naraeon.net/NSTFirmwareCheck.php?' +
     'Model=' + Query.Model + '&' +
     'Firmware=' + Query.Firmware);
 end;
@@ -155,6 +155,7 @@ function TFirmwareGetter.TFirmwareCache.CheckFirmware(Query: TFirmwareQuery):
 var
   CurrentCacheLine: TCacheLine;
 begin
+  result.CurrentVersion := TFirmwareVersion.NotMine;
   for CurrentCacheLine in Cache do
     if CurrentCacheLine.Query = Query then
       exit(CurrentCacheLine.Result);

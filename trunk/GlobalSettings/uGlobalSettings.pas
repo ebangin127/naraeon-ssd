@@ -9,7 +9,9 @@ const
   SimulationModel = 'PLEXTOR PX-128M3P';
   SimulationFirmware = '1.03';
 
-  CurrentVersion = '5.0.0';
+  CurrentVersion = '4.0.0';
+
+  NaraeonPublisher = 'Minkyu Kim';
 
 implementation
 

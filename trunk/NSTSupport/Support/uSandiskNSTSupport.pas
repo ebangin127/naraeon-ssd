@@ -28,8 +28,7 @@ implementation
 
 function TSandiskNSTSupport.IsX110: Boolean;
 begin
-  result := (Pos('SANDISK', Model) > 0) and
-    ((Pos('SD6SB1', Model) > 0) or (Pos('U100', Model) > 0));
+  result := (Pos('SANDISK', Model) > 0) and (Pos('SD6SB1', Model) > 0);
 end;
 
 function TSandiskNSTSupport.IsProductOfSandisk: Boolean;

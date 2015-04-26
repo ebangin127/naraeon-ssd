@@ -8,7 +8,7 @@ uses
 
 type
   FormatSizeSetting = record
-    FNumeralSystem: NumeralSystem;
+    FNumeralSystem: TNumeralSystem;
     FPrecision: Integer;
   end;
 
@@ -23,7 +23,7 @@ implementation
 
 function GetSizeUnitString
   (SizeInMB: Double;
-   UnitToTest: DatasizeUnit;
+   UnitToTest: TDatasizeUnit;
    Setting: FormatSizeSetting): String;
 const
   Threshold = 0.75;

@@ -185,6 +185,13 @@ var
   QueryResult: TFirmwareQueryResult;
 begin
   QueryResult := GetFirmwareQueryResult;
+  fMain.OnlineFirmwareUpdateAvailable :=
+    (QueryResult.CurrentVersion = TFirmwareVersion.OldVersion) or
+    (QueryResult.CurrentVersion = TFirmwareVersion.NewVersion);
+
+  if not fMain.OnlineFirmwareUpdateAvailable then
+    exit;
+
   SetFirmwareLabel;
   SetNewFirmwareCaption(QueryResult.LatestVersion);
   IfOldFirmwareSetLabelBoldAndRed(

@@ -6,33 +6,33 @@ uses
   Math;
 
 type
-  NumeralSystem = (Denary, Binary);
+  TNumeralSystem = (Denary, Binary);
 
-  DatasizeUnit = record
+  TDatasizeUnit = record
     FPowerOfKUnit: Integer;
     FUnitName: String;
   end;
 
   TDatasizeUnitChangeSetting = record
-    FNumeralSystem: NumeralSystem;
-    FFromUnit: DatasizeUnit;
-    FToUnit: DatasizeUnit;
+    FNumeralSystem: TNumeralSystem;
+    FFromUnit: TDatasizeUnit;
+    FToUnit: TDatasizeUnit;
   end;
 
-  NumeralSystemChangeSetting = record
-    FFromNumeralSystem: NumeralSystem;
-    FToNumeralSystem: NumeralSystem;
+  TNumeralSystemChangeSetting = record
+    FFromNumeralSystem: TNumeralSystem;
+    FToNumeralSystem: TNumeralSystem;
   end;
 
 const
-  PetaUnit: DatasizeUnit = (FPowerOfKUnit: 4; FUnitName: 'PB');
-  TeraUnit: DatasizeUnit = (FPowerOfKUnit: 3; FUnitName: 'TB');
-  GigaUnit: DatasizeUnit = (FPowerOfKUnit: 2; FUnitName: 'GB');
-  MegaUnit: DatasizeUnit = (FPowerOfKUnit: 1; FUnitName: 'MB');
-  KiloUnit: DatasizeUnit = (FPowerOfKUnit: 0; FUnitName: 'KB');
-  ByteUnit: DatasizeUnit = (FPowerOfKUnit: -1; FUnitName: 'B');
+  PetaUnit: TDatasizeUnit = (FPowerOfKUnit: 4; FUnitName: 'PB');
+  TeraUnit: TDatasizeUnit = (FPowerOfKUnit: 3; FUnitName: 'TB');
+  GigaUnit: TDatasizeUnit = (FPowerOfKUnit: 2; FUnitName: 'GB');
+  MegaUnit: TDatasizeUnit = (FPowerOfKUnit: 1; FUnitName: 'MB');
+  KiloUnit: TDatasizeUnit = (FPowerOfKUnit: 0; FUnitName: 'KB');
+  ByteUnit: TDatasizeUnit = (FPowerOfKUnit: -1; FUnitName: 'B');
 
-function GetDivideUnitSize(DivideUnitType: NumeralSystem): Integer;
+function GetDivideUnitSize(DivideUnitType: TNumeralSystem): Integer;
 function ChangeDatasizeUnit
   (Size: Double; Setting: TDatasizeUnitChangeSetting): Double;
 function LiteONUnitToMB(Size: UInt64): UInt64;
@@ -40,7 +40,7 @@ function MBToLiteONUnit(Size: UInt64): UInt64;
 
 implementation
 
-function GetDivideUnitSize(DivideUnitType: NumeralSystem): Integer;
+function GetDivideUnitSize(DivideUnitType: TNumeralSystem): Integer;
 const
   DenaryKilo = 1000;
   BinaryKibi = 1024;

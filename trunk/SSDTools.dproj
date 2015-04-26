@@ -254,6 +254,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="UIObjects\uSSDLabelListRefresher.pas"/>
         <DCCReference Include="UIObjects\uSSDLabelList.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
+        <DCCReference Include="Objects\uCodesignPublisherVerifier.pas"/>
+        <DCCReference Include="Modules\Windows\uCodesignExtern.pas"/>
+        <DCCReference Include="Classes\Threads\uDownloadThread.pas"/>
+        <DCCReference Include="ThreadHelper\uDownloader.pas"/>
+        <DCCReference Include="Objects\uFirmwareDownloader.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

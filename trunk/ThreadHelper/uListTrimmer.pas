@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  uTrimList, uPartitionTrimmer, uTrimThreadToModel;
+  uTrimList, uPartitionTrimmer, uTrimThreadToModel, uProgressSection;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);
@@ -18,6 +18,7 @@ type
 
     PartitionsToTrim: TTrimList;
     ThreadToSynchronize: TThread;
+    ProgressSynchronizer: TProgressSection;
 
     function IsFreeFromSynchronizeIssue: Boolean;
     procedure CheckSynchronizeIssue;
@@ -95,9 +96,12 @@ procedure TListTrimmer.TrimAppliedPartitionsWithUI(ThreadToSynchronize: TThread)
 begin
   try
     self.ThreadToSynchronize := ThreadToSynchronize;
+    ProgressSynchronizer := TProgressSection.Create(ThreadToSynchronize);
+    ProgressSynchronizer.ShowProgress;
     CheckIssueAndTrimAppliedPartitions;
     IfPartitionListExistsFreeAndNil;
   except
+    FreeAndNil(ProgressSynchronizer);
     TrimStageReadWrite := TTrimStage.Error;
   end;
 end;
@@ -122,6 +126,7 @@ begin
   if TrimThreadToModel <> nil then
   begin
     TrimThreadToModel.ApplyOriginalUI;
+    ProgressSynchronizer.HideProgress;
     FreeAndNil(TrimThreadToModel);
   end;
 end;

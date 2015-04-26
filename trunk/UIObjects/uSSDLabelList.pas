@@ -10,7 +10,7 @@ type
   TSSDLabelList = class(TList<TSSDLabel>)
   private
     const
-      LabelPerLine = 10;
+      LabelPerLine = 8;
       HorizontalPadding = 10;
       VerticalPadding = 10;
     function GetMaxHeight: Integer;

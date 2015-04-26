@@ -1,3 +1,4 @@
+unit uDownloadThreadToModel;
 unit uTrimThreadToModel;
 
 interface
@@ -18,7 +19,7 @@ type
     Progress: TTrimProgress;
   end;
 
-  TTrimThreadToModel = class
+  TDownloadThreadToModel = class
   public
     constructor Create(TrimSynchronizationToApply: TTrimSynchronization);
     procedure ApplyOriginalUI;
@@ -40,13 +41,13 @@ implementation
 uses
   uMain;
 
-constructor TTrimThreadToModel.Create(
+constructor TDownloadThreadToModel.Create(
   TrimSynchronizationToApply: TTrimSynchronization);
 begin
   TrimSynchronization := TrimSynchronizationToApply;
 end;
 
-procedure TTrimThreadToModel.ApplyProgressToUI(ProgressToApply: Integer);
+procedure TDownloadThreadToModel.ApplyProgressToUI(ProgressToApply: Integer);
 begin
   if TrimSynchronization.IsUIInteractionNeeded then
   begin
@@ -57,7 +58,7 @@ begin
   end;
 end;
 
-procedure TTrimThreadToModel.ApplyNextDriveStartToUI(ProgressToApply: Integer);
+procedure TDownloadThreadToModel.ApplyNextDriveStartToUI(ProgressToApply: Integer);
 begin
   if TrimSynchronization.IsUIInteractionNeeded then
   begin
@@ -68,7 +69,7 @@ begin
   end;
 end;
 
-procedure TTrimThreadToModel.ApplyOriginalUI;
+procedure TDownloadThreadToModel.ApplyOriginalUI;
 begin
   if TrimSynchronization.IsUIInteractionNeeded then
   begin
@@ -78,18 +79,18 @@ begin
   end;
 end;
 
-procedure TTrimThreadToModel.SynchronizedApplyProgressToUI;
+procedure TDownloadThreadToModel.SynchronizedApplyProgressToUI;
 begin
   fMain.pDownload.Position := Progress;
 end;
 
-function TTrimThreadToModel.IsTrimInProgress: Boolean;
+function TDownloadThreadToModel.IsTrimInProgress: Boolean;
 begin
   result := TrimSynchronization.Progress.CurrentPartition <=
     TrimSynchronization.Progress.PartitionCount;
 end;
 
-procedure TTrimThreadToModel.SynchronizedApplyProgressToLabel;
+procedure TDownloadThreadToModel.SynchronizedApplyProgressToLabel;
 begin
   fMain.lProgress.Caption :=
     CapProg1[CurrLang] +
@@ -97,13 +98,13 @@ begin
     IntToStr(TrimSynchronization.Progress.PartitionCount);
 end;
 
-procedure TTrimThreadToModel.SynchronizedApplyOriginalUI;
+procedure TDownloadThreadToModel.SynchronizedApplyOriginalUI;
 begin
   fMain.pDownload.Position := 0;
   fMain.gTrim.Visible := true;
 end;
 
-procedure TTrimThreadToModel.SynchronizedApplyNextDriveStartToUI;
+procedure TDownloadThreadToModel.SynchronizedApplyNextDriveStartToUI;
 begin
   SynchronizedApplyProgressToUI;
 

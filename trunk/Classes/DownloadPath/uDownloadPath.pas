@@ -37,14 +37,17 @@ function GetDownloadPath(const Input: TDownloadFile): String;
 begin
   result := Input.FBaseAddress;
   case Input.FType of
-    dftPlain:
-      begin
-        result := result + Input.FFileAddress;
-      end;
-    dftGetFromWeb:
-      begin
-        result := result + GetAddressFromWeb(Input.FFileAddress);
-      end;
+
+  dftPlain:
+  begin
+    result := result + Input.FFileAddress;
+  end;
+
+  dftGetFromWeb:
+  begin
+    result := result + GetAddressFromWeb(Input.FFileAddress);
+  end;
+
   end;
   result := result + Input.FPostAddress;
 end;

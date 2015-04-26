@@ -3,7 +3,7 @@ unit uSSDLabelListRefresher;
 interface
 
 uses
-  Forms, SysUtils, Generics.Collections, Windows, ShellAPI,
+  Classes, Forms, SysUtils, Generics.Collections, Windows, ShellAPI,
   uLanguageSettings, uPathManager, uAlert, uPhysicalDrive, uListChangeGetter,
   uSSDLabel;
 

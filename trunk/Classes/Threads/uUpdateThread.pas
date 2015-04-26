@@ -50,6 +50,8 @@ procedure TUpdateThread.StartUpdate;
 begin
   InnerUpdateNotice := CheckUpdateResult.UpdateNotice;
   Synchronize(Updater.StartUpdate);
+  while not Terminated do
+    Sleep(100);
 end;
 
 procedure TUpdateThread.Execute;

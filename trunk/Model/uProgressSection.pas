@@ -3,19 +3,30 @@ unit uProgressSection;
 interface
 
 uses
+  Classes,
   uButtonGroup;
 
 type
+  TProgressToApply = record
+    ProgressValue: Integer;
+    ProgressCaption, SpeedCaption: String;
+  end;
+
   TProgressSection = class
   private
+    ThreadToSynchronize: TThread;
+    ProgressToApply: TProgressToApply;
     procedure SetEnabledPropertyTo(Enabled: Boolean;
       ButtonGroupEntry: TButtonGroupEntry);
-      
+    procedure SynchronizedApplyProgress;
+    procedure SynchronizedHideProgress;
+    procedure SynchronizedShowProgress;
   public
+    constructor Create(ThreadToSynchronize: TThread);
+
     procedure HideProgress;
     procedure ShowProgress;
-    procedure ChangeProgress(ProgressValue: Integer; ProgressString,
-      SpeedString: String);
+    procedure ChangeProgress(ProgressToApply: TProgressToApply);
   end;
 
 implementation
@@ -30,7 +41,7 @@ begin
   ButtonGroupEntry.LabelButton.Enabled := Enabled;
 end;
   
-procedure TProgressSection.ShowProgress;
+procedure TProgressSection.SynchronizedShowProgress;
 var
   CurrentSSDLabel: Integer;
   CurrentButtonGroupEntry: Integer;
@@ -45,15 +56,44 @@ begin
   fMain.ButtonGroup.Open;
 end;
 
-procedure TProgressSection.ChangeProgress(ProgressValue: Integer;
-  ProgressString, SpeedString: String);
+procedure TProgressSection.HideProgress;
 begin
-  fMain.pDownload.Position := ProgressValue;
-  fMain.lProgress.Caption := ProgressString;
-  fMain.lSpeed.Caption := SpeedString;
+  if ThreadToSynchronize <> nil then
+    TThread.Synchronize(ThreadToSynchronize, SynchronizedHideProgress)
+  else
+    SynchronizedHideProgress;
 end;
 
-procedure TProgressSection.HideProgress;
+procedure TProgressSection.ShowProgress;
+begin
+  if ThreadToSynchronize <> nil then
+    TThread.Synchronize(ThreadToSynchronize, SynchronizedShowProgress)
+  else
+    SynchronizedShowProgress;
+end;
+
+procedure TProgressSection.ChangeProgress(ProgressToApply: TProgressToApply);
+begin
+  self.ProgressToApply := ProgressToApply;
+  if ThreadToSynchronize <> nil then
+    TThread.Synchronize(ThreadToSynchronize, SynchronizedApplyProgress)
+  else
+    SynchronizedApplyProgress;
+end;
+
+constructor TProgressSection.Create(ThreadToSynchronize: TThread);
+begin
+  self.ThreadToSynchronize := ThreadToSynchronize;
+end;
+
+procedure TProgressSection.SynchronizedApplyProgress;
+begin
+  fMain.pDownload.Position := ProgressToApply.ProgressValue;
+  fMain.lProgress.Caption := ProgressToApply.ProgressCaption;
+  fMain.lSpeed.Caption := ProgressToApply.SpeedCaption;
+end;
+
+procedure TProgressSection.SynchronizedHideProgress;
 var
   CurrentSSDLabel: Integer;
   CurrentButtonGroupEntry: Integer;

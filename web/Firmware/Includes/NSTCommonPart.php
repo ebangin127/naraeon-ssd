@@ -1,6 +1,6 @@
 <?php
-  require './modules/nst_config.php';
-  require './modules/nst_function.php';
+  require './Includes/NSTAccount.php';
+  require './Includes/NSTGetIP.php';
 
   class Stages {
     var $Conn;
@@ -21,12 +21,12 @@
       return 1;
     }
 
-    function Connect() {
+    function Connect($ID, $PASS, $DB) {
       $this->Conn = new mysqli(
         "localhost",
-        db_id(),
-        db_pass(),
-        "naraeonn_nstools");
+        $ID,
+        $PASS,
+        $DB);
 
       if ($this->Conn->connect_error) {
         printf(
@@ -90,7 +90,7 @@
     $Stage = new Stages();
 
     //Connect
-    if (!$Stage->Connect()) {
+    if (!$Stage->Connect(LogID(), LogPassword(), LogDB())) {
       return 0;
     }
 
@@ -102,6 +102,14 @@
     //Write Log
     if (!$Stage->WriteLog(GetIP(), $Num)) {
       $Stage->Close();
+      return 0;
+    }
+    
+    //Disconnect
+    $Stage->Close();
+
+    //Connect
+    if (!$Stage->Connect(FirmwareID(), FirmwarePassword(), FirmwareDB())) {
       return 0;
     }
 

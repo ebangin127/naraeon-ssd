@@ -108,7 +108,12 @@ uses
   uSSDLabel in 'UIObjects\uSSDLabel.pas',
   uSSDLabelListRefresher in 'UIObjects\uSSDLabelListRefresher.pas',
   uSSDLabelList in 'UIObjects\uSSDLabelList.pas',
-  uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
+  uListChangeGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
+  uCodesignPublisherVerifier in 'Objects\uCodesignPublisherVerifier.pas',
+  uCodesignExtern in 'Modules\Windows\uCodesignExtern.pas',
+  uDownloadThread in 'Classes\Threads\uDownloadThread.pas',
+  uDownloader in 'ThreadHelper\uDownloader.pas',
+  uFirmwareDownloader in 'Objects\uFirmwareDownloader.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}
@@ -126,8 +131,7 @@ var
   ExistingInstanceWindow: THandle;
 begin
   ExistingInstanceWindow := FindWindow(PChar('TfMain'), PChar(MainformCaption));
-  if (ExistingInstanceWindow <> 0) and
-     (Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) <> '.err') then
+  if ExistingInstanceWindow <> 0 then
   begin
     ShowWindow(ExistingInstanceWindow, SW_RESTORE);
     SetForegroundWindow(ExistingInstanceWindow);

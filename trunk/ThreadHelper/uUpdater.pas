@@ -3,8 +3,10 @@ unit uUpdater;
 interface
 
 uses
-  Classes, SysUtils,
-  uVersion, uHTTPWeb, uGlobalSettings;
+  Classes, SysUtils, Windows, ShellApi,
+  uVersion, uHTTPWeb, uGlobalSettings, uDownloadThread, uDownloadPath,
+  uCodesignVerifier, uLanguageSettings, uPathManager, uAlert, uDownloader,
+  uFileFunctions;
 
 type
   TCheckUpdateResult = record
@@ -16,11 +18,18 @@ type
   TUpdater = class
   private
     HTTPWeb: THTTPWeb;
+    DownloadThread: TDownloadThread;
+    DestinationPath: String;
+    DestinationDirectory: String;
     function IsNewerVersionExistsGetLatestVersion: TCheckUpdateResult;
     function GetUpdateCheckResultByGottenPage(
       GottenPage: TStringList): TCheckUpdateResult;
     function GetUpdateNotice: String;
     function GetUpdateNoticeByGottenPage(GottenPage: TStringStream): String;
+    procedure PostDownloadMethod;
+    procedure VerifyCodesignAndExecute;
+    procedure WrongCodesignAlertAndDelete;
+    procedure MoveSetupAndExecute;
   public
     function CheckUpdate: TCheckUpdateResult;
     procedure StartUpdate;
@@ -106,8 +115,83 @@ begin
 end;
 
 procedure TUpdater.StartUpdate;
+const
+  CancelButton = 1;
+var
+  Request: TDownloadRequest;
+  TempFolder: String;
 begin
-  fMain.ProgressDownload;
+  if MessageBox(
+    fMain.Handle,
+    PChar(fMain.UpdateThread.UpdateNotice),
+    PChar(AlrtNewVer[CurrLang]),
+    MB_OKCANCEL  + MB_IconInformation) <> CancelButton then
+      exit;
+
+  Request.Source.FBaseAddress := 'http://nstupdate.naraeon.net';
+  Request.Source.FFileAddress := '/Setup.exe';
+  Request.Source.FType := dftPlain;
+
+  TempFolder := TPathManager.TempFolder(false);
+  CreateDir(TempFolder);
+  Request.Destination.FBaseAddress := TempFolder;
+  Request.Destination.FFileAddress := 'Setup.exe';
+  Request.Destination.FType := dftPlain;
+  DestinationPath := TempFolder + 'Setup.exe';
+  DestinationDirectory := TempFolder;
+
+  Request.DownloadModelStrings.Download := CapUpdDwld[CurrLang];
+  Request.DownloadModelStrings.Cancel := fMain.bCancel.Caption;
+
+  DownloadThread := TDownloadThread.Create;
+  DownloadThread.SetRequest(Request);
+  DownloadThread.SetPostDownloadMethod(PostDownloadMethod);
+  DownloadThread.Start;
+end;
+
+procedure TUpdater.WrongCodesignAlertAndDelete;
+begin
+  AlertCreate(fMain, AlrtWrongCodesign[CurrLang]);
+  DeleteFile(PChar(DestinationPath));
+  DeleteDirectory(DestinationDirectory);
+end;
+
+procedure TUpdater.MoveSetupAndExecute;
+begin
+  AlertCreate(fMain, AlrtUpdateExit[CurrLang]);
+  MoveFile(PChar(DestinationPath),
+    PChar(TPathManager.AppPath + 'Setup.exe'));
+  DeleteDirectory(DestinationDirectory);
+  ShellExecute(0, nil,
+    PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
+  fMain.Close;
+end;
+
+procedure TUpdater.VerifyCodesignAndExecute;
+var
+  CodesignVerifier: TCodesignVerifier;
+begin
+  CodesignVerifier := TCodesignVerifier.Create;
+  if not CodesignVerifier.VerifySignByPublisher(
+    DestinationPath, NaraeonPublisher) then
+    WrongCodesignAlertAndDelete
+  else
+    MoveSetupAndExecute;
+  FreeAndNil(CodesignVerifier);
+end;
+
+procedure TUpdater.PostDownloadMethod;
+begin
+  fMain.ButtonGroup.Close;
+  if FileExists(DestinationPath) = false then
+  begin
+    AlertCreate(fMain, AlrtVerCanc[CurrLang]);
+    fMain.UpdateThread.Terminate;
+    exit;
+  end;
+
+  VerifyCodesignAndExecute;
+  fMain.UpdateThread.Terminate;
 end;
 
 end.
