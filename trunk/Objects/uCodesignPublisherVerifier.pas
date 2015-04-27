@@ -30,8 +30,6 @@ type
 
 implementation
 
-
-
 function TCodesignPublisherVerifier.ValidateCertificationCount: Boolean;
 var
   CertificateCount: DWORD;

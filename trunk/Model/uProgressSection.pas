@@ -9,7 +9,8 @@ uses
 type
   TProgressToApply = record
     ProgressValue: Integer;
-    ProgressCaption, SpeedCaption: String;
+    ProgressCaption: String;
+    SpeedCaption: String;
   end;
 
   TProgressSection = class

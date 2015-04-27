@@ -8,17 +8,6 @@ uses
   uLanguageSettings;
 
 type
-  TTrimProgress = record
-    CurrentPartition: Integer;
-    PartitionCount: Integer;
-  end;
-
-  TTrimSynchronization = record
-    IsUIInteractionNeeded: Boolean;
-    ThreadToSynchronize: TThread;
-    Progress: TTrimProgress;
-  end;
-
   TDownloadThreadToModel = class
   public
     constructor Create(TrimSynchronizationToApply: TTrimSynchronization);

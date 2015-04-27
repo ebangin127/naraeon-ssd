@@ -266,7 +266,7 @@ begin
     exit;
   RemainingCount := SourceSize - AWorkCount;
   LeftTimeInSecond := GetLeftTimeInSecond(RemainingCount, BytePerSecond);
-  ProgressToApply.ProgressCaption := CapTime[CurrLang] +
+  ProgressToApply.SpeedCaption := CapTime[CurrLang] +
     FormatTimeInSecond(LeftTimeInSecond);
 
   ProgressSynchronizer.ChangeProgress(ProgressToApply);
