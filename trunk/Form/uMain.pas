@@ -129,16 +129,6 @@ type
     procedure SSDSelLblMouseEnter(Sender: TObject);
     procedure SSDSelLblMouseLeave(Sender: TObject);
 
-<<<<<<< HEAD
-=======
-    //다운로드 진행
-    function DownloadFile(Src: TDownloadFile; Dest: TDownloadFile;
-      DownloadCaption, CancelCaption: String): Boolean;
-    procedure DownloaderWork(Sender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
-    procedure ProgressDownload;
-
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -153,27 +143,6 @@ type
     procedure FindAndSelectValidDrive;
     procedure SetSelectedDriveLabelBold;
     function FirmwareUpdateNotAvailable: Boolean;
-<<<<<<< HEAD
-=======
-  protected
-    //쓰레드 관련
-    TrimThread: TTrimThread;
-    UpdateThread: TUpdateThread;
-
-    //다운로드 관련
-    LastDwldCount: Int64;
-    CurrDwldCount: Int64;
-    Max: Int64;
-    Aborted: Boolean;
-
-    //표시 정보 관련
-    ShowSerial: Boolean;
-    ListEnter: Integer;
-
-    //최적화 관련
-    Optimizer: TNSTOptimizer;
-
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
 
@@ -186,20 +155,11 @@ type
     WICImage: TWICImage;
     ButtonGroup: TButtonGroup;
     OnlineFirmwareUpdateAvailable: Boolean;
-<<<<<<< HEAD
     UpdateThread: TUpdateThread;
     TrimThread: TTrimThread;
     ShowSerial: Boolean;
     ListEnter: Integer;
     Optimizer: TNSTOptimizer;
-=======
-
-    //현재 드라이브 관련
-    FirstiOptLeft: Integer;
-
-    procedure ShowProgress;
-    procedure HideProgress;
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
   end;
 
 var
@@ -274,40 +234,8 @@ begin
     exit;
   end;
 
-<<<<<<< HEAD
   FirmwareDownloader := TFirmwareDownloader.Create;
   FirmwareDownloader.DownloadFirmware;
-  FreeAndNil(FirmwareDownloader);
-=======
-  tRefresh.Enabled := false;
-
-  DownloadedFirmware := DownloadLatestFirmware(PhysicalDrive, FirmwareGetter);
-
-  if (DownloadedFirmware.IsFirmwareExists = false) or
-     (TRufus.CheckRufus = false) then
-  begin
-    tRefresh.Enabled := true;
-    exit;
-  end;
-
-  if (ExtractFileExt(DownloadedFirmware.FirmwarePath) = '.exe') then
-  begin
-    ShellExecute(0, 'open', PChar(DownloadedFirmware.FirmwarePath), nil, nil,
-      SW_SHOW);
-    iFirmUp.OnClick(nil);
-  end
-  else
-  begin
-    AlertCreate(Self, AlrtStartFormat[CurrLang]);
-    TRufus.RunRufus(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
-      DownloadedFirmware.FirmwarePath);
-    AlertCreate(Self, AlrtFirmEnd[CurrLang]);
-    DeleteDirectory(ExtractFilePath(DownloadedFirmware.FirmwarePath));
-    DeleteDirectory(DownloadedFirmware.UsedTempFolder);
-  end;
-
-  tRefresh.Enabled := true;
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
 end;
 
 procedure TfMain.bStartClick(Sender: TObject);
@@ -407,10 +335,6 @@ begin
   CurrDrive := '';
   ShowSerial := false;
   ListEnter := 0;
-<<<<<<< HEAD
-=======
-  FirstiOptLeft := iOptimize.Left;
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
 
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
@@ -850,56 +774,6 @@ begin
         '/F'));                                     //강제 삭제
 end;
 
-<<<<<<< HEAD
-=======
-procedure TfMain.ProgressDownload;
-const
-  CancelButton = 1;
-var
-  Src, Dest: TDownloadFile;
-  CodesignVerifier: TCodesignVerifier;
-begin
-  if Application.MessageBox(
-    PChar(UpdateThread.UpdateNotice),
-    PChar(AlrtNewVer[CurrLang]),
-    MB_OKCANCEL  + MB_IconInformation) <> CancelButton then
-      exit;
-
-  Src.FBaseAddress := 'http://nstupdate.naraeon.net';
-  Src.FFileAddress := '/Setup.exe';
-  Src.FType := dftPlain;
-
-  Dest.FBaseAddress := TPathManager.AppPath;
-  Dest.FFileAddress := 'Setup.exe';
-  Dest.FType := dftPlain;
-
-  if DownloadFile(Src, Dest, CapUpdDwld[CurrLang], bCancel.Caption) = false then
-  begin
-    AlertCreate(Self, AlrtVerCanc[CurrLang]);
-    exit;
-  end;
-
-  ButtonGroup.Close;
-
-  CodesignVerifier := TCodesignVerifier.Create;
-  if not CodesignVerifier.VerifySignByPublisher(
-    TPathManager.AppPath + 'Setup.exe',
-    NaraeonPublisher) then
-  begin
-    AlertCreate(Self, AlrtWrongCodesign[CurrLang]);
-    DeleteFile(TPathManager.AppPath + 'Setup.exe');
-  end
-  else
-  begin
-    AlertCreate(Self, AlrtUpdateExit[CurrLang]);
-    ShellExecute(0, nil,
-      PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
-    Application.Terminate;
-  end;
-  FreeAndNil(CodesignVerifier);
-end;
-
->>>>>>> 8df0d620b16c96ddc1af3526ba5f60c60c9b3b0f
 procedure TfMain.bScheduleClick(Sender: TObject);
 var
   DriveList: TPartitionList;

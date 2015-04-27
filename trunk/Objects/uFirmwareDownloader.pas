@@ -63,9 +63,12 @@ begin
   Request.Destination.FFileAddress := FirmwareQueryResult.FirmwarePath;
   Request.Destination.FPostAddress := '_tmp';
   Request.Destination.FType := dftPlain;
+  
+  Request.DownloadModelStrings.Download := CapFirmDwld[CurrLang];
+  Request.DownloadModelStrings.Cancel := BtDnldCncl[CurrLang];
 
-  ¿©±â¿¡ Model String ³Ö¾î¾ß ÇÔ
-  ±×¸®°í ¾Ë ¼ö ¾ø´Â ÀÌÀ¯·Î °è¼Ó ²¨Áö´Â µ¥ ÀÌÀ¯¸¦ Ã£¾Æ¾ß ÇÔ.
+  ï¿½ï¿½ï¿½â¿¡ Model String ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½ï¿½
+  ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Æ¾ï¿½ ï¿½ï¿½.
 end;
 
 procedure TFirmwareDownloader.StartDownload;
@@ -197,6 +200,7 @@ begin
 
   fMain.gFirmware.Visible := true;
   fMain.tRefresh.Enabled := true;
+  Free;
 end;
 
 end.
