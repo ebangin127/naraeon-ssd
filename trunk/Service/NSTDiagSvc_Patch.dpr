@@ -54,7 +54,8 @@ uses
   uDiagnosisService in 'Objects\uDiagnosisService.pas',
   uPathManager in '..\Classes\PathManager\uPathManager.pas',
   uPhysicalDriveList in '..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas',
-  uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas';
+  uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
+  uLegacyATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

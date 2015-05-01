@@ -240,7 +240,7 @@ end;
 function TPartitionTrimmer.GetCurrentPositionInLBA: UInt64;
 begin
   result := VolumeBitmapBufferWithErrorCode.PositionSize.StartingLCN.QuadPart;
-  result := result + CurrentPoint.CurrentCardinalInBuffer shl 3;
+  result := result + CurrentPoint.CurrentCardinalInBuffer shl 5;
   result := result + CurrentPoint.CurrentBitInCardinal;
   result := result * TrimBasicsToInitialize.LBAPerCluster;
 end;

@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Windows, IdHttp, IdComponent,
-  uDatasizeUnit, uStrFunctions, uDownloadPath, uProgressSection,
+  uDatasizeUnit, uStrFunctions, uFileFunctions, uDownloadPath, uProgressSection,
   uLanguageSettings;
 
 type
@@ -96,6 +96,7 @@ begin
   Downloader.Disconnect;
   FreeDestinationFileStream;
   DeleteFile(PChar(RAWRequest.Destination));
+  DeleteDirectory(ExtractFileDir(RAWRequest.Destination));
 end;
 
 procedure TDownloader.CreateDestinationFileStream;

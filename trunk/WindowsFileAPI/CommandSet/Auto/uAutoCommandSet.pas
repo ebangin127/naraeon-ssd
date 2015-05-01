@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Dialogs,
   uIoControlFile, uOSFile, uCommandSet,
   uBufferInterpreter, uSMARTValueList,
-  uATACommandSet, uSATCommandSet;
+  uATACommandSet, uLegacyATACommandSet, uSATCommandSet;
 
 type
   TAutoCommandSet = class(TCommandSet)
@@ -62,6 +62,10 @@ var
 begin
   try
     TestingCommandSet := TATACommandSet.Create(GetPathOfFileAccessing);
+    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+      (TestingCommandSet, result);
+
+    TestingCommandSet := TLegacyATACommandSet.Create(GetPathOfFileAccessing);
     result := TestCommandSetCompatibilityAndReturnIdentifyDevice
       (TestingCommandSet, result);
 

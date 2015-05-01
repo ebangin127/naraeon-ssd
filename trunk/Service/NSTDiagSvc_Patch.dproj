@@ -109,10 +109,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.1.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.1.0</VerInfo_Keys>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <Icon_MainIcon>..\SSDOptimizer_Icon.ico</Icon_MainIcon>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <Manifest_File>..\GetAdmin.manifest</Manifest_File>
     </PropertyGroup>
     <ItemGroup>
@@ -175,6 +176,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Classes\PathManager\uPathManager.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

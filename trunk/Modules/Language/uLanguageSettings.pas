@@ -211,6 +211,7 @@ const
 
   //나래온 넷 주소
     AddrSecureErase: Array[0..1] of String = ('http://naraeon.net/plugin/plugin_kor.htm', 'http://naraeon.net/plugin/plugin_eng.htm');
+    AddrUpdChk: Array[0..1] of String = ('http://nstupdate.naraeon.net/latestSSDTools.htm', 'http://nstupdate.naraeon.net/latestSSDTools_eng.htm');
 
   //진단
     DiagName: Array[0..1] of String = ('나래온 툴 진단도구', 'NSTools Diagnosis');

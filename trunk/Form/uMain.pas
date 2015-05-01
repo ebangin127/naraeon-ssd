@@ -12,7 +12,7 @@ uses
   uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
   uDiskFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
-  uFirmware, uButtonGroup, uInit, uRufus, uPathManager,
+  uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
   uFirmwareGetter, uGlobalSettings, uCodesignVerifier,

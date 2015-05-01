@@ -52,12 +52,10 @@ begin
 end;
 
 function TUpdater.IsNewerVersionExistsGetLatestVersion: TCheckUpdateResult;
-const
-  LatestSSDToolURL = 'http://nstupdate.naraeon.net/latestSSDTools.htm';
 var
   LatestSSDToolGetResult: TStringList;
 begin
-  LatestSSDToolGetResult := HTTPWeb.GetToStringList(LatestSSDToolURL);
+  LatestSSDToolGetResult := HTTPWeb.GetToStringList(AddrUpdChk[CurrLang]);
   if LatestSSDToolGetResult.Count = 0 then
     result.IsUpdateNeeded := false
   else
@@ -126,7 +124,10 @@ begin
     PChar(fMain.UpdateThread.UpdateNotice),
     PChar(AlrtNewVer[CurrLang]),
     MB_OKCANCEL  + MB_IconInformation) <> CancelButton then
-      exit;
+  begin
+    fMain.UpdateThread.Terminate;
+    exit;
+  end;
 
   Request.Source.FBaseAddress := 'http://nstupdate.naraeon.net';
   Request.Source.FFileAddress := '/Setup.exe';

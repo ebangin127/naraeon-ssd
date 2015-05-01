@@ -1,4 +1,4 @@
-unit uATACommandSet;
+unit uLegacyATACommandSet;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   uATABufferInterpreter;
 
 type
-  TATACommandSet = class sealed(TCommandSet)
+  TLegacyATACommandSet = class sealed(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -32,7 +32,7 @@ type
         PreviousTaskFile: ATA_SINGLE_TASK_FILE;
         CurrentTaskFile: ATA_SINGLE_TASK_FILE;
       end;
-      ATA_PASS_THROUGH_DIRECT = record
+      ATA_PASS_THROUGH_EX = record
         Length: USHORT;
         AtaFlags: USHORT;
         PathId: UCHAR;
@@ -42,11 +42,11 @@ type
         DataTransferLength: ULONG;
         TimeOutValue: ULONG;
         ReservedAsUlong: ULONG;
-        DataBuffer: PVOID;
+        DataBufferOffset: ULONG_PTR;
         TaskFile: ATA_TASK_FILES;
       end;
       ATA_WITH_BUFFER = record
-        Parameter: ATA_PASS_THROUGH_DIRECT;
+        Parameter: ATA_PASS_THROUGH_EX;
         Buffer: T512Buffer;
       end;
 
@@ -83,7 +83,7 @@ implementation
 
 { TATACommandSet }
 
-function TATACommandSet.GetCommonBuffer: ATA_WITH_BUFFER;
+function TLegacyATACommandSet.GetCommonBuffer: ATA_WITH_BUFFER;
 begin
   FillChar(result, SizeOf(result), #0);
   result.Parameter.Length := SizeOf(result.Parameter);
@@ -91,21 +91,22 @@ begin
   result.Parameter.TimeOutValue := 30;
 end;
 
-function TATACommandSet.GetCommonTaskFile: ATA_TASK_FILES;
+function TLegacyATACommandSet.GetCommonTaskFile: ATA_TASK_FILES;
 begin
   FillChar(result, SizeOf(result), #0);
 end;
 
-procedure TATACommandSet.SetInnerBufferAsFlagsAndTaskFile
+procedure TLegacyATACommandSet.SetInnerBufferAsFlagsAndTaskFile
   (Flags: ULONG; TaskFile: ATA_TASK_FILES);
 begin
   IoInnerBuffer := GetCommonBuffer;
   IoInnerBuffer.Parameter.AtaFlags := Flags;
   IoInnerBuffer.Parameter.TaskFile := TaskFile;
-  IoInnerBuffer.Parameter.DataBuffer := @IoInnerBuffer.Buffer;
+  IoInnerBuffer.Parameter.DataBufferOffset :=
+    SizeOf(IoInnerBuffer.Parameter);
 end;
 
-procedure TATACommandSet.SetInnerBufferToIdentifyDevice;
+procedure TLegacyATACommandSet.SetInnerBufferToIdentifyDevice;
 const
   IdentifyDeviceCommand = $EC;
 var
@@ -116,7 +117,7 @@ begin
   SetInnerBufferAsFlagsAndTaskFile(ATA_FLAGS_DATA_IN, IoTaskFile);
 end;
 
-procedure TATACommandSet.SetOSBufferByInnerBuffer;
+procedure TLegacyATACommandSet.SetOSBufferByInnerBuffer;
 begin
   IoOSBuffer.InputBuffer.Size := SizeOf(IoInnerBuffer);
   IoOSBuffer.InputBuffer.Buffer := @IOInnerBuffer;
@@ -125,14 +126,14 @@ begin
   IoOSBuffer.OutputBuffer.Buffer := @IOInnerBuffer;
 end;
 
-procedure TATACommandSet.SetBufferAndIdentifyDevice;
+procedure TLegacyATACommandSet.SetBufferAndIdentifyDevice;
 begin
   SetInnerBufferToIdentifyDevice;
   SetOSBufferByInnerBuffer;
-  IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+  IoControl(TIoControlCode.ATAPassThrough, IoOSBuffer);
 end;
 
-function TATACommandSet.InterpretIdentifyDeviceBuffer:
+function TLegacyATACommandSet.InterpretIdentifyDeviceBuffer:
   TIdentifyDeviceResult;
 var
   ATABufferInterpreter: TATABufferInterpreter;
@@ -143,13 +144,13 @@ begin
   FreeAndNil(ATABufferInterpreter);
 end;
 
-function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
+function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
 end;
 
-procedure TATACommandSet.SetInnerBufferToSMARTReadData;
+procedure TLegacyATACommandSet.SetInnerBufferToSMARTReadData;
 const
   SMARTFeatures = $D0;
   SMARTCycleLo = $4F;
@@ -166,14 +167,14 @@ begin
   SetInnerBufferAsFlagsAndTaskFile(ATA_FLAGS_DATA_IN, IoTaskFile);
 end;
 
-procedure TATACommandSet.SetBufferAndSMARTReadData;
+procedure TLegacyATACommandSet.SetBufferAndSMARTReadData;
 begin
   SetInnerBufferToSMARTReadData;
   SetOSBufferByInnerBuffer;
-  IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+  IoControl(TIoControlCode.ATAPassThrough, IoOSBuffer);
 end;
 
-function TATACommandSet.InterpretSMARTReadDataBuffer:
+function TLegacyATACommandSet.InterpretSMARTReadDataBuffer:
   TSMARTValueList;
 var
   ATABufferInterpreter: TATABufferInterpreter;
@@ -183,18 +184,18 @@ begin
   FreeAndNil(ATABufferInterpreter);
 end;
 
-function TATACommandSet.SMARTReadData: TSMARTValueList;
+function TLegacyATACommandSet.SMARTReadData: TSMARTValueList;
 begin
   SetBufferAndSMARTReadData;
   result := InterpretSMARTReadDataBuffer;
 end;
 
-function TATACommandSet.IsDataSetManagementSupported: Boolean;
+function TLegacyATACommandSet.IsDataSetManagementSupported: Boolean;
 begin
   exit(true);
 end;
 
-procedure TATACommandSet.SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);
+procedure TLegacyATACommandSet.SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);
 const
   StartLBALo = 0;
 begin
@@ -211,7 +212,7 @@ begin
   IoInnerBuffer.Buffer[StartLBALo + 5] := StartLBA;
 end;
 
-procedure TATACommandSet.SetLBACountToDataSetManagementBuffer(LBACount: Int64);
+procedure TLegacyATACommandSet.SetLBACountToDataSetManagementBuffer(LBACount: Int64);
 const
   LBACountHi = 7;
   LBACountLo = 6;
@@ -220,14 +221,14 @@ begin
   IoInnerBuffer.Buffer[LBACountHi] := LBACount shr 8;
 end;
 
-procedure TATACommandSet.SetDataSetManagementBuffer
+procedure TLegacyATACommandSet.SetDataSetManagementBuffer
   (StartLBA, LBACount: Int64);
 begin
   SetStartLBAToDataSetManagementBuffer(StartLBA);
   SetLBACountToDataSetManagementBuffer(StartLBA);
 end;
 
-procedure TATACommandSet.SetInnerBufferToDataSetManagement
+procedure TLegacyATACommandSet.SetInnerBufferToDataSetManagement
   (StartLBA, LBACount: Int64);
 const
   DataSetManagementFlags =
@@ -246,12 +247,12 @@ begin
   SetDataSetManagementBuffer(StartLBA, LBACount);
 end;
 
-function TATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
+function TLegacyATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
   SetInnerBufferToDataSetManagement(StartLBA, LBACount);
   SetOSBufferByInnerBuffer;
   result := ExceptionFreeIoControl
-    (TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+    (TIoControlCode.ATAPassThrough, IoOSBuffer);
 end;
 
 end.

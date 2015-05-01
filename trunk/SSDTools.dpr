@@ -21,7 +21,6 @@ uses
   uVersion in 'Version\uVersion.pas',
   uDownloadPath in 'Classes\DownloadPath\uDownloadPath.pas',
   uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas',
-  uFirmware in 'ModulesForUI\Firmware\uFirmware.pas',
   uUSBDrive in 'ModulesForUI\USBDrive\uUSBDrive.pas',
   uUAWebbrowser in 'Classes\UAWebbrowser\uUAWebbrowser.pas',
   uButtonGroup in 'ModulesForUI\ButtonGroup\uButtonGroup.pas',
@@ -113,7 +112,8 @@ uses
   uCodesignExtern in 'Modules\Windows\uCodesignExtern.pas',
   uDownloadThread in 'Classes\Threads\uDownloadThread.pas',
   uDownloader in 'ThreadHelper\uDownloader.pas',
-  uFirmwareDownloader in 'Objects\uFirmwareDownloader.pas';
+  uFirmwareDownloader in 'Objects\uFirmwareDownloader.pas',
+  uLegacyATACommandSet in 'WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

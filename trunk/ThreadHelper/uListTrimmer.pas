@@ -31,6 +31,7 @@ type
     procedure IfNeedUICreateModelController;
     procedure IfNeedUIFreeModelController;
     procedure IfPartitionListExistsFreeAndNil;
+    procedure TrimAppliedPartitionsWithProgressSection;
 
   public
     property IsUIInteractionNeeded:
@@ -92,17 +93,27 @@ begin
     FreeAndNil(PartitionsToTrim);
 end;
 
-procedure TListTrimmer.TrimAppliedPartitionsWithUI(ThreadToSynchronize: TThread);
+
+procedure TListTrimmer.TrimAppliedPartitionsWithProgressSection;
 begin
   try
-    self.ThreadToSynchronize := ThreadToSynchronize;
-    ProgressSynchronizer := TProgressSection.Create(ThreadToSynchronize);
     ProgressSynchronizer.ShowProgress;
     CheckIssueAndTrimAppliedPartitions;
     IfPartitionListExistsFreeAndNil;
   except
-    FreeAndNil(ProgressSynchronizer);
     TrimStageReadWrite := TTrimStage.Error;
+  end;
+end;
+
+procedure TListTrimmer.TrimAppliedPartitionsWithUI
+  (ThreadToSynchronize: TThread);
+begin
+  self.ThreadToSynchronize := ThreadToSynchronize;
+  ProgressSynchronizer := TProgressSection.Create(ThreadToSynchronize);
+  try
+    TrimAppliedPartitionsWithProgressSection;
+  finally
+    FreeAndNil(ProgressSynchronizer);
   end;
 end;
 

@@ -52,7 +52,9 @@ begin
 
   for CurrentButtonGroupEntry := 0 to fMain.ButtonGroup.Count - 1 do
     SetEnabledPropertyTo(false, fMain.ButtonGroup[CurrentButtonGroupEntry]);
-    
+  fMain.iHelp.Enabled := false;
+  fMain.lHelp.Enabled := false;
+
   fMain.gDownload.Visible := true;
   fMain.ButtonGroup.Open;
 end;
@@ -104,6 +106,8 @@ begin
 
   for CurrentButtonGroupEntry := 0 to fMain.ButtonGroup.Count - 1 do
     SetEnabledPropertyTo(true, fMain.ButtonGroup[CurrentButtonGroupEntry]);
+  fMain.iHelp.Enabled := true;
+  fMain.lHelp.Enabled := true;
     
   fMain.gDownload.Visible := false;
 end;

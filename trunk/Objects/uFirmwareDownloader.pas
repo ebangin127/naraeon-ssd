@@ -1,4 +1,4 @@
-unit uFirmwareDownloader;
+﻿unit uFirmwareDownloader;
 
 interface
 
@@ -66,9 +66,6 @@ begin
   
   Request.DownloadModelStrings.Download := CapFirmDwld[CurrLang];
   Request.DownloadModelStrings.Cancel := BtDnldCncl[CurrLang];
-
-  ���⿡ Model String �־��� ��
-  �׸��� �� �� ���� ������ ���� ������ �� ������ ã�ƾ� ��.
 end;
 
 procedure TFirmwareDownloader.StartDownload;
@@ -103,7 +100,8 @@ end;
 procedure TFirmwareDownloader.RenameTempFileAndSetFirmwarePath;
 begin
   RenameFile(Request.Destination.FBaseAddress +
-    Request.Destination.FPostAddress + '_tmp',
+    Request.Destination.FFileAddress +
+    Request.Destination.FPostAddress,
     TempFolder + FirmwareQueryResult.FirmwarePath);
   FirmwarePath := TempFolder + FirmwareQueryResult.FirmwarePath;
 end;
@@ -150,11 +148,13 @@ end;
 procedure TFirmwareDownloader.PostDownloadMethod;
 begin
   if FileExists(Request.Destination.FBaseAddress +
+    Request.Destination.FFileAddress +
     Request.Destination.FPostAddress) = false then
   begin
     AlertCreate(fMain, AlrtFirmCanc[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
+    Free;
     exit;
   end;
 
@@ -163,6 +163,7 @@ begin
   begin
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
+    Free;
     exit;
   end;
   ExpandAndSetFirmwarePath;
@@ -172,6 +173,7 @@ begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
+    Free;
     exit;
   end;
 
@@ -180,6 +182,7 @@ begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
+    Free;
     exit;
   end;
 
