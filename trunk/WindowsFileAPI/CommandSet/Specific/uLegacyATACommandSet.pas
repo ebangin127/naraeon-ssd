@@ -225,7 +225,7 @@ procedure TLegacyATACommandSet.SetDataSetManagementBuffer
   (StartLBA, LBACount: Int64);
 begin
   SetStartLBAToDataSetManagementBuffer(StartLBA);
-  SetLBACountToDataSetManagementBuffer(StartLBA);
+  SetLBACountToDataSetManagementBuffer(LBACount);
 end;
 
 procedure TLegacyATACommandSet.SetInnerBufferToDataSetManagement
@@ -234,20 +234,21 @@ const
   DataSetManagementFlags =
     ATA_FLAGS_48BIT_COMMAND or ATA_FLAGS_DATA_OUT or ATA_FLAGS_USE_DMA;
   DataSetManagementFeatures = $1;
-  DataSetManagementLBALo = $1;
+  DataSetManagementSectorCount = $1;
   DataSetManagementCommand = $6;
 var
   IoTaskFile: ATA_TASK_FILES;
 begin
   IoTaskFile := GetCommonTaskFile;
   IoTaskFile.CurrentTaskFile.Features := DataSetManagementFeatures;
-  IoTaskFile.CurrentTaskFile.LBALoSectorNumber := DataSetManagementLBALo;
+  IoTaskFile.CurrentTaskFile.SectorCount := DataSetManagementSectorCount;
   IoTaskFile.CurrentTaskFile.Command := DataSetManagementCommand;
   SetInnerBufferAsFlagsAndTaskFile(DataSetManagementFlags, IoTaskFile);
   SetDataSetManagementBuffer(StartLBA, LBACount);
 end;
 
-function TLegacyATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
+function TLegacyATACommandSet.DataSetManagement(StartLBA, LBACount: Int64):
+  Cardinal;
 begin
   SetInnerBufferToDataSetManagement(StartLBA, LBACount);
   SetOSBufferByInnerBuffer;
