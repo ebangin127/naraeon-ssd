@@ -5,17 +5,19 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.CheckLst, WinInet,
+  Vcl.StdCtrls, Vcl.CheckLst, WinInet, UITypes,
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uSSDInfo, uSSDSupport, uLogSystem, uPhysicalDriveList,
-  uSevenZip, uOptimizer, uUSBDrive, uGetFirm,
-  uDiskFunctions, uSMARTFunctions, uPartitionFunctions, uExeFunctions,
+  uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
+  uDiskFunctions, uExeFunctions,
   uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
-  uFirmware, uRefresh, uButtonGroup, uInit, uRufus, uPathManager,
+  uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
-  uPhysicalDrive, uPartitionListGetter;
+  uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
+  uFirmwareGetter, uGlobalSettings, uCodesignVerifier,
+  uSSDLabelList, uSSDLabel, uMainformPhysicalDriveApplier,
+  uSSDLabelListRefresher, uFirmwareDownloader;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -91,11 +93,9 @@ type
     iBG: TImage;
     iHelp: TImage;
     lHelp: TLabel;
-    tUpdMon: TTimer;
 
     //생성자와 파괴자
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
     //드라이브 리스트 관련 함수
@@ -117,7 +117,6 @@ type
     procedure iSCheckClick(Sender: TObject);
     procedure iAnalyticsClick(Sender: TObject);
     procedure iTrimClick(Sender: TObject);
-    procedure bCancelClick(Sender: TObject);
     procedure bTrimStartClick(Sender: TObject);
     procedure bReturnClick(Sender: TObject);
     procedure lSerialClick(Sender: TObject);
@@ -130,55 +129,38 @@ type
     procedure SSDSelLblMouseEnter(Sender: TObject);
     procedure SSDSelLblMouseLeave(Sender: TObject);
 
-    //다운로드 진행
-    function DownloadFile(Src: TDownloadFile; Dest: TDownloadFile;
-      DownloadCaption, CancelCaption: String): Boolean;
-    procedure DownloaderWork(Sender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
-    procedure ProgressDownload;
-
-    //펌웨어/Rufus 다운로드
-    function DownloadRufus: Boolean;
-
     procedure InitUIToRefresh;
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure tUpdMonTimer(Sender: TObject);
-  protected
-    //쓰레드 관련
-    TrimThread: TTrimThread;
-    UpdateThread: TUpdateThread;
+    procedure FormDestroy(Sender: TObject);
 
-    //다운로드 관련
-    LastDwldCount: Int64;
-    CurrDwldCount: Int64;
-    Max: Int64;
-    Aborted: Boolean;
-
-    //표시 정보 관련
-    SSDInfo: TSSDInfo_NST;
-    ShowSerial: Boolean;
-    ListEnter: Integer;
-
-    //창 관리자
-    ButtonGroup: TButtonGroup;
-
-    //최적화 관련
-    Optimizer: TNSTOptimizer;
-
+  private
+    procedure RefreshByPhysicalDrive;
+    procedure RefreshDrives;
+    function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
+    procedure CreateNewPhysicalDrive;
+    procedure IfThisDriveNotValidSelectOther;
+    procedure FindAndSelectValidDrive;
+    procedure SetSelectedDriveLabelBold;
+    function FirmwareUpdateNotAvailable: Boolean;
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
+
   public
     CurrDrive: String;
     SSDLabel: TSSDLabelList;
-    SSDList: TPhysicalDriveList;
+    PhysicalDriveList: TPhysicalDriveList;
     PhysicalDrive: TPhysicalDrive;
+    FirmwareGetter: TFirmwareGetter;
+    WICImage: TWICImage;
+    ButtonGroup: TButtonGroup;
+    OnlineFirmwareUpdateAvailable: Boolean;
+    UpdateThread: TUpdateThread;
+    TrimThread: TTrimThread;
+    ShowSerial: Boolean;
+    ListEnter: Integer;
+    Optimizer: TNSTOptimizer;
 
-    //현재 드라이브 관련
-    FirstiOptLeft: Integer;
-
-    procedure ShowProgress;
-    procedure HideProgress;
   end;
 
 var
@@ -191,11 +173,6 @@ const
 implementation
 
 {$R *.dfm}
-
-procedure TfMain.bCancelClick(Sender: TObject);
-begin
-  Aborted := true;
-end;
 
 procedure TfMain.bEraseUSBStartClick(Sender: TObject);
 var
@@ -216,7 +193,7 @@ begin
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
 
-    TempFolder := TPathManager.TempFolder;
+    TempFolder := TPathManager.TempFolder(true);
     CreateDir(TempFolder);
 
     TSevenZip.Extract(
@@ -229,8 +206,8 @@ begin
       CapLocalDisk[LANG_ENGLISH] +
       CapRemvDisk[LANG_ENGLISH] +
       CapProg1[LANG_ENGLISH] +
-      CapProg2[LANG_ENGLISH] +
-      CapProg3[LANG_ENGLISH]
+      CapProg3[LANG_ENGLISH] +
+      CapProg2[LANG_ENGLISH]
     );
 
     FileName := TempFolder + 'pmagic.iso';
@@ -250,51 +227,16 @@ end;
 
 procedure TfMain.bFirmStartClick(Sender: TObject);
 var
-  ChkFrmResult: FirmCheck;
-  ifConnected: DWORD;
+  FirmwareDownloader: TFirmwareDownloader;
 begin
-  InternetGetConnectedState(@ifConnected, 0);
-  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
-      (ifConnected = 0) then
-  begin
-    AlertCreate(Self, AlrtNoInternet[CurrLang]);
-    exit;
-  end
-  else if (cAgree.Checked = false) and (Sender <> Self) then
+  if fMain.cAgree.Checked = false then
   begin
     AlertCreate(Self, AlrtNoCheck[CurrLang]);
     exit;
   end;
 
-  tRefresh.Enabled := false;
-
-  ChkFrmResult.FirmExists := false;
-  ChkFrmResult := DownloadFirmware(TPathManager.AppPath, SSDInfo);
-
-  if (ChkFrmResult.FirmExists = false) or
-     ((TRufus.CheckRufus = false) and (DownloadRufus = false)) then
-  begin
-    tRefresh.Enabled := true;
-    exit;
-  end;
-
-  if (ExtractFileExt(ChkFrmResult.FirmPath) = '.exe') then
-  begin
-    ShellExecute(0, 'open', PChar(ChkFrmResult.FirmPath), nil, nil,
-      SW_SHOW);
-    iFirmUp.OnClick(nil);
-  end
-  else
-  begin
-    AlertCreate(Self, AlrtStartFormat[CurrLang]);
-    TRufus.RunRufus(Copy(cUSB.Items[cUSB.ItemIndex], 1, 3),
-      ChkFrmResult.FirmPath);
-    AlertCreate(Self, AlrtFirmEnd[CurrLang]);
-    DeleteDirectory(ExtractFilePath(ChkFrmResult.FirmPath));
-    DeleteDirectory(ChkFrmResult.TempFolder);
-  end;
-
-  tRefresh.Enabled := true;
+  FirmwareDownloader := TFirmwareDownloader.Create;
+  FirmwareDownloader.DownloadFirmware;
 end;
 
 procedure TfMain.bStartClick(Sender: TObject);
@@ -329,46 +271,34 @@ end;
 procedure TfMain.bTrimStartClick(Sender: TObject);
 var
   CurrPartition: Integer;
-  PartCount: Integer;
-  PartToTrim: TTrimList;
+  PartitionCount: Integer;
+  PartitionsToTrim: TTrimList;
 begin
-  PartCount := 0;
+  PartitionCount := 0;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
     if cTrimList.Checked[CurrPartition] then
-      PartCount := PartCount + 1;
+      PartitionCount := PartitionCount + 1;
 
   lDownload.Caption := CapTrimName[CurrLang];
-  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartCount) + ' '
-                        + CapProg2[CurrLang];
+  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartitionCount);
   bCancel.Visible := false;
   lSpeed.Visible := true;
 
   lSpeed.Font.Color := clRed;
   lSpeed.Font.Style := [fsBold];
-  lSpeed.Caption := CapProg3[CurrLang];
+  lSpeed.Caption := CapProg2[CurrLang];
 
   gTrim.Visible := false;
-  ShowProgress;
-  Application.ProcessMessages;
-
-  pDownload.Height := pDownload.Height + 10;
-  pDownload.Top := pDownload.Top + 5;
 
   CurrDrive := '';
-  PartToTrim := TTrimList.Create;
+  PartitionsToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
-  begin
     if cTrimList.Checked[CurrPartition] then
-    begin
-      PartToTrim.Add(
+      PartitionsToTrim.Add(
         Copy(cTrimList.Items[CurrPartition], 1, 2));
-    end;
-  end;
-  TrimThread.IsSemiAuto := false;
 
-  if TrimThread <> Nil then FreeAndNil(TrimThread);
-  TrimThread := TTrimThread.Create(true);
-  TrimThread.ApplyPartList(PartToTrim);
+  TrimThread := TTrimThread.Create(true, true);
+  TrimThread.SetPartitionList(PartitionsToTrim);
   TrimThread.Priority := tpLower;
   TrimThread.Start;
 end;
@@ -389,51 +319,44 @@ end;
 
 procedure TfMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if ((TrimThread <> nil) and
-      (TrimThread.TrimStage < TRIMSTAGE_END)) then
+  if TTrimThread.TrimStage = TTrimStage.InProgress then
   begin
     Action := caNone;
     exit;
   end;
-
-  if (TrimThread <> nil) and (TrimThread.TrimStage >= TRIMSTAGE_END) then
-    FreeAndNil(TrimThread);
-  if (UpdateThread <> nil) and (not UpdFinished) then
-    FreeAndNil(UpdateThread);
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
   Optimizer := TNSTOptimizer.Create;
-  SSDInfo := TSSDInfo_NST.Create;
   SSDLabel := TSSDLabelList.Create;
-  SSDList := TPhysicalDriveList.Create;
+  PhysicalDriveList := TPhysicalDriveList.Create;
+  FirmwareGetter := TFirmwareGetter.Create;
 
   CurrDrive := '';
   ShowSerial := false;
   ListEnter := 0;
-  FirstiOptLeft := iOptimize.Left;
-
-  if Copy(ParamStr(1), Length(ParamStr(1)) - 3, 4) = '.err' then
-    exit;
 
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
-  RefreshDrives(SSDInfo);
+  RefreshDrives;
 
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
-  TGetFirm.DestroyCache;
+  FreeAndNil(FirmwareGetter);
 
-  FreeAndNil(PhysicalDrive);
-  FreeAndNil(SSDList);
+  if PhysicalDrive <> nil then
+    FreeAndNil(PhysicalDrive);
+
+  FreeAndNil(PhysicalDriveList);
   FreeAndNil(SSDLabel);
-  FreeAndNil(SSDInfo);
+  FreeAndNil(PhysicalDrive);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
+  FreeAndNil(WICImage);
 end;
 
 procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
@@ -441,6 +364,20 @@ procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_F1 then
     iHelp.OnClick(nil);
+end;
+
+procedure TfMain.RefreshDrives;
+var
+  SSDLabelListRefresher: TSSDLabelListRefresher;
+begin
+  SSDLabelListRefresher := TSSDLabelListRefresher.Create;
+  SSDLabelListRefresher.RefreshDrives;
+  FreeAndNil(SSDLabelListRefresher);
+
+  if PhysicalDriveList.Count = 0 then
+    exit;
+  RefreshByPhysicalDrive;
+  SetSelectedDriveLabelBold;
 end;
 
 procedure TfMain.FormShow(Sender: TObject);
@@ -453,53 +390,27 @@ begin
   CloseDriveList;
 end;
 
-procedure TfMain.DownloaderWork(Sender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
-var
-  LeftSec: Int64;
-begin
-  if Aborted then
-    TIdHttp(Sender).Disconnect;
-
-  if (AWorkMode <> wmRead) then
-    exit;
-
-  pDownload.Position := Round((AWorkCount / Max) * 100);
-  CurrDwldCount := AWorkCount;
-  lProgress.Caption := CapProg1[CurrLang] +
-    Format('%.1fMB', [AWorkCount / 1024 / 1024]) + ' / ' +
-    Format('%.1fMB', [Max / 1024 / 1024]) +
-    ' (' + IntToStr(Round((AWorkCount / Max) * 100)) + '%)';
-
-  lSpeed.Caption :=
-    CapSpeed[CurrLang] +
-    Format('%.1f', [(CurrDwldCount - LastDwldCount) * 2 / 1024]) + 'KB/s';
-
-  LeftSec := 0;
-  if (CurrDwldCount - LastDwldCount) > 0 then
-    LeftSec :=
-      round((Max - CurrDwldCount) /
-        ((CurrDwldCount - LastDwldCount) * 2));
-
-  lSpeed.Caption := CapTime[CurrLang] + FormatTimeInSecond(LeftSec);
-  LastDwldCount := CurrDwldCount;
-
-  Application.ProcessMessages;
-end;
-
 procedure TfMain.iAnalyticsClick(Sender: TObject);
 begin
   CloseDriveList;
   ButtonGroup.Click(iAnalytics);
 end;
 
+function TfMain.FirmwareUpdateNotAvailable: Boolean;
+begin
+  result := (not PhysicalDrive.SupportStatus.FirmwareUpdate) or
+    (not OnlineFirmwareUpdateAvailable);
+end;
+
 procedure TfMain.iFirmUpClick(Sender: TObject);
 var
   ifConnected: DWORD;
+  Query: TFirmwareQuery;
+  QueryResult: TFirmwareQueryResult;
 begin
   CloseDriveList;
 
-  if SSDInfo.SSDSupport.SupportFirmUp = false then
+  if FirmwareUpdateNotAvailable then
   begin
     AlertCreate(Self, AlrtNoFirmSupport[CurrLang]);
     exit;
@@ -531,7 +442,13 @@ begin
   lNewFirm.Font.Style := [];
   ButtonGroup.Click(iFirmUp);
 
-  if IsNewVersion(SSDInfo.Model, SSDInfo.Firmware) = NEW_VERSION then
+  Query.Model := PhysicalDrive.IdentifyDeviceResult.Model;
+  Query.Firmware := PhysicalDrive.IdentifyDeviceResult.Firmware;
+  QueryResult := FirmwareGetter.CheckFirmware(Query);
+  if QueryResult.LatestVersion = '' then
+    exit;
+
+  if QueryResult.CurrentVersion = TFirmwareVersion.NewVersion then
   begin
     if lNewFirm.Font.Color <> clRed then
     begin
@@ -584,22 +501,19 @@ begin
   CloseDriveList;
 
   if ButtonGroup.FindEntry(iFirmUp).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/131', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/firmupdate/', '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iErase).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/144', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/erase-pm/', '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iTrim).Selected then
-  begin
-    if gTrim.Visible then
-      ShellExecute(0, 'open', 'http://naraeon.tistory.com/142', '',
-        nil, SW_NORMAL)
-    else
-      ShellExecute(0, 'open', 'http://naraeon.tistory.com/143', '',
-        nil, SW_NORMAL);
-  end
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/mantrim/', '',
+      nil, SW_NORMAL)
+  else if ButtonGroup.FindEntry(iOptimize).Selected then
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/optimize/', '',
+      nil, SW_NORMAL)
   else
-    ShellExecute(0, 'open', 'http://naraeon.tistory.com/132', '',
+    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/', '',
       nil, SW_NORMAL);
 end;
 
@@ -619,7 +533,8 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-  GetChildDrives(ExtractDeviceNum(SSDInfo.DeviceName), cTrimList.Items);
+  GetChildDrives(PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
+    cTrimList.Items);
   for CheckedDrives := 0 to cTrimList.Count - 1 do
     cTrimList.Checked[CheckedDrives] := true;
 end;
@@ -632,23 +547,24 @@ begin
   begin
     ShowSerial := false;
     lSerial.Caption := CapSerial[CurrLang];
-    for CurrNum := 0 to Length(SSDInfo.Serial) - 1 do
-      lSerial.Caption := lSerial.Caption + 'X';
+    for CurrNum := 0 to
+      Length(PhysicalDrive.IdentifyDeviceResult.Serial) - 1 do
+        lSerial.Caption := lSerial.Caption + 'X';
   end
   else
   begin
     ShowSerial := true;
-    lSerial.Caption := CapSerial[CurrLang] + SSDInfo.Serial;
+    lSerial.Caption := CapSerial[CurrLang] +
+      PhysicalDrive.IdentifyDeviceResult.Serial;
   end;
 end;
 
 procedure TfMain.SSDLabelClick(Sender: TObject);
-var
-  CurrIndex: Integer;
 begin
   CloseDriveList;
 
-  if CurrDrive = TSSDLabel(Sender).DeviceInfo.DeviceName then
+  if CurrDrive =
+    TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix then
   begin
     gSSDSel.Visible := false;
     exit;
@@ -657,15 +573,9 @@ begin
   lFirmware.Font.Color := clWindowText;
   ButtonGroup.CloseAll;
 
-  CurrDrive := TSSDLabel(Sender).DeviceInfo.DeviceName;
+  CurrDrive :=
+    TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix;
   tRefreshTimer(Self);
-
-  for CurrIndex := 0 to SSDLabel.Count - 1 do
-    if SSDLabel[CurrIndex].DeviceInfo.DeviceName =
-       TSSDLabel(Sender).DeviceInfo.DeviceName then
-      SSDLabel[CurrIndex].Font.Style := [fsBold]
-    else
-      SSDLabel[CurrIndex].Font.Style := [];
 
   gSSDSel.Visible := false;
 end;
@@ -701,6 +611,46 @@ begin
   CloseDriveList;
 end;
 
+function TfMain.TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer):
+  Boolean;
+begin
+  try
+    result := true;
+    fMain.PhysicalDrive := TPhysicalDrive.Create(DeviceNumber);
+  except
+    result := false;
+    FreeAndNil(fMain.PhysicalDrive);
+  end;
+end;
+
+procedure TfMain.FindAndSelectValidDrive;
+var
+  CurrentEntry: TSSDLabel;
+begin
+  for CurrentEntry in SSDLabel do
+  begin
+    if TryToCreatePhysicalDriveWithEntry(
+      StrToInt(
+        CurrentEntry.PhysicalDrive.GetPathOfFileAccessingWithoutPrefix)) then
+    begin
+      CurrentEntry.OnClick(CurrentEntry);
+      exit;
+    end;
+  end;
+end;
+
+procedure TfMain.IfThisDriveNotValidSelectOther;
+begin
+  if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrDrive)) = false then
+    FindAndSelectValidDrive;
+end;
+
+procedure TfMain.CreateNewPhysicalDrive;
+begin
+  FreeAndNil(fMain.PhysicalDrive);
+  IfThisDriveNotValidSelectOther;
+end;
+
 procedure TfMain.tRefreshTimer(Sender: TObject);
 const
   ORIGINAL_INTERVAL = 60000;
@@ -708,18 +658,37 @@ begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
 
-  if RefreshTimer(SSDInfo, ShowSerial, firstiOptLeft) = false then
-    Application.Terminate;
+  if Length(fMain.CurrDrive) = 0 then
+    exit;
+
+  CreateNewPhysicalDrive;
+  RefreshDrives;
 end;
 
-procedure TfMain.tUpdMonTimer(Sender: TObject);
+procedure TfMain.SetSelectedDriveLabelBold;
+var
+  CurrIndex: Integer;
 begin
-  if (UpdateThread <> nil) and
-     (UpdFinished) then
+  for CurrIndex := 0 to SSDLabel.Count - 1 do
   begin
-    tUpdMon.Enabled := false;
-    FreeAndNil(UpdateThread);
+    if SSDLabel[CurrIndex].PhysicalDrive.GetPathOfFileAccessing =
+       PhysicalDrive.GetPathOfFileAccessing then
+    begin
+      if SSDLabel[CurrIndex].Font.Style <> [fsBold] then
+        SSDLabel[CurrIndex].Font.Style := [fsBold];
+    end
+    else
+      SSDLabel[CurrIndex].Font.Style := [];
   end;
+end;
+
+procedure TfMain.RefreshByPhysicalDrive;
+var
+  MainformPhysicalDriveApplier: TMainformPhysicalDriveApplier;
+begin
+  MainformPhysicalDriveApplier := TMainformPhysicalDriveApplier.Create;
+  MainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(ShowSerial);
+  FreeAndNil(MainformPhysicalDriveApplier);
 end;
 
 procedure TfMain.WmAfterShow(var Msg: TMessage);
@@ -727,9 +696,6 @@ const
   INTERNET_CONNECTION_LAN = 2;
 var
   ifConnected: DWORD;
-  DesktopPath: array[0..MAX_PATH] of char;
-  DeskPath: String;
-  ErrList: TStringList;
 begin
   if lName.Caption = '' then
   begin
@@ -745,23 +711,7 @@ begin
     UpdateThread := TUpdateThread.Create(True);
     UpdateThread.Priority := tpLower;
     UpdateThread.Start;
-    tUpdMon.Enabled := true;
   end;
-
-  tRefresh.Enabled := false;
-  RefreshDrives(SSDInfo);
-  tRefresh.Enabled := true;
-
-  SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0, @DesktopPath[0]);
-  DeskPath := DesktopPath;
-
-  if FileExists(DeskPath + '\!!!SSDError!!!.err') then
-    MsgboxCreate(Self, DeskPath + '\!!!SSDError!!!.err');
-
-  ErrList := WriteBufferCheck;
-  if ErrList.Count > 0 then
-    AlertCreate(Self, ErrCache[CurrLang] + Chr(13) + Chr(10) +  ErrList.Text);
-  FreeAndNil(ErrList);
 end;
 
 procedure TfMain.WMDeviceChange(var Msg: TMessage);
@@ -780,52 +730,6 @@ begin
   end;
 end;
 
-procedure TfMain.ShowProgress;
-var
-  CurrImgLbl: Integer;
-begin
-  for CurrImgLbl := 0 to SSDLabel.Count - 1 do
-    SSDLabel[CurrImgLbl].Enabled := false;
-
-  iFirmUp.Enabled := false;
-  lFirmUp.Enabled := false;
-  iErase.Enabled := false;
-  lErase.Enabled := false;
-  iOptimize.Enabled := false;
-  lOptimize.Enabled := false;
-  iHelp.Enabled := false;
-  lHelp.Enabled := false;
-  iAnalytics.Enabled := false;
-  lAnalytics.Enabled := false;
-  iTrim.Enabled := false;
-  lTrim.Enabled := false;
-  gDownload.Visible := true;
-
-  ButtonGroup.Open;
-end;
-
-procedure TfMain.HideProgress;
-var
-  CurrImgLbl: Integer;
-begin
-  for CurrImgLbl := 0 to SSDLabel.Count - 1 do
-    SSDLabel[CurrImgLbl].Enabled := true;
-
-  iFirmUp.Enabled := true;
-  lFirmUp.Enabled := true;
-  iErase.Enabled := true;
-  lErase.Enabled := true;
-  iOptimize.Enabled := true;
-  lOptimize.Enabled := true;
-  iHelp.Enabled := true;
-  lHelp.Enabled := true;
-  iAnalytics.Enabled := true;
-  lAnalytics.Enabled := true;
-  iTrim.Enabled := true;
-  lTrim.Enabled := true;
-  gDownload.Visible := false;
-end;
-
 procedure TfMain.cTrimRunningClick(Sender: TObject);
 var
   SchedResult: String;
@@ -839,9 +743,11 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
-          '/tn "MANTRIM' + SSDInfo.Serial + '" ' +  //이름
+          '/tn "MANTRIM' +                          //이름
+          PhysicalDrive.IdentifyDeviceResult.Serial +
+          '" ' +
           '/tr "\" ' + Application.ExeName + '\" ' +//경로
-            SSDInfo.Serial + '" ' +
+            PhysicalDrive.IdentifyDeviceResult.Serial + '" ' +
           '/ru system'));                           //작업할 계정
     end
     else
@@ -851,86 +757,22 @@ begin
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
-          '/tn "MANTRIM' + SSDInfo.Serial + '" ' +  //이름
+          '/tn "MANTRIM' +                          //이름
+          PhysicalDrive.IdentifyDeviceResult.Serial +
+          '" ' +
           '/tr "''' + Application.ExeName +         //경로
-            ''' ''' + SSDInfo.Serial + '''" ' +
+            ''' ''' +
+          PhysicalDrive.IdentifyDeviceResult.Serial + '''" ' +
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
       string(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
-        '/TN "MANTRIM' + SSDInfo.Serial + '" ' +    //작업 이름
+        '/TN "MANTRIM' +                            //작업 이름
+        PhysicalDrive.IdentifyDeviceResult.Serial +
+        '" ' +
         '/F'));                                     //강제 삭제
-end;
-
-function TfMain.DownloadRufus: Boolean;
-var
-  Src, Dest: TDownloadFile;
-  DownloadResult: Boolean;
-begin
-  result := false;
-
-  AlertCreate(Self, AlrtBootInStart[CurrLang]);
-
-  Src.FBaseAddress := '';
-  Src.FFileAddress :=
-    'http://nstfirmware.naraeon.net/nst_rufus.htm';
-  Src.FType := dftGetFromWeb;
-
-  Dest.FBaseAddress := TPathManager.AppPath;
-  Dest.FFileAddress := 'Rufus\rufus.exe_tmp';
-  Dest.FType := dftPlain;
-
-  gFirmware.Visible := false;
-  DownloadResult :=
-    DownloadFile(Src, Dest, CapBootInDwld[CurrLang], bCancel.Caption);
-  gFirmware.Visible := true;
-
-  if DownloadResult = false then
-  begin
-    AlertCreate(Self, AlrtFirmCanc[CurrLang]);
-    exit;
-  end;
-  RenameFile(TPathManager.AppPath + 'Rufus\rufus.exe_tmp',
-             TPathManager.AppPath + 'Rufus\rufus.exe');
-
-  result := TRufus.CheckRufus;
-end;
-
-procedure TfMain.ProgressDownload;
-var
-  Src, Dest: TDownloadFile;
-begin
-  if Application.MessageBox(PChar(CapCurrVer[CurrLang] + CurrentVersion
-                           + Chr(13) + Chr(10) +
-                           CapNewVer[CurrLang] + Copy(ServerVersion, 1, 5)
-                           + Chr(13) + Chr(10) + Chr(13) + Chr(10) +
-                           Copy(ChangeLog, 1, CurrChr)
-                           + Chr(13) + Chr(10) + Chr(13) + Chr(10) +
-                           CapUpdQues[CurrLang]), PChar(AlrtNewVer[CurrLang]),
-                           MB_OKCANCEL  + MB_IconInformation) <> 1 then
-    exit;
-
-  Src.FBaseAddress := 'http://nstupdate.naraeon.net';
-  Src.FFileAddress := '/Setup.exe';
-  Src.FType := dftPlain;
-
-  Dest.FBaseAddress := TPathManager.AppPath;
-  Dest.FFileAddress := 'Setup.exe';
-  Dest.FType := dftPlain;
-
-  if DownloadFile(Src, Dest, CapUpdDwld[CurrLang], bCancel.Caption) = false then
-  begin
-    AlertCreate(Self, AlrtVerCanc[CurrLang]);
-    exit;
-  end;
-
-  ButtonGroup.Close;
-  AlertCreate(Self, AlrtUpdateExit[CurrLang]);
-  ShellExecute(0, nil,
-    PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
-  Application.Terminate;
 end;
 
 procedure TfMain.bScheduleClick(Sender: TObject);
@@ -949,51 +791,9 @@ begin
   FreeAndNil(DriveList);
 
   cTrimRunning.Checked :=
-    Pos('MANTRIM' + SSDInfo.Serial,
+    Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
       UnicodeString(OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;
-end;
-
-function TfMain.DownloadFile(Src: TDownloadFile; Dest: TDownloadFile;
-  DownloadCaption, CancelCaption: String): Boolean;
-var
-  SrcAddress, DestAddress: String;
-  Downloader: TIdHttp;
-  DownloadStream: TFileStream;
-begin
-  try
-    SrcAddress := GetDownloadPath(Src);
-    DestAddress := GetDownloadPath(Dest);
-  except
-    exit(false);
-  end;
-
-  lDownload.Caption := DownloadCaption;
-  bCancel.Caption := CancelCaption;
-
-  DownloadStream := TFileStream.Create(DestAddress,
-    fmCreate or fmShareExclusive);
-  Downloader := TIdHttp.Create;
-  Downloader.Request.UserAgent := 'Naraeon SSD Tools';
-  Downloader.HandleRedirects := true;
-
-  try
-    Aborted := false;
-    Max := 0;
-    Downloader.OnWork := DownloaderWork;
-    Downloader.Head(SrcAddress);
-    Max := Downloader.response.ContentLength;
-
-    ShowProgress;
-    Downloader.Get(SrcAddress, DownloadStream);
-    Application.ProcessMessages;
-    HideProgress;
-  finally
-    FreeAndNil(DownloadStream);
-    FreeAndNil(Downloader);
-  end;
-
-  result := not Aborted;
 end;
 end.
