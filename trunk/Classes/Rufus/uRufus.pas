@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Messages, Dialogs, IOUtils, Math, ShellAPI,
-  uPathManager;
+  uPathManager, uCodesignVerifier;
 
 type
   TRufus = class
@@ -45,8 +45,17 @@ const
 
 
 class function TRufus.CheckRufus: Boolean;
+var
+  CodesignVerifier: TCodesignVerifier;
 begin
   result := FileExists(TPathManager.AppPath + 'Rufus\rufus.exe');
+  if not result then
+    exit;
+
+  CodesignVerifier := TCodesignVerifier.Create;
+  result := CodesignVerifier.VerifySignByPublisher(
+    TPathManager.AppPath + 'Rufus\rufus.exe', 'Akeo Consulting');
+  FreeAndNil(CodesignVerifier);
 end;
 
 class procedure TRufus.RunRufus(DestDrive, FromISO: String);

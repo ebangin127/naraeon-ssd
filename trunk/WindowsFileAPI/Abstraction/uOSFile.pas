@@ -7,15 +7,17 @@ uses
 
 const
   ThisComputerPrefix = '\\.\';
-  PhysicalDrivePrefix = 'PhysicalDrive';
+  PhysicalDrivePrefix = 'PHYSICALDRIVE';
 
 type
   TOSFile = class abstract(TObject)
   public
     constructor Create(FileToGetAccess: String); virtual;
 
-    function GetPathOfFileAccessing: String;
-    function GetPathOfFileAccessingWithoutPrefix: String;
+    function IsPathEqual(OSFileToCompare: TOSFile): Boolean; overload;
+    function IsPathEqual(PathToCompare: String): Boolean; overload;
+    function GetPathOfFileAccessing: String; virtual;
+    function GetPathOfFileAccessingWithoutPrefix: String; virtual;
 
   protected
     procedure IfOSErrorRaiseException;
@@ -26,19 +28,31 @@ type
     function DeletePrefix(PrefixToDelete: String): String;
     function IsPathOfFileAccessingHavePrefix
       (PrefixToCheck: String): Boolean;
+    function GetOSErrorString(OSErrorCode: Integer): String;
+    function IsLastSystemCallSucceed: Boolean;
   end;
 
   EInsufficientPrivilege = class(Exception);
 
 implementation
 
-function IsLastSystemCallSucceed: Boolean;
+function TOSFile.IsPathEqual(OSFileToCompare: TOSFile): Boolean;
+begin
+  result := IsPathEqual(OSFileToCompare.GetPathOfFileAccessing);
+end;
+
+function TOSFile.IsPathEqual(PathToCompare: String): Boolean;
+begin
+  result := GetPathOfFileAccessing = PathToCompare;
+end;
+
+function TOSFile.IsLastSystemCallSucceed: Boolean;
 begin
   result :=
     GetLastError = ERROR_SUCCESS;
 end;
 
-function GetOSErrorString(OSErrorCode: Integer): String;
+function TOSFile.GetOSErrorString(OSErrorCode: Integer): String;
 begin
   result :=
     'OS Error: ' +
@@ -46,9 +60,15 @@ begin
 end;
 
 procedure TOSFile.IfOSErrorRaiseException;
+var
+  OSErrorException: EOSError;
 begin
   if not IsLastSystemCallSucceed then
-    raise EOSError.Create(GetOSErrorString(GetLastError));
+  begin
+    OSErrorException := EOSError.Create(GetOSErrorString(GetLastError));
+    OSErrorException.ErrorCode := GetLastError;
+    raise OSErrorException;
+  end;
 end;
 
 function TOSFile.GetPathOfFileAccessing: String;
@@ -87,7 +107,7 @@ end;
 constructor TOSFile.Create(FileToGetAccess: String);
 begin
   inherited Create;
-  PathOfFileAccessing := FileToGetAccess;
+  PathOfFileAccessing := UpperCase(FileToGetAccess);
 end;
 
 end.

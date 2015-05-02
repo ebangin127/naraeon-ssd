@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{73281663-701B-413A-A1FD-78A9FA509574}</ProjectGuid>
+        <ProjectGuid>{A0E736DE-F461-4C8B-BDB5-1177107FF897}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="SSDTools.dproj">

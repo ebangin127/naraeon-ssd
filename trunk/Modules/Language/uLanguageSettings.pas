@@ -29,7 +29,7 @@ const
     CapAlign: Array[0..1] of String = ('파티션 배열 (중요) : ', 'Partition Align (Important) : ');
     CapStatus: Array[0..1] of String = ('상태 : ', 'Status : ');
     CapUnknown: Array[0..1] of String = ('알 수 없음', 'Unknown');
-    ConnState: Array[0..3] of String = ('SATA 1.5Gb/s (', 'SATA 3.0Gb/s (', 'SATA 6.0Gb/s (', 'USB');
+    CapConnSpeed: Array[0..3] of String = ('SATA 1.5Gb/s (', 'SATA 3.0Gb/s (', 'SATA 6.0Gb/s (', 'USB');
     CapSupportNCQ: Array[0..1] of String = ('AHCI 사용', 'AHCI Working');
     CapNonSupNCQ: Array[0..1] of String = ('AHCI 꺼짐', 'AHCI Off');
 
@@ -126,8 +126,8 @@ const
     CapLocalDisk: Array[0..1] of String = ('로컬 디스크', 'Local Disk');
     CapRemvDisk: Array[0..1] of String = ('이동식 디스크', 'Removable Disk');
     CapProg1: Array[0..1] of String = ('진행 상황 : ', 'Progress : ');
-    CapProg2: Array[0..1] of String = ('드라이브 트림 진행중', 'Drive trimming');
-    CapProg3: Array[0..1] of String = ('트림 도중 자료 유실 우려가 있으니, 쓰기 작업 병행을 최소화해주세요', 'DO NOT DO WRITE-INTENSIVE OPERATION DURING MANUAL TRIM.');
+    CapProg2: Array[0..1] of String = ('트림 도중 자료 유실 우려가 있으니, 쓰기 작업 병행을 최소화해주세요', 'DO NOT DO WRITE-INTENSIVE OPERATION DURING MANUAL TRIM.');
+    CapProg3: Array[0..1] of String = ('드라이브 트림 진행중', 'Drive trimming');
 
 
   //반자동 트림
@@ -180,6 +180,7 @@ const
 
     AlrtUpdateExit: Array[0..1] of String = ('본 프로그램의 판올림을 위해 프로그램을 종료합니다.', 'Closing program to do update.');
     AlrtVerCanc: Array[0..1] of String = ('판올림 다운로드가 취소되었습니다.', 'Update download has been canceled.');
+    AlrtWrongCodesign: Array[0..1] of String = ('판올림이 잘못된 코드사인을 포함하고 있습니다.' + Chr(13) + Chr(10) + '개발자에게 알려주세요.', 'Update download has wrong codesign.' + Chr(13) + Chr(10) + 'Please report it to developer.');
     AlrtVerTraff: Array[0..1] of String = ('트래픽이 초과되었으므로, 직접 다운받아주세요.' + Chr(13) + Chr(10) + '죄송합니다.',
                                             'The update server is over its quota. Try later.' + Chr(13) + Chr(10) + 'Sorry for inconvenience.');
     AlrtNewVer: Array[0..1] of String = ('새로운 판 발견' , 'Update available');
@@ -206,11 +207,11 @@ const
 
 
   //다운로드
-    CapSpeed: Array[0..1] of String = ('전송 속도 : ', 'Transfer Speed : ');
     CapTime: Array[0..1] of String = ('남은 시간 : ', 'Remaining time : ');
 
   //나래온 넷 주소
     AddrSecureErase: Array[0..1] of String = ('http://naraeon.net/plugin/plugin_kor.htm', 'http://naraeon.net/plugin/plugin_eng.htm');
+    AddrUpdChk: Array[0..1] of String = ('http://nstupdate.naraeon.net/latestSSDTools.htm', 'http://nstupdate.naraeon.net/latestSSDTools_eng.htm');
 
   //진단
     DiagName: Array[0..1] of String = ('나래온 툴 진단도구', 'NSTools Diagnosis');

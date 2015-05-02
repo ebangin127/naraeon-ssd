@@ -2,13 +2,16 @@ unit uSevenZip;
 
 interface
 
-uses uExeFunctions;
+uses
+  SysUtils,
+  uExeFunctions, uCodesignVerifier;
 
 type
   TSevenZip = class
   private
     class function BuildCommand
       (SzipPath, SrcFile, DestFolder, Password: String): String;
+    class function VerifySevenZip(SzipPath: String): Boolean; static;
   public
     class function Extract
       (SzipPath, SrcFile, DestFolder: String;
@@ -34,12 +37,22 @@ begin
     result + ' -p"' + Password + '"';
 end;
 
+class function TSevenZip.VerifySevenZip(SzipPath: String): Boolean;
+var
+  CodesignVerifier: TCodesignVerifier;
+begin
+  CodesignVerifier := TCodesignVerifier.Create;
+  result := CodesignVerifier.VerifySignByPublisher(SzipPath, 'Minkyu Kim');
+  FreeAndNil(CodesignVerifier);
+end;
+
 class function TSevenZip.Extract
   (SzipPath, SrcFile, DestFolder, Password: String): AnsiString;
 begin
-  result :=
-    OpenProcWithOutput('C:\',
-      BuildCommand(SzipPath, SrcFile, DestFolder, Password));
+  if VerifySevenZip(SzipPath) then
+    result :=
+      OpenProcWithOutput('C:\',
+        BuildCommand(SzipPath, SrcFile, DestFolder, Password));
 end;
 
 end.

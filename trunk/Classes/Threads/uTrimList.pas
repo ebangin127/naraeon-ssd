@@ -6,24 +6,28 @@ uses
   Generics.Collections;
 
 type
-  TTrimListNextStat = (NEXTSTAT_SUCCESS, NEXTSTAT_NOTCMPL);
-  TTrimListNext = record
-    Status: TTrimListNextStat;
-    PartitionName: String;
+  TNextPartitionStatus = (Success, CompleteLastPartitionFirst);
+
+  TTrimListEntry = record
+    Status: TNextPartitionStatus;
+    PartitionPath: String;
   end;
+
   TTrimList = class(TList<String>)
   private
-    FCurrPartition: Integer;
-    FCompletedPartition: Integer;
+    CurrentPartitionReadWrite: Integer;
+    CompletedPartitionReadWrite: Integer;
+    AtomicNextPartitionMonitor: TMonitor;
+    function GetNextPartitionInCriticalSection: TTrimListEntry;
+    function IsLastPartitionCompletedProperly: Boolean;
+    function ChangePointerToNextPartitionAndGet: TTrimListEntry;
   public
-    property CurrPartition: Integer
-      read FCurrPartition;
-    property CompletedPartition: Integer
-      read FCompletedPartition;
+    property CurrentPartition: Integer read CurrentPartitionReadWrite;
+    property CompletedPartition: Integer read CompletedPartitionReadWrite;
 
     procedure PointerToFirst;
-    function GetNextPartition: TTrimListNext;
-    procedure MarkAsCompleted;
+    function GetNextPartition: TTrimListEntry;
+    procedure CompleteCurrentPartition;
   end;
 
 implementation
@@ -31,26 +35,46 @@ implementation
 
 procedure TTrimList.PointerToFirst;
 begin
-  FCurrPartition := -1;
-  FCompletedPartition := -1;
+  CurrentPartitionReadWrite := -1;
+  CompletedPartitionReadWrite := -1;
 end;
 
-function TTrimList.GetNextPartition: TTrimListNext;
+function TTrimList.IsLastPartitionCompletedProperly: Boolean;
 begin
-  if FCurrPartition < FCompletedPartition then
+  result := CurrentPartitionReadWrite >= CompletedPartitionReadWrite;
+end;
+
+function TTrimList.ChangePointerToNextPartitionAndGet: TTrimListEntry;
+begin
+  result.Status := TNextPartitionStatus.Success;
+  result.PartitionPath := self[CurrentPartitionReadWrite];
+  CurrentPartitionReadWrite := CurrentPartitionReadWrite + 1;
+end;
+
+function TTrimList.GetNextPartitionInCriticalSection: TTrimListEntry;
+begin
+  if not IsLastPartitionCompletedProperly then
   begin
-    result.Status := NEXTSTAT_NOTCMPL;
+    result.Status := TNextPartitionStatus.CompleteLastPartitionFirst;
     exit;
   end;
 
-  FCurrPartition := FCurrPartition + 1;
-  result.Status := NEXTSTAT_SUCCESS;
-  result.PartitionName := self[CurrPartition];
+  result := ChangePointerToNextPartitionAndGet;
 end;
 
-procedure TTrimList.MarkAsCompleted;
+
+function TTrimList.GetNextPartition: TTrimListEntry;
 begin
-  FCompletedPartition := FCurrPartition;
+  AtomicNextPartitionMonitor.Enter(self);
+  result := GetNextPartitionInCriticalSection;
+  AtomicNextPartitionMonitor.Exit(self);
+end;
+
+procedure TTrimList.CompleteCurrentPartition;
+begin
+  AtomicNextPartitionMonitor.Enter(self);
+  CompletedPartitionReadWrite := CurrentPartitionReadWrite;
+  AtomicNextPartitionMonitor.Exit(self);
 end;
 
 end.

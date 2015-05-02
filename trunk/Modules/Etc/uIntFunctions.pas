@@ -19,7 +19,7 @@ begin
   result := false;
   Base := 10;
   Start := 1;
-  digit := 0;
+  Digit := 0;
   StrValue := Trim(UpperCase(StrValue));
   if StrValue = '' then
     exit;

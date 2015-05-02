@@ -11,9 +11,11 @@ type
 
   TOSFileWithHandle = class abstract(TOSFile)
   public
-    constructor Create(FileToGetAccess: String); overload; virtual; abstract;
+    constructor Create(FileToGetAccess: String); reintroduce;
+      overload; virtual; abstract;
     constructor Create(FileToGetAccess: String;
-      DesiredAccess: TCreateFileDesiredAccess); overload;
+      DesiredAccess: TCreateFileDesiredAccess); reintroduce;
+      overload;
     destructor Destroy; override;
 
   protected
@@ -32,8 +34,7 @@ type
     function GetDesiredAccessFromTCreateFileDesiredAccess
       (Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-      DesiredAccess: DWORD): THandle;
-    procedure CloseHandleAndCheckError;
+      DesiredAccessInDWORD: DWORD): THandle;
     function IsPrivilegeValid(PrivilegeToTest: TCreateFileDesiredAccess):
       Boolean;
   end;
@@ -85,7 +86,7 @@ begin
 end;
 
 function TOSFileWithHandle.CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-  DesiredAccess: DWORD): THandle;
+  DesiredAccessInDWORD: DWORD): THandle;
 const
   OtherHandlesCanReadWrite = FILE_SHARE_WRITE or FILE_SHARE_READ;
   NoSecurityDescriptor = nil;
@@ -95,7 +96,7 @@ begin
   result :=
     Windows.CreateFile
       (FileToGetAccess,
-       DesiredAccess,
+       DesiredAccessInDWORD,
        OtherHandlesCanReadWrite,
        NoSecurityDescriptor,
        OPEN_EXISTING,
@@ -125,16 +126,10 @@ begin
   AccessPrivilege := DesiredAccess;
 end;
 
-procedure TOSFileWithHandle.CloseHandleAndCheckError;
-begin
-  CloseHandle(FileHandle);
-  IfOSErrorRaiseException;
-end;
-
 destructor TOSFileWithHandle.Destroy;
 begin
   if IsHandleValid(FileHandle) then
-    CloseHandleAndCheckError;
+    CloseHandle(FileHandle);
   inherited Destroy;
 end;
 

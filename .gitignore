@@ -12,3 +12,10 @@ Win32
 /Exe/SSDTools.exe
 /trunk/Win64
 __history
+*.txt
+/Exe/Rufus/*.exe
+/Exe/Erase/*.7z
+/Exe/*.exe
+/Documents/*.pdf
+/Exe/*.rsm
+/SignedFirmware

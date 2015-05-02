@@ -39,13 +39,16 @@ type
     function IoControl(
       ControlCode: TIoControlCode;
       IOBuffer: TIoControlIOBuffer): Cardinal;
+    function ExceptionFreeIoControl(
+      ControlCode: TIoControlCode;
+      IOBuffer: TIoControlIOBuffer): Cardinal;
 
   private
     function DeviceIoControlSystemCall(
-      OSControlCode: Cardinal;
+      OSControlCode: Integer;
       IOBuffer: TIoControlIOBuffer): Cardinal;
     function TDeviceIoControlCodeToOSControlCode
-      (ControlCode: TIoControlCode): Cardinal;
+      (ControlCode: TIoControlCode): Integer;
   end;
 
   ENoDataReturnedFromIO = class(Exception);
@@ -54,18 +57,30 @@ implementation
 
 { TDeviceFile }
 
+function TIoControlFile.ExceptionFreeIoControl(ControlCode: TIoControlCode;
+  IOBuffer: TIoControlIOBuffer): Cardinal;
+var
+  OSControlCode: Integer;
+begin
+  OSControlCode := TDeviceIoControlCodeToOSControlCode(ControlCode);
+  SetLastError(ERROR_SUCCESS);
+  DeviceIoControlSystemCall(OSControlCode, IOBuffer);
+  result := GetLastError;
+end;
+
 function TIoControlFile.IoControl(ControlCode: TIoControlCode;
   IOBuffer: TIoControlIOBuffer): Cardinal;
 var
-  OSControlCode: Cardinal;
+  OSControlCode: Integer;
 begin
   OSControlCode := TDeviceIoControlCodeToOSControlCode(ControlCode);
+  SetLastError(ERROR_SUCCESS);
   result := DeviceIoControlSystemCall(OSControlCode, IOBuffer);
   IfOSErrorRaiseException;
 end;
 
 function TIoControlFile.DeviceIoControlSystemCall(
-  OSControlCode: Cardinal;
+  OSControlCode: Integer;
   IOBuffer: TIoControlIOBuffer): Cardinal;
 const
   NotOverlappedIO = nil;
@@ -78,39 +93,36 @@ begin
 end;
 
 function TIoControlFile.TDeviceIoControlCodeToOSControlCode
-  (ControlCode: TIoControlCode): Cardinal;
+  (ControlCode: TIoControlCode): Integer;
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
-  IOCTL_ATA_PASS_THROUGH = (IOCTL_SCSI_BASE shl 16)
-                            or ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14)
-                            or ($040B shl 2) or (METHOD_BUFFERED);
+  IOCTL_ATA_PASS_THROUGH = 
+    (IOCTL_SCSI_BASE shl 16) or 
+    ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14) or ($040B shl 2) or
+    (METHOD_BUFFERED);
   IOCTL_ATA_PASS_THROUGH_DIRECT = $4D030;
-  IOCTL_SCSI_PASS_THROUGH      =  $0004D004;
+  IOCTL_SCSI_PASS_THROUGH =
+    (IOCTL_SCSI_BASE shl 16) or
+    ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14) or ($0401 shl 2) or
+    (METHOD_BUFFERED);
+  
+  OSControlCodeOfIoControlCode: Array[TIoControlCode] of Integer =
+    (IOCTL_ATA_PASS_THROUGH,
+     IOCTL_ATA_PASS_THROUGH_DIRECT,
+     IOCTL_SCSI_PASS_THROUGH,
+     IOCTL_STORAGE_QUERY_PROPERTY,
+     IOCTL_STORAGE_CHECK_VERIFY,
+     FSCTL_GET_VOLUME_BITMAP,
+     IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
+     FSCTL_GET_NTFS_VOLUME_DATA,
+     IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
+     0);
 begin
-  case ControlCode of
-    ATAPassThrough:
-      exit(IOCTL_ATA_PASS_THROUGH);
-    ATAPassThroughDirect:
-      exit(IOCTL_ATA_PASS_THROUGH_DIRECT);
-    SCSIPassThrough:
-      exit(IOCTL_SCSI_PASS_THROUGH);
-    StorageQueryProperty:
-      exit(IOCTL_STORAGE_QUERY_PROPERTY);
-    StorageCheckVerify:
-      exit(IOCTL_STORAGE_CHECK_VERIFY);
-    GetVolumeBitmap:
-      exit(FSCTL_GET_VOLUME_BITMAP);
-    GetVolumeDiskExtents:
-      exit(IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS);
-    GetNTFSVolumeData:
-      exit(FSCTL_GET_NTFS_VOLUME_DATA);
-    GetDriveGeometryEX:
-      exit(IOCTL_DISK_GET_DRIVE_GEOMETRY_EX);
-    else
-      raise EInvalidIoControlCode.Create
-        ('InvalidIoControlCode: There''s no such IoControlCode - ' +
-         IntToStr(Cardinal(ControlCode)));
-  end;
+  if ControlCode = TIoControlCode.Unknown then
+    raise EInvalidIoControlCode.Create
+      ('InvalidIoControlCode: There''s no such IoControlCode - ' +
+       IntToStr(Cardinal(ControlCode)));
+  exit(OSControlCodeOfIoControlCode[ControlCode]);
 end;
 
 end.

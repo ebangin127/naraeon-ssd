@@ -15,7 +15,9 @@ SetCompressor /solid lzma
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
-!include "Version.nsh"
+!include "include\Version.nsh"
+!include "include\Service.nsh"
+!include "include\ErrorFile.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -82,26 +84,36 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\SSDTools\Rufus"
   File "..\Exe\Rufus\rufus.exe"
 
+  SetOutPath "$INSTDIR\SSDTools\7z"
+  File "..\Exe\7z\7z.exe"
+
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
-
   File "..\Exe\NSTDiagSvc_Patch.exe"
-  ExecWait '"$INSTDIR\SSDTools\SSDTools.exe" /uninstall'
+
+  SetOutPath "$INSTDIR\SSDTools\Image"
+  File "..\Exe\Image\logo.png"
+  File "..\Exe\Image\bg.png"
+  File "..\Exe\Image\warning.ico"
+
   IfFileExists $INSTDIR\SSDTools\NSTDiagSvc_New.exe 0 +2
   Delete "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  call DeleteNaraeonSSDToolsService
+
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
+  ExecWait '"$SYSDIR\sc.exe" create NaraeonSSDToolsDiag binPath= "$INSTDIR\SSDTools\NSTDiagSvc_New.exe" DisplayName= "Naraeon SSD Tools - SSD life alerter" start= auto'
 
   SetShellVarContext all
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall.lnk"
   Delete "$DESKTOP\Naraeon SSD Tools.lnk"
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk"
 
+  call SetErrFile
+
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
   CreateShortCut "$DESKTOP\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
-
-  ExecWait '"$INSTDIR\SSDTools\NSTDiagSvc_New.exe" /install /silent'
 SectionEnd
 
 Section -AdditionalIcons
@@ -157,7 +169,8 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
-  ExecWait '"$INSTDIR\NSTDiagSvc_New.exe" /uninstall /silent'
+  call un.DeleteNaraeonSSDToolsService
+  call un.DeleteErrFile
 
   SetShellVarContext all
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Parted Magic).lnk"

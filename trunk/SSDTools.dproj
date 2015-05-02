@@ -58,9 +58,13 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
+        <VerInfo_Locale>1042</VerInfo_Locale>
+        <Manifest_File>GetAdmin.manifest</Manifest_File>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0</VerInfo_Keys>
         <SanitizedProjectName>SSDTools</SanitizedProjectName>
         <DCC_UsePackage>bindcompfmx;fmx;rtl;dbrtl;IndySystem;DbxClientDriver;bindcomp;inetdb;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DataSnapServer;DataSnapProviderClient;xmlrtl;DbxCommonDriver;IndyProtocols;DBXMySQLDriver;dbxcds;bindengine;DBXOracleDriver;dsnap;DBXInformixDriver;IndyCore;fmxase;DBXFirebirdDriver;inet;fmxobj;inetdbxpress;DBXSybaseASADriver;fmxdae;dbexpress;DataSnapIndy10ServerTransport;IPIndyImpl;$(DCC_UsePackage)</DCC_UsePackage>
-        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
@@ -71,27 +75,22 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_UsePackage>vcldbx;vclib;inetdbbde;DBXOdbcDriver;svnui;ibxpress;DBXSybaseASEDriver;vclimg;fmi;vclactnband;vcldb;vcldsnap;bindcompvcl;vclie;vcltouch;DBXDb2Driver;vclribbon;VclSmp;vcl;DataSnapConnectors;CloudService;DBXMSSQLDriver;dsnapcon;vclx;svn;bdertl;adortl;$(DCC_UsePackage)</DCC_UsePackage>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_DebugDCUs>true</DCC_DebugDCUs>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_UsePackage>DBXOdbcDriver;DBXSybaseASEDriver;vclimg;vclactnband;vcldb;vcldsnap;bindcompvcl;vclie;vcltouch;DBXDb2Driver;VclSmp;vcl;DBXMSSQLDriver;dsnapcon;vclx;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
-        <Manifest_File>GetAdmin.manifest</Manifest_File>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0</VerInfo_Keys>
         <DCC_ExeOutput>..\Exe\</DCC_ExeOutput>
-        <VerInfo_Locale>1042</VerInfo_Locale>
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
@@ -99,62 +98,49 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
-        <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_UnitSearchPath>D:\내 작업들\EmbeddedWB\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Main;FileVersion=5.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
+        <VerInfo_MajorVer>5</VerInfo_MajorVer>
+        <PostBuildEventExecuteWhen>TargetOutOfDate</PostBuildEventExecuteWhen>
+        <PostBuildEvent><![CDATA[signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode "$(OUTPUTPATH)"
+$(PostBuildEvent)]]></PostBuildEvent>
+        <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0</VerInfo_Keys>
         <DCC_ExeOutput>..\Exe\</DCC_ExeOutput>
-        <Manifest_File>None</Manifest_File>
-        <VerInfo_Locale>1042</VerInfo_Locale>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.0.1.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.1.0;Comments=</VerInfo_Keys>
+        <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
-        <Manifest_File>GetAdmin.manifest</Manifest_File>
-        <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
-        <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
-        <Manifest_File>GetAdmin.manifest</Manifest_File>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_DebugDCUs>false</DCC_DebugDCUs>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="uMain.pas">
-            <Form>fMain</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="uAlert.pas">
-            <Form>fAlert</Form>
-        </DCCReference>
-        <DCCReference Include="uMessage.pas">
-            <Form>fMessage</Form>
-        </DCCReference>
-        <DCCReference Include="uBrowser.pas">
-            <Form>fBrowser</Form>
-        </DCCReference>
         <DCCReference Include="Modules\Disk\uDiskFunctions.pas"/>
-        <DCCReference Include="Modules\Disk\uPartitionFunctions.pas"/>
-        <DCCReference Include="Modules\Disk\uSMARTFunctions.pas"/>
         <DCCReference Include="Modules\Etc\uIntFunctions.pas"/>
         <DCCReference Include="Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="Modules\Windows\uRegFunctions.pas"/>
@@ -163,77 +149,117 @@
         <DCCReference Include="Modules\Windows\uExeFunctions.pas"/>
         <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>
-        <DCCReference Include="Classes\SSDInfo\uSSDInfo.pas"/>
-        <DCCReference Include="Classes\SSDInfo\uSSDSupport.pas"/>
+        <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
         <DCCReference Include="Classes\Threads\uTrimThread.pas"/>
         <DCCReference Include="Classes\Threads\uUpdateThread.pas"/>
-        <DCCReference Include="Classes\Version\uVersion.pas"/>
+        <DCCReference Include="Version\uVersion.pas"/>
         <DCCReference Include="Classes\DownloadPath\uDownloadPath.pas"/>
         <DCCReference Include="Modules\Windows\uPlugAndPlay.pas"/>
-        <DCCReference Include="Classes\ATALowOps\uATALowOps.pas"/>
-        <DCCReference Include="ModulesForUI\Firmware\uFirmware.pas"/>
         <DCCReference Include="ModulesForUI\USBDrive\uUSBDrive.pas"/>
-        <DCCReference Include="ModulesForUI\Refresh\uRefresh.pas"/>
         <DCCReference Include="Classes\UAWebbrowser\uUAWebbrowser.pas"/>
         <DCCReference Include="ModulesForUI\ButtonGroup\uButtonGroup.pas"/>
         <DCCReference Include="ModulesForUI\Init\uInit.pas"/>
-        <DCCReference Include="Classes\GetFirm\uGetFirm.pas"/>
         <DCCReference Include="Classes\SevenZip\uSevenZip.pas"/>
         <DCCReference Include="Classes\Threads\uTrimList.pas"/>
         <DCCReference Include="Classes\Rufus\uRufus.pas"/>
-        <DCCReference Include="Classes\Diag\uDiag.pas"/>
-        <DCCReference Include="Classes\SSDList\uPhysicalDriveList.pas"/>
         <DCCReference Include="Classes\PathManager\uPathManager.pas"/>
-        <DCCReference Include="Classes\SemiAuto\uSemiAuto.pas"/>
+        <DCCReference Include="Objects\uSemiAutoTrimmer.pas"/>
         <DCCReference Include="Classes\Erase\uErase.pas"/>
         <DCCReference Include="Classes\MeasureUnit\uDatasizeUnit.pas"/>
         <DCCReference Include="Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="Classes\Initializer\uInitializer.pas"/>
         <DCCReference Include="ModulesForUI\Init\uLocaleApplier.pas"/>
-        <DCCReference Include="Classes\Partition\uNTFSStruct.pas"/>
-        <DCCReference Include="WindowsFileAPI\uDiskGeometryGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\uMotherDriveGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
         <DCCReference Include="WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
-        <DCCReference Include="WindowsFileAPI\uPartitionListGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\uFixedDriveListGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Abstraction\uOSFile.pas"/>
-        <DCCReference Include="WindowsFileAPI\uDriveAvailabilityGetter.pas"/>
         <DCCReference Include="Objects\uPhysicalDrive.pas"/>
-        <DCCReference Include="Objects\uDrive.pas"/>
-        <DCCReference Include="WindowsFileAPI\Abstraction\uPhysicalDriveGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\uBruteForcePhysicalDriveGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\uWMIPhysicalDriveListGetter.pas"/>
-        <None Include="ModelSupport_SSDTools\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\SSDTools\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\SSDTools\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uAlert\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uAlert\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uATALowOps\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uATALowOps\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uDiskFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDiskFunctions\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uSSDInfo\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uSSDInfo\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPartitionFunctions\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uTrimThread\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uPartition\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSErrorToException\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uNTFSStruct\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFile\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uIoControlFile\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPartitionListGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uFixedDriveListGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFile\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uDiskGeometryGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uOSFileWithHandle\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uMotherDriveGetter\default.txvpck"/>
-        <None Include="ModelSupport_SSDTools\uDrive\default.txaPackage"/>
-        <None Include="ModelSupport_SSDTools\uPhysicalDrive\default.txaPackage"/>
+        <DCCReference Include="Objects\uSMARTValueList.pas"/>
+        <DCCReference Include="WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Interpreter\uATABufferInterpreter.pas"/>
+        <DCCReference Include="GlobalSettings\uGlobalSettings.pas"/>
+        <DCCReference Include="Objects\uPartition.pas"/>
+        <DCCReference Include="Objects\uRegistryHelper.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uWMIPhysicalDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDiskGeometryGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
+        <DCCReference Include="NSTSupport\Auto\uAutoNSTSupport.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas"/>
+        <DCCReference Include="Web\Abstraction\uWeb.pas"/>
+        <DCCReference Include="Web\Getter\uHTTPSWeb.pas"/>
+        <DCCReference Include="Objects\uFirmwareGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas"/>
+        <DCCReference Include="ThreadHelper\uUpdater.pas"/>
+        <DCCReference Include="Objects\uParameter.pas"/>
+        <DCCReference Include="Web\Getter\uHTTPWeb.pas"/>
+        <DCCReference Include="Form\uAlert.pas">
+            <Form>fAlert</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Form\uBrowser.pas">
+            <Form>fBrowser</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Form\uMain.pas">
+            <Form>fMain</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Form\uMessage.pas">
+            <Form>fMessage</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="ThreadHelper\uListTrimmer.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas"/>
+        <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>
+        <DCCReference Include="ThreadToModel\uTrimThreadToModel.pas"/>
+        <DCCReference Include="NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas"/>
+        <DCCReference Include="Objects\uCodesignVerifier.pas"/>
+        <DCCReference Include="Objects\uNSToolsMutex.pas"/>
+        <DCCReference Include="Objects\uServiceController.pas"/>
+        <DCCReference Include="Objects\uIdentifyDiagnosis.pas"/>
+        <DCCReference Include="NSTSupport\Support\uCrucialNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uLiteonNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uMachXtremeNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uPlextorNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uSamsungNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uSandiskNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uSeagateNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uToshibaNSTSupport.pas"/>
+        <DCCReference Include="Model\uProgressSection.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformMainpartApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformPartitionAlignApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformReplacedSectorApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformSMARTApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformTotalWriteApplier.pas"/>
+        <DCCReference Include="UIObjects\MainformApplier\PhysicalDriveApplier\uMainformPhysicalDriveApplier.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabel.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabelListRefresher.pas"/>
+        <DCCReference Include="UIObjects\uSSDLabelList.pas"/>
+        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
+        <DCCReference Include="Objects\uCodesignPublisherVerifier.pas"/>
+        <DCCReference Include="Modules\Windows\uCodesignExtern.pas"/>
+        <DCCReference Include="Classes\Threads\uDownloadThread.pas"/>
+        <DCCReference Include="ThreadHelper\uDownloader.pas"/>
+        <DCCReference Include="Objects\uFirmwareDownloader.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -282,200 +308,20 @@
                     <Source Name="MainSource">SSDTools.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k180.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp180.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
-                <DeployFile LocalName="ModelSupport_SSDTools\uAlert\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDiskFunctions\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uFixedDriveListGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\SSDTools\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uAlert\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uOSFile\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uPhysicalDrive\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uOSFile\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uPartition\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uNTFSStruct\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uMotherDriveGetter\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uOSFileWithHandle\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uMotherDriveGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uATALowOps\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDiskFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uIoControlFile\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uOSFileWithHandle\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uOSErrorToException\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uPartitionListGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDiskGeometryGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDriveAvailabilityGetter\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uSSDInfo\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uTrimThread\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uDrive\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uPartitionFunctions\default.txvpck" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\SSDTools\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="ModelSupport_SSDTools\uATALowOps\default.txaPackage" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win32">
-                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -814,11 +660,27 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>
             </Platforms>
-            <ModelSupport>True</ModelSupport>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
     <Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
     <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
+    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
 </Project>

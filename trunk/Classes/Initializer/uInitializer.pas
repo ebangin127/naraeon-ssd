@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows, Classes, Graphics, Controls,
-  uAlert, uButtonGroup, uLanguageSettings, uGetFirm, uPathManager;
+  uAlert, uButtonGroup, uLanguageSettings, uPathManager;
 
 procedure InitMainForm;
 

@@ -1,4 +1,4 @@
-unit uPartitionFunctions;
+﻿unit uPartitionFunctions;
 
 interface
 
@@ -39,102 +39,12 @@ type
   end;
   //---GetNTFSVolumeData---//
 
-  //---GetDiskGeometry---//
-  DISK_GEOMETRY = Record
-    Cylinders: TLargeInteger;
-    MediaType: Byte;
-    TracksPerCylinder: DWORD;
-    SectorsPerTrack: DWORD;
-    BytesPerSector: DWORD;
-  end;
-
-  DISK_GEOMETRY_EX = Record
-    Geometry: DISK_GEOMETRY;
-    DiskSize: TLargeInteger;
-    Data: Array[0..1] of UChar;
-  end;
-  //---GetDiskGeometry---//
-
-//����ũ �뷮 �޾ƿ��� �Լ�
-function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
-
 //��Ƽ�� �뷮 �޾ƿ��� �Լ�
-function GetPartitionLength(DriveLetter: String): Int64;
 function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
 
 implementation
 
 uses uDiskFunctions;
-
-function GetDiskGeometry(const DiskNumber: String): DISK_GEOMETRY_EX;
-Var
-  RetBytes: DWORD;
-  hDevice: Longint;
-  Status: Longbool;
-begin
-  hDevice := CreateFile(PChar('\\.\PhysicalDrive' + DiskNumber), GENERIC_READ,
-              FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
-  If hDevice <> -1 Then
-  begin
-    Status := DeviceIoControl(hDevice, IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,
-              nil, 0, @result, Sizeof(DISK_GEOMETRY_EX), RetBytes, nil);
-    if status = false then
-      result.DiskSize := 0;
-    CloseHandle(hDevice);
-  end;
-end;
-
-function GetPartitionLength(DriveLetter: String): Int64;
-type
-  TMotherDriveEntry = record
-    DriveNumber: DWORD;
-    StartingOffset: TLargeInteger;
-    ExtentLength: TLargeInteger;
-  end;
-  DISK_EXTENT = TMotherDriveEntry;
-  VOLUME_DISK_EXTENTS = record
-    NumberOfDiskExtents: DWORD;
-    Extents: Array[0..50] of DISK_EXTENT;
-  end;
-var
-  RetBytes: DWORD;
-  hDevice: Longint;
-  Status: Longbool;
-  VolumeName: Array[0..MAX_PATH] of Char;
-  i: Integer;
-  TempResult: VOLUME_DISK_EXTENTS;
-begin
-  result := 0;
-  for i := 0 to MAX_PATH do
-    VolumeName[i] := #0;
-  QueryDosDeviceW(PChar(DriveLetter), VolumeName, MAX_PATH);
-  try
-    hDevice := CreateFile(PChar('\\.\' + DriveLetter), GENERIC_READ,
-                FILE_SHARE_WRITE or FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
-  except
-    exit;
-  end;
-  if Pos('ramdriv', lowercase(VolumeName)) > 0 then
-    TempResult.NumberOfDiskExtents := 0
-  else
-  begin
-    If hDevice <> -1 Then
-    begin
-      Status := DeviceIoControl (hDevice, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
-                nil, 0, @TempResult, Sizeof(VOLUME_DISK_EXTENTS), RetBytes, nil);
-      if (status = false) then
-      begin
-        TempResult.NumberOfDiskExtents := 0;
-      end;
-      result := TempResult.Extents[0].ExtentLength;
-      CloseHandle(hDevice);
-    end
-    else
-    begin
-      TempResult.NumberOfDiskExtents := 0;
-    end;
-  end;
-end;
 
 function GetNTFSVolumeData(const DriveLetter: String): NTFS_INFO;
 var

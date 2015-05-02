@@ -75,8 +75,6 @@ Section "MainSection" SEC01
   SetOverwrite on
   SetOutPath "$INSTDIR\SSDTools\Erase"
   File "..\exec_files\pmagic.7z"
-  SetOutPath "$INSTDIR\SSDTools\Unetbootin"
-  File "..\exec_files\unetbootin.exe"
 SectionEnd
 
 Section -AdditionalIcons
