@@ -51,10 +51,12 @@ var
   ListChangeGetter: TListChangeGetter;
 begin
   FreeLastChanges;
+  if PhysicalDriveList = nil then
+    PhysicalDriveList := TPhysicalDriveList.Create;
   ListChangeGetter := TListChangeGetter.Create;
   ListChangeGetter.IsOnlyGetSupportedDrives := true;
   LastChanges :=
-    ListChangeGetter.RefreshListWithResultFrom(PhysicalDriveList);
+    ListChangeGetter.ServiceRefreshListWithResultFrom(PhysicalDriveList);
   FreeAndNil(ListChangeGetter);
 end;
 

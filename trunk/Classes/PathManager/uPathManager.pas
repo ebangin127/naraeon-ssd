@@ -18,6 +18,8 @@ type
     class var FAllDesktopPath: String;
     class var FDesktopPathInChar: array[0..MAX_PATH] of char;
     class function IsValidPath(PathToValidate: String): Boolean; static;
+    class procedure SetPathForNormalInstance(Application: TApplication); static;
+    class procedure SetPathForServiceInstance; static;
 
   public
     class procedure SetPath(Application: TApplication);
@@ -31,20 +33,31 @@ type
 
 implementation
 
-class procedure TPathManager.SetPath(Application: TApplication);
+class procedure TPathManager.SetPathForNormalInstance(
+  Application: TApplication);
 begin
-  Randomize;
-  if Application <> nil then
-    FAppPath := ExtractFilePath(Application.ExeName)
-  else
-    FAppPath := ExtractFilePath(GetRegStr('LM',
-      'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
-      'UninstallString'));
+  FAppPath := ExtractFilePath(Application.ExeName);
   FWinDir := GetEnvironmentVariable('windir');
   FWinDrive := ExtractFileDrive(WinDir);
   SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, 0,
     @FDesktopPathInChar[0]);
+end;
+
+class procedure TPathManager.SetPathForServiceInstance;
+begin
+  FAppPath := ExtractFilePath(GetRegStr('LM',
+    'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
+    'UninstallString'));
   FAllDesktopPath := FDesktopPathInChar;
+end;
+
+class procedure TPathManager.SetPath(Application: TApplication);
+begin
+  Randomize;
+  if Application <> nil then
+    SetPathForNormalInstance(Application)
+  else
+    SetPathForServiceInstance;
 end;
 
 class function TPathManager.AllDesktopPath: String;

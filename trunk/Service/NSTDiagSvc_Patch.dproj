@@ -89,7 +89,6 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <Icon_MainIcon>SSDOptimizer_Icon.ico</Icon_MainIcon>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <Debugger_RunParams>/uninstall /silent</Debugger_RunParams>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -109,8 +108,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Release>1</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.1.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.1.0</VerInfo_Keys>
+        <DCC_MapFile>3</DCC_MapFile>
+        <VerInfo_Release>3</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.3.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.3.0</VerInfo_Keys>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <Icon_MainIcon>..\SSDOptimizer_Icon.ico</Icon_MainIcon>
@@ -120,11 +120,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="uMain.pas">
-            <Form>NaraeonSSDToolsDiag</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TService</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\Modules\Windows\uRegFunctions.pas"/>
         <DCCReference Include="..\Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
@@ -177,6 +172,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas"/>
+        <DCCReference Include="uMain.pas">
+            <Form>NaraeonSSDToolsDiag</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TService</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -231,6 +231,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
             </Delphi.Personality>
             <Deployment>
                 <DeployFile LocalName="..\..\Exe\NSTDiagSvc_Patch.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\EXE\NSTDiagSvc_Patch.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
                         <Overwrite>true</Overwrite>
@@ -583,7 +589,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -591,7 +597,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

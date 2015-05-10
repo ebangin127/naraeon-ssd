@@ -87,7 +87,7 @@ Section "MainSection" SEC01
   call DeleteNaraeonSSDToolsService
 
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
-  ExecWait '"$SYSDIR\sc.exe" create NaraeonSSDToolsDiag binPath= "$INSTDIR\SSDTools\NSTDiagSvc_New.exe" DisplayName= "Naraeon SSD Tools - SSD life alerter" start= auto'
+  call CreateNaraeonSSDToolsService
 
   call SetErrFile
 

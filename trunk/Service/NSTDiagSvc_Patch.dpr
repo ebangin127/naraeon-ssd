@@ -2,7 +2,6 @@ program NSTDiagSvc_Patch;
 
 uses
   Vcl.SvcMgr,
-  uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService},
   Windows,
   uRegFunctions in '..\Modules\Windows\uRegFunctions.pas',
   uLanguageSettings in '..\Modules\Language\uLanguageSettings.pas',
@@ -55,7 +54,8 @@ uses
   uPathManager in '..\Classes\PathManager\uPathManager.pas',
   uPhysicalDriveList in '..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas',
   uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
-  uLegacyATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas';
+  uLegacyATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas',
+  uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService};
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

@@ -6,4 +6,10 @@ object NaraeonSSDToolsDiag: TNaraeonSSDToolsDiag
   OnExecute = ServiceExecute
   Height = 150
   Width = 215
+  object tDiagnosis: TTimer
+    Enabled = False
+    OnTimer = tDiagnosisTimer
+    Left = 88
+    Top = 56
+  end
 end

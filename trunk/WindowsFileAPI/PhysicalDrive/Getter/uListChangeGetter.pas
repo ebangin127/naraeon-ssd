@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  uPhysicalDrive, uPhysicalDriveList;
+  uPhysicalDrive, uPhysicalDriveList, uPhysicalDriveListGetter;
 
 type
   TChangesList = record
@@ -24,7 +24,7 @@ type
     IsResultNeeded: Boolean;
     ListToRefresh: TPhysicalDriveList;
     CurrentPhysicalDriveList: TPhysicalDriveList;
-    procedure GetCurrentPhysicalDriveList;
+    procedure GetCurrentPhysicalDriveList(IsService: Boolean);
     function GetListChangeByCurrentPhysicalDriveList:
       TRefreshedListAndChanges;
     function IsSupportedOrNotNeededToCheck(
@@ -33,6 +33,10 @@ type
       var NewList: TPhysicalDriveList): TPhysicalDriveList;
     function ReturnDeletedListAndRefreshList(
       var NewList: TPhysicalDriveList): TStringList;
+    function InnerRefreshListWithResultFrom(
+      var ListToRefresh: TPhysicalDriveList; IsService: Boolean): TChangesList;
+    function GetPhysicalDriveListGetter(
+      IsService: Boolean): TPhysicalDriveListGetter;
   public
     property IsOnlyGetSupportedDrives: Boolean
       read InnerIsOnlyGetSupportedDrives write InnerIsOnlyGetSupportedDrives;
@@ -40,11 +44,14 @@ type
       var ListToRefresh: TPhysicalDriveList);
     function RefreshListWithResultFrom(
       var ListToRefresh: TPhysicalDriveList): TChangesList;
+    function ServiceRefreshListWithResultFrom(
+      var ListToRefresh: TPhysicalDriveList): TChangesList;
   end;
 
 implementation
 
-uses uAutoPhysicalDriveListGetter;
+uses
+  uAutoPhysicalDriveListGetter, uBruteForcePhysicalDriveListGetter;
 
 function TListChangeGetter.IsSupportedOrNotNeededToCheck(
   IsSupported: Boolean): Boolean;
@@ -61,24 +68,44 @@ begin
   RefreshListWithResultFrom(ListToRefresh);
 end;
 
-procedure TListChangeGetter.GetCurrentPhysicalDriveList;
-var
-  AutoPhysicalDriveListGetter: TAutoPhysicalDriveListGetter;
+function TListChangeGetter.GetPhysicalDriveListGetter(IsService: Boolean):
+  TPhysicalDriveListGetter;
 begin
-  AutoPhysicalDriveListGetter := TAutoPhysicalDriveListGetter.Create;
-  CurrentPhysicalDriveList :=
-    AutoPhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(AutoPhysicalDriveListGetter);
+  if not IsService then
+    result := TAutoPhysicalDriveListGetter.Create
+  else
+    result := TBruteForcePhysicalDriveListGetter.Create;
+end;
+
+procedure TListChangeGetter.GetCurrentPhysicalDriveList(IsService: Boolean);
+var
+  PhysicalDriveListGetter: TPhysicalDriveListGetter;
+begin
+  PhysicalDriveListGetter := GetPhysicalDriveListGetter(IsService);
+  CurrentPhysicalDriveList := PhysicalDriveListGetter.GetPhysicalDriveList;
+  FreeAndNil(PhysicalDriveListGetter);
 end;
   
 function TListChangeGetter.RefreshListWithResultFrom(
   var ListToRefresh: TPhysicalDriveList): TChangesList;
+begin
+  result := InnerRefreshListWithResultFrom(ListToRefresh, false);
+end;
+
+function TListChangeGetter.ServiceRefreshListWithResultFrom(
+  var ListToRefresh: TPhysicalDriveList): TChangesList;
+begin
+  result := InnerRefreshListWithResultFrom(ListToRefresh, true);
+end;
+
+function TListChangeGetter.InnerRefreshListWithResultFrom(
+  var ListToRefresh: TPhysicalDriveList; IsService: Boolean): TChangesList;
 var
   RefreshedListAndChanges: TRefreshedListAndChanges;
 begin
   IsResultNeeded := true;
   self.ListToRefresh := ListToRefresh;
-  GetCurrentPhysicalDriveList;
+  GetCurrentPhysicalDriveList(IsService);
   RefreshedListAndChanges := GetListChangeByCurrentPhysicalDriveList;
   FreeAndNil(ListToRefresh);
   ListToRefresh := RefreshedListAndChanges.RefreshedList;
@@ -135,7 +162,7 @@ begin
         GetPathOfFileAccessing);
   end;
 end;
-  
+
 function TListChangeGetter.GetListChangeByCurrentPhysicalDriveList:
   TRefreshedListAndChanges;
 begin

@@ -8,33 +8,17 @@ uses
   uDiagnosisService;
 
 type
-  PDevBroadcastHdr = ^TDevBroadcastHdr;
-  TDevBroadcastHdr = packed record
-    dbcd_size: DWORD;
-    dbcd_devicetype: DWORD;
-    dbcd_reserved: DWORD;
-  end;
-
-type
-  PDevBroadcastPortA = ^TDevBroadcastPortA;
-  TDevBroadcastPortA = packed record
-    dbcp_size: DWORD;
-    dbcp_devicetype: DWORD;
-    dbcp_reserved: DWORD;
-    dbcp_name: Array[0..4] of Char;
-  end;
-
-type
   TNaraeonSSDToolsDiag = class(TService)
+    tDiagnosis: TTimer;
     procedure ServiceExecute(Sender: TService);
     procedure ServiceCreate(Sender: TObject);
     procedure ServiceDestroy(Sender: TObject);
+    procedure tDiagnosisTimer(Sender: TObject);
   private
     DiagnosisService: TDiagnosisService;
-    procedure WaitForMessage;
+    procedure WaitForTerminate;
   public
     function GetServiceController: TServiceController; override;
-    { Public declarations }
   end;
 
 var
@@ -65,28 +49,25 @@ begin
     FreeAndNil(DiagnosisService);
 end;
 
-procedure TNaraeonSSDToolsDiag.WaitForMessage;
-const
-  WaitingTimeInMillisecond = 500;
-var
-  ElapsedMillisecond: Integer;
-begin
-  for ElapsedMillisecond := 0 to WaitingTimeInMillisecond - 1 do
-  begin
-    ServiceThread.ProcessRequests(False);
-    Sleep(1);
-  end;
-end;
-
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
 begin
   DiagnosisService.InitializePhysicalDriveList;
-
-  repeat
-    DiagnosisService.Diagnosis;
-    WaitForMessage;
-    if not DiagnosisService.IsThereAnySupportedDrive then
-      exit;
-  until Terminated;
+  WaitForTerminate;
 end;
+
+procedure TNaraeonSSDToolsDiag.WaitForTerminate;
+begin
+  tDiagnosis.Enabled := true;
+  while not Terminated do
+    ServiceThread.ProcessRequests(true);
+  tDiagnosis.Enabled := false;
+end;
+
+procedure TNaraeonSSDToolsDiag.tDiagnosisTimer(Sender: TObject);
+begin
+  DiagnosisService.Diagnosis;
+  if not DiagnosisService.IsThereAnySupportedDrive then
+    DoStop;
+end;
+
 end.

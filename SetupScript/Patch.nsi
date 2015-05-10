@@ -101,7 +101,7 @@ Section "MainSection" SEC01
   call DeleteNaraeonSSDToolsService
 
   Rename "$INSTDIR\SSDTools\NSTDiagSvc_Patch.exe" "$INSTDIR\SSDTools\NSTDiagSvc_New.exe"
-  ExecWait '"$SYSDIR\sc.exe" create NaraeonSSDToolsDiag binPath= "$INSTDIR\SSDTools\NSTDiagSvc_New.exe" DisplayName= "Naraeon SSD Tools - SSD life alerter" start= auto'
+  call CreateNaraeonSSDToolsService
 
   SetShellVarContext all
   Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall.lnk"
@@ -129,12 +129,6 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
-
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name)은 완전히 제거되었습니다."
-FunctionEnd
-
 Function GetParent
  
   Exch $R0
@@ -160,6 +154,11 @@ Function GetParent
     Pop $R1
     Exch $R0
  
+FunctionEnd
+
+Function un.onUninstSuccess
+  HideWindow
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name)은 완전히 제거되었습니다."
 FunctionEnd
 
 Function un.onInit

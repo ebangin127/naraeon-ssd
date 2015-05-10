@@ -14,8 +14,9 @@ type
     PhysicalDriveList: TPhysicalDriveList;
     procedure AddDriveToList(CurrentDrive: Integer);
     procedure IfThisDriveAccessibleAddToList(CurrentDrive: Integer);
-    function IsDriveAccessible(CurrentDrive: Integer): Boolean;
+    function TryToGetIsDriveAccessible(CurrentDrive: Integer): Boolean;
     procedure TryToGetPhysicalDriveList;
+    function IsDriveAccessible(CurrentDrive: Integer): Boolean;
   end;
 
 implementation
@@ -28,7 +29,7 @@ begin
   PhysicalDriveList.Add(TPhysicalDrive.Create(CurrentDrive));
 end;
 
-function TBruteForcePhysicalDriveListGetter.IsDriveAccessible
+function TBruteForcePhysicalDriveListGetter.TryToGetIsDriveAccessible
   (CurrentDrive: Integer): Boolean;
 var
   PhysicalDrive: TPhysicalDrive;
@@ -36,6 +37,16 @@ begin
   PhysicalDrive := TPhysicalDrive.Create(CurrentDrive);
   result := PhysicalDrive.IsDriveAvailable;
   FreeAndNil(PhysicalDrive);
+end;
+
+function TBruteForcePhysicalDriveListGetter.IsDriveAccessible
+  (CurrentDrive: Integer): Boolean;
+begin
+  try
+    result := TryToGetIsDriveAccessible(CurrentDrive);
+  except
+    result := false;
+  end;
 end;
 
 procedure TBruteForcePhysicalDriveListGetter.IfThisDriveAccessibleAddToList
