@@ -188,11 +188,11 @@ begin
   fMain.OnlineFirmwareUpdateAvailable :=
     (QueryResult.CurrentVersion = TFirmwareVersion.OldVersion) or
     (QueryResult.CurrentVersion = TFirmwareVersion.NewVersion);
+  SetFirmwareLabel;
 
   if not fMain.OnlineFirmwareUpdateAvailable then
     exit;
 
-  SetFirmwareLabel;
   SetNewFirmwareCaption(QueryResult.LatestVersion);
   IfOldFirmwareSetLabelBoldAndRed(
     QueryResult.CurrentVersion = TFirmwareVersion.OldVersion);
