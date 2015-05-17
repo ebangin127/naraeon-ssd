@@ -40,7 +40,7 @@ end;
 
 function TLiteonNSTSupport.IsS200: Boolean;
 begin
-  result := Pos('S200', Model) > 0;
+  result := Pos('M3S', Model) > 0;
 end;
 
 function TLiteonNSTSupport.IsE200: Boolean;
