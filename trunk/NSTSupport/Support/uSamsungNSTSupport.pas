@@ -13,6 +13,8 @@ type
     function GetSemiSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSamsung: Boolean;
+    function IsSamsung470: Boolean;
+    function IsSamsungOtherSSD: Boolean;
 
   public
     function GetSupportStatus: TSupportStatus; override;
@@ -24,11 +26,23 @@ implementation
 
 { TSamsungNSTSupport }
 
+function TSamsungNSTSupport.IsSamsungOtherSSD: Boolean;
+begin
+  result :=
+    Pos('SSD', UpperCase(Model)) > 0;
+end;
+
+function TSamsungNSTSupport.IsSamsung470: Boolean;
+begin
+  result :=
+    Pos('470', UpperCase(Model)) > 0;
+end;
+
 function TSamsungNSTSupport.IsProductOfSamsung: Boolean;
 begin
   result :=
     (Pos('SAMSUNG', UpperCase(Model)) > 0) and
-    (Pos('SSD', UpperCase(Model)) > 0);
+    (IsSamsungOtherSSD or IsSamsung470);
 end;
 
 function TSamsungNSTSupport.GetSemiSupport: TSupportStatus;

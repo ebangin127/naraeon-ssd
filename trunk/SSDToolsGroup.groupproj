@@ -9,6 +9,9 @@
         <Projects Include="Service\NSTDiagSvc_Patch.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Test\SSDToolsTests.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="NSTDiagSvc_Patch:Make">
         <MSBuild Projects="Service\NSTDiagSvc_Patch.dproj" Targets="Make"/>
     </Target>
+    <Target Name="SSDToolsTests">
+        <MSBuild Projects="Test\SSDToolsTests.dproj"/>
+    </Target>
+    <Target Name="SSDToolsTests:Clean">
+        <MSBuild Projects="Test\SSDToolsTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SSDToolsTests:Make">
+        <MSBuild Projects="Test\SSDToolsTests.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="SSDTools;NSTDiagSvc_Patch"/>
+        <CallTarget Targets="SSDTools;NSTDiagSvc_Patch;SSDToolsTests"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SSDTools:Clean;NSTDiagSvc_Patch:Clean"/>
+        <CallTarget Targets="SSDTools:Clean;NSTDiagSvc_Patch:Clean;SSDToolsTests:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SSDTools:Make;NSTDiagSvc_Patch:Make"/>
+        <CallTarget Targets="SSDTools:Make;NSTDiagSvc_Patch:Make;SSDToolsTests:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

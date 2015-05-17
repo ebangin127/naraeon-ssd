@@ -27,7 +27,7 @@ implementation
 
 function TSeagateNSTSupport.IsSeagate600: Boolean;
 begin
-  result := (Pos('SEAGATE', Model) > 0) and (Pos('HM000', Model) > 0);
+  result := (Pos('ST', Model) > 0) and (Pos('HM000', Model) > 0);
 end;
 
 function TSeagateNSTSupport.IsProductOfSeagate: Boolean;
