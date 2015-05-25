@@ -45,6 +45,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <SanitizedProjectName>SSDToolsTests</SanitizedProjectName>
         <DCC_Define>_CONSOLE_TESTRUNNER;$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>$(BDS)\Source\DUnit\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
@@ -490,6 +491,7 @@
                 <TestFramework>DUnit / Delphi Win32</TestFramework>
                 <TestRunner>GUI</TestRunner>
                 <SourceProjectName>E:\UnivProject\SSDTools - master\trunk\SSDTools.dproj</SourceProjectName>
+                <TestProjectName/>
             </UnitTesting>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
