@@ -3,7 +3,7 @@ unit uGlobalSettings;
 interface
 
 const
-  CurrentVersion = '5.0.5';
+  CurrentVersion = '5.0.6';
   NaraeonPublisher = 'Minkyu Kim';
 
 implementation

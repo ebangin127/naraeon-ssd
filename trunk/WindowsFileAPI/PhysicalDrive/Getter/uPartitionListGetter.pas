@@ -45,6 +45,7 @@ type
       TPhysicalDriveNumberQueryResult;
     procedure TryIfPartitionOfThisDriveAddToList(CurrentDrive: Integer);
     function TryAndIfFailReturnNil: TPartitionList;
+    function PreparePhysicalDriveNumberQuery(CurrentDrive: Integer): Boolean;
   end;
 
 implementation
@@ -106,17 +107,25 @@ begin
     result := Copy(result, 1, Length(result) - 1);
 end;
 
-procedure TPartitionListGetter.TryIfPartitionOfThisDriveAddToList
-  (CurrentDrive: Integer);
-var
-  PhysicalDriveNumberQueryResult: TPhysicalDriveNumberQueryResult;
+function TPartitionListGetter.PreparePhysicalDriveNumberQuery
+  (CurrentDrive: Integer): Boolean;
 begin
   PartitionExtentGetter := TPartitionExtentGetter.Create
     (DeleteLastBackslash
       (ThisComputerPrefix + FixedDriveList[CurrentDrive]));
   PartitionExtentList := PartitionExtentGetter.GetPartitionExtentList;
+  result := PartitionExtentList <> nil;
+end;
 
-  PhysicalDriveNumberQueryResult := FindPhysicalDriveNumberInPartitionExtentEntry;
+procedure TPartitionListGetter.TryIfPartitionOfThisDriveAddToList
+  (CurrentDrive: Integer);
+var
+  PhysicalDriveNumberQueryResult: TPhysicalDriveNumberQueryResult;
+begin
+  if not PreparePhysicalDriveNumberQuery(CurrentDrive) then
+    exit;
+  PhysicalDriveNumberQueryResult :=
+    FindPhysicalDriveNumberInPartitionExtentEntry;
   if PhysicalDriveNumberQueryResult.Found then
     AddThisDriveToList(CurrentDrive, PhysicalDriveNumberQueryResult.Position);
 end;
