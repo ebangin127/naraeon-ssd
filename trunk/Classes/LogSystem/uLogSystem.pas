@@ -2,7 +2,9 @@ unit uLogSystem;
 
 interface
 
-uses Classes, Sysutils, Dialogs, Windows, Math, uIntFunctions;
+uses
+  Classes, Sysutils, Dialogs, Windows, Math,
+  uUINT64;
 
 type
   TAverage = (Avg30, Avg90, Avg180);

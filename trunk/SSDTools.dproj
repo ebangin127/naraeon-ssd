@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SSDTools.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -145,11 +145,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="Modules\Disk\uDiskFunctions.pas"/>
-        <DCCReference Include="Modules\Etc\uIntFunctions.pas"/>
+        <DCCReference Include="Modules\Etc\uUINT64.pas"/>
         <DCCReference Include="Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="Modules\Windows\uRegFunctions.pas"/>
         <DCCReference Include="Modules\Windows\uFileFunctions.pas"/>
-        <DCCReference Include="Modules\Etc\uStrFunctions.pas"/>
+        <DCCReference Include="Modules\Etc\uDeleteWhitespace.pas"/>
         <DCCReference Include="Modules\Windows\uExeFunctions.pas"/>
         <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>

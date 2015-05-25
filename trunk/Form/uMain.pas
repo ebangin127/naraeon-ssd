@@ -10,8 +10,7 @@ uses
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
   uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
-  uDiskFunctions, uExeFunctions,
-  uFileFunctions, uStrFunctions, uDownloadPath, uPlugAndPlay,
+  uExeFunctions, uFileFunctions, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
@@ -532,7 +531,8 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-  GetChildDrives(PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
+  PhysicalDrive.GetChildDrives(
+    PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
     cTrimList.Items);
   for CheckedDrives := 0 to cTrimList.Count - 1 do
     cTrimList.Checked[CheckedDrives] := true;

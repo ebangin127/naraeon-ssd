@@ -3,7 +3,7 @@ unit uDatasizeUnit;
 interface
 
 uses
-  Math;
+  SysUtils, Math;
 
 type
   TNumeralSystem = (Denary, Binary);
@@ -24,6 +24,11 @@ type
     FToNumeralSystem: TNumeralSystem;
   end;
 
+  TFormatSizeSetting = record
+    FNumeralSystem: TNumeralSystem;
+    FPrecision: Integer;
+  end;
+
 const
   PetaUnit: TDatasizeUnit = (FPowerOfKUnit: 4; FUnitName: 'PB');
   TeraUnit: TDatasizeUnit = (FPowerOfKUnit: 3; FUnitName: 'TB');
@@ -37,6 +42,7 @@ function ChangeDatasizeUnit
   (Size: Double; Setting: TDatasizeUnitChangeSetting): Double;
 function LiteONUnitToMB(Size: UInt64): UInt64;
 function MBToLiteONUnit(Size: UInt64): UInt64;
+function FormatSizeInMB(SizeInMB: Double; Setting: TFormatSizeSetting): String;
 
 implementation
 
@@ -76,4 +82,42 @@ const
 begin
   result := Size div LiteONUnitInMB;
 end;
+
+function GetSizeUnitString
+  (SizeInMB: Double;
+   UnitToTest: TDatasizeUnit;
+   Setting: TFormatSizeSetting): String;
+const
+  Threshold = 0.75;
+var
+  DivideUnitSize: Integer;
+  UnitSizeInMB: Int64;
+begin
+  DivideUnitSize := GetDivideUnitSize(Setting.FNumeralSystem);
+  UnitSizeInMB :=
+    Floor(Power(DivideUnitSize, UnitToTest.FPowerOfKUnit - 1));
+
+  if SizeInMB >
+    (UnitSizeInMB * Threshold) then
+  begin
+    result :=
+      Format('%.' + IntToStr(Setting.FPrecision) + 'f' + UnitToTest.FUnitName,
+        [SizeInMB / UnitSizeInMB]);
+  end;
+end;
+
+function FormatSizeInMB(SizeInMB: Double; Setting: TFormatSizeSetting): String;
+begin
+  result := GetSizeUnitString(SizeInMB, PetaUnit, Setting);
+  if result <> '' then exit;
+
+  result := GetSizeUnitString(SizeInMB, TeraUnit, Setting);
+  if result <> '' then exit;
+
+  result := GetSizeUnitString(SizeInMB, GigaUnit, Setting);
+  if result <> '' then exit;
+
+  result := GetSizeUnitString(SizeInMB, MegaUnit, Setting);
+end;
+
 end.

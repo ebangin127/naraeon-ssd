@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, Windows, StdCtrls,
-  uDatasizeUnit, uStrFunctions, uPartitionListGetter, uPhysicalDrive;
+  uDatasizeUnit, uPartitionListGetter, uPhysicalDrive;
 
 type
   TSSDLabel = class(TLabel)
@@ -99,7 +99,7 @@ end;
 
 function FormatSizeInMBAsDenaryInteger(SizeInDenaryFloat: Double): String;
 var
-  DenaryInteger: FormatSizeSetting;
+  DenaryInteger: TFormatSizeSetting;
 begin
   DenaryInteger.FNumeralSystem := Denary;
   DenaryInteger.FPrecision := 0;

@@ -43,7 +43,6 @@ const
   ComboDefaultText = 'FreeDOS';
   ComboISOText = 'ISO Image';
 
-
 class function TRufus.CheckRufus: Boolean;
 var
   CodesignVerifier: TCodesignVerifier;

@@ -3,20 +3,11 @@
 interface
 
 uses
-  Windows, SysUtils,
-  uStrFunctions, uDatasizeUnit;
+  Windows, SysUtils, uDatasizeUnit;
 
-function GetVolumeLabel(AltName: String; DriveName: String): string;
+function GetVolumeLabel(VolumeName: String; DrivePath: String): string;
 
 const
-  SMART_READ_ATTRIBUTE_VALUES = $D0;
-  SMART_CYL_LOW = $4F;
-  SMART_CYL_HI = $C2;
-  SMART_CMD = $B0;
-
-  ATAMode = false;
-  SCSIMode = true;
-
   VolumeNames = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 implementation
@@ -35,9 +26,9 @@ begin
   exit(ChangeDatasizeUnit(SizeOfDiskInByte, ByteToMega));
 end;
 
-function GetVolumeLabel(AltName: String; DriveName: String): string;
+function GetVolumeLabel(VolumeName: String; DrivePath: String): string;
 const
-  VolumeLabelSetting: FormatSizeSetting =
+  VolumeLabelSetting: TFormatSizeSetting =
     (FNumeralSystem: Denary; FPrecision: 0);
 var
   NotUsed: DWORD;
@@ -47,16 +38,15 @@ var
   SizeOfDiskInMB: Double;
 begin
   FillMemory(@Buf, Length(Buf) * SizeOf(Char), 0);
-  GetVolumeInformation(PChar(DriveName), Buf, SizeOf(Buf), @VolumeSerialNumber,
-                        NotUsed, VolumeFlags, nil, 0);
+  GetVolumeInformation(PChar(DrivePath), Buf, SizeOf(Buf), @VolumeSerialNumber,
+    NotUsed, VolumeFlags, nil, 0);
 
   if Buf[0] = #0 then
-    CopyMemory(@Buf, @AltName[1],
-               Length(AltName) * SizeOf(Char));
+    CopyMemory(@Buf, @VolumeName[1], Length(VolumeName) * SizeOf(Char));
 
-  SizeOfDiskInMB := GetSizeOfDiskInMB(DriveName);
+  SizeOfDiskInMB := GetSizeOfDiskInMB(DrivePath);
   Result :=
-    DriveName + ' (' + Buf + ' - ' +
+    DrivePath + ' (' + Buf + ' - ' +
       FormatSizeInMB(SizeOfDiskInMB, VolumeLabelSetting) + ')';
 end;
 

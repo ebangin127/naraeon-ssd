@@ -5,7 +5,7 @@ interface
 uses
   SysUtils,
   uLanguageSettings, uPhysicalDrive, uListChangeGetter, uNSTSupport, uLogSystem,
-  uPathManager, uStrFunctions, uDatasizeUnit;
+  uPathManager, uDatasizeUnit;
 
 type
   TMainformTotalWriteApplier = class
@@ -72,7 +72,7 @@ end;
 
 procedure TMainformTotalWriteApplier.AppendWriteToWriteLabel;
 var
-  BinaryPointOne: FormatSizeSetting;
+  BinaryPointOne: TFormatSizeSetting;
 begin
   BinaryPointOne.FNumeralSystem := Binary;
   BinaryPointOne.FPrecision := 1;

@@ -5,7 +5,7 @@ interface
 uses
   Graphics,
   uLanguageSettings, uPhysicalDrive, uSSDLabelListRefresher, uFirmwareGetter,
-  uDatasizeUnit, uStrFunctions, uBufferInterpreter, uNCQAvailabilityGetter;
+  uDatasizeUnit, uBufferInterpreter, uNCQAvailabilityGetter;
 
 type
   TMainformMainpartApplier = class
@@ -58,7 +58,7 @@ end;
 function TMainformMainpartApplier.FormatSizeInDenaryIntegerMB(
   SizeInDenaryMB: Double): String;
 var
-  DenaryInteger: FormatSizeSetting;
+  DenaryInteger: TFormatSizeSetting;
 begin
   DenaryInteger.FNumeralSystem := Denary;
   DenaryInteger.FPrecision := 0;

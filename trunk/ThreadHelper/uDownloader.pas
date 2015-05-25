@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Windows, IdHttp, IdComponent,
-  uDatasizeUnit, uStrFunctions, uFileFunctions, uDownloadPath, uProgressSection,
+  uDatasizeUnit, uTimeUnit, uFileFunctions, uDownloadPath, uProgressSection,
   uLanguageSettings;
 
 type
