@@ -1,4 +1,4 @@
-﻿unit uMain;
+unit uMain;
 
 interface
 
@@ -405,6 +405,8 @@ var
   ifConnected: DWORD;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
+  RemovableDriveListGetter: TRemovableDriveListGetter;
+  RemovableDriveList: TDriveList;
 begin
   CloseDriveList;
 
@@ -428,7 +430,14 @@ begin
     exit;
   end;
 
-  GetUSBDrives(cUSB.Items);
+  RemovableDriveListGetter := TRemovableDriveListGetter.Create;
+  RemovableDriveList := RemovableDriveListGetter.GetDriveList;
+  TVolumeLabelGetter.PathListToVolumeLabel(RemovableDriveList,
+    CapRemvDisk[CurrLang]);
+  cUSB.Items.Assign(RemovableDriveList);
+  FreeAndNil(RemovableDriveListGetter);
+  FreeAndNil(RemovableDriveList);
+  
   cUSB.ItemIndex := 0;
   if cUSB.Items.Count = 0 then
   begin
@@ -460,6 +469,9 @@ begin
 end;
 
 procedure TfMain.iEraseClick(Sender: TObject);
+var
+  RemovableDriveListGetter: TRemovableDriveListGetter;
+  RemovableDriveList: TDriveList;
 begin
   CloseDriveList;
 
@@ -469,7 +481,14 @@ begin
     exit;
   end;
 
-  GetUSBDrives(cUSBErase.Items);
+  RemovableDriveListGetter := TRemovableDriveListGetter.Create;
+  RemovableDriveList := RemovableDriveListGetter.GetDriveList;
+  TVolumeLabelGetter.PathListToVolumeLabel(RemovableDriveList,
+    CapRemvDisk[CurrLang]);
+  cUSBErase.Items.Assign(RemovableDriveList);
+  FreeAndNil(RemovableDriveListGetter);
+  FreeAndNil(RemovableDriveList);
+  
   cUSBErase.ItemIndex := 0;
 
   if cUSBErase.Items.Count > 0 then
@@ -525,15 +544,25 @@ end;
 procedure TfMain.iTrimClick(Sender: TObject);
 var
   CheckedDrives: Integer;
+  PartitionList: TStringList;
+  VolumeLabelGetter: TVolumeLabelGetter;
 begin
   CloseDriveList;
 
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
-  PhysicalDrive.GetChildDrives(
-    PhysicalDrive.GetPathOfFileAccessingWithoutPrefix,
-    cTrimList.Items);
+  PartitionList := PhysicalDrive.GetPartitionList;
+  for CurrDrv := 0 to PartitionList.Count - 1 do
+  begin
+    VolumeLabelGetter := TVolumeLabelGetter.Create(
+      PartitionList[CurrDrv].Letter);
+    cTrimList.Add(VolumeLabelGetter.GetVolumeLabel(
+      CapLocalDisk[CurrLang]));
+    FreeAndNil(VolumeLabelGetter);
+  end;
+  FreeAndNil(PartitionList);
+  
   for CheckedDrives := 0 to cTrimList.Count - 1 do
     cTrimList.Checked[CheckedDrives] := true;
 end;

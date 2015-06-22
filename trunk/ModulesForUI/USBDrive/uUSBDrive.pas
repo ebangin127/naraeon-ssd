@@ -8,7 +8,7 @@ uses
   uDiskFunctions, uPhysicalDrive, uPartitionListGetter;
 
 
-//ÀÚ½Ä µå¶óÀÌºê °¡Á®¿À±â
+//ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 procedure GetUSBDrives(USBDrives: TStrings);
 procedure GetChildDrives(DiskNumber: String; ChildDrives: TStrings);
 

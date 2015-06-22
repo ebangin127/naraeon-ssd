@@ -2,8 +2,8 @@ unit uUINT64;
 
 interface
 
-function TryStrToUINT64(StrValue: String; var uValue: UInt64): Boolean;
-function StrToUINT64(Value: String): UInt64;
+function TryStrToUInt64(UInt64InString: String; var Output: UInt64): Boolean;
+function StrToUInt64(UInt64InString: String): UInt64;
 
 implementation
 
@@ -11,49 +11,94 @@ uses SysUtils, Character;
 
 {$R-}
 
-function TryStrToUInt64(StrValue: String; var uValue: UInt64): Boolean;
-var
-  Start,Base,Digit: Integer;
-  n: Integer;
-  Nextvalue: UInt64;
+type
+  TUInt64ConvertSettings = record
+    FBase: Integer;
+    FStartPoint: Integer;
+  end;
+
+function IsInvalidUInt64Value(UInt64InString: String): Boolean;
 begin
   result := false;
-  Base := 10;
-  Start := 1;
-  Digit := 0;
-  StrValue := Trim(UpperCase(StrValue));
-  if StrValue = '' then
-    exit;
-  if StrValue[1] = '-' then
-    exit;
-  if StrValue[1] = '$' then
-  begin
-    Base := 16;
-    Start := 2;
-    if Length(StrValue) > 17 then
-        exit;
-  end;
-  uValue := 0;
-  for n := Start to Length(StrValue) do
-  begin
-      if StrValue[n].IsNumber then
-          Digit := Ord(StrValue[n]) - Ord('0')
-      else if  (Base = 16) and (StrValue[n] >= 'A') and (StrValue[n] <= 'F') then
-          Digit := (Ord(StrValue[n]) - Ord('A'))+10
-      else
-          exit;
-      Nextvalue := (uValue * base) + digit;
-      if (Nextvalue < uValue) then
-          exit;
-      uValue := Nextvalue;
-  end;
-  result := true;
+  if (UInt64InString = '') or
+     (UInt64InString[1] = '-') or
+     (Length(UInt64InString) > 17) then
+    result := true;
 end;
 
-function StrToUInt64(Value:String): UInt64;
+function GetNewDigit(UInt64InChar: Char; Base: Integer): Integer;
 begin
-  if not TryStrToUINT64(Value,result) then
-    raise EConvertError.Create('Invalid uint64 value');
+  if UInt64InChar.IsNumber then
+    result := Ord(UInt64InChar) - Ord('0')
+  else if  (Base = 16) and (UInt64InChar >= 'A') and (UInt64InChar <= 'F') then
+    result := (Ord(UInt64InChar) - Ord('A')) + 10
+  else
+    result := -1;
+end;
+
+function IsNewDigitInvalid(Output, NextOutput: UInt64; DigitToAdd: Integer):
+  Boolean;
+begin
+  result := (DigitToAdd = -1) or (Output >= NextOutput);
+end;
+
+function CharToUInt64ByBase(UInt64InChar: Char;
+  var Output: UInt64; Base: Integer): Boolean;
+var
+  NextOutput: UInt64;
+  DigitToAdd: Integer;
+begin
+  result := false;
+  
+  DigitToAdd := GetNewDigit(UInt64InChar, Base);
+  NextOutput := (Output * Base) + DigitToAdd;
+  if IsNewDigitInvalid(Output, NextOutput, DigitToAdd) then
+    exit;
+  
+  Output := NextOutput;
+  result := true;
+end;
+    
+function ConvertToUInt64ByNumeralSystem(UInt64InString: String;
+  var Output: UInt64; NumeralSystem: TUInt64ConvertSettings): Boolean;
+var
+  CurrentChar: Integer;
+begin
+  result := false;
+  Output := 0;
+  
+  for CurrentChar := NumeralSystem.StartPoint to Length(UInt64InString) do
+    if not CharToUInt64ByBase(UInt64InString[CurrentChar],
+      Output, NumeralSystem.Base) then
+        exit;
+        
+  result := true;
+end;
+  
+function GetNumeralSystem(UInt64InString: String): TUInt64ConvertSettings;
+begin
+  UInt64InString := Trim(UpperCase(UInt64InString));
+  
+  if UInt64InString[1] = HexadecimalKeyword then
+    exit(Hexadecimal)
+  else
+    exit(Decimal);
+end;
+
+function TryStrToUInt64(UInt64InString: String; var Output: UInt64): Boolean;
+begin
+  result := false;
+  if IsInvalidUInt64Value(UInt64InString) then
+    exit(false)
+  else
+    exit(ConvertToUInt64ByNumeralSystem(UInt64InString, Output,
+      GetNumeralSystem(UInt64InString)));
+end;
+
+function StrToUInt64(UInt64InString: String): UInt64;
+begin
+  if not TryStrToUINT64(UInt64InString, result) then
+    raise EConvertError.Create('Invalid UInt64 value: ' + UInt64InString);
 end;
 
 end.

@@ -4,7 +4,7 @@ interface
 
 uses
   IdHttp, IdComponent,
-  uDownloadPath, uDiskFunctions;
+  uDownloadPath;
 
 type
   TProgressGroup = class
@@ -15,7 +15,7 @@ type
     FFileSizeInByte: Int64;
     FPreviousPosition: Integer;
 
-    //´Ù¿î·Îµå ÁøÇà
+    //ï¿½Ù¿ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½
     procedure Disconnect(Sender: TObject);
     function DownloadFile(Src: TDownloadFile; Dest: TDownloadFile;
       DownloadCaption, CancelCaption: String): Boolean;
@@ -55,8 +55,6 @@ begin
 
   if FPreviousPosition = CurrentPosition then
     exit;
-
-
 
   GetTBStr(1024, [FFileSizeInByte / 1024 / 1024]);
 
@@ -141,6 +139,7 @@ begin
 
   result := not Aborted;
 end;
+
 procedure TProgressGroup.ProgressDownload;
 begin
 

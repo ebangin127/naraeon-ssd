@@ -15,9 +15,11 @@ type
 
 implementation
 
-function TFATFileSystem.GetPartitionInformationForDataSetManagement:
+function TNTFSFileSystem.GetPartitionInformationForDataSetManagement:
   TPartitionInformationForDataSetManagement;
 begin
+  result.StartPadding := 0;
+  result.LBAPerCluster := 0;
 end;
 
 end.
