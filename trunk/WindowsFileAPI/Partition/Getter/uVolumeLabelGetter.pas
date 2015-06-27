@@ -3,37 +3,45 @@ unit uVolumeLabelGetter;
 interface
 
 uses
-  uOSFile;
+  Classes, Windows, SysUtils,
+  uDatasizeUnit, uOSFile;
 
 type
   TVolumeLabelGetter = class(TOSFile)
   private
     type
-      TNTBSVolumeName: Array[0..MAX_PATH] of Char;
+      TNTBSVolumeName = Array[0..MAX_PATH] of Char;
   private
     VolumeLabelInNTBS: TNTBSVolumeName;
     procedure SetVolumeLabelInNTBS;
     procedure IfVolumeLabelIsNullUseAlternative(AlternativeName: String);
     function GetSizeOfDiskInMB: Double;
-    procedure AppendSizeOfDiskInMB(AlternativeName: String): String;
+    function AppendSizeOfDiskInMB(AlternativeName: String): String;
+    function GetByteToMega: TDatasizeUnitChangeSetting;
   public
     function GetVolumeLabel(AlternativeName: String): String;
-    procedure PathListToVolumeLabel(PathList: TString;
-      AlternativeName: String); static;
   end;
+
+procedure PathListToVolumeLabel(PathList: TStrings;
+  AlternativeName: String);
 
 implementation
 
+function TVolumeLabelGetter.GetByteToMega: TDatasizeUnitChangeSetting;
+begin
+  result.FNumeralSystem := Denary;
+  result.FFromUnit := ByteUnit;
+  result.FToUnit := MegaUnit;
+end;
+
 function TVolumeLabelGetter.GetSizeOfDiskInMB: Double;
 const
-  ByteToMega: TDatasizeUnitChangeSetting =
-    (FNumeralSystem: Denary; FFromUnit: ByteUnit; FToUnit: MegaUnit);
   VolumeNames = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var
   SizeOfDiskInByte: Int64;
 begin
   SizeOfDiskInByte := DiskSize(Pos(GetPathOfFileAccessing[1], VolumeNames));
-  exit(ChangeDatasizeUnit(SizeOfDiskInByte, ByteToMega));
+  exit(ChangeDatasizeUnit(SizeOfDiskInByte, GetByteToMega));
 end;
 
 procedure TVolumeLabelGetter.SetVolumeLabelInNTBS;
@@ -43,7 +51,7 @@ var
   VolumeSerialNumber: DWORD;
 begin
   ZeroMemory(@VolumeLabelInNTBS, SizeOf(VolumeLabelInNTBS));
-  GetVolumeInformation(PChar(DrivePath), VolumeLabelInNTBS,
+  GetVolumeInformation(PChar(GetPathOfFileAccessing), VolumeLabelInNTBS,
     SizeOf(VolumeLabelInNTBS), @VolumeSerialNumber, MaximumComponentLength,
     VolumeFlags, nil, 0);
 end;
@@ -56,7 +64,7 @@ begin
       Length(AlternativeName) * SizeOf(Char));
 end;
 
-procedure TVolumeLabelGetter.AppendSizeOfDiskInMB(
+function TVolumeLabelGetter.AppendSizeOfDiskInMB(
   AlternativeName: String): String;
 const
   DenaryInteger: TFormatSizeSetting =
@@ -64,7 +72,7 @@ const
 var
   SizeOfDiskInMB: Double;
 begin
-  SizeOfDiskInMB := GetSizeOfDiskInMB(GetPathOfFileAccessing);
+  SizeOfDiskInMB := GetSizeOfDiskInMB;
   result :=
     GetPathOfFileAccessing + ' (' + VolumeLabelInNTBS + ' - ' +
       FormatSizeInMB(SizeOfDiskInMB, DenaryInteger) + ')';
@@ -74,11 +82,11 @@ function TVolumeLabelGetter.GetVolumeLabel(AlternativeName: String): String;
 begin
   SetVolumeLabelInNTBS;
   IfVolumeLabelIsNullUseAlternative(AlternativeName);
-  exit(AppendSizeOfDiskInMB);
+  exit(AppendSizeOfDiskInMB(AlternativeName));
 end;
 
-procedure TVolumeLabelGetter.PathListToVolumeLabel(PathList: TString;
-  AlternativeName: String); static;
+procedure PathListToVolumeLabel(PathList: TStrings;
+  AlternativeName: String);
 var
   VolumeLabelGetter: TVolumeLabelGetter;
   CurrentPath: Integer;

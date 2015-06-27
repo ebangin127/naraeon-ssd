@@ -1,4 +1,4 @@
-unit uMain;
+﻿unit uMain;
 
 interface
 
@@ -9,14 +9,15 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uLogSystem, uSevenZip, uOptimizer, uUSBDrive,
-  uExeFunctions, uFileFunctions, uDownloadPath, uPlugAndPlay,
+  uLogSystem, uSevenZip, uOptimizer,
+  uExeFunctions, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
   uFirmwareGetter, uGlobalSettings, uCodesignVerifier,
   uSSDLabelList, uSSDLabel, uMainformPhysicalDriveApplier,
-  uSSDLabelListRefresher, uFirmwareDownloader;
+  uSSDLabelListRefresher, uFirmwareDownloader, uRemovableDriveListGetter,
+  uDriveListGetter, uVolumeLabelGetter;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -430,10 +431,9 @@ begin
     exit;
   end;
 
-  RemovableDriveListGetter := TRemovableDriveListGetter.Create;
+  RemovableDriveListGetter := TRemovableDriveListGetter.Create('');
   RemovableDriveList := RemovableDriveListGetter.GetDriveList;
-  TVolumeLabelGetter.PathListToVolumeLabel(RemovableDriveList,
-    CapRemvDisk[CurrLang]);
+  PathListToVolumeLabel(RemovableDriveList, CapRemvDisk[CurrLang]);
   cUSB.Items.Assign(RemovableDriveList);
   FreeAndNil(RemovableDriveListGetter);
   FreeAndNil(RemovableDriveList);
@@ -481,10 +481,9 @@ begin
     exit;
   end;
 
-  RemovableDriveListGetter := TRemovableDriveListGetter.Create;
+  RemovableDriveListGetter := TRemovableDriveListGetter.Create('');
   RemovableDriveList := RemovableDriveListGetter.GetDriveList;
-  TVolumeLabelGetter.PathListToVolumeLabel(RemovableDriveList,
-    CapRemvDisk[CurrLang]);
+  PathListToVolumeLabel(RemovableDriveList, CapRemvDisk[CurrLang]);
   cUSBErase.Items.Assign(RemovableDriveList);
   FreeAndNil(RemovableDriveListGetter);
   FreeAndNil(RemovableDriveList);
@@ -544,8 +543,9 @@ end;
 procedure TfMain.iTrimClick(Sender: TObject);
 var
   CheckedDrives: Integer;
-  PartitionList: TStringList;
+  PartitionList: TPartitionList;
   VolumeLabelGetter: TVolumeLabelGetter;
+  CurrentDrive: Integer;
 begin
   CloseDriveList;
 
@@ -553,11 +553,11 @@ begin
     exit;
 
   PartitionList := PhysicalDrive.GetPartitionList;
-  for CurrDrv := 0 to PartitionList.Count - 1 do
+  for CurrentDrive := 0 to PartitionList.Count - 1 do
   begin
     VolumeLabelGetter := TVolumeLabelGetter.Create(
-      PartitionList[CurrDrv].Letter);
-    cTrimList.Add(VolumeLabelGetter.GetVolumeLabel(
+      PartitionList[CurrentDrive].Letter);
+    cTrimList.Items.Add(VolumeLabelGetter.GetVolumeLabel(
       CapLocalDisk[CurrLang]));
     FreeAndNil(VolumeLabelGetter);
   end;

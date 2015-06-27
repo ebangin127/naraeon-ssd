@@ -39,7 +39,7 @@ end;
 function IsNewDigitInvalid(Output, NextOutput: UInt64; DigitToAdd: Integer):
   Boolean;
 begin
-  result := (DigitToAdd = -1) or (Output >= NextOutput);
+  result := (DigitToAdd = -1) or (Output > NextOutput);
 end;
 
 function CharToUInt64ByBase(UInt64InChar: Char;
@@ -67,18 +67,24 @@ begin
   result := false;
   Output := 0;
   
-  for CurrentChar := NumeralSystem.StartPoint to Length(UInt64InString) do
+  for CurrentChar := NumeralSystem.FStartPoint to Length(UInt64InString) do
     if not CharToUInt64ByBase(UInt64InString[CurrentChar],
-      Output, NumeralSystem.Base) then
+      Output, NumeralSystem.FBase) then
         exit;
         
   result := true;
 end;
   
 function GetNumeralSystem(UInt64InString: String): TUInt64ConvertSettings;
+const
+  HexadecimalKeyword = '$';
+  Hexadecimal: TUInt64ConvertSettings =
+    (FBase: 16; FStartPoint: 2);
+  Decimal: TUInt64ConvertSettings =
+    (FBase: 10; FStartPoint: 1);
 begin
   UInt64InString := Trim(UpperCase(UInt64InString));
-  
+
   if UInt64InString[1] = HexadecimalKeyword then
     exit(Hexadecimal)
   else

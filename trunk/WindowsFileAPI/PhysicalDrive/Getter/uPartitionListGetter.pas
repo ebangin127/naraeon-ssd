@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  uOSFile, uFixedDriveListGetter, uPartitionExtentGetter;
+  uOSFile, uDriveListGetter, uFixedDriveListGetter, uPartitionExtentGetter;
 
 type
   TPartitionEntry = record
@@ -28,11 +28,11 @@ type
   private
     PartitionList: TPartitionList;
     PartitionExtentList: TPartitionExtentList;
-    FixedDriveList: TFixedDriveList;
+    FixedDriveList: TDriveList;
     PhysicalDriveNumber: Cardinal;
     PartitionExtentGetter: TPartitionExtentGetter;
 
-    function GetFixedDrives: TFixedDriveList;
+    function GetFixedDrives: TDriveList;
     procedure AddThisDriveToList
       (CurrentDrive: Integer; PartitionExtentPosition: Cardinal);
     procedure IfPartitionOfThisDriveAddToList(CurrentDrive: Integer);
@@ -50,14 +50,14 @@ type
 
 implementation
 
-function TPartitionListGetter.GetFixedDrives: TFixedDriveList;
+function TPartitionListGetter.GetFixedDrives: TDriveList;
 var
   FixedDriveListGetter: TFixedDriveListGetter;
 begin
   try
     FixedDriveListGetter := TFixedDriveListGetter.Create
       (GetPathOfFileAccessing);
-    result := FixedDriveListGetter.GetFixedDriveList;
+    result := FixedDriveListGetter.GetDriveList;
   finally
     FreeAndNil(FixedDriveListGetter);
   end;

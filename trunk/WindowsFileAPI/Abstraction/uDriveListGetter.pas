@@ -14,7 +14,7 @@ type
     function GetDriveList: TDriveList;
   
   protected
-    function GetDriveTypeToGet: Cardinal; abstract;
+    function GetDriveTypeToGet: Cardinal; virtual; abstract;
 
   private
     SpecifiedDriveList: TDriveList;

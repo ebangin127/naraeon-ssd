@@ -1,4 +1,4 @@
-unit uFileFunctions;
+unit uDeleteDirectory;
 
 interface
 
@@ -10,7 +10,7 @@ implementation
 
 function GetSHFileOpStruct(const DirectoryToDelete: String): TSHFileOpStruct;
 begin
-  FillChar(SHFileOpStruct, sizeof(SHFileOpStruct), 0);
+  FillChar(result, sizeof(SHFileOpStruct), 0);
   result.Wnd := 0;
   result.pFrom := PChar(DirectoryToDelete);
   result.wFunc := FO_DELETE;
@@ -20,10 +20,12 @@ end;
     
 function TryToDeleteFoundDirectory(const DirectoryToDelete,
   FoundFile: String): Boolean;
+var
+  CurrentDirectoryToDelete: String;
 begin
   try
     CurrentDirectoryToDelete := ExcludeTrailingPathDelimiter(
-      DirectoryToDelete + srSchRec.Name);
+      DirectoryToDelete + FoundFile);
     result := (SHFileOperation(GetSHFileOpStruct(
       CurrentDirectoryToDelete)) = 0);
   except
@@ -33,7 +35,6 @@ end;
 
 function DeleteDirectory(const DirectoryToDelete: String): Boolean;
 var
-  CurrentDirectoryToDelete: string;
   ZeroFoundElseNotFound: integer;
   SearchRecord: TSearchRec;
 begin
@@ -44,10 +45,10 @@ begin
   while ZeroFoundElseNotFound = 0 do
   begin
     TryToDeleteFoundDirectory(DirectoryToDelete, SearchRecord.Name);
-    ZeroFoundElseNotFound := FindNext(srSchRec);
+    ZeroFoundElseNotFound := FindNext(SearchRecord);
   end;
   
-  FindClose(srSchRec);
+  FindClose(SearchRecord);
 end;
 
 end.

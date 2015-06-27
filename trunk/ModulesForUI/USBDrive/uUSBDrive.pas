@@ -1,11 +1,11 @@
-unit uUSBDrive;
+﻿unit uUSBDrive;
 
 interface
 
 uses
   Windows, Classes, SysUtils,
   uLanguageSettings,
-  uDiskFunctions, uPhysicalDrive, uPartitionListGetter;
+  uPhysicalDrive, uPartitionListGetter;
 
 
 //�ڽ� ����̺� ��������

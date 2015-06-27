@@ -3,6 +3,7 @@ unit uRemovableDriveListGetter;
 interface
 
 uses
+  Windows,
   uDriveListGetter;
 
 type

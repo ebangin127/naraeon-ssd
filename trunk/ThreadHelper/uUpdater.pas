@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, Windows, ShellApi,
   uVersion, uHTTPWeb, uGlobalSettings, uDownloadThread, uDownloadPath,
   uCodesignVerifier, uLanguageSettings, uPathManager, uAlert, uDownloader,
-  uFileFunctions;
+  uDeleteDirectory;
 
 type
   TCheckUpdateResult = record

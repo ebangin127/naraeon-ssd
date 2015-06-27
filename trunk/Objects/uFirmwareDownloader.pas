@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, IdURI, Dialogs, ShellApi,
   uAlert, uLanguageSettings, uPathManager, uGlobalSettings,
   uExeFunctions, uPhysicalDrive, uDownloadThread,
-  uFileFunctions, uDownloadPath, uFirmwareGetter, uCodesignVerifier,
+  uDeleteDirectory, uDownloadPath, uFirmwareGetter, uCodesignVerifier,
   uDownloader, uRufus;
 
 type

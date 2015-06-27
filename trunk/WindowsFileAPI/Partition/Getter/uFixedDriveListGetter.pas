@@ -3,6 +3,7 @@ unit uFixedDriveListGetter;
 interface
 
 uses
+  Windows,
   uDriveListGetter;
 
 type
