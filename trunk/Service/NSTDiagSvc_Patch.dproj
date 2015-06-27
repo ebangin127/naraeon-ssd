@@ -122,8 +122,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Modules\Windows\uRegFunctions.pas"/>
         <DCCReference Include="..\Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
-        <DCCReference Include="..\Modules\Disk\uDiskFunctions.pas"/>
-        <DCCReference Include="..\Modules\Disk\uPartitionFunctions.pas"/>
         <DCCReference Include="..\Modules\Etc\uUINT64.pas"/>
         <DCCReference Include="..\Modules\Etc\uDeleteWhitespace.pas"/>
         <DCCReference Include="..\Classes\LogSystem\uLogSystem.pas"/>
@@ -143,7 +141,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Interpreter\uATABufferInterpreter.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
@@ -176,6 +173,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <FormType>dfm</FormType>
             <DesignClass>TService</DesignClass>
         </DCCReference>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uDriveListGetter.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

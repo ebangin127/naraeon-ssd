@@ -6,8 +6,6 @@ uses
   uRegFunctions in '..\Modules\Windows\uRegFunctions.pas',
   uLanguageSettings in '..\Modules\Language\uLanguageSettings.pas',
   uExeFunctions in '..\Modules\Windows\uExeFunctions.pas',
-  uDiskFunctions in '..\Modules\Disk\uDiskFunctions.pas',
-  uPartitionFunctions in '..\Modules\Disk\uPartitionFunctions.pas',
   uUINT64 in '..\Modules\Etc\uUINT64.pas',
   uDeleteWhitespace in '..\Modules\Etc\uDeleteWhitespace.pas',
   uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
@@ -27,7 +25,6 @@ uses
   uDriveAvailabilityGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas',
   uNCQAvailabilityGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas',
   uPartitionListGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas',
-  uFixedDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
   uPartitionExtentGetter in '..\WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas',
   uATABufferInterpreter in '..\WindowsFileAPI\Interpreter\uATABufferInterpreter.pas',
   uNSTSupport in '..\NSTSupport\Abstraction\uNSTSupport.pas',
@@ -55,7 +52,10 @@ uses
   uPhysicalDriveList in '..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas',
   uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
   uLegacyATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas',
-  uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService};
+  uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService},
+  uDriveListGetter in '..\WindowsFileAPI\Abstraction\uDriveListGetter.pas',
+  uFixedDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
+  uRemovableDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

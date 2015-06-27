@@ -93,7 +93,6 @@ end;
 
 function TryStrToUInt64(UInt64InString: String; var Output: UInt64): Boolean;
 begin
-  result := false;
   if IsInvalidUInt64Value(UInt64InString) then
     exit(false)
   else
