@@ -16,6 +16,20 @@ const
 
 type
   TNSTLog = class
+  public
+    //1. Ã¢ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½Ä±ï¿½ï¿½ï¿½
+    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String;
+      IsCount: Boolean); overload;
+    constructor Create(Folder: String; Serial: String; IsCount: Boolean);
+      overload;
+    destructor Destroy; override;
+    //2. ï¿½ï¿½ï¿½ï¿½ ï¿½ç¿¬ï¿½ï¿½ï¿½Ï±ï¿½
+    procedure Disconnect;
+    //3. ï¿½Ð°ï¿½ ï¿½ï¿½ï¿½ï¿½
+    function ReadBothFiles(CurrGig: String): Boolean;
+    procedure ReleaseEqualGig;
+    procedure ReleaseOneGig(CurrGig: String);
+  private
     LastDay: String;
     LastOneGig, LastFiveGig: Integer;
     Average: Array[TAverage] of String;
@@ -27,20 +41,8 @@ type
     ConnSerial: String;
     LastConnFolder: String;
     OnlyCount: Boolean;
-    //1. Ã¢Á¶ÀÚ¿Í ÆÄ±«ÀÚ
-    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String;
-      IsCount: Boolean); overload;
-    constructor Create(Folder: String; Serial: String; IsCount: Boolean);
-      overload;
-    destructor Destroy; override;
-    //2. ²÷°í Àç¿¬°áÇÏ±â
-    procedure Disconnect;
-    //3. ÀÐ°í ¾²±â
-    function ReadBothFiles(CurrGig: String): Boolean;
-    procedure ReleaseEqualGig;
-    procedure ReleaseOneGig(CurrGig: String);
-    protected
-      OneGigList: TStringList;
+  protected
+    OneGigList: TStringList;
   end;
 
 procedure MigrateOldLog(OldPath, NewPath: String);
@@ -58,22 +60,11 @@ constructor TNSTLog.Create(Folder, Serial: String; IsCount: Boolean);
 var
   CurrAvgDays: Integer;
 begin
-  ConnFolder := '';
-  LastConnFolder := '';
-  LastDay := '';
-  DayCount := 0;
-  TodayUsage := '';
-  for CurrAvgDays := 0 to AvgMax do
-  begin
-    Average[TAverage(CurrAvgDays)] := '';
-  end;
-  LastOneGig := 0;
-  LastFiveGig := 0;
   OneGigList := TStringList.Create;
   ReadableList := TStringList.Create;
   OnlyCount := IsCount;
   try
-    //1±â°¡ ÆÄÀÏ ·Îµù
+    //1ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     if FileExists(Folder + 'WriteLog' + Serial + '.txt') = false then
     begin
       if FileExists(Folder + 'UseLog' + Serial + '.txt') = false then

@@ -8,7 +8,7 @@ uses
   //General//
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
   uSeagateNSTSupport, uToshibaNSTSupport, uSamsungNSTSupport,
-  uMachXtremeNSTSupport,
+  uMachXtremeNSTSupport, uPhisonNSTSupport,
   //Sandforce//
   uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
   uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport,
@@ -80,6 +80,9 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TMachXtremeNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TPhisonNSTSupport>(result);
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TToshibaSandforceNSTSupport>(result);
