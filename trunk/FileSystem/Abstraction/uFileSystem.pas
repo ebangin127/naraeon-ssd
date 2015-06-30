@@ -16,9 +16,6 @@ type
   end;
 
   TFileSystem = class abstract(TIoControlFile)
-  private
-    
-  
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess;
     
