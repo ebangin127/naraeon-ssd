@@ -23,25 +23,11 @@ type
     function GetMinimumPrivilege: TCreateFileDesiredAccess;
     
   public
-    function GetPartitionSizeInCluster: UInt64;
     function GetPartitionInformationForDataSetManagement:
       TPartitionInformationForDataSetManagement; virtual; abstract;
   end;
 
 implementation
-
-
-  DeviceIoControl(
-    PartHandle,
-    FSCTL_GET_VOLUME_BITMAP,
-    @StartingBuffer, SizeOf(STARTING_LCN_INPUT_BUFFER),
-    @BitmapBuffer, VOLUME_BITMAP_BYTES,
-    BytesRead, nil);
-
-function TFileSystem.GetPartitionSizeInCluster: UInt64;
-begin
-  
-end;
 
 function GetMinimumPrivilege: TCreateFileDesiredAccess;
 begin
