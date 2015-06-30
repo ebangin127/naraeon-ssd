@@ -84,6 +84,7 @@ uses
   uSandiskNSTSupport in 'NSTSupport\Support\uSandiskNSTSupport.pas',
   uSeagateNSTSupport in 'NSTSupport\Support\uSeagateNSTSupport.pas',
   uToshibaNSTSupport in 'NSTSupport\Support\uToshibaNSTSupport.pas',
+  uPhisonNSTSupport in 'NSTSupport\Support\uPhisonNSTSupport.pas',
   uProgressSection in 'Model\uProgressSection.pas',
   uMainformMainpartApplier in 'UIObjects\MainformApplier\PartApplier\uMainformMainpartApplier.pas',
   uMainformPartitionAlignApplier in 'UIObjects\MainformApplier\PartApplier\uMainformPartitionAlignApplier.pas',

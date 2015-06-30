@@ -61,6 +61,7 @@ type
     procedure TestToshibaQFSupport;
     procedure TestToshibaQHSupport;
     procedure TestToshibaQProSupport;
+    procedure TestPhisonCT7Support;
   end;
 
 implementation
@@ -237,6 +238,12 @@ end;
 procedure TestTAutoNSTSupport.TestToshibaQProSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNJ128GCST', 'JTRA0102');
+end;
+
+procedure TestTAutoNSTSupport.TestPhisonCT7Support;
+begin
+  TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM00.f');
+  TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM01.3');
 end;
 
 procedure TestTAutoNSTSupport.TestSupportStatusWithModelFirmware(Model,

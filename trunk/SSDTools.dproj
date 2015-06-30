@@ -234,6 +234,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\Support\uSandiskNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\Support\uSeagateNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\Support\uToshibaNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Support\uPhisonNSTSupport.pas"/>
         <DCCReference Include="Model\uProgressSection.pas"/>
         <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformMainpartApplier.pas"/>
         <DCCReference Include="UIObjects\MainformApplier\PartApplier\uMainformPartitionAlignApplier.pas"/>
@@ -677,7 +678,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -685,7 +687,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>
