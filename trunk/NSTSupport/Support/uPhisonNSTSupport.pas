@@ -53,9 +53,7 @@ end;
 
 function TPhisonNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
-  if IsProductOfPhison then
-    result := GetSemiSupport;
+  result := GetSemiSupport;
 end;
 
 function TPhisonNSTSupport.GetTotalWrite: TTotalWrite;
