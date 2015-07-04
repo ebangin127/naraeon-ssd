@@ -14,8 +14,8 @@ type
     ReplacedSectors: UInt64;
     procedure ApplyReplacedSectorsAsTotalWrite;
     procedure ApplyTodayUsageByLog;
-    procedure SetUsageLabelByLogAndAvailableType(WriteLog: TNSTLog;
-      AvailableAverageType: Integer);
+    procedure SetUsageLabelByLogAndAvailableType(
+      WriteLog: TNSTLog; AvailableAverageType: Integer);
     procedure CreateReplacedSectorLog;
     procedure FreeReplacedSectorLog;
     function GetAvailableAverageType: Integer;
@@ -91,7 +91,8 @@ end;
 procedure TMainformReplacedSectorApplier.ApplyTodayUsageByLog;
 begin
   fMain.lTodayUsage.Caption := CapToday[CurrLang] +
-    ReplacedSectorLog.TodayUsage + CapCount[CurrLang];
+    ReplacedSectorLog.TodayUsage +
+    CapCount[CurrLang];
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyUsageByLog;
@@ -141,7 +142,7 @@ begin
   else
     RecoverAnalyticsLabel;
   FreeReplacedSectorLog;
-  
+
 end;
 
 end.

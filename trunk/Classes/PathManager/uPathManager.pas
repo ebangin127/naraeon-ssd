@@ -46,8 +46,7 @@ end;
 class procedure TPathManager.SetPathForServiceInstance;
 begin
   FAppPath := ExtractFilePath(GetRegStr('LM',
-    'Software\Microsoft\Windows\CurrentVersion\Uninstall\Naraeon SSD Tools\',
-    'UninstallString'));
+    'SYSTEM\CurrentControlSet\services\NaraeonSSDToolsDiag', 'ImagePath'));
   FAllDesktopPath := FDesktopPathInChar;
 end;
 

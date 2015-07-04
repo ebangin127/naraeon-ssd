@@ -30,13 +30,13 @@ function TPhisonNSTSupport.IsHasSATASSDString: Boolean;
 begin
   result :=
     Pos('SATA SSD', UpperCase(Model)) = 1;
-end
+end;
 
-function IsHasSAFM0String: Boolean;
+function TPhisonNSTSupport.IsHasSAFM0String: Boolean;
 begin
   result :=
     Pos('SAFM0', UpperCase(Firmware)) = 1;
-end
+end;
 
 function TPhisonNSTSupport.IsProductOfPhison: Boolean;
 begin
@@ -53,12 +53,13 @@ end;
 
 function TPhisonNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result := GetSemiSupport;
+  if IsProductOfPhison then
+    result := GetSemiSupport;
 end;
 
 function TPhisonNSTSupport.GetTotalWrite: TTotalWrite;
 const
-  GiBtoMiB: Double = 1024;
+  GiBtoMiB = 1024;
   IDOfHostWrite = 241;
 var
   RAWValue: UInt64;
@@ -79,7 +80,7 @@ const
   IDofUsedHour = 9;
   ReplacedSectorThreshold = 50;
   ReadErrorThreshold = 10;
-  HalfOfSMARTBits = 24;
+  HalfOfSMARTBits = 16;
 begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;

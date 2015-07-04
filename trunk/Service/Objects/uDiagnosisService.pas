@@ -44,6 +44,7 @@ begin
   TPathManager.SetPath(nil);
   DetermineLanguage;
   ErrorFilePath := TPathManager.AllDesktopPath + '\!!!SSDError!!!.err';
+  IsFirstDiagnosis := true;
 end;
 
 procedure TDiagnosisService.SetPhysicalDriveList;
@@ -176,7 +177,7 @@ var
 begin
   ReplacedSectorLog := TNSTLog.Create(
     TPathManager.AppPath,
-    Entry.IdentifyDeviceResult.Serial,
+    Entry.IdentifyDeviceResult.Serial + 'RSLog',
     false);
   IfNeedToAlertCreateAlertFile(Entry,
     ReplacedSectorLog.ReadBothFiles(UIntToStr(

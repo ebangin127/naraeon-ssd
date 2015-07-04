@@ -78,10 +78,8 @@ const
 
 
     CapFirmDwld: Array[0..1] of String = ('펌웨어 다운로드', 'Downloading Firmware');
-    CapBootInDwld: Array[0..1] of String = ('부팅용 USB 제작기 다운로드', 'Downloading bootable thumb drive maker');
 
     AlrtFirmStart: Array[0..1] of String = ('펌웨어 다운로드를 시작합니다.', 'Starting download Firmware.');
-    AlrtBootInStart: Array[0..1] of String = ('부팅용 USB 제작기 다운로드를 시작합니다.', 'Starting download bootable thumb drive maker.');
     AlrtFirmCanc: Array[0..1] of String = ('펌웨어 다운로드가 취소되었습니다.', 'Download has been canceled.');
     AlrtFirmFail: Array[0..1] of String = ('펌웨어 다운로드가 실패하였습니다.', 'Download has been failed.');
 

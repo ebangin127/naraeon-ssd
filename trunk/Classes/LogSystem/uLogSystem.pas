@@ -1,10 +1,8 @@
-unit uLogSystem;
+﻿unit uLogSystem;
 
 interface
 
-uses
-  Classes, Sysutils, Dialogs, Windows, Math,
-  uUINT64;
+uses Classes, Sysutils, Dialogs, Windows, Math, uUINT64;
 
 type
   TAverage = (Avg30, Avg90, Avg180);
@@ -16,20 +14,6 @@ const
 
 type
   TNSTLog = class
-  public
-    //1. â���ڿ� �ı���
-    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String;
-      IsCount: Boolean); overload;
-    constructor Create(Folder: String; Serial: String; IsCount: Boolean);
-      overload;
-    destructor Destroy; override;
-    //2. ���� �翬���ϱ�
-    procedure Disconnect;
-    //3. �а� ����
-    function ReadBothFiles(CurrGig: String): Boolean;
-    procedure ReleaseEqualGig;
-    procedure ReleaseOneGig(CurrGig: String);
-  private
     LastDay: String;
     LastOneGig, LastFiveGig: Integer;
     Average: Array[TAverage] of String;
@@ -41,8 +25,20 @@ type
     ConnSerial: String;
     LastConnFolder: String;
     OnlyCount: Boolean;
-  protected
-    OneGigList: TStringList;
+    //1. 창조자와 파괴자
+    constructor Create(Folder: String; Serial: String; CurrSMARTGig: String;
+      IsCount: Boolean); overload;
+    constructor Create(Folder: String; Serial: String; IsCount: Boolean);
+      overload;
+    destructor Destroy; override;
+    //2. 끊고 재연결하기
+    procedure Disconnect;
+    //3. 읽고 쓰기
+    function ReadBothFiles(CurrGig: String): Boolean;
+    procedure ReleaseEqualGig;
+    procedure ReleaseOneGig(CurrGig: String);
+    protected
+      OneGigList: TStringList;
   end;
 
 procedure MigrateOldLog(OldPath, NewPath: String);
@@ -60,11 +56,22 @@ constructor TNSTLog.Create(Folder, Serial: String; IsCount: Boolean);
 var
   CurrAvgDays: Integer;
 begin
+  ConnFolder := '';
+  LastConnFolder := '';
+  LastDay := '';
+  DayCount := 0;
+  TodayUsage := '';
+  for CurrAvgDays := 0 to AvgMax do
+  begin
+    Average[TAverage(CurrAvgDays)] := '';
+  end;
+  LastOneGig := 0;
+  LastFiveGig := 0;
   OneGigList := TStringList.Create;
   ReadableList := TStringList.Create;
   OnlyCount := IsCount;
   try
-    //1�Ⱑ ���� �ε�
+    //1기가 파일 로딩
     if FileExists(Folder + 'WriteLog' + Serial + '.txt') = false then
     begin
       if FileExists(Folder + 'UseLog' + Serial + '.txt') = false then

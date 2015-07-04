@@ -7,7 +7,7 @@ object NaraeonSSDToolsDiag: TNaraeonSSDToolsDiag
   Height = 150
   Width = 215
   object tDiagnosis: TTimer
-    Enabled = False
+    Interval = 60000
     OnTimer = tDiagnosisTimer
     Left = 88
     Top = 56

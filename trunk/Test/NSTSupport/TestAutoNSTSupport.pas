@@ -22,7 +22,6 @@ type
   strict private
     FAutoNSTSupport: TAutoNSTSupport;
     procedure TestSupportStatusWithModelFirmware(Model, Firmware: String);
-  private
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -63,6 +62,8 @@ type
     procedure TestToshibaQHSupport;
     procedure TestToshibaQProSupport;
     procedure TestPhisonCT7Support;
+    procedure TestADATASP900Support;
+    procedure TestADATASP920Support;
   end;
 
 implementation
@@ -251,6 +252,16 @@ procedure TestTAutoNSTSupport.TestPhisonCT7Support;
 begin
   TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM00.f');
   TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM01.3');
+end;
+
+procedure TestTAutoNSTSupport.TestADATASP900Support;
+begin
+  TestSupportStatusWithModelFirmware('ADATA SP900', '5.8.2');
+end;
+
+procedure TestTAutoNSTSupport.TestADATASP920Support;
+begin
+  TestSupportStatusWithModelFirmware('ADATA SP920SS', 'MU01');
 end;
 
 procedure TestTAutoNSTSupport.TestSupportStatusWithModelFirmware(Model,

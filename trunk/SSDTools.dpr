@@ -115,7 +115,9 @@ uses
   uDriveListGetter in 'WindowsFileAPI\Abstraction\uDriveListGetter.pas',
   uIoControlFile in 'WindowsFileAPI\Abstraction\uIoControlFile.pas',
   uOSFile in 'WindowsFileAPI\Abstraction\uOSFile.pas',
-  uOSFileWithHandle in 'WindowsFileAPI\Abstraction\uOSFileWithHandle.pas';
+  uOSFileWithHandle in 'WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
+  uADATASandforceNSTSupport in 'NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas',
+  uADATANSTSupport in 'NSTSupport\Support\uADATANSTSupport.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

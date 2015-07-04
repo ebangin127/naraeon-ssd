@@ -17,7 +17,6 @@ type
     function IsProductOfToshiba: Boolean;
     function IsTHNSNF: Boolean;
     function IsTHNSNH: Boolean;
-    function IsTHNSNS: Boolean;
     function IsTHNSNJ: Boolean;
 
   public
@@ -50,15 +49,10 @@ begin
   result := Pos('THNSNJ', Model) > 0;
 end;
 
-function TToshibaNSTSupport.IsTHNSNS: Boolean;
-begin
-  result := Pos('THNSNS', Model) > 0;
-end;
-
 function TToshibaNSTSupport.IsProductOfToshiba: Boolean;
 begin
   result := IsModelHasToshibaString and
-    (IsTHNSNF or IsTHNSNH or IsTHNSNJ or IsTHNSNS);
+    (IsTHNSNF or IsTHNSNH or IsTHNSNJ);
 end;
 
 function TToshibaNSTSupport.GetFullSupport: TSupportStatus;
@@ -66,10 +60,7 @@ begin
   result.Supported := true;
   result.FirmwareUpdate := true;
   
-  if IsTHNSNS then
-    result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue
-  else
-    result.TotalWriteType := TTotalWriteType.WriteNotSupported;
+  result.TotalWriteType := TTotalWriteType.WriteNotSupported;
 end;
 
 function TToshibaNSTSupport.GetSupportStatus: TSupportStatus;
@@ -100,12 +91,8 @@ const
   IDOfEraseErrorElse = 182;
 begin
   result.TrueReadErrorFalseEraseError := false;
-  if IsTHNSNS then 
-    result.Value :=
-      InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorTHNSNS)
-  else
-    result.Value :=
-      InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorElse);
+  result.Value :=
+    InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorElse);
 end;
 
 function TToshibaNSTSupport.GetSMARTInterpreted(

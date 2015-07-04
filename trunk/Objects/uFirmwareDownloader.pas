@@ -115,7 +115,7 @@ begin
     NewPath := Copy(FirmwarePath, 1, Length(FirmwarePath) -
       Length(ExtractFileExt(FirmwarePath))) + '.iso';
     OpenProcWithOutput(TPathManager.WinDir,
-      'expand.exe ' + FirmwarePath + ' ' + NewPath);
+      'expand.exe "' + FirmwarePath + '" "' + NewPath + '"');
     DeleteFile(FirmwarePath);
     FirmwarePath := NewPath;
   end;

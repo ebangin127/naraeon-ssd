@@ -1,4 +1,4 @@
-unit uCrucialNSTSupport;
+unit uADATANSTSupport;
 
 interface
 
@@ -7,17 +7,14 @@ uses
   uNSTSupport, uSMARTValueList;
 
 type
-  TCrucialNSTSupport = class sealed(TNSTSupport)
+  TADATANSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
     function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
-    function IsM500: Boolean;
-    function IsM550: Boolean;
-    function IsModelHasCrucialString: Boolean;
-    function IsMX100: Boolean;
-    function IsMX200: Boolean;
-    function IsProductOfCrucial: Boolean;
+    function IsModelHasADATAString: Boolean;
+    function IsSP920: Boolean;
+    function IsProductOfADATA: Boolean;
 
   public
     function GetSupportStatus: TSupportStatus; override;
@@ -27,55 +24,38 @@ type
 
 implementation
 
-{ TCrucialNSTSupport }
+{ TADATANSTSupport }
 
-function TCrucialNSTSupport.IsModelHasCrucialString: Boolean;
+function TADATANSTSupport.IsModelHasADATAString: Boolean;
 begin
-  result := Pos('CRUCIAL', Model) > 0;
+  result := Pos('ADATA ', Model) = 1;
 end;
 
-function TCrucialNSTSupport.IsMX100: Boolean;
+function TADATANSTSupport.IsSP920: Boolean;
 begin
-  result := Pos('MX100', Model) > 0;
+  result := Pos('SP920', Model) > 0;
 end;
 
-function TCrucialNSTSupport.IsMX200: Boolean;
+function TADATANSTSupport.IsProductOfADATA: Boolean;
 begin
-  result := Pos('MX200', Model) > 0;
+  result := IsModelHasADATAString and IsSP920;
 end;
 
-function TCrucialNSTSupport.IsM550: Boolean;
-begin
-  result := Pos('M550', Model) > 0;
-end;
-
-function TCrucialNSTSupport.IsM500: Boolean;
-begin
-  result := Pos('M500', Model) > 0;
-end;
-
-function TCrucialNSTSupport.IsProductOfCrucial: Boolean;
-begin
-  result := IsModelHasCrucialString and 
-    (IsMX100 or IsMX200 or
-     IsM500 or IsM550);
-end;
-
-function TCrucialNSTSupport.GetFullSupport: TSupportStatus;
+function TADATANSTSupport.GetFullSupport: TSupportStatus;
 begin
   result.Supported := true;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
-function TCrucialNSTSupport.GetSupportStatus: TSupportStatus;
+function TADATANSTSupport.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
-  if IsProductOfCrucial then
+  if IsProductOfADATA then
     result := GetFullSupport;
 end;
 
-function TCrucialNSTSupport.GetTotalWrite: TTotalWrite;
+function TADATANSTSupport.GetTotalWrite: TTotalWrite;
 const
   LBAtoMiB: Double = 1/2 * 1/1024;
   IDOfHostWrite = 246;
@@ -90,7 +70,7 @@ begin
   result.InValue.ValueInMiB := Floor(RAWValue * LBAtoMiB);
 end;
 
-function TCrucialNSTSupport.GetSMARTInterpreted(
+function TADATANSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 const
   IDOfEraseError = 172;
@@ -102,7 +82,7 @@ begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;
 
-  result.UsedHour := 
+  result.UsedHour :=
     InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.ReadEraseError.TrueReadErrorFalseEraseError := false;
   result.ReadEraseError.Value :=

@@ -118,6 +118,8 @@ begin
   if result <> '' then exit;
 
   result := GetSizeUnitString(SizeInMB, MegaUnit, Setting);
+  if result = '' then
+    result := '0MB';
 end;
 
 end.

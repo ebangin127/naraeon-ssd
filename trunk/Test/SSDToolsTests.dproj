@@ -95,22 +95,25 @@
         </DelphiCompile>
         <DCCReference Include="..\NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Auto\uAutoNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
+        <DCCReference Include="..\Objects\uSMARTValueList.pas"/>
+        <DCCReference Include="NSTSupport\TestAutoNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uCrucialNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uLiteonNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uMachXtremeNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\uPhisonNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uPlextorNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uSamsungNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uSandiskNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uSeagateNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uToshibaNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
-        <DCCReference Include="..\Objects\uSMARTValueList.pas"/>
-        <DCCReference Include="NSTSupport\TestAutoNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\uADATANSTSupport.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -33,19 +33,12 @@ uses
   uAutoPhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas',
   uBruteForcePhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas',
   uWMIPhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uWMIPhysicalDriveListGetter.pas',
-  uCrucialNSTSupport in '..\NSTSupport\Support\uCrucialNSTSupport.pas',
   uLiteonNSTSupport in '..\NSTSupport\Support\uLiteonNSTSupport.pas',
   uMachXtremeNSTSupport in '..\NSTSupport\Support\uMachXtremeNSTSupport.pas',
   uPlextorNSTSupport in '..\NSTSupport\Support\uPlextorNSTSupport.pas',
   uSamsungNSTSupport in '..\NSTSupport\Support\uSamsungNSTSupport.pas',
   uSandiskNSTSupport in '..\NSTSupport\Support\uSandiskNSTSupport.pas',
   uSeagateNSTSupport in '..\NSTSupport\Support\uSeagateNSTSupport.pas',
-  uToshibaNSTSupport in '..\NSTSupport\Support\uToshibaNSTSupport.pas',
-  uHynixSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas',
-  uMachXtremeSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
-  uOCZSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
-  uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
-  uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
   uSandforceNSTSupport in '..\NSTSupport\Abstraction\uSandforceNSTSupport.pas',
   uDiagnosisService in 'Objects\uDiagnosisService.pas',
   uPathManager in '..\Classes\PathManager\uPathManager.pas',
@@ -55,7 +48,17 @@ uses
   uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService},
   uDriveListGetter in '..\WindowsFileAPI\Abstraction\uDriveListGetter.pas',
   uFixedDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
-  uRemovableDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas';
+  uRemovableDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas',
+  uADATANSTSupport in '..\NSTSupport\Support\uADATANSTSupport.pas',
+  uCrucialNSTSupport in '..\NSTSupport\Support\uCrucialNSTSupport.pas',
+  uPhisonNSTSupport in '..\NSTSupport\Support\uPhisonNSTSupport.pas',
+  uToshibaNSTSupport in '..\NSTSupport\Support\uToshibaNSTSupport.pas',
+  uADATASandforceNSTSupport in '..\NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas',
+  uHynixSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas',
+  uMachXtremeSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
+  uOCZSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
+  uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
+  uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}
