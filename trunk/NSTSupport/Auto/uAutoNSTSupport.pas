@@ -12,7 +12,8 @@ uses
   //Sandforce//
   uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
   uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport,
-  uMachXtremeSandforceNSTSupport;
+  uMachXtremeSandforceNSTSupport,
+  uADATASandforceNSTSupport;
 
 type
   TAutoNSTSupport = class sealed(TNSTSupport)
@@ -98,6 +99,9 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TMachXtremeSandforceNSTSupport>(result);
+  result :=
+    TestNSTSupportCompatibilityAndReturnSupportStatus
+      <TADATASandforceNSTSupport>(result);
 end;
 
 destructor TAutoNSTSupport.Destroy;

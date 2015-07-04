@@ -39,6 +39,7 @@ type
     procedure TestCrucialM500Support;
     procedure TestCrucialM550Support;
     procedure TestCrucialMX100Support;
+    procedure TestCrucialMX200Support;
     procedure TestLiteonS100Support;
     procedure TestLiteonS200Support;
     procedure TestLiteonE200Support;
@@ -128,6 +129,12 @@ procedure TestTAutoNSTSupport.TestCrucialMX100Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT128MX100SSD1', 'MU02');
   TestSupportStatusWithModelFirmware('Crucial_CT128MX100SSD3', 'MU02');
+end;
+
+procedure TestTAutoNSTSupport.TestCrucialMX200Support;
+begin
+  TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD1', 'MU01');
+  TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD3', 'MU01');
 end;
 
 procedure TestTAutoNSTSupport.TestLiteonE200Support;

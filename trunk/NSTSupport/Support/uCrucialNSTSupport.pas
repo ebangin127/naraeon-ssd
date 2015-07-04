@@ -16,6 +16,7 @@ type
     function IsM550: Boolean;
     function IsModelHasCrucialString: Boolean;
     function IsMX100: Boolean;
+    function IsMX200: Boolean;
     function IsProductOfCrucial: Boolean;
 
   public
@@ -38,6 +39,11 @@ begin
   result := Pos('MX100', Model) > 0;
 end;
 
+function TCrucialNSTSupport.IsMX200: Boolean;
+begin
+  result := Pos('MX200', Model) > 0;
+end;
+
 function TCrucialNSTSupport.IsM550: Boolean;
 begin
   result := Pos('M550', Model) > 0;
@@ -50,7 +56,9 @@ end;
 
 function TCrucialNSTSupport.IsProductOfCrucial: Boolean;
 begin
-  result := IsModelHasCrucialString and (IsMX100 or IsM550 or IsM500);
+  result := IsModelHasCrucialString and 
+    (IsMX100 or IsMX200 or
+     IsM500 or IsM550);
 end;
 
 function TCrucialNSTSupport.GetFullSupport: TSupportStatus;
@@ -76,6 +84,7 @@ var
 begin
   result.InValue.TrueHostWriteFalseNANDWrite := true;
 
+  
   RAWValue :=
     InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
 
