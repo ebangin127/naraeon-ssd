@@ -557,6 +557,7 @@ begin
   PartitionList := PhysicalDrive.GetPartitionList;
   for CurrentDrive := 0 to PartitionList.Count - 1 do
   begin
+    cTrimList.Clear;
     VolumeLabelGetter := TVolumeLabelGetter.Create(
       PartitionList[CurrentDrive].Letter);
     cTrimList.Items.Add(VolumeLabelGetter.GetVolumeLabel(
