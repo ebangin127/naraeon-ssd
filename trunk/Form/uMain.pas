@@ -340,6 +340,8 @@ begin
   ApplyLocaleToMainformAndArrangeButton;
   RefreshDrives;
 
+  if FileExists(TPathManager.AppPath + 'Setup.exe') then
+    DeleteFile(TPathManager.AppPath + 'Setup.exe');
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
 

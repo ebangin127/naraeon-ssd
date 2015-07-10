@@ -15,14 +15,20 @@ type
     CurrentConfig,
     DynData
     );
-    
+
+  TRegistryPath = record
+    Root: TRegistryRootKey;
+    PathUnderHKEY: String;
+    ValueName: String;
+  end;
+
   TRegistryHelper = class helper for TRegistry
   public
     procedure SetRootKey(RegistryRootKey: TRegistryRootKey);
-    function OpenKeyWithRootAndPath
-      (Root: TRegistryRootKey; Path: String): Boolean;
-    function OpenKeyWithReadOnlyWithRootAndPath
-      (Root: TRegistryRootKey; Path: String): Boolean;
+    procedure OpenKeyWithRootAndPath
+      (Root: TRegistryRootKey; Path: String);
+    procedure OpenKeyReadOnlyWithRootAndPath
+      (Root: TRegistryRootKey; Path: String);
   private
     const
       TOSRegistryRootKey: Array[TRegistryRootKey] of HKEY =
@@ -43,17 +49,21 @@ begin
   RootKey := TOSRegistryRootKey[RegistryRootKey];
 end;
 
-function TRegistryHelper.OpenKeyWithRootAndPath
-  (Root: TRegistryRootKey; Path: String): Boolean;
+procedure TRegistryHelper.OpenKeyWithRootAndPath
+  (Root: TRegistryRootKey; Path: String);
 begin 
   SetRootKey(Root);
-  result := OpenKeyReadOnly(Path);
+  if not OpenKey(Path, false) then
+    raise EOSError.Create(
+      'Registry Access Denied: (' + IntToStr(GetLastError) + ') ' + Path);
 end;
 
-function TRegistryHelper.OpenKeyWithReadOnlyWithRootAndPath
-  (Root: TRegistryRootKey; Path: String): Boolean;
+procedure TRegistryHelper.OpenKeyReadOnlyWithRootAndPath
+  (Root: TRegistryRootKey; Path: String);
 begin
   SetRootKey(Root);
-  result := OpenKeyReadOnly(Path);
+  if not OpenKeyReadOnly(Path) then
+    raise EOSError.Create(
+      'Registry Access Denied: (' + IntToStr(GetLastError) + ') ' + Path);
 end;
 end.

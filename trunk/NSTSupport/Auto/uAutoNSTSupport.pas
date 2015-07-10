@@ -81,11 +81,9 @@ begin
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TMachXtremeNSTSupport>(result);
-{$IF FALSE}
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TPhisonNSTSupport>(result);
-{$ENDIF}
   result :=
     TestNSTSupportCompatibilityAndReturnSupportStatus
       <TADATANSTSupport>(result);

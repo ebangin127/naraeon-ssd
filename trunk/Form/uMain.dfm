@@ -20,7 +20,7 @@ object fMain: TfMain
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object iBG: TImage
     Left = 0
