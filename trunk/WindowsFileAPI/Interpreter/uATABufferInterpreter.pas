@@ -60,7 +60,7 @@ function TATABufferInterpreter.GetRAWOfRow
   (CurrentRowStart: Integer): UInt64;
 const
   RAWValueStart = 5;
-  RAWValueLength = 7;
+  RAWValueLength = 6;
 var
   RAWStart, RAWEnd: Integer;
   CurrentRAW: Integer;
