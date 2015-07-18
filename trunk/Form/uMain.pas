@@ -340,6 +340,8 @@ begin
   ApplyLocaleToMainformAndArrangeButton;
   RefreshDrives;
 
+  if FileExists(TPathManager.AppPath + 'Setup.exe') then
+    DeleteFile(TPathManager.AppPath + 'Setup.exe');
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
 
@@ -555,6 +557,7 @@ begin
   PartitionList := PhysicalDrive.GetPartitionList;
   for CurrentDrive := 0 to PartitionList.Count - 1 do
   begin
+    cTrimList.Clear;
     VolumeLabelGetter := TVolumeLabelGetter.Create(
       PartitionList[CurrentDrive].Letter);
     cTrimList.Items.Add(VolumeLabelGetter.GetVolumeLabel(
