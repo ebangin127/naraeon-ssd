@@ -10,6 +10,7 @@ type
     ID: Byte;
     Current: Byte;
     Worst: Byte;
+    Threshold: Byte;
     RAW: UInt64;
   end;
 

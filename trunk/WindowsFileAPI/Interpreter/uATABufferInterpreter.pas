@@ -27,6 +27,7 @@ type
     function GetIDOfRow(CurrentRowStart: Integer): Byte;
     function GetRAWOfRow(CurrentRowStart: Integer): UInt64;
     function GetWorstOfRow(CurrentRowStart: Integer): Byte;
+    function GetThresholdOfRow(CurrentRowStart: Integer): Byte;
     procedure IfValidSMARTAddToList(CurrentRow: Integer);
   end;
 
@@ -54,6 +55,14 @@ const
   WorstValuePosition = 4;
 begin
   result := BufferInterpreting[CurrentRowStart + WorstValuePosition];
+end;
+
+function TATABufferInterpreter.GetThresholdOfRow
+  (CurrentRowStart: Integer): Byte;
+const
+  ThresholdValuePosition = 11;
+begin
+  result := BufferInterpreting[CurrentRowStart + ThresholdValuePosition];
 end;
 
 function TATABufferInterpreter.GetRAWOfRow
@@ -90,6 +99,7 @@ begin
   SMARTValueEntry.Current := GetCurrentOfRow(CurrentRow);
   SMARTValueEntry.Worst := GetWorstOfRow(CurrentRow);
   SMARTValueEntry.RAW := GetRAWOfRow(CurrentRow);
+  SMARTValueEntry.Threshold := GetThresholdOfRow(CurrentRow);
   SMARTValueList.Add(SMARTValueEntry);
 end;
 
