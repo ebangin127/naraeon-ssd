@@ -180,20 +180,20 @@ end;
 
 procedure TAverageLogger.ChangeLastRecordedPeriodToNow;
 begin
-  OneGigList[0] := FormatDateTime('yy/mm/dd', Now);
+  TimestampedValueList[0] := FormatDateTime('yy/mm/dd', Now);
   SaveToFile;
 end;
 
 procedure TAverageLogger.AddNewRecordWithTimestamp(NewValue: String);
 begin
-  OneGigList.Insert(0, NewValue);
-  OneGigList.Insert(0, FormatDateTime('yy/mm/dd', Now));
+  TimestampedValueList.Insert(0, NewValue);
+  TimestampedValueList.Insert(0, FormatDateTime('yy/mm/dd', Now));
   SaveToFile;
 end;
 
 procedure TAverageLogger.SaveToFile;
 begin
-  OneGigList.SaveToFile(FileName);
+  TimestampedValueList.SaveToFile(FileName);
 end;
 
 class function TAverageLogger.BuildFileName(Folder, Serial: String): String;
