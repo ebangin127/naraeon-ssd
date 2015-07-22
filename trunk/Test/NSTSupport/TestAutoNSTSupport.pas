@@ -26,6 +26,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
+    procedure TestNonSupport;
     //SANDFORCE
     procedure TestHynixSandforceSupport;
     procedure TestMachMXDSFusionSupport;
@@ -77,6 +78,13 @@ procedure TestTAutoNSTSupport.TearDown;
 begin
   FAutoNSTSupport.Free;
   FAutoNSTSupport := nil;
+end;
+
+procedure TestTAutoNSTSupport.TestNonSupport;
+begin
+  FAutoNSTSupport.SetModelAndFirmware('', '');
+  CheckFalse(FAutoNSTSupport.GetSupportStatus.Supported,
+    'Model & Firmware: Blank');
 end;
 
 procedure TestTAutoNSTSupport.TestHynixSandforceSupport;

@@ -4,30 +4,27 @@ interface
 
 uses
   SysUtils,
-  uLanguageSettings, uPhysicalDrive, uListChangeGetter, uNSTSupport, uLogSystem,
-  uPathManager, uDatasizeUnit;
+  uLanguageSettings, uPhysicalDrive, uListChangeGetter, uNSTSupport, 
+  uAverageWriteLogger, uAverageLogger, uPathManager, uDatasizeUnit;
 
 type
   TMainformTotalWriteApplier = class
   private
     procedure AppendWriteToWriteLabel;
-    procedure ApplyTodayUsageByLog(WriteLog: TNSTLog);
+    procedure ApplyTodayUsageByLog(WriteLog: TAverageWriteLogger);
     procedure ApplyTotalWriteAsCount;
     procedure ApplyTotalWriteAsValue;
     procedure ApplyTotalWriteByWriteType;
     procedure ApplyTotalWriteConvertedToMiB;
     procedure ApplyTotalWriteInCount;
-    procedure SetUsageLabelByLogAndAvailableType(WriteLog: TNSTLog;
-      AvailableAverageType: Integer);
-    function GetAvailableAverageType(WriteLog: TNSTLog): Integer;
+    procedure SetUsageLabelByLogAndAvailableType(WriteLog: TAverageWriteLogger);
     function IsTotalWriteNotSupported: Boolean;
     function KiBtoMiB(SizeInKiB: UInt64): Double;
     procedure RefreshWriteLogAndApplyUsageByLog;
     procedure RestoreComponentsFromCountIfSet;
     procedure SetComponentsForCount;
-    procedure SetUsageLabelAsUnknown;
     procedure SetWriteLabelByHostNANDInformation;
-    procedure ApplyUsageByLog(WriteLog: TNSTLog);
+    procedure ApplyUsageByLog(WriteLog: TAverageWriteLogger);
   public
     procedure ApplyMainformTotalWrite;
   end;
@@ -84,61 +81,45 @@ begin
       BinaryPointOne);
 end;
 
-function TMainformTotalWriteApplier.GetAvailableAverageType(WriteLog: TNSTLog):
-  Integer;
-var
-  CurrentAverageType: Integer;
-begin
-  result := -1;
-  for CurrentAverageType := AvgMax downto 0 do
-    if Length(WriteLog.Average[IntToAvg[CurrentAverageType]]) > 0 then
-      exit(CurrentAverageType);
-end;
-
 procedure TMainformTotalWriteApplier.SetUsageLabelByLogAndAvailableType(
-  WriteLog: TNSTLog; AvailableAverageType: Integer);
+  WriteLog: TAverageWriteLogger);
+var
+  MaxPeriodAverage: TPeriodAverage;
 begin
-  if Length(WriteLog.Average[IntToAvg[AvailableAverageType]]) > 0 then
-    fMain.l1Month.Caption :=
-      CapAvg[AvailableAverageType][CurrLang] +
-      WriteLog.Average[IntToAvg[AvailableAverageType]] + 'GB/' +
-      CapDay[CurrLang];
-end;
-
-procedure TMainformTotalWriteApplier.SetUsageLabelAsUnknown;
-begin
+  MaxPeriodAverage := WriteLog.GetMaxPeriodFormattedAverage;
   fMain.l1Month.Caption :=
-    CapAvg[0][CurrLang] + '0 GB/' + CapDay[CurrLang];
+    CapAvg[Integer(MaxPeriodAverage.Period)][CurrLang] +
+    MaxPeriodAverage.FormattedAverageValue + 'GB/' +
+    WriteLog.Average[IntToAvg[AvailableAverageType]] + 'GB/' +
+    CapDay[CurrLang];
 end;
 
-procedure TMainformTotalWriteApplier.ApplyTodayUsageByLog(WriteLog: TNSTLog);
+procedure TMainformTotalWriteApplier.ApplyTodayUsageByLog(
+  WriteLog: TAverageWriteLogger);
 begin
   fMain.lTodayUsage.Caption := CapToday[CurrLang] +
     WriteLog.TodayUsage + 'GB';
 end;
 
-procedure TMainformTotalWriteApplier.ApplyUsageByLog(WriteLog: TNSTLog);
-var
-  AvailableAverageType: Integer;
+procedure TMainformTotalWriteApplier.ApplyUsageByLog(
+  WriteLog: TAverageWriteLogger);
 begin
-  AvailableAverageType := GetAvailableAverageType(WriteLog);
-  if AvailableAverageType >= 0 then
-    SetUsageLabelByLogAndAvailableType(WriteLog, AvailableAverageType)
-  else
-    SetUsageLabelAsUnknown;
+  SetUsageLabelByLogAndAvailableType(WriteLog);
   ApplyTodayUsageByLog(WriteLog);
 end;
 
 procedure TMainformTotalWriteApplier.RefreshWriteLogAndApplyUsageByLog;
 var
-  WriteLog: TNSTLog;
+  WriteLog: TAverageWriteLogger;
 begin   
   WriteLog :=
-    TNSTLog.Create(
-      TPathManager.AppPath, fMain.PhysicalDrive.IdentifyDeviceResult.Serial,
-      UIntToStr(MBToLiteONUnit(
-        fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)),
-        false);
+    TAverageWriteLogger.Create(
+      TAverageWriteLogger.BuildFileName(
+        TPathManager.AppPath,
+        fMain.PhysicalDrive.IdentifyDeviceResult.Serial));
+  WriteLog.ReadAndRefresh(
+    UIntToStr(MBToLiteONUnit(
+      fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)));
   ApplyUsageByLog(WriteLog);
   FreeAndNil(WriteLog);
 end;

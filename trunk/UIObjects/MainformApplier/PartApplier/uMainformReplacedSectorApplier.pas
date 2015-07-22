@@ -5,24 +5,21 @@ interface
 uses
   SysUtils,
   uPathManager, uLanguageSettings, uPhysicalDrive, uListChangeGetter,
-  uLogSystem, uNSTSupport;
+  uAverageCountLogger, uAverageLogger, uNSTSupport;
 
 type
   TMainformReplacedSectorApplier = class
   private
-    ReplacedSectorLog: TNSTLog;
+    ReplacedSectorLog: TAverageCountLogger;
     ReplacedSectors: UInt64;
     procedure ApplyReplacedSectorsAsTotalWrite;
     procedure ApplyTodayUsageByLog;
-    procedure SetUsageLabelByLogAndAvailableType(
-      WriteLog: TNSTLog; AvailableAverageType: Integer);
+    procedure SetUsageLabelByLogAndAvailableType;
     procedure CreateReplacedSectorLog;
     procedure FreeReplacedSectorLog;
-    function GetAvailableAverageType: Integer;
     function IsTotalWriteNotSupported: Boolean;
     procedure SetHostWriteLabelAsReplacedSectors;
     procedure SetReplacedSectors;
-    procedure SetUsageLabelAsUnknown;
     procedure RecoverAnalyticsLabel;
     procedure SetAnalyticsLabelAsLifeAnalysis;
     procedure ApplyUsageByLog;
@@ -43,9 +40,11 @@ end;
 
 procedure TMainformReplacedSectorApplier.CreateReplacedSectorLog;
 begin
-  ReplacedSectorLog := TNSTLog.Create(
-    TPathManager.AppPath, fMain.PhysicalDrive.IdentifyDeviceResult.Serial +
-    'RSLog', UIntToStr(ReplacedSectors), true);
+  ReplacedSectorLog := TAverageCountLogger.Create(
+    TAverageCountLogger.BuildFileName(
+      TPathManager.AppPath,
+      fMain.PhysicalDrive.IdentifyDeviceResult.Serial + 'RSLog'));
+  ReplacedSectorLog.ReadAndRefresh(UIntToStr(ReplacedSectors));
 end;
 
 procedure TMainformReplacedSectorApplier.FreeReplacedSectorLog;
@@ -61,31 +60,16 @@ begin
     TTotalWriteType.WriteNotSupported;
 end;
 
-function TMainformReplacedSectorApplier.GetAvailableAverageType: Integer;
+procedure TMainformReplacedSectorApplier.SetUsageLabelByLogAndAvailableType;
 var
-  CurrentAverageType: Integer;
+  MaxPeriodAverage: TPeriodAverage;
 begin
-  result := -1;
-  for CurrentAverageType := AvgMax downto 0 do
-    if Length(ReplacedSectorLog.Average[IntToAvg[CurrentAverageType]]) > 0 then
-      exit(CurrentAverageType);
-end;
-
-procedure TMainformReplacedSectorApplier.SetUsageLabelByLogAndAvailableType(
-  WriteLog: TNSTLog; AvailableAverageType: Integer);
-begin
-  if Length(ReplacedSectorLog.Average[IntToAvg[AvailableAverageType]]) > 0 then
-    fMain.l1Month.Caption :=
-      CapAvg[AvailableAverageType][CurrLang] +
-      ReplacedSectorLog.Average[IntToAvg[AvailableAverageType]] +
-      CapCount[CurrLang] +
-      CapDay[CurrLang];
-end;
-
-procedure TMainformReplacedSectorApplier.SetUsageLabelAsUnknown;
-begin
+  MaxPeriodAverage := ReplacedSectorLog.GetMaxPeriodFormattedAverage;
   fMain.l1Month.Caption :=
-    CapAvg[0][CurrLang]+ CapCount[CurrLang] + CapDay[CurrLang];
+    CapAvg[Integer(MaxPeriodAverage.Period)][CurrLang] +
+    MaxPeriodAverage.FormattedAverageValue +
+    CapCount[CurrLang] +
+    CapDay[CurrLang];
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyTodayUsageByLog;
@@ -96,14 +80,8 @@ begin
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyUsageByLog;
-var
-  AvailableAverageType: Integer;
 begin
-  AvailableAverageType := GetAvailableAverageType;
-  if AvailableAverageType >= 0 then
-    SetUsageLabelByLogAndAvailableType(ReplacedSectorLog, AvailableAverageType)
-  else
-    SetUsageLabelAsUnknown;
+  SetUsageLabelByLogAndAvailableType(ReplacedSectorLog, AvailableAverageType)
   ApplyTodayUsageByLog;
 end;
 

@@ -5,8 +5,8 @@ interface
 uses
   Classes, SysUtils, ShlObj, Windows,
   uPhysicalDrive, uPhysicalDriveList, uLanguageSettings, uPathManager,
-  uListChangeGetter, uDatasizeUnit, uLogSystem, uNSTSupport,
-  uPartitionListGetter, uExeFunctions;
+  uListChangeGetter, uDatasizeUnit, uAverageCountLogger, uAverageWriteLogger,
+  uNSTSupport, uPartitionListGetter, uExeFunctions;
 
 type
   TDiagnosisService = class
@@ -114,19 +114,19 @@ end;
 
 procedure TDiagnosisService.RefreshTotalWriteLog(Entry: TPhysicalDrive);
 var
-  TotalWriteLog: TNSTLog;
+  TotalWriteLog: TAverageWriteLogger;
 begin
   if Entry.SupportStatus.TotalWriteType <>
      TTotalWriteType.WriteSupportedAsValue then
       exit;
 
-  TotalWriteLog := TNSTLog.Create(
-    TPathManager.AppPath,
-    Entry.IdentifyDeviceResult.Serial,
-    UIntToStr(
-      MBToLiteONUnit(
-        Entry.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)),
-    false);
+  TotalWriteLog := TAverageWriteLogger.Create(
+    TAverageWriteLogger.BuildFileName(
+      TPathManager.AppPath,
+      Entry.IdentifyDeviceResult.Serial));
+  TotalWriteLog.ReadAndRefresh(UIntToStr(
+    MBToLiteONUnit(
+      Entry.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)));
   FreeAndNil(TotalWriteLog);
 end;
 
@@ -173,15 +173,16 @@ end;
 
 procedure TDiagnosisService.RefreshReplacedSectorLog(Entry: TPhysicalDrive);
 var
-  ReplacedSectorLog: TNSTLog;
+  ReplacedSectorLog: TAverageCountLogger;
 begin
-  ReplacedSectorLog := TNSTLog.Create(
-    TPathManager.AppPath,
-    Entry.IdentifyDeviceResult.Serial + 'RSLog',
-    false);
+  ReplacedSectorLog := TAverageCountLogger.Create(
+    TAverageCountLogger.BuildFileName(
+      TPathManager.AppPath,
+      Entry.IdentifyDeviceResult.Serial + 'RSLog'));
+  ReplacedSectorLog.ReadAndRefresh(UIntToStr(
+    Entry.SMARTInterpreted.ReplacedSectors));
   IfNeedToAlertCreateAlertFile(Entry,
-    ReplacedSectorLog.ReadBothFiles(UIntToStr(
-      Entry.SMARTInterpreted.ReplacedSectors)));
+    ReplacedSectorLog.GetFormattedTodayDelta <> '0.0');
   FreeAndNil(ReplacedSectorLog);
 end;
 
