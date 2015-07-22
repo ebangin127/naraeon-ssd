@@ -152,7 +152,7 @@ begin
     exit;
     
   LastDateInLog := FormatDateTime('yy/mm/dd', Now);
-  LastOneGig := StrToUInt64(NewValue);
+  LastValueInLog := StrToUInt64(NewValue);
   if TodayDelta > 0 then AddNewRecordWithTimestamp(NewValue)
   else ChangeLastRecordedPeriodToNow;
 end;
