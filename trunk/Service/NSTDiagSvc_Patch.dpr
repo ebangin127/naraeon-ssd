@@ -8,7 +8,6 @@ uses
   uExeFunctions in '..\Modules\Windows\uExeFunctions.pas',
   uUINT64 in '..\Modules\Etc\uUINT64.pas',
   uDeleteWhitespace in '..\Modules\Etc\uDeleteWhitespace.pas',
-  uLogSystem in '..\Classes\LogSystem\uLogSystem.pas',
   uDatasizeUnit in '..\Classes\MeasureUnit\uDatasizeUnit.pas',
   uTimeUnit in '..\Classes\MeasureUnit\uTimeUnit.pas',
   uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',
@@ -58,7 +57,10 @@ uses
   uMachXtremeSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas',
   uOCZSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
   uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
-  uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas';
+  uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
+  uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
+  uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
+  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

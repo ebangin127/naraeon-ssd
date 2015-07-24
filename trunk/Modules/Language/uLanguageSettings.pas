@@ -148,12 +148,12 @@ const
     CapWearLevel: Array[0..1] of String = ('웨어 레벨링 횟수 : ', 'Wear Leveling Count : ');
     CapCannotTrust: Array[0..1] of String = (' (신뢰할 수 없음)', ' (DO NOT TRUST)');
 
-    CapAvg: Array[0..2] of Array[0..1] of String = (('최근 6개월 평균 : ' , 'Average write per day (Recent 6 months) : '),
+    CapAvg: Array[0..2] of Array[0..1] of String = (('최근 30일 평균 : ', 'Average write per day (Recent 30 days) : '),
                                                     ('최근 3개월 평균 : ' , 'Average write per day (Recent 3 months) : '),
-                                                    ('최근 30일 평균 : ', 'Average write per day (Recent 30 days) : '));
-    CaprAvg: Array[0..2] of Array[0..1] of String = (('최근 6개월 평균 : ' , 'Average replaced sectors per day (Recent 6 months) : '),
+                                                    ('최근 6개월 평균 : ' , 'Average write per day (Recent 6 months) : '));
+    CaprAvg: Array[0..2] of Array[0..1] of String = (('최근 30일 평균 : ', 'Average replaced sectors per day (Recent 30 days) : '),
                                                      ('최근 3개월 평균 : ' , 'Average replaced sectors per day (Recent 3 months) : '),
-                                                     ('최근 30일 평균 : ', 'Average replaced sectors per day (Recent 30 days) : '));
+                                                     ('최근 6개월 평균 : ' , 'Average replaced sectors per day (Recent 6 months) : '));
     CapToday: Array[0..1] of String = ('오늘 사용량 : ' , 'Today Usage : ');
     CaprToday: Array[0..1] of String = ('오늘 증가한 치환 섹터 : ' , 'Replaced Sectors (Today) : ');
     CapPowerTime: Array[0..1] of String = ('전원이 들어온 시간 : ', 'Total Power-On Hours : ');

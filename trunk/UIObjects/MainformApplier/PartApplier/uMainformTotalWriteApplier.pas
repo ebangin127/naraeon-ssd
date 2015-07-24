@@ -90,7 +90,6 @@ begin
   fMain.l1Month.Caption :=
     CapAvg[Integer(MaxPeriodAverage.Period)][CurrLang] +
     MaxPeriodAverage.FormattedAverageValue + 'GB/' +
-    WriteLog.Average[IntToAvg[AvailableAverageType]] + 'GB/' +
     CapDay[CurrLang];
 end;
 
@@ -98,7 +97,7 @@ procedure TMainformTotalWriteApplier.ApplyTodayUsageByLog(
   WriteLog: TAverageWriteLogger);
 begin
   fMain.lTodayUsage.Caption := CapToday[CurrLang] +
-    WriteLog.TodayUsage + 'GB';
+    WriteLog.GetFormattedTodayDelta + 'GB';
 end;
 
 procedure TMainformTotalWriteApplier.ApplyUsageByLog(

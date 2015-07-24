@@ -75,13 +75,13 @@ end;
 procedure TMainformReplacedSectorApplier.ApplyTodayUsageByLog;
 begin
   fMain.lTodayUsage.Caption := CapToday[CurrLang] +
-    ReplacedSectorLog.TodayUsage +
+    ReplacedSectorLog.GetFormattedTodayDelta +
     CapCount[CurrLang];
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyUsageByLog;
 begin
-  SetUsageLabelByLogAndAvailableType(ReplacedSectorLog, AvailableAverageType)
+  SetUsageLabelByLogAndAvailableType;
   ApplyTodayUsageByLog;
 end;
 

@@ -7,7 +7,7 @@ uses uAverageLogger;
 type
   TAverageCountLogger = class(TAverageLogger)
   protected
-    function GetUnit: Double; virtual; override; 
+    function GetUnit: Double; override;
   end;
 
 implementation

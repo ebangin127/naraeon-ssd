@@ -9,7 +9,7 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uLogSystem, uSevenZip, uOptimizer,
+  uSevenZip, uOptimizer,
   uExeFunctions, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,

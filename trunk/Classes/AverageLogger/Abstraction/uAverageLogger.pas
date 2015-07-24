@@ -12,13 +12,13 @@ type
     FormattedAverageValue: String;
   end;
   
-  TAverageLogger = abstract class
+  TAverageLogger = class abstract
   private
     LastDateInLog: String;
     LastValueInLog: UInt64;
     MaxPeriodAverage: TPeriodAverage;
     PassedDaysFromFirst: Integer;
-    TodayDelta: Integer;
+    TodayDelta: Double;
     UserDefaultFormat: TFormatSettings;
     TimestampedValueList: TStringList;
     FileName: String;
@@ -40,6 +40,7 @@ type
     function GetFormattedTodayDelta: String;  
     function GetMaxPeriodFormattedAverage: TPeriodAverage;  
     class function BuildFileName(Folder, Serial: String): String;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -82,15 +83,16 @@ begin
   LastDateInLog := '';
   LastValueInLog := 0;
   PassedDaysFromFirst := 0;
-  InnerMaxPeriodAverage.Period := TAveragePeriod.Days30;
-  InnerMaxPeriodAverage.FormattedAverageValue := '';
+  MaxPeriodAverage.Period := TAveragePeriod.Days30;
+  MaxPeriodAverage.FormattedAverageValue := '0.0';
   TodayDelta := 0;
 end;
 
 procedure TAverageLogger.SetAverage(NewValue: String);
 const
   AvgMax = 2;
-  AveragePeriodInInteger: Array[TAveragePeriod] of Integer = (30, 90, 180);
+  AveragePeriodInSet: Array[0..AvgMax] of Set of Byte =
+    ([0..29], [30..89], [90..180]);
   IntegerToAveragePeriod: Array[0..AvgMax] of TAveragePeriod =
     (Days30, Days90, Days180);
 var
@@ -99,17 +101,17 @@ var
   AverageValue: Double;
 begin
   FirstValueInLog := 
-    StrToUInt64(TimestampedValueList.Count - 1]);
+    StrToUInt64(TimestampedValueList[TimestampedValueList.Count - 1]);
   if StrToUInt64(NewValue) = (FirstValueInLog) then
     exit;
     
   for CurrentAveragePeriod := AvgMax downto 0 do
-    if PassedDaysFromFirst <= AveragePeriodInInteger[CurrentAveragePeriod] then
+    if PassedDaysFromFirst in AveragePeriodInSet[CurrentAveragePeriod] then
     begin
       MaxPeriodAverage.Period :=
         IntegerToAveragePeriod[CurrentAveragePeriod];
       AverageValue :=
-        (StrToUInt64(NewValue) - (StrToUInt64(FirstValueInLog))) /
+        (StrToUInt64(NewValue) - FirstValueInLog) /
         PassedDaysFromFirst *
         GetUnit;
       MaxPeriodAverage.FormattedAverageValue :=
@@ -132,7 +134,10 @@ procedure TAverageLogger.ReadAndSetAverageTodayDelta(NewValue: String);
 begin
   InitializeAverageTodayDelta;
   if TimestampedValueList.Count = 0 then
+  begin
+    TodayDelta := StrToUInt64(NewValue);
     exit;
+  end;
   
   LastDateInLog := TimestampedValueList[0];
   LastValueInLog := StrToUInt64(TimestampedValueList[1]);
@@ -141,7 +146,8 @@ begin
       TimestampedValueList[
         TimestampedValueList.Count - 2], UserDefaultFormat));
   TodayDelta :=
-    (StrToUInt64(CurrGig) - StrToUInt64(TimestampedValueList[1])) * GetUnit;
+    (StrToUInt64(NewValue) -
+     StrToUInt64(TimestampedValueList[1])) * GetUnit;
   SetAverage(NewValue);
 end;
 
