@@ -147,7 +147,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\Etc\uUINT64.pas"/>
         <DCCReference Include="Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="Modules\Etc\uDeleteWhitespace.pas"/>
-        <DCCReference Include="Classes\LogSystem\uLogSystem.pas"/>
+        <DCCReference Include="Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
+        <DCCReference Include="Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
+        <DCCReference Include="Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
         <DCCReference Include="Classes\Optimizer\uOptimizer.pas"/>
         <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
         <DCCReference Include="Classes\Threads\uTrimThread.pas"/>
@@ -680,7 +682,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -688,7 +691,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

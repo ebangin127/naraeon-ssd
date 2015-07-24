@@ -6,8 +6,8 @@ uses
   SysUtils, Classes, Windows, Dialogs,
   uRegFunctions, Registry;
 
-function WriteBufferCheck: TStringList; //¾²±â ¹öÆÛ Ã¼Å©µÇ¾îÀÖ³ª È®ÀÎ
-function OpenProcWithOutput(Path: String; Command: String): AnsiString; //ÇÁ·Î±×·¥ ¿­±â
+function WriteBufferCheck: TStringList; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©ï¿½Ç¾ï¿½ï¿½Ö³ï¿½ È®ï¿½ï¿½
+function OpenProcWithOutput(Path: String; Command: String): AnsiString; //ï¿½ï¿½ï¿½Î±×·ï¿½ ï¿½ï¿½ï¿½ï¿½
 procedure OpenProcWOOutput(Path: String; Command: String);
 function Is64Bit: Boolean;
 
@@ -120,32 +120,8 @@ begin
 end;
 
 procedure OpenProcWOOutput(Path: String; Command: String);
-var
-  start: TStartupInfo;
-  sec: TSecurityAttributes;
-  pinfo: TProcessInformation;
-  hwrite, hread: THandle;
-  PathW, CommandW: WideString;
 begin
-  sec.nLength := sizeof(sec);
-  sec.lpSecurityDescriptor := nil;
-  sec.bInheritHandle := true;
-  if CreatePipe(hread, hwrite, @sec, 0)<>true then
-  begin
-    exit;
-  end;
-  FillChar(start, sizeof(STARTUPINFO), 0);
-  start.cb := sizeof(STARTUPINFO);
-  start.wShowWindow := SW_HIDE;
-  start.dwFlags := STARTF_USESHOWWINDOW;
-  start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
-  start.hStdOutput := hwrite;
-  start.hStdError := hwrite;
-  PathW := Path;
-  CommandW := Command;
-  if not CreateProcess(nil, PWideChar(CommandW), nil, nil, True, 0, nil, PWideChar(PathW), start, pinfo) then ShowMessage('Error!');
-  CloseHandle(hwrite);
-  CloseHandle(hread);
+  OpenProcWithOutput(Path, Command);
 end;
 
 function Is64Bit: Boolean;
