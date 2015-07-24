@@ -32,6 +32,7 @@ type
     procedure RefreshFile(NewValue: String);
     procedure DisposeExpiredRecords;
     procedure SaveToFile;
+    function IsNewRecordNeeded: Boolean;
   protected
     function GetUnit: Double; virtual; abstract; 
   public
@@ -134,10 +135,7 @@ procedure TAverageLogger.ReadAndSetAverageTodayDelta(NewValue: String);
 begin
   InitializeAverageTodayDelta;
   if TimestampedValueList.Count = 0 then
-  begin
-    TodayDelta := StrToUInt64(NewValue);
     exit;
-  end;
   
   LastDateInLog := TimestampedValueList[0];
   LastValueInLog := StrToUInt64(TimestampedValueList[1]);
@@ -151,6 +149,12 @@ begin
   SetAverage(NewValue);
 end;
 
+function TAverageLogger.IsNewRecordNeeded: Boolean;
+begin
+  result :=
+    (TimestampedValueList.Count = 0) or
+    (TodayDelta > 0);
+end;
 
 procedure TAverageLogger.RefreshFile(NewValue: String);
 begin
@@ -159,7 +163,7 @@ begin
     
   LastDateInLog := FormatDateTime('yy/mm/dd', Now);
   LastValueInLog := StrToUInt64(NewValue);
-  if TodayDelta > 0 then AddNewRecordWithTimestamp(NewValue)
+  if IsNewRecordNeeded then AddNewRecordWithTimestamp(NewValue)
   else ChangeLastRecordedPeriodToNow;
 end;
 
