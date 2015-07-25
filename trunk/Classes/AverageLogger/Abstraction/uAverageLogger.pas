@@ -11,7 +11,7 @@ type
     Period: TAveragePeriod;
     FormattedAverageValue: String;
   end;
-  
+
   TAverageLogger = class abstract
   private
     LastDateInLog: String;
@@ -33,12 +33,14 @@ type
     procedure DisposeExpiredRecords;
     procedure SaveToFile;
     function IsNewRecordNeeded: Boolean;
+    function IsLastRecordExpired: Boolean;
   protected
-    function GetUnit: Double; virtual; abstract; 
+    function GetUnit: Double; virtual; abstract;
   public
-    constructor Create(FileName: String);
+    constructor Create(FileName: String); overload;
+    constructor Create(FileContents: TStringList); overload;
     procedure ReadAndRefresh(NewValue: String);
-    function GetFormattedTodayDelta: String;  
+    function GetFormattedTodayDelta: String;
     function GetMaxPeriodFormattedAverage: TPeriodAverage;  
     class function BuildFileName(Folder, Serial: String): String;
     destructor Destroy; override;
@@ -53,15 +55,12 @@ begin
     TimestampedValueList.SaveToFile(FileName)
   else
     TimestampedValueList.LoadFromFile(FileName);
-  if TimestampedValueList.Count > 0 then
-    DisposeExpiredRecords;
 end;
 
 constructor TAverageLogger.Create(FileName: String);
 begin
   TimestampedValueList := TStringList.Create;
-  UserDefaultFormat := TFormatSettings.Create(GetUserDefaultLCID);
-  UserDefaultFormat.DateSeparator := '-';
+  Create(TimestampedValueList);
   ReadFileOrCreateNew(FileName);
 end;
 
@@ -133,7 +132,6 @@ end;
 
 procedure TAverageLogger.ReadAndSetAverageTodayDelta(NewValue: String);
 begin
-  InitializeAverageTodayDelta;
   if TimestampedValueList.Count = 0 then
     exit;
   
@@ -169,6 +167,7 @@ end;
 
 procedure TAverageLogger.ReadAndRefresh(NewValue: String);
 begin
+  InitializeAverageTodayDelta;
   if IsNewValueInvalid(NewValue) then
     exit;
 
@@ -176,12 +175,19 @@ begin
   RefreshFile(NewValue);
 end;
 
+function TAverageLogger.IsLastRecordExpired: Boolean;
+begin
+  result := TimestampedValueList.Count > 0;
+  result := result and
+    ((Now - 180) >
+      StrToDateTime(
+        TimestampedValueList[TimestampedValueList.Count - 2],
+        UserDefaultFormat));
+end;
+
 procedure TAverageLogger.DisposeExpiredRecords;
 begin
-  while (Now - 181) >
-    StrToDateTime(
-      TimestampedValueList[TimestampedValueList.Count - 2],
-      UserDefaultFormat) do
+  while IsLastRecordExpired do
   begin
     TimestampedValueList.Delete(TimestampedValueList.Count - 1);
     TimestampedValueList.Delete(TimestampedValueList.Count - 1);
@@ -194,6 +200,15 @@ begin
   SaveToFile;
 end;
 
+constructor TAverageLogger.Create(FileContents: TStringList);
+begin
+  UserDefaultFormat := TFormatSettings.Create(GetUserDefaultLCID);
+  UserDefaultFormat.DateSeparator := '-';
+  TimestampedValueList := FileContents;
+  if TimestampedValueList.Count > 0 then
+    DisposeExpiredRecords;
+end;
+
 procedure TAverageLogger.AddNewRecordWithTimestamp(NewValue: String);
 begin
   TimestampedValueList.Insert(0, NewValue);
@@ -203,7 +218,9 @@ end;
 
 procedure TAverageLogger.SaveToFile;
 begin
+  {$IfNDef UNITTEST}
   TimestampedValueList.SaveToFile(FileName);
+  {$EndIf}
 end;
 
 class function TAverageLogger.BuildFileName(Folder, Serial: String): String;

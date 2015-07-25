@@ -78,6 +78,9 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_Define>UNITTEST;$(DCC_Define)</DCC_Define>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <BRCC_Defines>CONSOLE_TESTRUNNER;$(BRCC_Defines)</BRCC_Defines>
@@ -114,6 +117,12 @@
         <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uADATANSTSupport.pas"/>
+        <DCCReference Include="Classes\AverageLogger\TestAverageCountLogger.pas"/>
+        <DCCReference Include="..\Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
+        <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
+        <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
+        <DCCReference Include="..\Modules\Etc\uUINT64.pas"/>
+        <DCCReference Include="Classes\AverageLogger\TestAverageWriteLogger.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

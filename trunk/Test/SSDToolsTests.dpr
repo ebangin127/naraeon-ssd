@@ -36,7 +36,13 @@ uses
   uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
   uADATASandforceNSTSupport in '..\NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas',
-  uADATANSTSupport in '..\NSTSupport\Support\uADATANSTSupport.pas';
+  uADATANSTSupport in '..\NSTSupport\Support\uADATANSTSupport.pas',
+  TestAverageCountLogger in 'Classes\AverageLogger\TestAverageCountLogger.pas',
+  uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
+  uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
+  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
+  uUINT64 in '..\Modules\Etc\uUINT64.pas',
+  TestAverageWriteLogger in 'Classes\AverageLogger\TestAverageWriteLogger.pas';
 
 {$R *.RES}
 
