@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, Windows, SysUtils, Classes, ShlObj, Character,
-  uRegFunctions;
+  uRegFunctions, uRegistryHelper;
 
 type
   TPathManager = class
@@ -44,9 +44,13 @@ begin
 end;
 
 class procedure TPathManager.SetPathForServiceInstance;
+const
+  ServiceInstancePath: TRegistryPath =
+    (Root: LocalMachine;
+     PathUnderHKEY: 'SYSTEM\CurrentControlSet\services\NaraeonSSDToolsDiag';
+     ValueName: 'ImagePath');
 begin
-  FAppPath := ExtractFilePath(GetRegStr('LM',
-    'SYSTEM\CurrentControlSet\services\NaraeonSSDToolsDiag', 'ImagePath'));
+  FAppPath := ExtractFilePath(TStaticRegistry.GetRegStr(ServiceInstancePath));
   FAllDesktopPath := FDesktopPathInChar;
 end;
 

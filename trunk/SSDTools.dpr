@@ -26,7 +26,6 @@ uses
   uRufus in 'Classes\Rufus\uRufus.pas',
   uPathManager in 'Classes\PathManager\uPathManager.pas',
   uSemiAutoTrimmer in 'Objects\uSemiAutoTrimmer.pas',
-  uErase in 'Classes\Erase\uErase.pas',
   uDatasizeUnit in 'Classes\MeasureUnit\uDatasizeUnit.pas',
   uTimeUnit in 'Classes\MeasureUnit\uTimeUnit.pas',
   uInitializer in 'Classes\Initializer\uInitializer.pas',

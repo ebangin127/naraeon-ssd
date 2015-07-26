@@ -164,7 +164,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Classes\Rufus\uRufus.pas"/>
         <DCCReference Include="Classes\PathManager\uPathManager.pas"/>
         <DCCReference Include="Objects\uSemiAutoTrimmer.pas"/>
-        <DCCReference Include="Classes\Erase\uErase.pas"/>
         <DCCReference Include="Classes\MeasureUnit\uDatasizeUnit.pas"/>
         <DCCReference Include="Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="Classes\Initializer\uInitializer.pas"/>

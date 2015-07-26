@@ -1,4 +1,4 @@
-unit uExeFunctions;
+﻿unit uExeFunctions;
 
 interface
 
@@ -26,7 +26,8 @@ begin
   DevicesList := TStringList.Create;
   SerialsList := TStringList.Create;
   ValueList := TStringList.Create;
-  GetKeyList('LM', 'SYSTEM\CurrentControlSet\Enum\IDE', DevicesList);
+  TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
+    'LM', 'SYSTEM\CurrentControlSet\Enum\IDE', ''), DevicesList);
   for CurrDev := 0 to DevicesList.Count - 1 do
   begin
     if ((Pos('SAMSUNG', DevicesList[CurrDev]) > 0) and (Pos('SSD', DevicesList[CurrDev]) > 0)) or
@@ -35,23 +36,28 @@ begin
         ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('JT', DevicesList[CurrDev]) > 0)) or
         ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('MMY', DevicesList[CurrDev]) > 0)) then
     begin
-      GetKeyList('LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev], SerialsList);
+      TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev], ''), SerialsList);
       for CurrSer := 0 to SerialsList.Count - 1 do
       begin
-        GetValueList('LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                            '\Device Parameters\Disk', ValueList);
-        if GetRegInt('LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                            '\Device Parameters\Disk', 'UserWriteCacheSetting') = 0 then
+        TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' +
+          SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
+        if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+          '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
         begin
-          SetRegInt('LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                              '\Device Parameters\Disk', 'UserWriteCacheSetting', 1);
-          result.Add(GetRegStr('LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer]
-                    , 'FriendlyName'));
+          TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+            'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+            '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
+          result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
+            'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer], 'FriendlyName')));
         end;
       end;
     end;
   end;
-  GetKeyList('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI', DevicesList);
+  TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
+    'SYSTEM\CurrentControlSet\Enum\SCSI', ''), DevicesList);
   for CurrDev := 0 to DevicesList.Count - 1 do
   begin
     if ((Pos('SAMSUNG', DevicesList[CurrDev]) > 0) and (Pos('SSD', DevicesList[CurrDev]) > 0)) or
@@ -60,18 +66,23 @@ begin
         ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('JT', DevicesList[CurrDev]) > 0)) or
         ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('MMY', DevicesList[CurrDev]) > 0)) then
     begin
-      GetKeyList('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev], SerialsList);
+      TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
+        'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev], ''), SerialsList);
       for CurrSer := 0 to SerialsList.Count - 1 do
       begin
-        GetValueList('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                            '\Device Parameters\Disk', ValueList);
-        if GetRegInt('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                            '\Device Parameters\Disk', 'UserWriteCacheSetting') = 0 then
+        TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' +
+          SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
+        if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+          '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
         begin
-          SetRegInt('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
-                              '\Device Parameters\Disk', 'UserWriteCacheSetting', 1);
-          result.Add(GetRegStr('LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer]
-                    , 'FriendlyName'));
+          TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+            '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
+          result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
+            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer]
+            , 'FriendlyName')));
         end;
       end;
     end;

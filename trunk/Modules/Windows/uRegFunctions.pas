@@ -3,177 +3,158 @@ unit uRegFunctions;
 interface
 
 uses
-  Registry, Windows, Classes, Dialogs, SysUtils;
+  Registry, Windows, Classes, Dialogs, SysUtils,
+  uRegistryHelper;
 
-function GetRegInt(Const Root, Path, ValueName: String): Integer;
-function GetRegStr(Const Root, Path, ValueName: String): String;
-procedure GetKeyList(Const Root, Path: String; results: TStringList);
-procedure GetValueList(Const Root, Path: String; results: TStringList);
-function SetRegInt(Const Root, Path, ValueName: String; NewValue: Integer): Boolean;
-function SetRegStr(Const Root, Path, ValueName, NewValue: String): Boolean;
+type
+  TStaticRegistry = class
+  public
+    class function GetRegInt(const Path: TRegistryPath):
+      Integer;
+    class function GetRegStr(const Path: TRegistryPath):
+      String;
+    class function GetKeyList(const Path: TRegistryPath;
+      PreparedList: TStringList): TStringList;
+    class function GetValueList(const Path: TRegistryPath;
+      PreparedList: TStringList): TStringList;
+    class function SetRegInt(const Path: TRegistryPath; NewValue: Integer):
+      Boolean;
+    class function SetRegStr(const Path: TRegistryPath; NewValue: String):
+      Boolean;
+    class function LegacyPathToNew(Root: String; PathUnderHKEY: String;
+      ValueName: String): TRegistryPath;
+  private
+    class var Registry: TRegistry;
+    class var Path: TRegistryPath;
+
+    class procedure SetPath(PathToSet: TRegistryPath);
+    class procedure OpenRegistryWithRight(Right: Cardinal);
+    class procedure CloseRegistry;
+    class function GetBitSpecificRight: Cardinal;
+    class function GetTRegistryWithRight(Right: Cardinal): TRegistry;
+  end;
 
 implementation
 
 uses
   uExeFunctions;
 
+class function TStaticRegistry.GetBitSpecificRight: Cardinal;
 const
   KEY_WOW64_64KEY = $0100;
-
-function BitSpecificRight: Cardinal;
 begin
   if Is64Bit then
     exit(KEY_WOW64_64KEY);
   exit(0);
 end;
 
-function GetRegInt(Const Root, Path, ValueName: String): Integer;
-var
-  TempRegistry: TRegistry;
-  ValueNames: TStringList;
-  regres: Boolean;
+class function TStaticRegistry.GetTRegistryWithRight(Right: Cardinal):
+  TRegistry;
 begin
-  result := -1;
-  if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    regres := TempRegistry.OpenKeyReadOnly(Path);
-    if regres then
-    begin
-      ValueNames := TStringList.Create;
-      TempRegistry.GetValueNames(ValueNames);
-      if ValueNames.IndexOf(ValueName) <> -1 then
-        result := TempRegistry.ReadInteger(ValueName);
-      FreeAndNil(ValueNames);
-    end;
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  result := TRegistry.Create(Right or GetBitSpecificRight);
 end;
 
-function GetRegStr(Const Root, Path, ValueName: String): String;
-var
-  TempRegistry: TRegistry;
-  ValueNames: TStringList;
-  regres: Boolean;
+class procedure TStaticRegistry.OpenRegistryWithRight(Right: Cardinal);
 begin
-  result := '';
-  if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    regres := TempRegistry.OpenKeyReadOnly(Path);
-    if regres then
-    begin
-      ValueNames := TStringList.Create;
-      TempRegistry.GetValueNames(ValueNames);
-      if ValueNames.IndexOf(ValueName) <> -1 then
-        result := TempRegistry.ReadString(ValueName);
-      FreeAndNil(ValueNames);
-    end;
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  Registry := GetTRegistryWithRight(Right);
+  if Right = KEY_READ then
+    Registry.OpenKeyReadOnlyWithRootAndPath(Path.Root, Path.PathUnderHKEY)
+  else
+    Registry.OpenKeyWithRootAndPath(Path.Root, Path.PathUnderHKEY);
 end;
 
-procedure GetKeyList(Const Root, Path: String; results: TStringList);
-var
-  TempRegistry: TRegistry;
+class function TStaticRegistry.LegacyPathToNew(Root: String; PathUnderHKEY,
+  ValueName: String): TRegistryPath;
 begin
-  if (Length(Root) > 0) and (Length(Path) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    TempRegistry.OpenKey(Path, False);
-    TempRegistry.GetKeyNames(results);
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  if Root = 'CR' then result.Root := ClassesRoot
+  else if Root = 'CU' then result.Root := CurrentUser
+  else if Root = 'LM' then result.Root := LocalMachine
+  else if Root = 'U' then result.Root := Users
+  else if Root = 'PD' then result.Root := PerformanceData
+  else if Root = 'CC' then result.Root := CurrentConfig
+  else if Root = 'DD' then result.Root := DynData;
+
+  result.PathUnderHKEY := PathUnderHKEY;
+  result.ValueName := ValueName;
 end;
 
-procedure GetValueList(Const Root, Path: String; results: TStringList);
-var
-  TempRegistry: TRegistry;
+class procedure TStaticRegistry.CloseRegistry;
 begin
-  if (Length(Root) > 0) and (Length(Path) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    TempRegistry.OpenKey(Path, False);
-    TempRegistry.GetValueNames(results);
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  Registry.CloseKey;
+  FreeAndNil(Registry);
 end;
 
-function SetRegInt(Const Root, Path, ValueName: String; NewValue: Integer): Boolean;
-var
-  TempRegistry: TRegistry;
+class procedure TStaticRegistry.SetPath(PathToSet: TRegistryPath);
 begin
-  result := false;
-  if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or KEY_WRITE or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    TempRegistry.OpenKey(Path, True);
-    TempRegistry.WriteInteger(ValueName, NewValue);
-    if TempRegistry.ReadInteger(ValueName) = NewValue then result := true;
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  Path := PathToSet;
 end;
 
-function SetRegStr(Const Root, Path, ValueName, NewValue: String): Boolean;
-var
-  TempRegistry: TRegistry;
+class function TStaticRegistry.GetRegInt(const Path: TRegistryPath): Integer;
 begin
-  result := false;
-  if (Length(Root) > 0) and (Length(Path) > 0) and (Length(ValueName) > 0) then
-  begin
-    TempRegistry := TRegistry.Create(KEY_READ or KEY_WRITE or BitSpecificRight);
-    if Root = 'CR' then TempRegistry.RootKey := HKEY_CLASSES_ROOT
-    else if Root = 'CU' then TempRegistry.RootKey := HKEY_CURRENT_USER
-    else if Root = 'LM' then TempRegistry.RootKey := HKEY_LOCAL_MACHINE
-    else if Root = 'U' then TempRegistry.RootKey := HKEY_USERS
-    else if Root = 'PD' then TempRegistry.RootKey := HKEY_PERFORMANCE_DATA
-    else if Root = 'CC' then TempRegistry.RootKey := HKEY_CURRENT_CONFIG
-    else if Root = 'DD' then TempRegistry.RootKey := HKEY_DYN_DATA;
-    TempRegistry.OpenKey(Path, True);
-    TempRegistry.WriteString(ValueName, NewValue);
-    if TempRegistry.ReadString(ValueName) = NewValue then result := true;
-    TempRegistry.CloseKey;
-    FreeAndNil(TempRegistry);
-  end;
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ);
+  result := Registry.ReadInteger(Path.ValueName);
+  CloseRegistry;
 end;
+
+class function TStaticRegistry.GetRegStr(const Path: TRegistryPath): String;
+begin
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ);
+  result := Registry.ReadString(Path.ValueName);
+  CloseRegistry;
+end;
+
+class function TStaticRegistry.SetRegInt(const Path: TRegistryPath;
+  NewValue: Integer): Boolean;
+begin
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ or KEY_WRITE);
+  result := true;
+  try
+    Registry.WriteInteger(Path.ValueName, NewValue);
+  except
+    result := false;
+  end;
+  CloseRegistry;
+end;
+
+class function TStaticRegistry.SetRegStr(const Path: TRegistryPath;
+  NewValue: String): Boolean;
+begin
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ or KEY_WRITE);
+  result := true;
+  try
+    Registry.WriteString(Path.ValueName, NewValue);
+  except
+    result := false;
+  end;
+  CloseRegistry;
+end;
+
+class function TStaticRegistry.GetKeyList(const Path: TRegistryPath;
+  PreparedList: TStringList): TStringList;
+begin
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ);
+  result := PreparedList;
+  if result = nil then
+    result := TStringList.Create;
+  Registry.GetKeyNames(result);
+  CloseRegistry;
+end;
+
+class function TStaticRegistry.GetValueList(const Path: TRegistryPath;
+  PreparedList: TStringList): TStringList;
+begin
+  SetPath(Path);
+  OpenRegistryWithRight(KEY_READ);
+  result := PreparedList;
+  if result = nil then
+    result := TStringList.Create;
+  Registry.GetKeyNames(result);
+  CloseRegistry;
+end;
+
 end.

@@ -91,22 +91,23 @@ begin
     begin
       if Win32MajorVersion = 6 then
       begin
-        SetRegInt('LM',
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\Control\Session Manager' +
-          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
-        SetRegInt('LM',
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\Control\Session Manager' +
-          '\Memory Management\PrefetchParameters', 'EnableSuperfetch', 0);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\SysMain', 'Start', 4);
+          '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 0);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\services\SysMain', 'Start'), 4);
         Resultfutil :=
           string(OpenProcWithOutput(
             TPathManager.WinDir + '\System32', 'net stop SysMain'));
       end
       else if Win32MajorVersion = 5 then
       begin
-        SetRegInt('LM',
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\Control\Session Manager' +
-          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 0);
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
       end;
     end;
     CurrItem := CurrItem + 1;
@@ -117,10 +118,12 @@ begin
   begin
     if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
     begin
-      SetRegStr('LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction',
-        'Enable', 'N');
-      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion' +
-        '\OptimalLayout', 'EnableAutoLayout', 0);
+      TStaticRegistry.SetRegStr(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction',
+        'Enable'), 'N');
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+        'SOFTWARE\Microsoft\Windows\CurrentVersion' +
+        '\OptimalLayout', 'EnableAutoLayout'), 0);
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -134,13 +137,15 @@ begin
   begin
     if Win32MajorVersion = 6 then
     begin
-      SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start', 4);
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 4);
       Resultfutil :=
         string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
-      SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start', 4);
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 4);
       Resultfutil :=
         string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop CiSvc'));
     end;
@@ -150,11 +155,15 @@ begin
   //System Restore
   if (Optimized[CurrItem] = false) and (OptList[CurrItem]) then
   begin
-    SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start', 4);
+    TStaticRegistry.SetRegInt(
+      TStaticRegistry.LegacyPathToNew('LM',
+        'SYSTEM\CurrentControlSet\services\srservice', 'Start'), 4);
     Resultfutil :=
       string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop srservice'));
-    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
-      '\SystemRestore', 'DisableSR', 1);
+    TStaticRegistry.SetRegInt(
+      TStaticRegistry.LegacyPathToNew('LM',
+        'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
+        '\SystemRestore', 'DisableSR'), 1);
     if Is64Bit then
     begin
       Resultfutil :=
@@ -216,20 +225,24 @@ begin
     begin
       if Win32MajorVersion = 6 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager' +
-          '\Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager' +
-          '\Memory Management\PrefetchParameters', 'EnableSuperfetch', 3);
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\SysMain',
-          'Start', 2);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager' +
+          '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 3);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\services\SysMain',
+          'Start'), 2);
         Resultfutil := string(OpenProcWithOutput(TPathManager.WinDir +
           '\System32',
           'net start SysMain'));
       end
       else if Win32MajorVersion = 5 then
       begin
-        SetRegInt('LM', 'SYSTEM\CurrentControlSet\Control\Session Manager\' +
-          'Memory Management\PrefetchParameters', 'EnablePrefetcher', 3);
+        TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
+          'SYSTEM\CurrentControlSet\Control\Session Manager\' +
+          'Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
       end;
     end;
     CurrItem := CurrItem + 1;
@@ -240,9 +253,11 @@ begin
   begin
     if Optimized[CurrItem] then
     begin
-      SetRegStr('LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable', 'Y');
-      SetRegInt('LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion' +
-        '\OptimalLayout', 'EnableAutoLayout', 1);
+      TStaticRegistry.SetRegStr(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable'), 'Y');
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SOFTWARE\Microsoft\Windows\CurrentVersion' +
+        '\OptimalLayout', 'EnableAutoLayout'), 1);
     end;
     CurrItem := CurrItem + 1;
   end;
@@ -256,13 +271,15 @@ begin
   begin
     if Win32MajorVersion = 6 then
     begin
-      SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start', 2);
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 2);
       Resultfutil :=
         string(OpenProcWithOutput(TPathManager.WinDrive, 'net start WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
-      SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start', 2);
+      TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 2);
       Resultfutil :=
         string(OpenProcWithOutput(TPathManager.WinDrive, 'net start CiSvc'));
     end;
@@ -272,11 +289,13 @@ begin
   //System Restore
   if Optimized[CurrItem] then
   begin
-    SetRegInt('LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start', 2);
+    TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+      'LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start'), 2);
     Resultfutil :=
       string(OpenProcWithOutput(TPathManager.WinDrive, 'net start srservice'));
-    SetRegInt('LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
-      'SystemRestore', 'DisableSR', 0);
+    TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
+      'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
+      'SystemRestore', 'DisableSR'), 0);
   end;
 
   //--- Selective ---//
@@ -316,10 +335,10 @@ begin
   begin
     Optimized[CurrItem] :=
       not
-        (GetRegInt('LM',
+        (TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\Control\Session Manager' +
           '\Memory Management\PrefetchParameters',
-          'EnablePrefetcher') > 0);
+          'EnablePrefetcher')) > 0);
     CurrItem := CurrItem + 1;
   end;
 
@@ -328,12 +347,12 @@ begin
   begin
     Optimized[CurrItem] :=
       not
-        ((GetRegStr('LM',
-          'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable') <> 'N')
+        ((TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew('LM',
+          'SOFTWARE\Microsoft\Dfrg\BootOptimizeFunction', 'Enable')) <> 'N')
         and
-        (GetRegInt('LM',
+        (TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SOFTWARE\Microsoft\Windows\CurrentVersion\OptimalLayout',
-          'EnableAutoLayout') <> 0));
+          'EnableAutoLayout')) <> 0));
     CurrItem := CurrItem + 1;
   end;
 
@@ -345,25 +364,27 @@ begin
   if Win32MajorVersion = 6 then
   begin
     Optimized[CurrItem] :=
-      (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\WSearch',
-        'Start') = 4);
+      (TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\WSearch',
+        'Start')) = 4);
   end
   else if Win32MajorVersion = 5 then
   begin
     Optimized[CurrItem] :=
-      (GetRegInt('LM', 'SYSTEM\CurrentControlSet\services\CiSvc',
-        'Start') = 4);
+      (TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew(
+        'LM', 'SYSTEM\CurrentControlSet\services\CiSvc',
+        'Start')) = 4);
   end;
   CurrItem := CurrItem + 1;
 
   //시스템 보호 끄기
   Optimized[CurrItem] :=
-    ((GetRegInt('LM',
+    ((TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
                 'SYSTEM\CurrentControlSet\services\srservice',
-                'Start') = 4) and
-     (GetRegInt('LM',
+                'Start')) = 4) and
+     (TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
                 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
-                'DisableSR') = 1));
+                'DisableSR')) = 1));
 end;
 
 procedure TNSTOptimizer.RefreshOptList;
