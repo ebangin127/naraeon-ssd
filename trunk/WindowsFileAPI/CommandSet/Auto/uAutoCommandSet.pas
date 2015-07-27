@@ -25,22 +25,26 @@ type
     function DefaultIdentifyDevice: TIdentifyDeviceResult;
     procedure IfCommandSetNilRaiseException;
   end;
+  TMetaCommandSet = class of TCommandSet;
 
 implementation
 
 { TAutoCommandSet }
 
 function TAutoCommandSet.TestCommandSetCompatibilityAndReturnIdentifyDevice
-  (CommandSetToTry: TCommandSet;
+  (TCommandSetToTry: TMetaCommandSet;
    LastResult: TIdentifyDeviceResult): TIdentifyDeviceResult;
+var
+  CommandSetToTry: TCommandSet;
 begin
   if LastResult.Model <> '' then
   begin
-    FreeAndNil(CommandSetToTry);
     result := LastResult;
     exit;
   end;
-
+  
+  CommandSetToTry := TCommandSetToTry.Create(GetPathOfFileAccessing);
+  
   try
     result := CommandSetToTry.IdentifyDevice;
     result.IsDataSetManagementSupported :=
@@ -57,21 +61,16 @@ begin
 end;
 
 function TAutoCommandSet.DefaultIdentifyDevice: TIdentifyDeviceResult;
-var
-  TestingCommandSet: TCommandSet;
 begin
   try
-    TestingCommandSet := TATACommandSet.Create(GetPathOfFileAccessing);
     result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TestingCommandSet, result);
+      (TATACommandSet, result);
 
-    TestingCommandSet := TLegacyATACommandSet.Create(GetPathOfFileAccessing);
     result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TestingCommandSet, result);
+      (TLegacyATACommandSet, result);
 
-    TestingCommandSet := TSATCommandSet.Create(GetPathOfFileAccessing);
     result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TestingCommandSet, result);
+      (TSATCommandSet, result);
   except
     FreeAndNil(TestingCommandSet);
   end;
