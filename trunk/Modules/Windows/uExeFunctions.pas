@@ -18,76 +18,76 @@ uses
 
 function WriteBufferCheck: TStringList;
 var
-  DevicesList, SerialsList: TStringList;
+  ModelList, SerialsList: TStringList;
   ValueList: TStringList;
   CurrDev, CurrSer: Integer;
 begin
   result := TStringList.Create;
-  DevicesList := TStringList.Create;
+  ModelList := TStringList.Create;
   SerialsList := TStringList.Create;
   ValueList := TStringList.Create;
   TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
-    'LM', 'SYSTEM\CurrentControlSet\Enum\IDE', ''), DevicesList);
-  for CurrDev := 0 to DevicesList.Count - 1 do
+    'LM', 'SYSTEM\CurrentControlSet\Enum\IDE', ''), ModelList);
+  for CurrDev := 0 to ModelList.Count - 1 do
   begin
-    if ((Pos('SAMSUNG', DevicesList[CurrDev]) > 0) and (Pos('SSD', DevicesList[CurrDev]) > 0)) or
-        (Pos('LITEONIT', DevicesList[CurrDev]) > 0) or
-        ((Pos('PLEXTOR', DevicesList[CurrDev]) > 0) and (Pos('PX', DevicesList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('JT', DevicesList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('MMY', DevicesList[CurrDev]) > 0)) then
+    if ((Pos('SAMSUNG', ModelList[CurrDev]) > 0) and (Pos('SSD', ModelList[CurrDev]) > 0)) or
+        (Pos('LITEONIT', ModelList[CurrDev]) > 0) or
+        ((Pos('PLEXTOR', ModelList[CurrDev]) > 0) and (Pos('PX', ModelList[CurrDev]) > 0)) or
+        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('JT', ModelList[CurrDev]) > 0)) or
+        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('MMY', ModelList[CurrDev]) > 0)) then
     begin
       TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
-        'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev], ''), SerialsList);
+        'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev], ''), SerialsList);
       for CurrSer := 0 to SerialsList.Count - 1 do
       begin
         TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' +
+          'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' +
           SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
         if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+          'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
           '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
         begin
           TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-            'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+            'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
             '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
           result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer], 'FriendlyName')));
+            'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer], 'FriendlyName')));
         end;
       end;
     end;
   end;
   TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
-    'SYSTEM\CurrentControlSet\Enum\SCSI', ''), DevicesList);
-  for CurrDev := 0 to DevicesList.Count - 1 do
+    'SYSTEM\CurrentControlSet\Enum\SCSI', ''), ModelList);
+  for CurrDev := 0 to ModelList.Count - 1 do
   begin
-    if ((Pos('SAMSUNG', DevicesList[CurrDev]) > 0) and (Pos('SSD', DevicesList[CurrDev]) > 0)) or
-        (Pos('LITEONIT', DevicesList[CurrDev]) > 0) or
-        ((Pos('PLEXTOR', DevicesList[CurrDev]) > 0) and (Pos('PX', DevicesList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('JT', DevicesList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', DevicesList[CurrDev]) > 0) and (Pos('MMY', DevicesList[CurrDev]) > 0)) then
+    if ((Pos('SAMSUNG', ModelList[CurrDev]) > 0) and (Pos('SSD', ModelList[CurrDev]) > 0)) or
+        (Pos('LITEONIT', ModelList[CurrDev]) > 0) or
+        ((Pos('PLEXTOR', ModelList[CurrDev]) > 0) and (Pos('PX', ModelList[CurrDev]) > 0)) or
+        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('JT', ModelList[CurrDev]) > 0)) or
+        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('MMY', ModelList[CurrDev]) > 0)) then
     begin
       TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
-        'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev], ''), SerialsList);
+        'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev], ''), SerialsList);
       for CurrSer := 0 to SerialsList.Count - 1 do
       begin
         TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' +
+          'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' +
           SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
         if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+          'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
           '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
         begin
           TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer] +
+            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
             '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
           result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + DevicesList[CurrDev] + '\' + SerialsList[CurrSer]
+            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer]
             , 'FriendlyName')));
         end;
       end;
     end;
   end;
-  FreeAndNil(DevicesList);
+  FreeAndNil(ModelList);
   FreeAndNil(SerialsList);
   FreeAndNil(ValueList);
 end;

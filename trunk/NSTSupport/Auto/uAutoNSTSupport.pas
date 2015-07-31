@@ -1,10 +1,10 @@
-unit uAutoNSTSupport;
+unit uPartitionTrimmer;
 
 interface
 
 uses
   SysUtils, Math,
-  uNSTSupport, uSMARTValueList,
+  uNSTSupport, uSMARTValueList, uSandforceNSTSupport,
   //General//
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
   uSeagateNSTSupport, uToshibaNSTSupport, uSamsungNSTSupport,
@@ -16,7 +16,7 @@ uses
   uADATASandforceNSTSupport;
 
 type
-  TAutoNSTSupport = class sealed(TNSTSupport)
+  TPartitionTrimmer = class sealed(TNSTSupport)
   private
     NSTSupport: TNSTSupport;
     function TestNSTSupportCompatibilityAndReturnSupportStatus
@@ -26,14 +26,15 @@ type
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
       TSMARTInterpreted; override;
+    function IsSandforce: Boolean;
     destructor Destroy; override;
   end;
 
 implementation
 
-{ TAutoNSTSupport }
+{ TPartitionTrimmer }
 
-function TAutoNSTSupport.TestNSTSupportCompatibilityAndReturnSupportStatus
+function TPartitionTrimmer.TestNSTSupportCompatibilityAndReturnSupportStatus
   <T> (LastResult: TSupportStatus): TSupportStatus;
 var
   NSTSupportToTry: T;
@@ -51,7 +52,7 @@ begin
     FreeAndNil(NSTSupportToTry);
 end;
 
-function TAutoNSTSupport.GetSupportStatus: TSupportStatus;
+function TPartitionTrimmer.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
   if NSTSupport <> nil then
@@ -107,19 +108,24 @@ begin
       <TADATASandforceNSTSupport>(result);
 end;
 
-destructor TAutoNSTSupport.Destroy;
+destructor TPartitionTrimmer.Destroy;
 begin
   if NSTSupport <> nil then
     FreeAndNil(NSTSupport);
   inherited;
 end;
 
-function TAutoNSTSupport.GetSMARTInterpreted(
+function TPartitionTrimmer.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 begin
   if NSTSupport = nil then
     GetSupportStatus;
   result := NSTSupport.GetSMARTInterpreted(SMARTValueList);
+end;
+
+function TPartitionTrimmer.IsSandforce: Boolean;
+begin
+  result := NSTSupport is TSandforceNSTSupport;
 end;
 
 end.

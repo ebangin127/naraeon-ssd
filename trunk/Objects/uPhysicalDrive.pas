@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils, uOSFile, uCommandSet,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
-  uBufferInterpreter, uSMARTValueList, uAutoCommandSet, uAutoNSTSupport,
+  uBufferInterpreter, uSMARTValueList, uAutoCommandSet, uPartitionTrimmer,
   uNSTSupport, uNCQAvailabilityGetter;
 
 type
@@ -19,7 +19,7 @@ type
     NCQAvailabilityReadWrite: TNCQAvailability;
 
     AutoCommandSet: TAutoCommandSet;
-    AutoNSTSupport: TAutoNSTSupport;
+    PartitionTrimmer: TPartitionTrimmer;
 
     procedure RequestIdentifyDevice;
     procedure RequestSMARTReadData;
@@ -36,7 +36,7 @@ type
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
     function TryToGetIsDriveAvailable: Boolean;
-    procedure TryToCreateAndSetAutoNSTSupport;
+    procedure TryToCreateAndSetPartitionTrimmer;
 
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
@@ -86,8 +86,8 @@ destructor TPhysicalDrive.Destroy;
 begin
   if AutoCommandSet <> nil then
     FreeAndNil(AutoCommandSet);
-  if AutoNSTSupport <> nil then
-    FreeAndNil(AutoNSTSupport);
+  if PartitionTrimmer <> nil then
+    FreeAndNil(PartitionTrimmer);
   if SMARTValueListReadWrite <> nil then
     FreeAndNil(SMARTValueListReadWrite);
   inherited;
@@ -212,34 +212,34 @@ begin
   SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
 end;
 
-procedure TPhysicalDrive.TryToCreateAndSetAutoNSTSupport;
+procedure TPhysicalDrive.TryToCreateAndSetPartitionTrimmer;
 begin
   try
-    AutoNSTSupport :=
-      TAutoNSTSupport.Create(
+    PartitionTrimmer :=
+      TPartitionTrimmer.Create(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
   except
-    FreeAndNil(AutoNSTSupport);
+    FreeAndNil(PartitionTrimmer);
   end;
 end;
 
 procedure TPhysicalDrive.RequestSupportStatus;
 begin
-  if AutoNSTSupport = nil then
-    TryToCreateAndSetAutoNSTSupport;
-  if AutoNSTSupport <> nil then
-    SupportStatusReadWrite := AutoNSTSupport.GetSupportStatus
+  if PartitionTrimmer = nil then
+    TryToCreateAndSetPartitionTrimmer;
+  if PartitionTrimmer <> nil then
+    SupportStatusReadWrite := PartitionTrimmer.GetSupportStatus
   else
     SupportStatusReadWrite.Supported := false;
 end;
 
 procedure TPhysicalDrive.RequestSMARTInterpreted;
 begin
-  if AutoNSTSupport = nil then
-    TryToCreateAndSetAutoNSTSupport;
-  if AutoNSTSupport <> nil then
-    SMARTInterpretedReadWrite := AutoNSTSupport.GetSMARTInterpreted(
+  if PartitionTrimmer = nil then
+    TryToCreateAndSetPartitionTrimmer;
+  if PartitionTrimmer <> nil then
+    SMARTInterpretedReadWrite := PartitionTrimmer.GetSMARTInterpreted(
       GetSMARTValueListOrRequestAndReturn);
 end;
 

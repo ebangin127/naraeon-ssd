@@ -46,7 +46,7 @@ uses
   uAutoCommandSet in 'WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas',
   uATACommandSet in 'WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas',
   uSATCommandSet in 'WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas',
-  uAutoNSTSupport in 'NSTSupport\Auto\uAutoNSTSupport.pas',
+  uPartitionTrimmer in 'NSTSupport\Auto\uPartitionTrimmer.pas',
   uPhysicalDriveListGetter in 'WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas',
   uCommandSet in 'WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas',
   uWeb in 'Web\Abstraction\uWeb.pas',

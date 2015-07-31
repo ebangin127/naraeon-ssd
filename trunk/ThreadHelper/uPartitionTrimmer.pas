@@ -4,9 +4,11 @@ interface
 
 uses
   SysUtils, Classes, Windows, Math,
-  uOSFile, uTrimBasicsGetter, uAutoTrimBasicsGetter, uPartition,
-  uPartitionExtentGetter, uAutoCommandSet, uVolumeBitmapGetter,
-  uTrimThreadToModel;
+  uOSFile, uTrimBasicsGetter, uPartition,
+  uTrimThreadToModel,
+  u{$IfDef UNITTEST}Mock{$EndIf}AutoTrimBasicsGetter
+  u{$IfDef UNITTEST}Mock{$EndIf}DeviceTrimmer,
+  u{$IfDef UNITTEST}Mock{$EndIf}VolumeBitmapGetter;
 
 type
   TPartitionTrimmer = class(TOSFile)
@@ -40,56 +42,54 @@ type
 
   private
     TrimSynchronization: TTrimSynchronization;
-    AutoTrimBasicsGetter: TAutoTrimBasicsGetter;
     VolumeBitmapGetter: TVolumeBitmapGetter;
     VolumeBitmapBufferWithErrorCode: TVolumeBitmapBufferWithErrorCode;
     CurrentPartitionTrimProgress: TCurrentPartitionTrimProgress;
     TrimBasicsToInitialize: TTrimBasicsToInitialize;
-    PendingTrimOperation: TPendingTrimOperation;
+    DeviceTrimmer: TDeviceTrimmer;
     CurrentPoint: TCurrentPoint;
-    AutoCommandSet: TAutoCommandSet;
     TrimThreadToModel: TTrimThreadToModel;
     VolumeSizeInCluster: LARGE_INTEGER;
     LastTick: Cardinal;
-    procedure InitializeTrim;
+    
+    procedure TryToTrimPartition(
+      TrimSynchronizationToApply: TTrimSynchronization);
     procedure ProcessTrim;
-    function IsMoreTrimNeeded: Boolean;
     procedure TrimNextPartOfPartition;
     procedure TrimCurrentCardinal;
     procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean);
-    procedure SetNextPartPosition;
-    function IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
-    procedure IfLastPartSetCardinalBitLength;
-    function GetBitLengthOfLastCardinal(BitmapSizeInBit: LARGE_INTEGER): Integer;
-    procedure InitializeBitCardinalLength;
-    procedure InitializeStartLBA;
-    procedure CalculateProgress;
-    procedure SetBaseProgress;
-    procedure IncreaseOrSetTrimPosition;
-    procedure SetThisPositionAsStart;
-    function GetCurrentPositionInLBA: UInt64;
-    function IsTrimNeeded(IsCurrentClusterUnused: Boolean): Boolean;
-    function FoundUsedSpaceOrLastPart(IsCurrentClusterUnused: Boolean): Boolean;
-    function IsLastPartOfBuffer: Boolean;
-    function IsLBACountOverLimit: Boolean;
-    procedure ProcessAndClearPendingTrim;
-    procedure ClearPendingTrim;
-    procedure ProcessPendingTrim;
-    procedure InitializeCommandSet;
-    procedure FreeClassesForTrim;
-    procedure IfNeedToRestApplyToUI;
-    procedure TryToTrimPartition(
-      TrimSynchronizationToApply: TTrimSynchronization);
-    procedure SetVolumeSizeInCluster;
+    
+    procedure InitializeTrim;
     procedure InitializeTrimBasicsGetter;
     procedure InitializeVolumeBitmap;
     procedure InitializeModel;
-    function GetMotherDrivePath: String;
+    procedure InitializeDeviceTrimmer;
+    procedure InitializeBitCardinalLength;
+    procedure InitializeStartLBA;
+    
+    function IsMoreTrimNeeded: Boolean;
+    function FoundUsedSpaceOrLastPart(IsCurrentClusterUnused: Boolean): Boolean;
+    function IsTrimNeeded(IsCurrentClusterUnused: Boolean): Boolean;
+    function IsLastPartOfBuffer: Boolean;
+    function IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
+    
+    function GetCurrentPositionInLBA: UInt64;
+    
+    procedure SetVolumeSizeInCluster;
+    procedure SetNextPartPosition;
+    procedure SetBaseProgress;
+    procedure IfLastPartSetCardinalBitLength;
+    function GetBitLengthOfLastCardinal(BitmapSizeInBit: LARGE_INTEGER): Integer;
+    procedure CalculateProgress;
+    procedure ProcessAndClearPendingTrim;
+    procedure IfNeedToRestApplyToUI;
+    procedure IncreaseOrSetTrimPosition;
     procedure SetVolumeBitmapBuffer(StartingLCN: LARGE_INTEGER);
     procedure IfLastCardinalInBufferSetBitLength;
+    
+    procedure FreeClassesForTrim;
 
   public
-    destructor Destroy; override;
     procedure TrimPartition(TrimSynchronizationToApply: TTrimSynchronization);
     function GetPathOfFileAccessing: String; override;
   end;
@@ -98,81 +98,11 @@ implementation
 
 { TPartitionTrimmer }
 
-destructor TPartitionTrimmer.Destroy;
-begin
-  if AutoTrimBasicsGetter <> nil then
-    FreeAndNil(AutoTrimBasicsGetter);
-  inherited;
-end;
-
 procedure TPartitionTrimmer.SetVolumeBitmapBuffer
   (StartingLCN: LARGE_INTEGER);
 begin
   VolumeBitmapBufferWithErrorCode :=
     VolumeBitmapGetter.GetVolumeBitmap(StartingLCN);
-end;
-
-function TPartitionTrimmer.GetMotherDrivePath: String;
-var
-  PartitionExtentGetter: TPartitionExtentGetter;
-  PartitionExtentList: TPartitionExtentList;
-begin
-  PartitionExtentGetter :=
-    TPartitionExtentGetter.Create(GetPathOfFileAccessing);
-  PartitionExtentList := PartitionExtentGetter.GetPartitionExtentList;
-  result :=
-    ThisComputerPrefix +
-    PhysicalDrivePrefix +
-    IntToStr(PartitionExtentList[0].DriveNumber);
-  FreeAndNil(PartitionExtentList);
-  FreeAndNil(PartitionExtentGetter);
-end;
-
-procedure TPartitionTrimmer.InitializeCommandSet;
-begin
-  AutoCommandSet := TAutoCommandSet.Create(GetMotherDrivePath);
-  AutoCommandSet.IdentifyDevice;
-end;
-
-procedure TPartitionTrimmer.SetVolumeSizeInCluster;
-begin
-  VolumeSizeInCluster :=
-    VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize;
-end;
-
-procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
-begin
-  AutoTrimBasicsGetter := TAutoTrimBasicsGetter.Create(GetPathOfFileAccessing);
-  if not AutoTrimBasicsGetter.IsPartitionMyResponsibility then
-    raise EUnknownPartition.Create
-      ('Unknown Partiton: Use with known partition');
-  TrimBasicsToInitialize := AutoTrimBasicsGetter.GetTrimBasicsToInitialize;
-  InitializeStartLBA;
-end;
-
-procedure TPartitionTrimmer.InitializeVolumeBitmap;
-begin
-  VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
-  SetVolumeBitmapBuffer(CurrentPoint.OffsetInCluster);
-  SetVolumeSizeInCluster;
-  InitializeBitCardinalLength;
-end;
-
-procedure TPartitionTrimmer.InitializeModel;
-begin
-  CalculateProgress;
-  TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
-  TrimThreadToModel.ApplyNextDriveStartToUI(
-    CurrentPartitionTrimProgress.Progress);
-end;
-
-procedure TPartitionTrimmer.InitializeTrim;
-begin
-  CurrentPoint.OffsetInCluster.QuadPart := 0;
-  InitializeTrimBasicsGetter;
-  InitializeVolumeBitmap;
-  InitializeCommandSet;
-  InitializeModel;
 end;
 
 procedure TPartitionTrimmer.SetBaseProgress;
@@ -251,31 +181,22 @@ begin
   result := ThisComputerPrefix + result;
 end;
 
-procedure TPartitionTrimmer.SetThisPositionAsStart;
-begin
-  PendingTrimOperation.IsUnusedSpaceFound := true;
-  PendingTrimOperation.StartLBA :=
-    CurrentPoint.PartitionStartLBA +
-    GetCurrentPositionInLBA;
-  PendingTrimOperation.LengthInLBA :=
-    TrimBasicsToInitialize.LBAPerCluster;
-end;
-
 procedure TPartitionTrimmer.IncreaseOrSetTrimPosition;
 begin
-  if PendingTrimOperation.IsUnusedSpaceFound then
-    PendingTrimOperation.LengthInLBA :=
-      PendingTrimOperation.LengthInLBA +
-      TrimBasicsToInitialize.LBAPerCluster
+  if DeviceTrimmer.IsUnusedSpaceFound then
+    DeviceTrimmer.IncreaseLength(TrimBasicsToInitialize.LBAPerCluster);
   else
-    SetThisPositionAsStart;
+    DeviceTrimmer.SetStartPoint(
+      CurrentPoint.PartitionStartLBA + GetCurrentPositionInLBA,
+      TrimBasicsToInitialize.LBAPerCluster);
 end;
 
-function TPartitionTrimmer.IsLBACountOverLimit: Boolean;
-const
-  LimitLengthInLBA = 65500;
+function TPartitionTrimmer.IsTrimNeeded(IsCurrentClusterUnused: Boolean):
+  Boolean;
 begin
-  result := PendingTrimOperation.LengthInLBA > LimitLengthInLBA;
+  result :=
+    DeviceTrimmer.IsUnusedSpaceFound and
+    FoundUsedSpaceOrLastPart(IsCurrentClusterUnused);
 end;
 
 function TPartitionTrimmer.IsLastPartOfBuffer: Boolean;
@@ -291,28 +212,8 @@ function TPartitionTrimmer.FoundUsedSpaceOrLastPart(
 begin
   result :=
     (not IsCurrentClusterUnused) or
-    IsLBACountOverLimit or
+    DeviceTrimmer.IsLBACountOverLimit or
     IsLastPartOfBuffer;
-end;
-
-function TPartitionTrimmer.IsTrimNeeded(IsCurrentClusterUnused: Boolean):
-  Boolean;
-begin
-  result :=
-    PendingTrimOperation.IsUnusedSpaceFound and
-    FoundUsedSpaceOrLastPart(IsCurrentClusterUnused);
-end;
-
-procedure TPartitionTrimmer.ProcessPendingTrim;
-begin
-  AutoCommandSet.DataSetManagement(
-    PendingTrimOperation.StartLBA,
-    PendingTrimOperation.LengthInLBA);
-end;
-
-procedure TPartitionTrimmer.ClearPendingTrim;
-begin
-  ZeroMemory(@PendingTrimOperation, SizeOf(PendingTrimOperation));
 end;
 
 procedure TPartitionTrimmer.IfNeedToRestApplyToUI;
@@ -335,8 +236,7 @@ end;
 
 procedure TPartitionTrimmer.ProcessAndClearPendingTrim;
 begin
-  ProcessPendingTrim;
-  ClearPendingTrim;
+  DeviceTrimmer.Flush;
   IfNeedToRestApplyToUI;
 end;
 
@@ -399,12 +299,18 @@ begin
     (VolumeBitmapBufferWithErrorCode.LastError = ERROR_SUCCESS);
 end;
 
+procedure TPartitionTrimmer.ProcessTrim;
+begin
+  while IsMoreTrimNeeded do
+    TrimNextPartOfPartition;
+end;
+
 procedure TPartitionTrimmer.InitializeBitCardinalLength;
 begin
   CurrentPoint.CardinalLength := Length(VolumeBitmapBufferWithErrorCode.Buffer);
   CurrentPoint.BitLengthOfLastCardinal := BitsPerCardinal;
 end;
- 
+
 procedure TPartitionTrimmer.InitializeStartLBA;
 begin
   CurrentPoint.PartitionStartLBA :=
@@ -412,22 +318,55 @@ begin
     TrimBasicsToInitialize.PaddingLBA;
 end;
 
-procedure TPartitionTrimmer.ProcessTrim;
+procedure TPartitionTrimmer.InitializeDeviceTrimmer;
 begin
-  while IsMoreTrimNeeded do
-    TrimNextPartOfPartition;
+  DeviceTrimmer := TDeviceTrimmer.Create(GetPathOfFileAccessing);
 end;
 
-procedure TPartitionTrimmer.FreeClassesForTrim;
+procedure TPartitionTrimmer.SetVolumeSizeInCluster;
 begin
-  if AutoTrimBasicsGetter <> nil then
-    FreeAndNil(AutoTrimBasicsGetter);
-  if VolumeBitmapGetter <> nil then
-    FreeAndNil(VolumeBitmapGetter);
-  if AutoCommandSet <> nil then
-    FreeAndNil(AutoCommandSet);
-  if TrimThreadToModel <> nil then
-    FreeAndNil(TrimThreadToModel);
+  VolumeSizeInCluster :=
+    VolumeBitmapBufferWithErrorCode.PositionSize.BitmapSize;
+end;
+
+procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
+var
+  AutoTrimBasicsGetter: TAutoTrimBasicsGetter;
+begin
+  {$IfNDef UNITTEST}
+  AutoTrimBasicsGetter := TAutoTrimBasicsGetter.Create(GetPathOfFileAccessing);
+  if not AutoTrimBasicsGetter.IsPartitionMyResponsibility then
+    raise EUnknownPartition.Create
+      ('Unknown Partiton: Use with known partition');
+  TrimBasicsToInitialize := AutoTrimBasicsGetter.GetTrimBasicsToInitialize;
+  FreeAndNil(AutoTrimBasicsGetter);
+  InitializeStartLBA;
+  {$EndIf}
+end;
+
+procedure TPartitionTrimmer.InitializeVolumeBitmap;
+begin
+  VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
+  SetVolumeBitmapBuffer(CurrentPoint.OffsetInCluster);
+  SetVolumeSizeInCluster;
+  InitializeBitCardinalLength;
+end;
+
+procedure TPartitionTrimmer.InitializeModel;
+begin
+  CalculateProgress;
+  TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
+  TrimThreadToModel.ApplyNextDriveStartToUI(
+    CurrentPartitionTrimProgress.Progress);
+end;
+
+procedure TPartitionTrimmer.InitializeTrim;
+begin
+  CurrentPoint.OffsetInCluster.QuadPart := 0;
+  InitializeTrimBasicsGetter;
+  InitializeVolumeBitmap;
+  InitializeDeviceTrimmer;
+  InitializeModel;
 end;
 
 procedure TPartitionTrimmer.TryToTrimPartition(
@@ -436,6 +375,13 @@ begin
   TrimSynchronization := TrimSynchronizationToApply;
   InitializeTrim;
   ProcessTrim;
+end;
+
+procedure TPartitionTrimmer.FreeClassesForTrim;
+begin
+  FreeAndNil(VolumeBitmapGetter);
+  FreeAndNil(TrimThreadToModel);
+  FreeAndNil(DeviceTrimmer);
 end;
 
 procedure TPartitionTrimmer.TrimPartition(

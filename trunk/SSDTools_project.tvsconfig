@@ -7,7 +7,7 @@
   <Option Name="namespaceFolder.uTrimList" Type="System.String" Value="uTrimList" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uTimeUnit" Type="System.String" Value="uTimeUnit" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uSemiAuto" Type="System.String" Value="uSemiAuto" Category="General" IsBrowsable="False" />
-  <Option Name="namespaceFolder.uAutoNSTSupport" Type="System.String" Value="uAutoNSTSupport" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.uPartitionTrimmer" Type="System.String" Value="uPartitionTrimmer" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uOSFileWithHandle" Type="System.String" Value="uOSFileWithHandle" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uHTTPSWeb" Type="System.String" Value="uHTTPSWeb" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uWeb" Type="System.String" Value="uWeb" Category="General" IsBrowsable="False" />

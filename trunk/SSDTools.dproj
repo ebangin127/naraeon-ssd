@@ -184,7 +184,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
-        <DCCReference Include="NSTSupport\Auto\uAutoNSTSupport.pas"/>
+        <DCCReference Include="NSTSupport\Auto\uPartitionTrimmer.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas"/>
         <DCCReference Include="Web\Abstraction\uWeb.pas"/>
