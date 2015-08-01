@@ -1,4 +1,4 @@
-unit uPartitionTrimmer;
+unit uAutoNSTSupport;
 
 interface
 
@@ -16,7 +16,7 @@ uses
   uADATASandforceNSTSupport;
 
 type
-  TPartitionTrimmer = class sealed(TNSTSupport)
+  TAutoNSTSupport = class sealed(TNSTSupport)
   private
     NSTSupport: TNSTSupport;
     function TestNSTSupportCompatibilityAndReturnSupportStatus
@@ -32,9 +32,9 @@ type
 
 implementation
 
-{ TPartitionTrimmer }
+{ TAutoNSTSupport }
 
-function TPartitionTrimmer.TestNSTSupportCompatibilityAndReturnSupportStatus
+function TAutoNSTSupport.TestNSTSupportCompatibilityAndReturnSupportStatus
   <T> (LastResult: TSupportStatus): TSupportStatus;
 var
   NSTSupportToTry: T;
@@ -52,7 +52,7 @@ begin
     FreeAndNil(NSTSupportToTry);
 end;
 
-function TPartitionTrimmer.GetSupportStatus: TSupportStatus;
+function TAutoNSTSupport.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
   if NSTSupport <> nil then
@@ -108,14 +108,14 @@ begin
       <TADATASandforceNSTSupport>(result);
 end;
 
-destructor TPartitionTrimmer.Destroy;
+destructor TAutoNSTSupport.Destroy;
 begin
   if NSTSupport <> nil then
     FreeAndNil(NSTSupport);
   inherited;
 end;
 
-function TPartitionTrimmer.GetSMARTInterpreted(
+function TAutoNSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 begin
   if NSTSupport = nil then
@@ -123,7 +123,7 @@ begin
   result := NSTSupport.GetSMARTInterpreted(SMARTValueList);
 end;
 
-function TPartitionTrimmer.IsSandforce: Boolean;
+function TAutoNSTSupport.IsSandforce: Boolean;
 begin
   result := NSTSupport is TSandforceNSTSupport;
 end;

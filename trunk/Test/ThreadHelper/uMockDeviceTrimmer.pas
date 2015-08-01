@@ -3,7 +3,7 @@ unit uMockDeviceTrimmer;
 interface
 
 uses
-  Generics.Collections,
+  SysUtils, Generics.Collections, Windows,
   uOSFile;
 
 type
@@ -17,19 +17,18 @@ type
   TDeviceTrimmer = class(TOSFile)
   private
     PendingTrimOperation: TPendingTrimOperation;
-    TrimOperationList: TTrimOperationList;
-
-    procedure IncreaseOrSetTrimPosition;
-    procedure SetThisPositionAsStart;
+    class var TrimOperationList: TTrimOperationList;
   public
     constructor Create(FileToGetAccess: String); override;
-    destructor Destroy; override;
     procedure Flush;
     procedure SetStartPoint(StartLBA, LengthInLBA: UInt64);
     procedure IncreaseLength(LengthInLBA: UInt64);
     function IsUnusedSpaceFound: Boolean;
     function IsLBACountOverLimit: Boolean;
-    function GetOperationList: TTrimOperationList;
+
+    class procedure CreateTrimOperationLogger;
+    class procedure FreeTrimOperationLogger;
+    class function GetTrimOperationLogger: TTrimOperationList;
   end;
 
 implementation
@@ -39,11 +38,15 @@ implementation
 constructor TDeviceTrimmer.Create(FileToGetAccess: String); 
 begin
   inherited;
-  TrimOperationList := TTrimOperationList.Create;
   ZeroMemory(@PendingTrimOperation, SizeOf(PendingTrimOperation));
 end;
 
-destructor TDeviceTrimmer.Destroy; override;
+class procedure TDeviceTrimmer.CreateTrimOperationLogger;
+begin
+  TrimOperationList := TTrimOperationList.Create;
+end;
+
+class procedure TDeviceTrimmer.FreeTrimOperationLogger;
 begin
   FreeAndNil(TrimOperationList);
 end;
@@ -80,8 +83,9 @@ begin
   result := PendingTrimOperation.IsUnusedSpaceFound;
 end;
 
-function TDeviceTrimmer.GetOperationList: TTrimOperationList;
+class function TDeviceTrimmer.GetTrimOperationLogger: TTrimOperationList;
 begin
-  result := TrimOperationList;
+  result := TrimOperationList
 end;
+
 end.

@@ -42,7 +42,13 @@ uses
   uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
   uUINT64 in '..\Modules\Etc\uUINT64.pas',
-  TestAverageWriteLogger in 'Classes\AverageLogger\TestAverageWriteLogger.pas';
+  TestAverageWriteLogger in 'Classes\AverageLogger\TestAverageWriteLogger.pas',
+  TestPartitionTrimmer in 'ThreadHelper\TestPartitionTrimmer.pas',
+  uMockAutoTrimBasicsGetter in 'ThreadHelper\uMockAutoTrimBasicsGetter.pas',
+  uMockDeviceTrimmer in 'ThreadHelper\uMockDeviceTrimmer.pas',
+  uMockVolumeBitmapGetter in 'ThreadHelper\uMockVolumeBitmapGetter.pas',
+  uPartitionTrimmer in '..\ThreadHelper\uPartitionTrimmer.pas',
+  uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas';
 
 {$R *.RES}
 

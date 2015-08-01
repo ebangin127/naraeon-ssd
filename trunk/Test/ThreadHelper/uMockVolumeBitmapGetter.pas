@@ -53,16 +53,15 @@ var
   RemainingLength: Int64;
 begin
   RemainingLength :=
-    BitmapBufferLength - StartingLCN.QuadPart - BitmapSizePerBuffer;
+    BitmapBufferLength - StartingLCN.QuadPart;
   result.PositionSize.StartingLCN := StartingLCN;
-  result.PositionSize.BitmapSize := (RemainingLength + BitmapSizePerBuffer) *
-    BitmapSizePerBuffer;
+  result.PositionSize.BitmapSize.QuadPart := RemainingLength;
   result.Buffer := BitmapBufferStorage[StartingLCN.QuadPart div
     BitmapSizePerBuffer];
       
-  if RemainingLength > 0 then
+  if RemainingLength > BitmapSizePerBuffer then
     result.LastError := ERROR_MORE_DATA
-  else if RemainingLength = 0 then
+  else if RemainingLength >= 0 then
     result.LastError := ERROR_SUCCESS
   else
     result.LastError := ERROR_NO_MORE_ITEMS; 

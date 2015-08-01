@@ -4,11 +4,14 @@ interface
 
 uses
   SysUtils, Classes, Windows, Math,
-  uOSFile, uTrimBasicsGetter, uPartition,
-  uTrimThreadToModel,
-  u{$IfDef UNITTEST}Mock{$EndIf}AutoTrimBasicsGetter
-  u{$IfDef UNITTEST}Mock{$EndIf}DeviceTrimmer,
-  u{$IfDef UNITTEST}Mock{$EndIf}VolumeBitmapGetter;
+  uOSFile
+  {$IfNDef UNITTEST}, uPartition, uTrimThreadToModel,{$EndIf}
+  {$IfDef UNITTEST}, uMockAutoTrimBasicsGetter,
+  {$Else}uTrimBasicsGetter, uAutoTrimBasicsGetter,{$EndIf}
+  {$IfDef UNITTEST}uMockDeviceTrimmer,
+  {$Else}uDeviceTrimmer,{$EndIf}
+  {$IfDef UNITTEST}uMockVolumeBitmapGetter
+  {$Else}uVolumeBitmapGetter{$EndIf};
 
 type
   TPartitionTrimmer = class(TOSFile)
@@ -48,7 +51,9 @@ type
     TrimBasicsToInitialize: TTrimBasicsToInitialize;
     DeviceTrimmer: TDeviceTrimmer;
     CurrentPoint: TCurrentPoint;
+    {$IfNDef UNITTEST}
     TrimThreadToModel: TTrimThreadToModel;
+    {$EndIf}
     VolumeSizeInCluster: LARGE_INTEGER;
     LastTick: Cardinal;
     
@@ -112,8 +117,11 @@ begin
   if CurrentPartitionTrimProgress.BaseProgress > 0 then
     exit;
 
-  CurrentPartitionTrimProgress.ProgressPerPartition :=
-    round(1 / TrimSynchronization.Progress.PartitionCount * ToPercent);
+  if TrimSynchronization.Progress.PartitionCount > 0 then
+    CurrentPartitionTrimProgress.ProgressPerPartition :=
+      round(1 / TrimSynchronization.Progress.PartitionCount * ToPercent)
+  else
+    CurrentPartitionTrimProgress.ProgressPerPartition := 0;
 
   CurrentPartitionTrimProgress.BaseProgress :=
     round(CurrentPartitionTrimProgress.ProgressPerPartition *
@@ -184,7 +192,7 @@ end;
 procedure TPartitionTrimmer.IncreaseOrSetTrimPosition;
 begin
   if DeviceTrimmer.IsUnusedSpaceFound then
-    DeviceTrimmer.IncreaseLength(TrimBasicsToInitialize.LBAPerCluster);
+    DeviceTrimmer.IncreaseLength(TrimBasicsToInitialize.LBAPerCluster)
   else
     DeviceTrimmer.SetStartPoint(
       CurrentPoint.PartitionStartLBA + GetCurrentPositionInLBA,
@@ -202,9 +210,9 @@ end;
 function TPartitionTrimmer.IsLastPartOfBuffer: Boolean;
 begin
   result :=
-    (CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength) and
+    (CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength - 1) and
     (CurrentPoint.CurrentBitInCardinal =
-     CurrentPoint.BitLengthOfCurrentCardinal);
+     CurrentPoint.BitLengthOfCurrentCardinal - 1);
 end;
 
 function TPartitionTrimmer.FoundUsedSpaceOrLastPart(
@@ -230,7 +238,9 @@ begin
   begin
     LastTick := CurrentTick;
     CalculateProgress;
+    {$IfNDef UNITTEST}
     TrimThreadToModel.ApplyProgressToUI(CurrentPartitionTrimProgress.Progress);
+    {$EndIf}
   end;
 end;
 
@@ -250,7 +260,7 @@ end;
 
 procedure TPartitionTrimmer.IfLastCardinalInBufferSetBitLength;
 begin
-  if CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength then
+  if CurrentPoint.CurrentCardinalInBuffer = CurrentPoint.CardinalLength - 1 then
     CurrentPoint.BitLengthOfCurrentCardinal :=
       CurrentPoint.BitLengthOfLastCardinal;
 end;
@@ -333,7 +343,6 @@ procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
 var
   AutoTrimBasicsGetter: TAutoTrimBasicsGetter;
 begin
-  {$IfNDef UNITTEST}
   AutoTrimBasicsGetter := TAutoTrimBasicsGetter.Create(GetPathOfFileAccessing);
   if not AutoTrimBasicsGetter.IsPartitionMyResponsibility then
     raise EUnknownPartition.Create
@@ -341,7 +350,6 @@ begin
   TrimBasicsToInitialize := AutoTrimBasicsGetter.GetTrimBasicsToInitialize;
   FreeAndNil(AutoTrimBasicsGetter);
   InitializeStartLBA;
-  {$EndIf}
 end;
 
 procedure TPartitionTrimmer.InitializeVolumeBitmap;
@@ -355,9 +363,11 @@ end;
 procedure TPartitionTrimmer.InitializeModel;
 begin
   CalculateProgress;
+  {$IfNDef UNITTEST}
   TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
   TrimThreadToModel.ApplyNextDriveStartToUI(
     CurrentPartitionTrimProgress.Progress);
+  {$EndIf}
 end;
 
 procedure TPartitionTrimmer.InitializeTrim;
@@ -380,7 +390,9 @@ end;
 procedure TPartitionTrimmer.FreeClassesForTrim;
 begin
   FreeAndNil(VolumeBitmapGetter);
+  {$IfNDef UNITTEST}
   FreeAndNil(TrimThreadToModel);
+  {$EndIf}
   FreeAndNil(DeviceTrimmer);
 end;
 

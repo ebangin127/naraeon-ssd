@@ -46,7 +46,6 @@ uses
   uAutoCommandSet in 'WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas',
   uATACommandSet in 'WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas',
   uSATCommandSet in 'WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas',
-  uPartitionTrimmer in 'NSTSupport\Auto\uPartitionTrimmer.pas',
   uPhysicalDriveListGetter in 'WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas',
   uCommandSet in 'WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas',
   uWeb in 'Web\Abstraction\uWeb.pas',
@@ -65,7 +64,6 @@ uses
   uNTFSTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas',
   uFATTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas',
   uAutoTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas',
-  uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
   uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas',
   uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in 'NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
@@ -118,7 +116,10 @@ uses
   uOSFile in 'WindowsFileAPI\Abstraction\uOSFile.pas',
   uOSFileWithHandle in 'WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
   uADATASandforceNSTSupport in 'NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas',
-  uADATANSTSupport in 'NSTSupport\Support\uADATANSTSupport.pas';
+  uADATANSTSupport in 'NSTSupport\Support\uADATANSTSupport.pas',
+  uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
+  uDeviceTrimmer in 'ThreadHelper\uDeviceTrimmer.pas',
+  uAutoNSTSupport in 'NSTSupport\Auto\uAutoNSTSupport.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

@@ -9,6 +9,7 @@ uses
   uATACommandSet, uLegacyATACommandSet, uSATCommandSet;
 
 type
+  TMetaCommandSet = class of TCommandSet;
   TAutoCommandSet = class(TCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
@@ -20,12 +21,11 @@ type
   private
     CommandSet: TCommandSet;
     function TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (CommandSetToTry: TCommandSet;
+      (TCommandSetToTry: TMetaCommandSet;
        LastResult: TIdentifyDeviceResult): TIdentifyDeviceResult;
     function DefaultIdentifyDevice: TIdentifyDeviceResult;
     procedure IfCommandSetNilRaiseException;
   end;
-  TMetaCommandSet = class of TCommandSet;
 
 implementation
 
@@ -62,18 +62,14 @@ end;
 
 function TAutoCommandSet.DefaultIdentifyDevice: TIdentifyDeviceResult;
 begin
-  try
-    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TATACommandSet, result);
+  result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+    (TATACommandSet, result);
 
-    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TLegacyATACommandSet, result);
+  result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+    (TLegacyATACommandSet, result);
 
-    result := TestCommandSetCompatibilityAndReturnIdentifyDevice
-      (TSATCommandSet, result);
-  except
-    FreeAndNil(TestingCommandSet);
-  end;
+  result := TestCommandSetCompatibilityAndReturnIdentifyDevice
+    (TSATCommandSet, result);
 end;
 
 destructor TAutoCommandSet.Destroy;

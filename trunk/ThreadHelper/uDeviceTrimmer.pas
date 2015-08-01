@@ -3,6 +3,7 @@ unit uDeviceTrimmer;
 interface
 
 uses
+  SysUtils, Windows,
   uOSFile, uPartitionExtentGetter, uAutoCommandSet;
 
 type
@@ -18,8 +19,7 @@ type
     AutoCommandSet: TAutoCommandSet;
 
     function GetMotherDrivePath: String;
-    procedure IncreaseOrSetTrimPosition;
-    procedure SetThisPositionAsStart;
+    procedure SetCommandSet;
   public
     constructor Create(FileToGetAccess: String); override;
     destructor Destroy; override;
@@ -41,7 +41,7 @@ begin
   ZeroMemory(@PendingTrimOperation, SizeOf(PendingTrimOperation));
 end;
 
-destructor TDeviceTrimmer.Destroy; override;
+destructor TDeviceTrimmer.Destroy;
 begin
   FreeAndNil(AutoCommandSet);
 end;

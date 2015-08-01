@@ -3,7 +3,7 @@ unit uOSFile;
 interface
 
 uses
-  Windows, SysUtils, Dialogs;
+  Windows, SysUtils;
 
 const
   ThisComputerPrefix = '\\.\';

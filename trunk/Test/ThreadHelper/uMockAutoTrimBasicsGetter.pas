@@ -3,16 +3,34 @@ unit uMockAutoTrimBasicsGetter;
 interface
 
 uses
-  SysUtils, Windows,
-  uPartition, uIoControlFile, uTrimBasicsGetter, uVolumeBitmapGetter,
-  uFATTrimBasicsGetter, uNTFSTrimBasicsGetter, uPartitionExtentGetter;
+  Classes, SysUtils, Windows,
+  uOSFile;
 
 type
-  TAutoTrimBasicsGetter = class(TTrimBasicsGetter)
-  public
-    function IsPartitionMyResponsibility: Boolean; override;
-    function GetTrimBasicsToInitialize: TTrimBasicsToInitialize; override;
+  TTrimProgress = record
+    CurrentPartition: Integer;
+    PartitionCount: Integer;
   end;
+
+  TTrimSynchronization = record
+    IsUIInteractionNeeded: Boolean;
+    ThreadToSynchronize: TThread;
+    Progress: TTrimProgress;
+  end;
+
+  TTrimBasicsToInitialize = record
+    PaddingLBA: Integer;
+    LBAPerCluster: Cardinal;
+    StartLBA: UInt64;
+  end;
+
+  TAutoTrimBasicsGetter = class(TOSFile)
+  public
+    function IsPartitionMyResponsibility: Boolean;
+    function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
+  end;
+
+  EUnknownPartition = class(Exception);
 
 implementation
 
