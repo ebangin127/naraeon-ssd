@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFile, uPartitionExtentGetter, uAutoCommandSet;
+  uOSFile, uPartitionExtentGetter, uCommandSet, uCommandSetFactory;
 
 type
   TPendingTrimOperation = record
@@ -16,7 +16,7 @@ type
   TDeviceTrimmer = class(TOSFile)
   private
     PendingTrimOperation: TPendingTrimOperation;
-    AutoCommandSet: TAutoCommandSet;
+    CommandSet: TCommandSet;
 
     function GetMotherDrivePath: String;
     procedure SetCommandSet;
@@ -43,13 +43,13 @@ end;
 
 destructor TDeviceTrimmer.Destroy;
 begin
-  FreeAndNil(AutoCommandSet);
+  FreeAndNil(CommandSet);
 end;
 
 procedure TDeviceTrimmer.SetCommandSet;
 begin
-  AutoCommandSet := TAutoCommandSet.Create(GetMotherDrivePath);
-  AutoCommandSet.IdentifyDevice;
+  CommandSet := TCommandSetFactory.GetSuitableCommandSet(GetMotherDrivePath);
+  CommandSet.IdentifyDevice;
 end;
 
 function TDeviceTrimmer.GetMotherDrivePath: String;

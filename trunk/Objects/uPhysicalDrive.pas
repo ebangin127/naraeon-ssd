@@ -3,10 +3,11 @@ unit uPhysicalDrive;
 interface
 
 uses
-  Windows, SysUtils, uOSFile, uCommandSet,
+  Windows, SysUtils, 
+  uOSFile, uNSTSupport, uNSTSupportFactory,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
-  uBufferInterpreter, uSMARTValueList, uAutoCommandSet, uAutoNSTSupport,
-  uNSTSupport, uNCQAvailabilityGetter;
+  uBufferInterpreter, uSMARTValueList, uCommandSet, 
+  uNSTSupport, uNCQAvailabilityGetter, uCommandSetFactory;
 
 type
   TPhysicalDrive = class(TOSFile)
@@ -18,8 +19,8 @@ type
     SMARTValueListReadWrite: TSMARTValueList;
     NCQAvailabilityReadWrite: TNCQAvailability;
 
-    AutoCommandSet: TAutoCommandSet;
-    AutoNSTSupport: TAutoNSTSupport;
+    CommandSet: TCommandSet;
+    NSTSupport: TNSTSupport;
 
     procedure RequestIdentifyDevice;
     procedure RequestSMARTReadData;
@@ -36,7 +37,7 @@ type
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
     function TryToGetIsDriveAvailable: Boolean;
-    procedure TryToCreateAndSetAutoNSTSupport;
+    procedure TryToCreateAndSetNSTSupport;
 
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
@@ -70,7 +71,7 @@ implementation
 constructor TPhysicalDrive.Create(FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess);
-  AutoCommandSet := TAutoCommandSet.Create(FileToGetAccess);
+  CommandSet := TCommandSetFactory.GetSuitableCommandSet(FileToGetAccess);
 end;
 
 constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
@@ -84,10 +85,10 @@ end;
 
 destructor TPhysicalDrive.Destroy;
 begin
-  if AutoCommandSet <> nil then
-    FreeAndNil(AutoCommandSet);
-  if AutoNSTSupport <> nil then
-    FreeAndNil(AutoNSTSupport);
+  if CommandSet <> nil then
+    FreeAndNil(CommandSet);
+  if NSTSupport <> nil then
+    FreeAndNil(NSTSupport);
   if SMARTValueListReadWrite <> nil then
     FreeAndNil(SMARTValueListReadWrite);
   inherited;
@@ -203,43 +204,41 @@ end;
 
 procedure TPhysicalDrive.RequestIdentifyDevice;
 begin
-  IdentifyDeviceResultReadWrite := AutoCommandSet.IdentifyDevice;
+  IdentifyDeviceResultReadWrite := CommandSet.IdentifyDevice;
 end;
 
 procedure TPhysicalDrive.RequestSMARTReadData;
 
 begin
-  SMARTValueListReadWrite := AutoCommandSet.SMARTReadData;
+  SMARTValueListReadWrite := CommandSet.SMARTReadData;
 end;
 
-procedure TPhysicalDrive.TryToCreateAndSetAutoNSTSupport;
+procedure TPhysicalDrive.TryToCreateAndSetNSTSupport;
 begin
   try
-    AutoNSTSupport :=
-      TAutoNSTSupport.Create(
+    NSTSupport :=
+      TNSTSupportFactory.GetSuitableNSTSupport(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
   except
-    FreeAndNil(AutoNSTSupport);
+    FreeAndNil(NSTSupport);
   end;
 end;
 
 procedure TPhysicalDrive.RequestSupportStatus;
 begin
-  if AutoNSTSupport = nil then
-    TryToCreateAndSetAutoNSTSupport;
-  if AutoNSTSupport <> nil then
-    SupportStatusReadWrite := AutoNSTSupport.GetSupportStatus
-  else
+  if NSTSupport = nil then
+    TryToCreateAndSetNSTSupport;
+  if NSTSupport = nil then
     SupportStatusReadWrite.Supported := false;
 end;
 
 procedure TPhysicalDrive.RequestSMARTInterpreted;
 begin
-  if AutoNSTSupport = nil then
-    TryToCreateAndSetAutoNSTSupport;
-  if AutoNSTSupport <> nil then
-    SMARTInterpretedReadWrite := AutoNSTSupport.GetSMARTInterpreted(
+  if NSTSupport = nil then
+    TryToCreateAndSetNSTSupport;
+  if NSTSupport <> nil then
+    SMARTInterpretedReadWrite := NSTSupport.GetSMARTInterpreted(
       GetSMARTValueListOrRequestAndReturn);
 end;
 

@@ -1,4 +1,4 @@
-unit TestAutoNSTSupport;
+unit TestNSTSupport;
 {
 
   Delphi DUnit Test Case
@@ -13,17 +13,17 @@ interface
 
 uses
   TestFramework,
-  uNSTSupport, uAutoNSTSupport;
+  uNSTSupport, uNSTSupportFactory;
 
 type
-  // Test methods for class TAutoNSTSupport
+  // Test methods for class TNSTSupportFactory
 
-  TestTAutoNSTSupport = class(TTestCase)
+  TestTNSTSupportFactory = class(TTestCase)
   strict private
-    FAutoNSTSupport: TAutoNSTSupport;
+    FNSTSupportFactory: TNSTSupportFactory;
+    FNSTSupport: TNSTSupport;
     procedure TestSupportStatusWithModelFirmware(Model, Firmware: String);
   public
-    procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestNonSupport;
@@ -69,219 +69,214 @@ type
 
 implementation
 
-procedure TestTAutoNSTSupport.SetUp;
+procedure TestTNSTSupportFactory.TearDown;
 begin
-  FAutoNSTSupport := TAutoNSTSupport.Create;
+  FNSTSupport.Free;
+  FNSTSupport := nil;
 end;
 
-procedure TestTAutoNSTSupport.TearDown;
-begin
-  FAutoNSTSupport.Free;
-  FAutoNSTSupport := nil;
-end;
-
-procedure TestTAutoNSTSupport.TestNonSupport;
+procedure TestTNSTSupportFactory.TestNonSupport;
 begin
   FAutoNSTSupport.SetModelAndFirmware('', '');
   CheckFalse(FAutoNSTSupport.GetSupportStatus.Supported,
     'Model & Firmware: Blank');
 end;
 
-procedure TestTAutoNSTSupport.TestHynixSandforceSupport;
+procedure TestTNSTSupportFactory.TestHynixSandforceSupport;
 begin
   TestSupportStatusWithModelFirmware('HYNIX HFS120G3AMNM', '10301A00');
 end;
 
-procedure TestTAutoNSTSupport.TestMachMXDSFusionSupport;
+procedure TestTNSTSupportFactory.TestMachMXDSFusionSupport;
 begin
   TestSupportStatusWithModelFirmware('MXSSD3MDSF-120G', '5.04');
 end;
 
-procedure TestTAutoNSTSupport.TestPatriotPyroSupport;
+procedure TestTNSTSupportFactory.TestPatriotPyroSupport;
 begin
   TestSupportStatusWithModelFirmware('Patriot Pyro', '319ABBF0');
 end;
 
-procedure TestTAutoNSTSupport.TestTHNSNSSupport;
+procedure TestTNSTSupportFactory.TestTHNSNSSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNS120GBSP', 'TA5ABBF0');
 end;
 
-procedure TestTAutoNSTSupport.TestOCZAgility3Support;
+procedure TestTNSTSupportFactory.TestOCZAgility3Support;
 begin
   TestSupportStatusWithModelFirmware('OCZ-AGILITY3', '2.06');
 end;
 
-procedure TestTAutoNSTSupport.TestOCZVertex3MaxIOPSSupport;
+procedure TestTNSTSupportFactory.TestOCZVertex3MaxIOPSSupport;
 begin
   TestSupportStatusWithModelFirmware('OCZ-VERTEX3 MI', '2.22');
 end;
 
-procedure TestTAutoNSTSupport.TestOCZVertex3Support;
+procedure TestTNSTSupportFactory.TestOCZVertex3Support;
 begin
   TestSupportStatusWithModelFirmware('OCZ-VERTEX3', '2.15');
 end;
 
-procedure TestTAutoNSTSupport.TestCrucialM500Support;
+procedure TestTNSTSupportFactory.TestCrucialM500Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT120M500SSD1', 'MU05');
   TestSupportStatusWithModelFirmware('Crucial_CT120M500SSD3', 'MU05');
 end;
 
-procedure TestTAutoNSTSupport.TestCrucialM550Support;
+procedure TestTNSTSupportFactory.TestCrucialM550Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT128M550SSD1', 'MU02');
   TestSupportStatusWithModelFirmware('Crucial_CT128M550SSD3', 'MU02');
 end;
 
-procedure TestTAutoNSTSupport.TestCrucialMX100Support;
+procedure TestTNSTSupportFactory.TestCrucialMX100Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT128MX100SSD1', 'MU02');
   TestSupportStatusWithModelFirmware('Crucial_CT128MX100SSD3', 'MU02');
 end;
 
-procedure TestTAutoNSTSupport.TestCrucialMX200Support;
+procedure TestTNSTSupportFactory.TestCrucialMX200Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD1', 'MU01');
   TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD3', 'MU01');
 end;
 
-procedure TestTAutoNSTSupport.TestLiteonE200Support;
+procedure TestTNSTSupportFactory.TestLiteonE200Support;
 begin
   TestSupportStatusWithModelFirmware('LITEONIT E200-160', 'VF81');
 end;
 
-procedure TestTAutoNSTSupport.TestLiteonS100Support;
+procedure TestTNSTSupportFactory.TestLiteonS100Support;
 begin
   TestSupportStatusWithModelFirmware('LITEONIT S100-256', 'VB83');
 end;
 
-procedure TestTAutoNSTSupport.TestLiteonS200Support;
+procedure TestTNSTSupportFactory.TestLiteonS200Support;
 begin
   TestSupportStatusWithModelFirmware('LITEONIT LAM-256M3S', 'WBA1');
 end;
 
-procedure TestTAutoNSTSupport.TestMachJetUltraSupport;
+procedure TestTNSTSupportFactory.TestMachJetUltraSupport;
 begin
   TestSupportStatusWithModelFirmware('MXSSD2MJTU-128G', 'UNKNOWN');
 end;
 
-procedure TestTAutoNSTSupport.TestMachMXMMYSupport;
+procedure TestTNSTSupportFactory.TestMachMXMMYSupport;
 begin
   TestSupportStatusWithModelFirmware('MXSSD3MMY-128G', 'V1707');
 end;
 
-procedure TestTAutoNSTSupport.TestPlextorM3PSupport;
+procedure TestTNSTSupportFactory.TestPlextorM3PSupport;
 begin
   TestSupportStatusWithModelFirmware('PLEXTOR PX-128M3P', '1.01');
 end;
 
-procedure TestTAutoNSTSupport.TestPlextorM5ProSupport;
+procedure TestTNSTSupportFactory.TestPlextorM5ProSupport;
 begin
   TestSupportStatusWithModelFirmware('PLEXTOR PX-128M5Pro', '1.07');
 end;
 
-procedure TestTAutoNSTSupport.TestPlextorM5PSupport;
+procedure TestTNSTSupportFactory.TestPlextorM5PSupport;
 begin
   TestSupportStatusWithModelFirmware('PLEXTOR PX-128M5P', '1.07');
 end;
 
-procedure TestTAutoNSTSupport.TestPlextorM5SSupport;
+procedure TestTNSTSupportFactory.TestPlextorM5SSupport;
 begin
   TestSupportStatusWithModelFirmware('PLEXTOR PX-128M5S', '1.05');
 end;
 
-procedure TestTAutoNSTSupport.TestPlextorNinjaSupport;
+procedure TestTNSTSupportFactory.TestPlextorNinjaSupport;
 begin
   TestSupportStatusWithModelFirmware('Ninja-256', '1.00');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung470Support;
+procedure TestTNSTSupportFactory.TestSamsung470Support;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG 470 Series', 'AXM0601Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung830Support;
+procedure TestTNSTSupportFactory.TestSamsung830Support;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 830 Series', 'CXM03B1Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung840EVOSupport;
+procedure TestTNSTSupportFactory.TestSamsung840EVOSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 840 EVO 250GB', 'EXT0AB0Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung840ProSupport;
+procedure TestTNSTSupportFactory.TestSamsung840ProSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 840 Pro Series', 'DXM02B0Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung840Support;
+procedure TestTNSTSupportFactory.TestSamsung840Support;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 840 Series', 'DXT06B0Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung850EVOSupport;
+procedure TestTNSTSupportFactory.TestSamsung850EVOSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 850 EVO 120GB', 'EMT01B6Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSamsung850ProSupport;
+procedure TestTNSTSupportFactory.TestSamsung850ProSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 850 PRO 512GB', 'EXM01B6Q');
 end;
 
-procedure TestTAutoNSTSupport.TestSandiskX110Support;
+procedure TestTNSTSupportFactory.TestSandiskX110Support;
 begin
   TestSupportStatusWithModelFirmware('SanDisk SD6SB1M256G1022I', 'X230600');
 end;
 
-procedure TestTAutoNSTSupport.TestSeagate600Support;
+procedure TestTNSTSupportFactory.TestSeagate600Support;
 begin
   TestSupportStatusWithModelFirmware('ST480HM000', 'B660');
 end;
 
-procedure TestTAutoNSTSupport.TestToshibaQFSupport;
+procedure TestTNSTSupportFactory.TestToshibaQFSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNF256GBSS', 'FSXAN104');
 end;
 
-procedure TestTAutoNSTSupport.TestToshibaQHSupport;
+procedure TestTNSTSupportFactory.TestToshibaQHSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNH128GBST', 'HTRAN101');
 end;
 
-procedure TestTAutoNSTSupport.TestToshibaQProSupport;
+procedure TestTNSTSupportFactory.TestToshibaQProSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNJ128GCST', 'JTRA0102');
 end;
 
-procedure TestTAutoNSTSupport.TestPhisonCT7Support;
+procedure TestTNSTSupportFactory.TestPhisonCT7Support;
 begin
   TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM00.f');
   TestSupportStatusWithModelFirmware('SATA SSD', 'SAFM01.3');
 end;
 
-procedure TestTAutoNSTSupport.TestADATASP900Support;
+procedure TestTNSTSupportFactory.TestADATASP900Support;
 begin
   TestSupportStatusWithModelFirmware('ADATA SP900', '5.8.2');
 end;
 
-procedure TestTAutoNSTSupport.TestADATASP920Support;
+procedure TestTNSTSupportFactory.TestADATASP920Support;
 begin
   TestSupportStatusWithModelFirmware('ADATA SP920SS', 'MU01');
 end;
 
-procedure TestTAutoNSTSupport.TestSupportStatusWithModelFirmware(Model,
+procedure TestTNSTSupportFactory.TestSupportStatusWithModelFirmware(Model,
   Firmware: String);
 begin
-  FAutoNSTSupport.SetModelAndFirmware(Model, Firmware);
+  FNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
   CheckTrue(FAutoNSTSupport.GetSupportStatus.Supported,
     'Model: ' + Model + ' Firmware: ' + Firmware);
 end;
 
 initialization
   // Register any test cases with the test runner
-  RegisterTest(TestTAutoNSTSupport.Suite);
+  RegisterTest(TestTNSTSupportFactory.Suite);
 end.
 

@@ -4,10 +4,15 @@ interface
 
 uses
   Classes, SysUtils,
-  uPartitionTrimmer;
+  uNSTSupport, uSandforceNSTSupport, uNSTSupportFactory;
 
 type
   TWriteBufferSettingVerifier = class
+  {$IfNDef UNITTEST}
+  private
+  {$EndIf}
+    function SplitIntoModelAndFirmware(
+      ModelAndFirmware: String; out Model, Firmware: String): Boolean;
   private
     function CheckAndCorrectByInterface(InterfaceName: String): TStringList;
     ModelList, DeviceList: TStringList;
@@ -19,27 +24,51 @@ implementation
 
 { TWriteBufferSettingVerifier }
 
+function TWriteBufferSettingVerifier.UnderbarToSpace(
+  ModelAndFirmware: String): String;
+var
+  CurrentPoint: Integer;
+begin
+  result := ModelAndFirmware;
+  for CurrentPoint := 0 to Length(result) - 1 do
+    if result[CurrentPoint] = '_' then
+      result[CurrentPoint] := ' ';
+end;
+
 function TWriteBufferSettingVerifier.SplitIntoModelAndFirmware(
-  const ModelAndFirmware: String; out Model, Firmware: String): Boolean;
+  ModelAndFirmware: String; out Model, Firmware: String): Boolean;
+const
+  IdeDiskString = 'Disk';
+  FirmwareLength = 8;
 var
   Model, Firmware: String;
+  ModelLength: Integer;
 begin
-  Assert(false, 'Split not implemented');
+  if Copy(ModelAndFirmware, 1, Length(IdeDiskString)) <> IdeDiskString then
+    exit;
+  
+  ModelAndFirmware := UnderbarToSpace(ModelAndFirmware);
+  ModelLength := Length(ModelAndFirmware) -
+    (Length(DiskString) + FirmwareLength);
+  Model := Copy(ModelAndFirmware, Length(DiskString) + 1, ModelLength);
+  Firmware := Copy(ModelAndFirmware, 
+    Length(ModelLength) + Length(DiskString) + 1,
+    FirmwareLength);
 end;
 
 function TWriteBufferSettingVerifier.CheckSupportStatus(
   ModelAndFirmware: String): Boolean;
 var
-  PartitionTrimmer: TPartitionTrimmer;
+  NSTSupport: TNSTSupport;
   Model, Firmware: String;
 begin
-  PartitionTrimmer := TPartitionTrimmer.Create;
+  NSTSupport := TNSTSupport.Create;
   SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware);
-  PartitionTrimmer.SetModelAndFirmware(Model, Firmware);
+  NSTSupport.SetModelAndFirmware(Model, Firmware);
   result :=
-    (PartitionTrimmer.GetSupportStatus.Supported) and
-    (not PartitionTrimmer.IsSandforce);
-  FreeAndNil(PartitionTrimmer);
+    (NSTSupport.GetSupportStatus.Supported) and
+    (not (NSTSupport is TSandforceNSTSupport));
+  FreeAndNil(NSTSupport);
 end;
 
 function TWriteBufferSettingVerifier.CheckDevice(
