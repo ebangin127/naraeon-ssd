@@ -20,7 +20,6 @@ type
 
   TestTNSTSupportFactory = class(TTestCase)
   strict private
-    FNSTSupportFactory: TNSTSupportFactory;
     FNSTSupport: TNSTSupport;
     procedure TestSupportStatusWithModelFirmware(Model, Firmware: String);
   public
@@ -77,9 +76,8 @@ end;
 
 procedure TestTNSTSupportFactory.TestNonSupport;
 begin
-  FAutoNSTSupport.SetModelAndFirmware('', '');
-  CheckFalse(FAutoNSTSupport.GetSupportStatus.Supported,
-    'Model & Firmware: Blank');
+  FNSTSupport := TNSTSupportFactory.GetSuitableNSTSupport('', '');
+  CheckTrue(FNSTSupport = nil, 'Model & Firmware: Blank');
 end;
 
 procedure TestTNSTSupportFactory.TestHynixSandforceSupport;
@@ -270,9 +268,8 @@ end;
 procedure TestTNSTSupportFactory.TestSupportStatusWithModelFirmware(Model,
   Firmware: String);
 begin
-  FNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
-  CheckTrue(FAutoNSTSupport.GetSupportStatus.Supported,
-    'Model: ' + Model + ' Firmware: ' + Firmware);
+  FNSTSupport := TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
+  CheckTrue(FNSTSupport <> nil, 'Model: ' + Model + ' Firmware: ' + Firmware);
 end;
 
 initialization

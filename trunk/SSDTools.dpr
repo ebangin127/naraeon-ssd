@@ -43,7 +43,6 @@ uses
   uDiskGeometryGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uDiskGeometryGetter.pas',
   uDriveAvailabilityGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas',
   uPartitionListGetter in 'WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas',
-  uAutoCommandSet in 'WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas',
   uATACommandSet in 'WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas',
   uSATCommandSet in 'WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas',
   uPhysicalDriveListGetter in 'WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas',
@@ -119,7 +118,8 @@ uses
   uADATANSTSupport in 'NSTSupport\Support\uADATANSTSupport.pas',
   uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
   uDeviceTrimmer in 'ThreadHelper\uDeviceTrimmer.pas',
-  uAutoNSTSupport in 'NSTSupport\Auto\uAutoNSTSupport.pas';
+  uCommandSetFactory in 'WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
+  uNSTSupportFactory in 'NSTSupport\Factory\uNSTSupportFactory.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

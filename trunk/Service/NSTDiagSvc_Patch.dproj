@@ -106,7 +106,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-        <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.8.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.8.0</VerInfo_Keys>
@@ -134,7 +133,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
         <DCCReference Include="..\Objects\uSMARTValueList.pas"/>
@@ -145,7 +143,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Interpreter\uATABufferInterpreter.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
-        <DCCReference Include="..\NSTSupport\Auto\uAutoNSTSupport.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas"/>
@@ -183,6 +180,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
+        <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
+        <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -236,16 +236,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
-                <DeployFile LocalName="..\..\Exe\NSTDiagSvc_Patch.exe" Configuration="Release" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\..\EXE\NSTDiagSvc_Patch.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\Exe\NSTDiagSvc_Patch.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
                     </Platform>
                 </DeployFile>
                 <DeployClass Required="true" Name="DependencyPackage">
@@ -595,8 +593,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
-</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -604,8 +601,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
-</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

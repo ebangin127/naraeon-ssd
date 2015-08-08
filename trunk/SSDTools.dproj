@@ -181,7 +181,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDiskGeometryGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas"/>
@@ -269,7 +268,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\Support\uADATANSTSupport.pas"/>
         <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>
         <DCCReference Include="ThreadHelper\uDeviceTrimmer.pas"/>
-        <DCCReference Include="NSTSupport\Auto\uAutoNSTSupport.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
+        <DCCReference Include="NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -323,16 +323,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
-                <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployClass Required="true" Name="DependencyPackage">

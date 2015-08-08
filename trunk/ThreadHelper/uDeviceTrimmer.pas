@@ -84,7 +84,7 @@ end;
 
 procedure TDeviceTrimmer.Flush;
 begin
-  AutoCommandSet.DataSetManagement(
+  CommandSet.DataSetManagement(
     PendingTrimOperation.StartLBA,
     PendingTrimOperation.LengthInLBA);
   ZeroMemory(@PendingTrimOperation, SizeOf(PendingTrimOperation));

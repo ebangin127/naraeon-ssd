@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, 
-  uNSTSupport
+  uNSTSupport,
   //General//
   uCrucialNSTSupport, uLiteonNSTSupport, uPlextorNSTSupport, uSandiskNSTSupport,
   uSeagateNSTSupport, uToshibaNSTSupport, uSamsungNSTSupport,
@@ -22,8 +22,8 @@ type
     class function GetSuitableNSTSupport(Model, Firmware: String):
       TNSTSupport;
   private
-    class var Model: String;
-    class var Firmware: String;
+    class var FModel: String;
+    class var FFirmware: String;
     class function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
     class function TestNSTSupportCompatibility(
       TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
@@ -36,12 +36,12 @@ implementation
 class function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
   TNSTSupport;
 begin
-  self.Model := Model;
-  self.Firmware := Firmware;
-  result := TryNSTSupportAndGetRightNSTSupport(Model, Firmware):
+  FModel := Model;
+  FFirmware := Firmware;
+  result := TryNSTSupportAndGetRightNSTSupport;
 end;
 
-class function TAutoCommandSet.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
+class function TNSTSupportFactory.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
 begin
   result := nil;
   result := TestNSTSupportCompatibility(TCrucialNSTSupport, result);
@@ -62,7 +62,7 @@ begin
   result := TestNSTSupportCompatibility(TADATASandforceNSTSupport, result);
 end;
 
-class function TAutoNSTSupport.TestNSTSupportCompatibility(
+class function TNSTSupportFactory.TestNSTSupportCompatibility(
   TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
 var
   NSTSupportToTry: TNSTSupport;
@@ -70,7 +70,7 @@ begin
   if LastResult <> nil then
     exit(LastResult);
   
-  result := TNSTSupportToTry.Create(Model, Firmware);
+  result := TNSTSupportToTry.Create(FModel, FFirmware);
 
   if not result.GetSupportStatus.Supported then
     FreeAndNil(result);

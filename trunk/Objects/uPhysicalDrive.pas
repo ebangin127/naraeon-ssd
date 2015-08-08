@@ -7,7 +7,7 @@ uses
   uOSFile, uNSTSupport, uNSTSupportFactory,
   uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
   uBufferInterpreter, uSMARTValueList, uCommandSet, 
-  uNSTSupport, uNCQAvailabilityGetter, uCommandSetFactory;
+  uNCQAvailabilityGetter, uCommandSetFactory;
 
 type
   TPhysicalDrive = class(TOSFile)

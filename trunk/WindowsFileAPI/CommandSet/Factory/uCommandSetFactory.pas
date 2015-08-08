@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, SysUtils, Dialogs,
-  uCommandSet, uATACommandSet, uLegacyATACommandSet, uSATCommandSet;
+  uCommandSet, uBufferInterpreter,
+  uATACommandSet, uLegacyATACommandSet, uSATCommandSet;
 
 type
   TMetaCommandSet = class of TCommandSet;
@@ -33,7 +34,7 @@ begin
     raise EArgumentNilException.Create('Argument Nil: CommandSet is not set');
 end;
 
-class function TAutoCommandSet.TryCommandSetsAndGetRightSet: TCommandSet;
+class function TCommandSetFactory.TryCommandSetsAndGetRightSet: TCommandSet;
 begin
   result := nil;
   result := TestCommandSetCompatibility(TATACommandSet, result);
@@ -41,7 +42,7 @@ begin
   result := TestCommandSetCompatibility(TSATCommandSet, result);
 end;
 
-class function TAutoCommandSet.TestCommandSetCompatibility
+class function TCommandSetFactory.TestCommandSetCompatibility
   (TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
 var
   CommandSetToTry: TCommandSet;

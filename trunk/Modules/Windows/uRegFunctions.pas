@@ -93,7 +93,11 @@ class function TStaticRegistry.GetRegInt(const Path: TRegistryPath): Integer;
 begin
   SetPath(Path);
   OpenRegistryWithRight(KEY_READ);
-  result := Registry.ReadInteger(Path.ValueName);
+  try
+    result := Registry.ReadInteger(Path.ValueName);
+  except
+    result := 0;
+  end;
   CloseRegistry;
 end;
 
@@ -101,7 +105,11 @@ class function TStaticRegistry.GetRegStr(const Path: TRegistryPath): String;
 begin
   SetPath(Path);
   OpenRegistryWithRight(KEY_READ);
-  result := Registry.ReadString(Path.ValueName);
+  try
+    result := Registry.ReadString(Path.ValueName);
+  except
+    result := '';
+  end;
   CloseRegistry;
 end;
 

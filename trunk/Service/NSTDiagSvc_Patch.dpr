@@ -16,7 +16,6 @@ uses
   uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
   uOSFileWithHandle in '..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
   uCommandSet in '..\WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas',
-  uAutoCommandSet in '..\WindowsFileAPI\CommandSet\Auto\uAutoCommandSet.pas',
   uATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas',
   uSATCommandSet in '..\WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas',
   uSMARTValueList in '..\Objects\uSMARTValueList.pas',
@@ -27,7 +26,6 @@ uses
   uPartitionExtentGetter in '..\WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas',
   uATABufferInterpreter in '..\WindowsFileAPI\Interpreter\uATABufferInterpreter.pas',
   uNSTSupport in '..\NSTSupport\Abstraction\uNSTSupport.pas',
-  uAutoNSTSupport in '..\NSTSupport\Auto\uAutoNSTSupport.pas',
   uPhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas',
   uAutoPhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas',
   uBruteForcePhysicalDriveListGetter in '..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas',
@@ -60,7 +58,10 @@ uses
   uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
   uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
-  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas';
+  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
+  uRegistryHelper in '..\Objects\uRegistryHelper.pas',
+  uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
+  uCommandSetFactory in '..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}
