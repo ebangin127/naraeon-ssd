@@ -48,7 +48,12 @@ uses
   uPartitionTrimmer in '..\ThreadHelper\uPartitionTrimmer.pas',
   uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
   uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
-  TestNSTSupport in 'NSTSupport\TestNSTSupport.pas';
+  TestNSTSupport in 'NSTSupport\TestNSTSupport.pas',
+  TestWriteBufferSettingVerifier in 'Objects\TestWriteBufferSettingVerifier.pas',
+  uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
+  uStaticRegistry in '..\Objects\uStaticRegistry.pas',
+  uRegistryHelper in '..\Objects\uRegistryHelper.pas',
+  uExeFunctions in '..\Modules\Windows\uExeFunctions.pas';
 
 {$R *.RES}
 

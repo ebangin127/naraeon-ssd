@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFile, uIoControlFile, uOSFileWithHandle;
+  uOSFile, uIoControlFile, uOSFileWithHandle,
+  uPartition, uPartitionExtentGetter;
 
 type
   TTrimBasicsToInitialize = record
@@ -16,6 +17,7 @@ type
   TTrimBasicsGetter = class abstract(TIoControlFile)
   private
     FileSystemNameInCharArray: Array[0..MAX_PATH - 1] of Char;
+    function GetStartLBA: UInt64;
 
   protected
     function GetFileSystemName: String;
@@ -28,7 +30,7 @@ type
     constructor Create(FileToGetAccess: String); override;
     function IsPartitionMyResponsibility: Boolean; virtual; abstract;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
-      virtual; abstract;
+      virtual;
   end;
 
   EUnknownPartition = class(Exception);
@@ -52,6 +54,23 @@ end;
 function TTrimBasicsGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
 begin
   result := TCreateFileDesiredAccess.DesiredReadOnly;
+end;
+
+function TTrimBasicsGetter.GetStartLBA: UInt64;
+var
+  Partition: TPartition;
+  PartitionExtentList: TPartitionExtentList;
+begin
+  Partition := TPartition.Create(GetPathOfFileAccessing);
+  PartitionExtentList := Partition.GetPartitionExtentList;
+  result := PartitionExtentList[0].StartingOffset div BytePerLBA;
+  FreeAndNil(PartitionExtentList);
+  FreeAndNil(Partition);
+end;
+
+function TTrimBasicsGetter.GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
+begin
+  result.StartLBA := GetStartLBA;
 end;
 
 constructor TTrimBasicsGetter.Create(FileToGetAccess: String);

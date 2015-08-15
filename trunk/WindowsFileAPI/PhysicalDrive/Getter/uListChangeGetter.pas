@@ -24,7 +24,6 @@ type
     IsResultNeeded: Boolean;
     ListToRefresh: TPhysicalDriveList;
     CurrentPhysicalDriveList: TPhysicalDriveList;
-    procedure GetCurrentPhysicalDriveList(IsService: Boolean);
     function GetListChangeByCurrentPhysicalDriveList:
       TRefreshedListAndChanges;
     function IsSupportedOrNotNeededToCheck(
@@ -35,8 +34,8 @@ type
       var NewList: TPhysicalDriveList): TStringList;
     function InnerRefreshListWithResultFrom(
       var ListToRefresh: TPhysicalDriveList; IsService: Boolean): TChangesList;
-    function GetPhysicalDriveListGetter(
-      IsService: Boolean): TPhysicalDriveListGetter;
+    function GetPhysicalDriveList(
+      IsService: Boolean): TPhysicalDriveList;
   public
     property IsOnlyGetSupportedDrives: Boolean
       read InnerIsOnlyGetSupportedDrives write InnerIsOnlyGetSupportedDrives;
@@ -68,22 +67,13 @@ begin
   RefreshListWithResultFrom(ListToRefresh);
 end;
 
-function TListChangeGetter.GetPhysicalDriveListGetter(IsService: Boolean):
-  TPhysicalDriveListGetter;
+function TListChangeGetter.GetPhysicalDriveList(IsService: Boolean):
+  TPhysicalDriveList;
 begin
   if not IsService then
-    result := TAutoPhysicalDriveListGetter.Create
+    result := TAutoPhysicalDriveListGetter.GetPhysicalDriveList
   else
-    result := TBruteForcePhysicalDriveListGetter.Create;
-end;
-
-procedure TListChangeGetter.GetCurrentPhysicalDriveList(IsService: Boolean);
-var
-  PhysicalDriveListGetter: TPhysicalDriveListGetter;
-begin
-  PhysicalDriveListGetter := GetPhysicalDriveListGetter(IsService);
-  CurrentPhysicalDriveList := PhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(PhysicalDriveListGetter);
+    result := TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService;
 end;
   
 function TListChangeGetter.RefreshListWithResultFrom(
@@ -105,7 +95,7 @@ var
 begin
   IsResultNeeded := true;
   self.ListToRefresh := ListToRefresh;
-  GetCurrentPhysicalDriveList(IsService);
+  CurrentPhysicalDriveList := GetPhysicalDriveList(IsService);
   RefreshedListAndChanges := GetListChangeByCurrentPhysicalDriveList;
   FreeAndNil(ListToRefresh);
   ListToRefresh := RefreshedListAndChanges.RefreshedList;

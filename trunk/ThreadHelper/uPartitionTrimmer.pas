@@ -7,7 +7,7 @@ uses
   uOSFile
   {$IfNDef UNITTEST}, uPartition, uTrimThreadToModel,{$EndIf}
   {$IfDef UNITTEST}, uMockAutoTrimBasicsGetter,
-  {$Else}uTrimBasicsGetter, uAutoTrimBasicsGetter,{$EndIf}
+  {$Else}uTrimBasicsGetter, uTrimBasicsGetterFactory,{$EndIf}
   {$IfDef UNITTEST}uMockDeviceTrimmer,
   {$Else}uDeviceTrimmer,{$EndIf}
   {$IfDef UNITTEST}uMockVolumeBitmapGetter
@@ -341,14 +341,15 @@ end;
 
 procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
 var
-  AutoTrimBasicsGetter: TAutoTrimBasicsGetter;
+  TrimBasicsGetter: TTrimBasicsGetter;
 begin
-  AutoTrimBasicsGetter := TAutoTrimBasicsGetter.Create(GetPathOfFileAccessing);
-  if not AutoTrimBasicsGetter.IsPartitionMyResponsibility then
+  TrimBasicsGetter := TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
+    GetPathOfFileAccessing);
+  if not TrimBasicsGetter.IsPartitionMyResponsibility then
     raise EUnknownPartition.Create
       ('Unknown Partiton: Use with known partition');
-  TrimBasicsToInitialize := AutoTrimBasicsGetter.GetTrimBasicsToInitialize;
-  FreeAndNil(AutoTrimBasicsGetter);
+  TrimBasicsToInitialize := TrimBasicsGetter.GetTrimBasicsToInitialize;
+  FreeAndNil(TrimBasicsGetter);
   InitializeStartLBA;
 end;
 

@@ -3,7 +3,6 @@ program NSTDiagSvc_Patch;
 uses
   Vcl.SvcMgr,
   Windows,
-  uRegFunctions in '..\Modules\Windows\uRegFunctions.pas',
   uLanguageSettings in '..\Modules\Language\uLanguageSettings.pas',
   uExeFunctions in '..\Modules\Windows\uExeFunctions.pas',
   uUINT64 in '..\Modules\Etc\uUINT64.pas',
@@ -59,9 +58,11 @@ uses
   uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
-  uRegistryHelper in '..\Objects\uRegistryHelper.pas',
   uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
-  uCommandSetFactory in '..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas';
+  uCommandSetFactory in '..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
+  uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
+  uRegistryHelper in '..\Objects\uRegistryHelper.pas',
+  uStaticRegistry in '..\Objects\uStaticRegistry.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

@@ -3,7 +3,8 @@ unit uOSFileWithHandle;
 interface
 
 uses
-  Windows, SysUtils, Dialogs, uOSFile;
+  Windows, SysUtils, Dialogs, uOSFile,
+  uSecurityDescriptor;
 
 type
   TCreateFileDesiredAccess =
@@ -87,21 +88,25 @@ end;
 
 function TOSFileWithHandle.CreateFileSystemCall(FileToGetAccess: LPCWSTR;
   DesiredAccessInDWORD: DWORD): THandle;
+var
+  SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
 const
   OtherHandlesCanReadWrite = FILE_SHARE_WRITE or FILE_SHARE_READ;
   NoSecurityDescriptor = nil;
   NoFileAttributeFlag = 0;
   NoTemplateFile = 0;
 begin
+  SecurityDescriptorManipulator := TSecurityDescriptorManipulator.Create;
   result :=
     Windows.CreateFile
       (FileToGetAccess,
        DesiredAccessInDWORD,
        OtherHandlesCanReadWrite,
-       NoSecurityDescriptor,
+       SecurityDescriptorManipulator.GetSecurityDescriptor,
        OPEN_EXISTING,
        NoFileAttributeFlag,
        NoTemplateFile);
+  FreeAndNil(SecurityDescriptorManipulator);
 end;
 
 procedure TOSFileWithHandle.IfInsufficientPrivilegeRaiseException

@@ -148,6 +148,8 @@ function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
+  result.StorageInterface := TStorageInterface.ATA;
+  result.IsDataSetManagementSupported := IsDataSetManagementSupported;
 end;
 
 procedure TLegacyATACommandSet.SetInnerBufferToSMARTReadData;

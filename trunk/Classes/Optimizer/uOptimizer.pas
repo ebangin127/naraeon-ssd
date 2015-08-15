@@ -4,7 +4,8 @@ interface
 
 uses SysUtils, Classes, Forms,
     Generics.Collections,
-    uRegFunctions, uExeFunctions, uLanguageSettings, uAlert, uPathManager;
+    uStaticRegistry, uIs64Bit, uExeFunctions,
+    uLanguageSettings, uAlert, uPathManager;
 
 type
   TOptList = TList<Boolean>;
@@ -68,7 +69,7 @@ begin
   begin
     if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
     begin
-      OpenProcWithOutput(
+      TProcessOpener.OpenProcWithOutput(
         TPathManager.WinDrive,
         TPathManager.WinDir + '\System32\cmd.exe /C powercfg -h off');
     end;
@@ -78,7 +79,7 @@ begin
   //LastExcess
   if (Optimized[CurrItem] = False) and (OptList[CurrItem]) then
   begin
-    OpenProcWithOutput(
+    TProcessOpener.OpenProcWithOutput(
       TPathManager.WinDrive, 'FSUTIL behavior set disablelastaccess 1');
   end;
   CurrItem := CurrItem + 1;
@@ -100,7 +101,7 @@ begin
         TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\services\SysMain', 'Start'), 4);
         Resultfutil :=
-          string(OpenProcWithOutput(
+          string(TProcessOpener.OpenProcWithOutput(
             TPathManager.WinDir + '\System32', 'net stop SysMain'));
       end
       else if Win32MajorVersion = 5 then
@@ -140,14 +141,14 @@ begin
       TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
         'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 4);
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop WSearch'));
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net stop WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
       TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
         'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 4);
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop CiSvc'));
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net stop CiSvc'));
     end;
   end;
   CurrItem := CurrItem + 1;
@@ -159,7 +160,7 @@ begin
       TStaticRegistry.LegacyPathToNew('LM',
         'SYSTEM\CurrentControlSet\services\srservice', 'Start'), 4);
     Resultfutil :=
-      string(OpenProcWithOutput(TPathManager.WinDrive, 'net stop srservice'));
+      string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net stop srservice'));
     TStaticRegistry.SetRegInt(
       TStaticRegistry.LegacyPathToNew('LM',
         'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
@@ -167,14 +168,14 @@ begin
     if Is64Bit then
     begin
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive,
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive,
           TPathManager.WinDir + '\System32\cmd.exe /C ' +
           '"%windir%\sysnative\vssadmin.exe" delete shadows /all /quiet'));
     end
     else
     begin
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive,
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive,
           TPathManager.WinDir + '\System32\cmd.exe /C ' +
           '"%windir%\system32\vssadmin.exe" delete shadows /all /quiet'));
     end;
@@ -201,7 +202,7 @@ begin
   begin
     if Optimized[CurrItem] then
     begin
-      OpenProcWithOutput(
+      TProcessOpener.OpenProcWithOutput(
         TPathManager.WinDrive,
         TPathManager.WinDir + '\System32\cmd.exe /C powercfg -h on');
     end;
@@ -211,7 +212,7 @@ begin
   //LastExcess
   if Optimized[CurrItem] then
   begin
-    OpenProcWithOutput(TPathManager.WinDrive,
+    TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive,
       'FSUTIL behavior set disablelastaccess 0');
   end;
   CurrItem := CurrItem + 1;
@@ -234,7 +235,7 @@ begin
         TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
           'SYSTEM\CurrentControlSet\services\SysMain',
           'Start'), 2);
-        Resultfutil := string(OpenProcWithOutput(TPathManager.WinDir +
+        Resultfutil := string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDir +
           '\System32',
           'net start SysMain'));
       end
@@ -274,14 +275,14 @@ begin
       TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
         'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 2);
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive, 'net start WSearch'));
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net start WSearch'));
     end
     else if Win32MajorVersion = 5 then
     begin
       TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
         'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 2);
       Resultfutil :=
-        string(OpenProcWithOutput(TPathManager.WinDrive, 'net start CiSvc'));
+        string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net start CiSvc'));
     end;
   end;
   CurrItem := CurrItem + 1;
@@ -292,7 +293,7 @@ begin
     TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
       'LM', 'SYSTEM\CurrentControlSet\services\srservice', 'Start'), 2);
     Resultfutil :=
-      string(OpenProcWithOutput(TPathManager.WinDrive, 'net start srservice'));
+      string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive, 'net start srservice'));
     TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
       'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
       'SystemRestore', 'DisableSR'), 0);
@@ -324,7 +325,7 @@ begin
 
   //LastAccess
   Resultfutil :=
-    string(OpenProcWithOutput(TPathManager.WinDrive,
+    string(TProcessOpener.OpenProcWithOutput(TPathManager.WinDrive,
       'FSUTIL behavior query disablelastaccess'));
   Optimized[CurrItem] := not (Pos('= 0', Resultfutil) > 0);
   CurrItem := CurrItem + 1;

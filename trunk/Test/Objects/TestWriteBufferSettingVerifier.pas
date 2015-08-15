@@ -13,7 +13,7 @@ interface
 
 uses
   TestFramework,
-  uNSTSupport, uAutoNSTSupport;
+  uWriteBufferSettingVerifier;
 
 type
   // Test methods for class TWriteBufferSettingVerifier
@@ -28,7 +28,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestHynixSandforceSupport;
+    procedure TestSplittingHardDiskModelFirmware;
   end;
 
 implementation
@@ -44,7 +44,7 @@ begin
   FWriteBufferSettingVerifier := nil;
 end;
 
-procedure TestTWriteBufferSettingVerifier.TestADATASP920Support;
+procedure TestTWriteBufferSettingVerifier.TestSplittingHardDiskModelFirmware;
 begin
   TestSplittingModelAndFirmware(
     'DiskWDC_WD10EZEX-00BN5A0____________________01.01A01',
@@ -73,6 +73,6 @@ end;
 
 initialization
   // Register any test cases with the test runner
-  RegisterTest(TestTAutoNSTSupport.Suite);
+  RegisterTest(TestTWriteBufferSettingVerifier.Suite);
 end.
 

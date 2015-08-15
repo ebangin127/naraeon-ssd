@@ -62,7 +62,7 @@ uses
   uTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas',
   uNTFSTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas',
   uFATTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas',
-  uAutoTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas',
+  uTrimBasicsGetterFactory in 'WindowsFileAPI\Partition\TrimBasics\Factory\uTrimBasicsGetterFactory.pas',
   uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas',
   uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in 'NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
@@ -103,7 +103,7 @@ uses
   uDeleteDirectory in 'Modules\Windows\uDeleteDirectory.pas',
   uExeFunctions in 'Modules\Windows\uExeFunctions.pas',
   uPlugAndPlay in 'Modules\Windows\uPlugAndPlay.pas',
-  uRegFunctions in 'Modules\Windows\uRegFunctions.pas',
+  uStaticRegistry in 'Objects\uStaticRegistry.pas',
   uFixedDriveListGetter in 'WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
   uPartitionExtentGetter in 'WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas',
   uRemovableDriveListGetter in 'WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas',
@@ -119,7 +119,9 @@ uses
   uPartitionTrimmer in 'ThreadHelper\uPartitionTrimmer.pas',
   uDeviceTrimmer in 'ThreadHelper\uDeviceTrimmer.pas',
   uCommandSetFactory in 'WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
-  uNSTSupportFactory in 'NSTSupport\Factory\uNSTSupportFactory.pas';
+  uNSTSupportFactory in 'NSTSupport\Factory\uNSTSupportFactory.pas',
+  uIs64Bit in 'Modules\Windows\uIs64Bit.pas',
+  uSecurityDescriptor in 'Objects\uSecurityDescriptor.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

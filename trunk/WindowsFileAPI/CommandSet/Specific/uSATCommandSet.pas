@@ -193,6 +193,8 @@ function TSATCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
+  result.StorageInterface := TStorageInterface.SAT;
+  result.IsDataSetManagementSupported := IsDataSetManagementSupported;
 end;
 
 procedure TSATCommandSet.SetInnerBufferToSMARTReadData;

@@ -34,6 +34,7 @@ end;
 function TFATTrimBasicsGetter.GetTrimBasicsToInitialize:
   TTrimBasicsToInitialize;
 begin
+  result := inherited;
   result.LBAPerCluster := GetLBAPerCluster;
   result.PaddingLBA := GetPaddingLBA(result.LBAPerCluster);
 end;

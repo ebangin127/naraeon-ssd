@@ -15,6 +15,7 @@ type
       TCommandSet;
 
   private
+    constructor Create;
     class var FileToGetAccess: String;
     class function TryCommandSetsAndGetRightSet: TCommandSet;
     class function TestCommandSetCompatibility(
@@ -24,6 +25,11 @@ type
 implementation
 
 { TCommandSetFactory }
+
+constructor TCommandSetFactory.Create;
+begin
+
+end;
 
 class function TCommandSetFactory.GetSuitableCommandSet(
   FileToGetAccess: String): TCommandSet;
@@ -45,7 +51,6 @@ end;
 class function TCommandSetFactory.TestCommandSetCompatibility
   (TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
 var
-  CommandSetToTry: TCommandSet;
   IdentifyDeviceResult: TIdentifyDeviceResult;
 begin
   if LastResult <> nil then
@@ -54,7 +59,7 @@ begin
   result := TCommandSetToTry.Create(FileToGetAccess);
   
   try
-    IdentifyDeviceResult := CommandSetToTry.IdentifyDevice;
+    IdentifyDeviceResult := result.IdentifyDevice;
   except
     IdentifyDeviceResult.Model := '';
   end;

@@ -49,6 +49,7 @@ end;
 function TNTFSTrimBasicsGetter.GetTrimBasicsToInitialize:
   TTrimBasicsToInitialize;
 begin
+  result := inherited;
   result.PaddingLBA := 0;
   result.LBAPerCluster := GetLBAPerCluster;
 end;

@@ -212,7 +212,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Auto\uAutoTrimBasicsGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Factory\uTrimBasicsGetterFactory.pas"/>
         <DCCReference Include="ThreadToModel\uTrimThreadToModel.pas"/>
         <DCCReference Include="NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
@@ -253,7 +253,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\Windows\uDeleteDirectory.pas"/>
         <DCCReference Include="Modules\Windows\uExeFunctions.pas"/>
         <DCCReference Include="Modules\Windows\uPlugAndPlay.pas"/>
-        <DCCReference Include="Modules\Windows\uRegFunctions.pas"/>
+        <DCCReference Include="Objects\uStaticRegistry.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas"/>
@@ -270,6 +270,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="ThreadHelper\uDeviceTrimmer.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
         <DCCReference Include="NSTSupport\Factory\uNSTSupportFactory.pas"/>
+        <DCCReference Include="Modules\Windows\uIs64Bit.pas"/>
+        <DCCReference Include="Objects\uSecurityDescriptor.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -326,6 +328,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>SSDTools.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployClass Required="true" Name="DependencyPackage">

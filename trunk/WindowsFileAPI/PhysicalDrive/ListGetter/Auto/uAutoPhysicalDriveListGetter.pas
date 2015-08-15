@@ -8,72 +8,63 @@ uses
   uWMIPhysicalDriveListGetter, uPhysicalDriveList;
 
 type
-  TAutoPhysicalDriveListGetter = class(TPhysicalDriveListGetter)
-  public
-    function GetPhysicalDriveList: TPhysicalDriveList; override;
+  TMetaPhysicalDriveListGetter = class of TPhysicalDriveListGetter;
+
+  TAutoPhysicalDriveListGetter = class
   private
-    PhysicalDriveList: TPhysicalDriveList;
-    function IsMoreTrialNeeded: Boolean;
-    procedure LetBruteForceGetterFillTheList;
-    procedure LetBruteForceGetterFillTheListIfNeeded;
-    procedure LetWMIGetterFillTheList;
-    procedure LetWMIGetterFillTheListIfNeeded;
+    class function TestCompatibilityAndGet(
+      TPhysicalDriveListGetterToTry: TMetaPhysicalDriveListGetter;
+      LastResult: TPhysicalDriveList): TPhysicalDriveList; static;
+  public
+    constructor Create;
+    class function GetPhysicalDriveList: TPhysicalDriveList;
+    class function GetPhysicalDriveListInService: TPhysicalDriveList;
   end;
 
 implementation
 
 { TAutoPhysicalDriveListGetter }
-function TAutoPhysicalDriveListGetter.IsMoreTrialNeeded: Boolean;
+
+constructor TAutoPhysicalDriveListGetter.Create;
 begin
-  result := 
-    (PhysicalDriveList = nil) or
-    (PhysicalDriveList.Count = 0);
+
 end;
 
-procedure TAutoPhysicalDriveListGetter.LetBruteForceGetterFillTheList;
-var
-  BruteForcePhysicalDriveListGetter: TBruteForcePhysicalDriveListGetter;
-begin
-  BruteForcePhysicalDriveListGetter := TBruteForcePhysicalDriveListGetter.Create;
-  PhysicalDriveList :=
-    BruteForcePhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(BruteForcePhysicalDriveListGetter);
-end;
-
-procedure TAutoPhysicalDriveListGetter.LetWMIGetterFillTheList;
-var
-  WMIPhysicalDriveListGetter: TWMIPhysicalDriveListGetter;
-begin
-  WMIPhysicalDriveListGetter := TWMIPhysicalDriveListGetter.Create;
-  PhysicalDriveList :=
-    WMIPhysicalDriveListGetter.GetPhysicalDriveList;
-  FreeAndNil(WMIPhysicalDriveListGetter);
-end;
-
-procedure TAutoPhysicalDriveListGetter.LetBruteForceGetterFillTheListIfNeeded;
-begin
-  if IsMoreTrialNeeded = false then
-    exit;
-  if PhysicalDriveList <> nil then
-    FreeAndNil(PhysicalDriveList);
-  LetBruteForceGetterFillTheList;
-end;
-
-procedure TAutoPhysicalDriveListGetter.LetWMIGetterFillTheListIfNeeded;
-begin
-  if IsMoreTrialNeeded = false then
-    exit;
-  if PhysicalDriveList <> nil then
-    FreeAndNil(PhysicalDriveList);
-  LetWMIGetterFillTheList;
-end;
-
-function TAutoPhysicalDriveListGetter.GetPhysicalDriveList:
+class function TAutoPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
-  LetWMIGetterFillTheListIfNeeded;
-  LetBruteForceGetterFillTheListIfNeeded;
-  result := PhysicalDriveList;
+  result := nil;
+  result := TestCompatibilityAndGet(TWMIPhysicalDriveListGetter,
+    result);
+  result := TestCompatibilityAndGet(TBruteForcePhysicalDriveListGetter,
+    result);
+end;
+
+class function TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService:
+  TPhysicalDriveList;
+begin
+  result := nil;
+  result := TestCompatibilityAndGet(TBruteForcePhysicalDriveListGetter,
+    result);
+end;
+
+class function TAutoPhysicalDriveListGetter.TestCompatibilityAndGet(
+  TPhysicalDriveListGetterToTry: TMetaPhysicalDriveListGetter;
+  LastResult: TPhysicalDriveList): TPhysicalDriveList;
+var
+  PhysicalDriveListGetter: TPhysicalDriveListGetter;
+begin
+  if LastResult <> nil then
+    exit;
+
+  PhysicalDriveListGetter := TPhysicalDriveListGetterToTry.Create;
+  result := PhysicalDriveListGetter.GetPhysicalDriveList;
+
+  if (result = nil) or
+    (result.Count = 0) then
+      FreeAndNil(result);
+
+  FreeAndNil(PhysicalDriveListGetter);
 end;
 
 end.

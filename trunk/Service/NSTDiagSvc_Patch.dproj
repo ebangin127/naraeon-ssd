@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>NSTDiagSvc_Patch.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -120,7 +120,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Modules\Windows\uRegFunctions.pas"/>
         <DCCReference Include="..\Modules\Language\uLanguageSettings.pas"/>
         <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
         <DCCReference Include="..\Modules\Etc\uUINT64.pas"/>
@@ -180,9 +179,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
-        <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
+        <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
+        <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
+        <DCCReference Include="..\Objects\uStaticRegistry.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -236,14 +237,16 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment>
-                <DeployFile LocalName="..\..\EXE\NSTDiagSvc_Patch.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="..\..\Exe\NSTDiagSvc_Patch.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\EXE\NSTDiagSvc_Patch.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployClass Required="true" Name="DependencyPackage">

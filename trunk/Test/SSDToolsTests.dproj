@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{05A33A46-6F15-462E-88BA-2012B6AAC044}</ProjectGuid>
         <ProjectVersion>16.1</ProjectVersion>
-        <FrameworkType>None</FrameworkType>
+        <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -129,6 +129,11 @@
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <DCCReference Include="NSTSupport\TestNSTSupport.pas"/>
+        <DCCReference Include="Objects\TestWriteBufferSettingVerifier.pas"/>
+        <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
+        <DCCReference Include="..\Objects\uStaticRegistry.pas"/>
+        <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
+        <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -193,11 +198,16 @@
                 <DeployFile LocalName="Win32\Debug\SSDToolsTests.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDToolsTests.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
-                    <Platform Name="OSX32"/>
-                    <Platform Name="iOSSimulator"/>
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
                 </DeployFile>
                 <DeployClass Required="true" Name="DependencyPackage">
                     <Platform Name="iOSDevice">

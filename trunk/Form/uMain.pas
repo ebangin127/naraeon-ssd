@@ -554,10 +554,10 @@ begin
   if ButtonGroup.Click(iTrim) <> clkOpen then
     exit;
 
+  cTrimList.Clear;
   PartitionList := PhysicalDrive.GetPartitionList;
   for CurrentDrive := 0 to PartitionList.Count - 1 do
   begin
-    cTrimList.Clear;
     VolumeLabelGetter := TVolumeLabelGetter.Create(
       PartitionList[CurrentDrive].Letter);
     cTrimList.Items.Add(VolumeLabelGetter.GetVolumeLabel(
@@ -769,7 +769,7 @@ begin
     if Win32MajorVersion = 5 then
     begin
       SchedResult :=
-        string(OpenProcWithOutput(
+        string(TProcessOpener.OpenProcWithOutput(
           TPathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
@@ -783,7 +783,7 @@ begin
     end
     else
       SchedResult :=
-        string(OpenProcWithOutput(
+        string(TProcessOpener.OpenProcWithOutput(
           TPathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
@@ -797,7 +797,7 @@ begin
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
-      string(OpenProcWithOutput(
+      string(TProcessOpener.OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
         '/TN "MANTRIM' +                            //작업 이름
@@ -823,7 +823,7 @@ begin
 
   cTrimRunning.Checked :=
     Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
-      UnicodeString(OpenProcWithOutput(
+      UnicodeString(TProcessOpener.OpenProcWithOutput(
         TPathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;
 end;

@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, ShlObj, Windows,
   uPhysicalDrive, uPhysicalDriveList, uLanguageSettings, uPathManager,
   uListChangeGetter, uDatasizeUnit, uAverageCountLogger, uAverageWriteLogger,
-  uNSTSupport, uPartitionListGetter, uExeFunctions;
+  uNSTSupport, uPartitionListGetter, uWriteBufferSettingVerifier;
 
 type
   TDiagnosisService = class
@@ -27,6 +27,7 @@ type
       IsReplacedSectorDifferent: Boolean);
     function GetAlertFile: TStringList;
     function GetPartitionLetters(Entry: TPhysicalDrive): String;
+    procedure SaveWriteBufferCheckResult(WriteBufferErrors: TStringList);
   public
     constructor Create;
     destructor Destroy; override;
@@ -94,18 +95,29 @@ end;
 
 procedure TDiagnosisService.WriteBufferCheck;
 var
-  WriteBufferErrors: TStringList;
+  WriteBufferSettingVerifier: TWriteBufferSettingVerifier;
+begin
+  WriteBufferSettingVerifier := TWriteBufferSettingVerifier.Create;
+  SaveWriteBufferCheckResult(
+    WriteBufferSettingVerifier.CheckAndCorrect);
+  FreeAndNil(WriteBufferSettingVerifier);
+end;
+
+procedure TDiagnosisService.SaveWriteBufferCheckResult(
+  WriteBufferErrors: TStringList);
+var
   AlertFile: TStringList;
   CurrentLine: Integer;
 begin
-  WriteBufferErrors := uExeFunctions.WriteBufferCheck;
   if WriteBufferErrors.Count > 0 then
   begin
     AlertFile := GetAlertFile;
     for CurrentLine := 0 to WriteBufferErrors.Count - 1 do
-      AlertFile.Add(GetLogLine(Now,
-        ' !!!!! ' + WriteBufferErrors[CurrentLine] + ' ' +
-        CapWrongBuf[CurrLang] + ' !!!!! ' + CapWrongBuf2[CurrLang]));
+      AlertFile.Add(
+        GetLogLine(Now, ' !!!!! ' +
+          WriteBufferErrors[CurrentLine] + ' ' +
+          CapWrongBuf[CurrLang] + ' !!!!! ' +
+          CapWrongBuf2[CurrLang]));
     AlertFile.SaveToFile(ErrorFilePath);
     FreeAndNil(AlertFile);
   end;

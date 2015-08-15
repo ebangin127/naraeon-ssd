@@ -4,7 +4,8 @@ interface
 
 uses
   Classes, SysUtils,
-  uNSTSupport, uSandforceNSTSupport, uNSTSupportFactory;
+  uNSTSupport, uSandforceNSTSupport, uNSTSupportFactory,
+  uRegistryHelper, uRegFunctions;
 
 type
   TWriteBufferSettingVerifier = class
@@ -14,8 +15,18 @@ type
     function SplitIntoModelAndFirmware(
       ModelAndFirmware: String; out Model, Firmware: String): Boolean;
   private
+    ModelList: TStringList;
+    DeviceList: TStringList;
     function CheckAndCorrectByInterface(InterfaceName: String): TStringList;
-    ModelList, DeviceList: TStringList;
+    function CheckAndCorrectByDevice(ModelPathInRegistry: TRegistryPath;
+      CurrentDevice: String): String;
+    function CheckAndCorrectByModel(InterfacePathInRegistry: TRegistryPath;
+      ModelAndFirmware: String): TStringList;
+    function CheckDevice(DevicePathInRegistry: TRegistryPath): Boolean;
+    function CheckSupportStatus(ModelAndFirmware: String): Boolean;
+    function CorrectDevice(DevicePathInRegistry: TRegistryPath): Boolean;
+    function UnderbarToSpace(ModelAndFirmware: String): String;
+    function GetDeviceFriendlyName(DevicePathInRegistry: TRegistryPath): String;
   public
     function CheckAndCorrect: TStringList;
   end;
@@ -30,7 +41,7 @@ var
   CurrentPoint: Integer;
 begin
   result := ModelAndFirmware;
-  for CurrentPoint := 0 to Length(result) - 1 do
+  for CurrentPoint := 1 to Length(result) do
     if result[CurrentPoint] = '_' then
       result[CurrentPoint] := ' ';
 end;
@@ -41,19 +52,19 @@ const
   IdeDiskString = 'Disk';
   FirmwareLength = 8;
 var
-  Model, Firmware: String;
   ModelLength: Integer;
 begin
   if Copy(ModelAndFirmware, 1, Length(IdeDiskString)) <> IdeDiskString then
-    exit;
-  
+    exit(false);
+
   ModelAndFirmware := UnderbarToSpace(ModelAndFirmware);
   ModelLength := Length(ModelAndFirmware) -
-    (Length(DiskString) + FirmwareLength);
-  Model := Copy(ModelAndFirmware, Length(DiskString) + 1, ModelLength);
-  Firmware := Copy(ModelAndFirmware, 
-    Length(ModelLength) + Length(DiskString) + 1,
-    FirmwareLength);
+    (Length(IdeDiskString) + FirmwareLength);
+  Model := Trim(Copy(ModelAndFirmware, Length(IdeDiskString) + 1, ModelLength));
+  Firmware := Trim(Copy(ModelAndFirmware,
+    ModelLength + Length(IdeDiskString) + 1, FirmwareLength));
+
+  result := true;
 end;
 
 function TWriteBufferSettingVerifier.CheckSupportStatus(
@@ -62,10 +73,12 @@ var
   NSTSupport: TNSTSupport;
   Model, Firmware: String;
 begin
-  NSTSupport := TNSTSupport.Create;
-  SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware);
-  NSTSupport.SetModelAndFirmware(Model, Firmware);
+  if not SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware) then
+    exit(false);
+
+  NSTSupport := TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
   result :=
+    (NSTSupport <> nil) and
     (NSTSupport.GetSupportStatus.Supported) and
     (not (NSTSupport is TSandforceNSTSupport));
   FreeAndNil(NSTSupport);
@@ -76,8 +89,12 @@ function TWriteBufferSettingVerifier.CheckDevice(
 const
   WriteBufferIsDisabled = 0;
 begin
-  result := TStaticRegistry.GetRegInt(DevicePathInRegistry) =
-    WriteBufferIsDisabled;
+  try
+    result := TStaticRegistry.GetRegInt(DevicePathInRegistry) =
+      WriteBufferIsDisabled;
+  except
+    result := false;
+  end;
 end;
 
 function TWriteBufferSettingVerifier.CorrectDevice(
@@ -85,23 +102,36 @@ function TWriteBufferSettingVerifier.CorrectDevice(
 const
   WriteBufferIsEnabled = 1;
 begin
-  TStaticRegistry.SetRegInt(DevicePathInRegistry,
+  result := TStaticRegistry.SetRegInt(DevicePathInRegistry,
     WriteBufferIsEnabled);
 end;
 
-function TWriteBufferSettingVerifier.CheckAndCorrectByDevice(
-  ModelPathInRegistry: TRegistryPath; CurrentDevice: String): Boolean;
-var
-  CurrentDevice: String;
+function TWriteBufferSettingVerifier.GetDeviceFriendlyName(
+  DevicePathInRegistry: TRegistryPath): String;
 begin
-  ModelPathInRegistry.PathUnderHKEY := InterfacePathInRegistry.PathUnderHKEY
+  DevicePathInRegistry.ValueName := 'FriendlyName';
+  result := TStaticRegistry.GetRegStr(DevicePathInRegistry);
+end;
+
+function TWriteBufferSettingVerifier.CheckAndCorrectByDevice(
+  ModelPathInRegistry: TRegistryPath; CurrentDevice: String): String;
+var
+  IsDeviceNeedCorrection: Boolean;
+  DevicePath: String;
+begin
+  result := '';
+  DevicePath := ModelPathInRegistry.PathUnderHKEY
     + '\' + CurrentDevice;
   ModelPathInRegistry.PathUnderHKEY :=
-    ModelPathInRegistry.PathUnderHKEY + '\Device Parameters\Disk';
+    DevicePath + '\Device Parameters\Disk';
   ModelPathInRegistry.ValueName := 'UserWriteCacheSetting';
-  result := CheckDevice(ModelPathInRegistry);
-  if result then
+  IsDeviceNeedCorrection := CheckDevice(ModelPathInRegistry);
+  if IsDeviceNeedCorrection then
+  begin
     CorrectDevice(ModelPathInRegistry);
+    ModelPathInRegistry.PathUnderHKEY := DevicePath;
+    result := GetDeviceFriendlyName(ModelPathInRegistry);
+  end;
 end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrectByModel(
@@ -109,8 +139,9 @@ function TWriteBufferSettingVerifier.CheckAndCorrectByModel(
   ModelAndFirmware: String): TStringList;
 var
   CurrentDevice: String;
-  ResultInDevice: TStringList;
+  CurrentDeviceResult: String;
 begin
+  result := TStringList.Create;
   if not CheckSupportStatus(ModelAndFirmware) then
     exit;
     
@@ -119,8 +150,10 @@ begin
   TStaticRegistry.GetKeyList(InterfacePathInRegistry, DeviceList);
   for CurrentDevice in DeviceList do
   begin
-    if CheckAndCorrectByDevice(InterfacePathInRegistry, CurrentDevice) then
-      result := GetDeviceFriendlyName(InterfacePathInRegistry, CurrentDevice);
+    CurrentDeviceResult :=
+      CheckAndCorrectByDevice(InterfacePathInRegistry, CurrentDevice);
+    if CurrentDeviceResult <> '' then
+      result.Add(CurrentDeviceResult);
   end;
 end;
 
@@ -148,7 +181,7 @@ begin
     ResultInModel :=
       CheckAndCorrectByModel(
         BasePathWithInterfaceName, ModelAndFirmware);
-    if ResultInModel <> '' then
+    if ResultInModel.Count > 0 then
       result.AddStrings(ResultInModel);
     FreeAndNil(ResultInModel);
   end;
@@ -156,18 +189,17 @@ end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrect: TStringList;
 const
-  InterfaceArray = ['IDE', 'SCSI'];
+  InterfaceSet: Array[0..1] of String = ('IDE', 'SCSI');
 var
   CurrentInterfaceName: String;
   ResultInSpecificInterface: TStringList;
 begin
   result := TStringList.Create;
-  
+
   ModelList := TStringList.Create;
   DeviceList := TStringList.Create;
-  ValueList := TStringList.Create;
-  
-  for CurrentInterfaceName in InterfaceArray do
+
+  for CurrentInterfaceName in InterfaceSet do
   begin
     ResultInSpecificInterface :=
       CheckAndCorrectByInterface(CurrentInterfaceName);
@@ -177,7 +209,6 @@ begin
   
   FreeAndNil(ModelList);
   FreeAndNil(DeviceList);
-  FreeAndNil(ValueList);
 end;
 
 end.

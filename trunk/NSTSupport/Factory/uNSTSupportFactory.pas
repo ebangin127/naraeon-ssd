@@ -22,6 +22,7 @@ type
     class function GetSuitableNSTSupport(Model, Firmware: String):
       TNSTSupport;
   private
+    constructor Create;
     class var FModel: String;
     class var FFirmware: String;
     class function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
@@ -32,6 +33,11 @@ type
 implementation
 
 { TNSTSupportFactory }
+
+constructor TNSTSupportFactory.Create;
+begin
+
+end;
 
 class function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
   TNSTSupport;
@@ -64,8 +70,6 @@ end;
 
 class function TNSTSupportFactory.TestNSTSupportCompatibility(
   TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
-var
-  NSTSupportToTry: TNSTSupport;
 begin
   if LastResult <> nil then
     exit(LastResult);

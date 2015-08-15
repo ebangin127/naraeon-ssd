@@ -3,158 +3,86 @@
 interface
 
 uses
-  SysUtils, Classes, Windows, Dialogs,
-  uRegFunctions, Registry;
+  SysUtils, Windows, Dialogs,
+  uSecurityDescriptor;
 
-function WriteBufferCheck: TStringList; //���� ���� üũ�Ǿ��ֳ� Ȯ��
-function OpenProcWithOutput(Path: String; Command: String): AnsiString; //���α׷� ����
-procedure OpenProcWOOutput(Path: String; Command: String);
-function Is64Bit: Boolean;
+type
+  TProcessOpener = class
+  public
+    class function OpenProcWithOutput(Path: String; Command: String):
+      AnsiString;
+  private
+    class var SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
+    class function GetSecurityDescriptor: TSecurityAttributes;
+    class procedure CreatePipeWithHandles(
+      var ReadHandle, WriteHandle: THandle);
+    class function ReadFromHandle(const ReadHandle: THandle): AnsiString; static;
+  end;
 
 implementation
 
-uses
-  uMain;
-
-function WriteBufferCheck: TStringList;
-var
-  ModelList, SerialsList: TStringList;
-  ValueList: TStringList;
-  CurrDev, CurrSer: Integer;
+class function TProcessOpener.GetSecurityDescriptor: TSecurityAttributes;
 begin
-  result := TStringList.Create;
-  ModelList := TStringList.Create;
-  SerialsList := TStringList.Create;
-  ValueList := TStringList.Create;
-  TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
-    'LM', 'SYSTEM\CurrentControlSet\Enum\IDE', ''), ModelList);
-  for CurrDev := 0 to ModelList.Count - 1 do
-  begin
-    if ((Pos('SAMSUNG', ModelList[CurrDev]) > 0) and (Pos('SSD', ModelList[CurrDev]) > 0)) or
-        (Pos('LITEONIT', ModelList[CurrDev]) > 0) or
-        ((Pos('PLEXTOR', ModelList[CurrDev]) > 0) and (Pos('PX', ModelList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('JT', ModelList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('MMY', ModelList[CurrDev]) > 0)) then
-    begin
-      TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew(
-        'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev], ''), SerialsList);
-      for CurrSer := 0 to SerialsList.Count - 1 do
-      begin
-        TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' +
-          SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
-        if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
-          '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
-        begin
-          TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-            'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
-            '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
-          result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\IDE\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer], 'FriendlyName')));
-        end;
-      end;
-    end;
-  end;
-  TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
-    'SYSTEM\CurrentControlSet\Enum\SCSI', ''), ModelList);
-  for CurrDev := 0 to ModelList.Count - 1 do
-  begin
-    if ((Pos('SAMSUNG', ModelList[CurrDev]) > 0) and (Pos('SSD', ModelList[CurrDev]) > 0)) or
-        (Pos('LITEONIT', ModelList[CurrDev]) > 0) or
-        ((Pos('PLEXTOR', ModelList[CurrDev]) > 0) and (Pos('PX', ModelList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('JT', ModelList[CurrDev]) > 0)) or
-        ((Pos('MXSSD', ModelList[CurrDev]) > 0) and (Pos('MMY', ModelList[CurrDev]) > 0)) then
-    begin
-      TStaticRegistry.GetKeyList(TStaticRegistry.LegacyPathToNew('LM',
-        'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev], ''), SerialsList);
-      for CurrSer := 0 to SerialsList.Count - 1 do
-      begin
-        TStaticRegistry.GetValueList(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' +
-          SerialsList[CurrSer] + '\Device Parameters\Disk', ''), ValueList);
-        if TStaticRegistry.GetRegInt(TStaticRegistry.LegacyPathToNew('LM',
-          'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
-          '\Device Parameters\Disk', 'UserWriteCacheSetting')) = 0 then
-        begin
-          TStaticRegistry.SetRegInt(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer] +
-            '\Device Parameters\Disk', 'UserWriteCacheSetting'), 1);
-          result.Add(TStaticRegistry.GetRegStr(TStaticRegistry.LegacyPathToNew(
-            'LM', 'SYSTEM\CurrentControlSet\Enum\SCSI\' + ModelList[CurrDev] + '\' + SerialsList[CurrSer]
-            , 'FriendlyName')));
-        end;
-      end;
-    end;
-  end;
-  FreeAndNil(ModelList);
-  FreeAndNil(SerialsList);
-  FreeAndNil(ValueList);
+  result.nLength := sizeof(result);
+  result.lpSecurityDescriptor :=
+    SecurityDescriptorManipulator.GetSecurityDescriptor;
+  result.bInheritHandle := true;
 end;
 
-function OpenProcWithOutput(Path: String; Command: String): AnsiString;
+class procedure TProcessOpener.CreatePipeWithHandles(
+  var ReadHandle, WriteHandle: THandle);
 var
-  start: TStartupInfo;
-  sec: TSecurityAttributes;
-  pinfo: TProcessInformation;
-  hwrite, hread: THandle;
-  BytesRead: DWORD;
-  Buffer: array[0..512] of Ansichar;
-  ResultString: AnsiString;
-  PathW, CommandW: WideString;
+  SecurityAttributes: TSecurityAttributes;
 begin
-  sec.nLength := sizeof(sec);
-  sec.lpSecurityDescriptor := nil;
-  sec.bInheritHandle := true;
-  if CreatePipe(hread, hwrite, @sec, 0)<>true then
-  begin
-    exit;
-  end;
-  FillChar(start, sizeof(STARTUPINFO), 0);
-  start.cb := sizeof(STARTUPINFO);
-  start.wShowWindow := SW_HIDE;
-  start.dwFlags := STARTF_USESHOWWINDOW;
-  start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
-  start.hStdOutput := hwrite;
-  start.hStdError := hwrite;
-  PathW := Path;
-  CommandW := Command;
-  if not CreateProcess(nil, PWideChar(CommandW), nil, nil, True, 0, nil, PWideChar(PathW), start, pinfo) then ShowMessage('Error!');
-  CloseHandle(hwrite);
-  while ReadFile(hread, Buffer, Length(buffer)-1, BytesRead, nil) and (BytesRead>0) do
+  SecurityAttributes := GetSecurityDescriptor;
+  if not CreatePipe(ReadHandle, WriteHandle, @SecurityAttributes, 0) then
+    raise EOSError.Create('CreatePipe Error (' + UIntToStr(GetLastError) + ')');
+end;
+
+class function TProcessOpener.ReadFromHandle(
+  const ReadHandle: THandle): AnsiString;
+var
+  Buffer: array[0..512] of AnsiChar;
+  BytesRead: DWORD;
+begin
+  result := '';
+  while
+    (ReadFile(ReadHandle, Buffer, Length(Buffer) - 1, BytesRead, nil)) and
+    (BytesRead > 0) do
   begin
     Buffer[BytesRead] := #0;
-    ResultString := ResultString + Buffer;
+    result := result + Buffer;
   end;
-  CloseHandle(hread);
-  Result := ResultString;
 end;
 
-procedure OpenProcWOOutput(Path: String; Command: String);
-begin
-  OpenProcWithOutput(Path, Command);
-end;
-
-function Is64Bit: Boolean;
-type
-  TIsWow64Process = function(AHandle:THandle; var AIsWow64: BOOL): BOOL; stdcall;
+class function TProcessOpener.OpenProcWithOutput(Path: String; Command: String):
+  AnsiString;
+const
+  StartupSettingsTemplate: TStartupInfo =
+    (cb: sizeof(STARTUPINFO);
+     dwFlags: STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+     wShowWindow: SW_HIDE);
 var
-  vKernel32Handle: DWORD;
-  vIsWow64Process: TIsWow64Process;
-  vIsWow64: BOOL;
+  StartupSettings: TStartupInfo;
+  WriteHandle, ReadHandle: THandle;
+  ProcessInformation: _PROCESS_INFORMATION;
 begin
-  Result := False;
+  SecurityDescriptorManipulator := TSecurityDescriptorManipulator.Create;
 
-  vKernel32Handle := LoadLibrary('kernel32.dll');
-  if (vKernel32Handle = 0) then Exit;
-  try
-    @vIsWow64Process := GetProcAddress(vKernel32Handle, 'IsWow64Process');
-    if not Assigned(vIsWow64Process) then Exit;
-    vIsWow64 := False;
-    if (vIsWow64Process(GetCurrentProcess, vIsWow64)) then
-      Result := vIsWow64;
-  finally
-    FreeLibrary(vKernel32Handle);
-  end;
+  CreatePipeWithHandles(ReadHandle, WriteHandle);
+  StartupSettings := StartupSettingsTemplate;
+  StartupSettings.hStdOutput := WriteHandle;
+  StartupSettings.hStdError := WriteHandle;
+
+  if not CreateProcess(nil,
+    PWideChar(WideString(Command)), nil, nil, True, 0, nil,
+    PWideChar(WideString(Path)), StartupSettings, ProcessInformation) then
+      raise EOSError.Create(
+        'CreateProcess Error (' + UIntToStr(GetLastError) + ')');
+  CloseHandle(WriteHandle);
+  result := ReadFromHandle(ReadHandle);
+  CloseHandle(ReadHandle);
+
+  FreeAndNil(SecurityDescriptorManipulator);
 end;
 end.

@@ -147,6 +147,8 @@ function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
+  result.StorageInterface := TStorageInterface.ATA;
+  result.IsDataSetManagementSupported := IsDataSetManagementSupported;
 end;
 
 procedure TATACommandSet.SetInnerBufferToSMARTReadData;

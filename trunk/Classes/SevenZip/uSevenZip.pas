@@ -51,7 +51,7 @@ class function TSevenZip.Extract
 begin
   if VerifySevenZip(SzipPath) then
     result :=
-      OpenProcWithOutput('C:\',
+      TProcessOpener.OpenProcWithOutput('C:\',
         BuildCommand(SzipPath, SrcFile, DestFolder, Password));
 end;
 

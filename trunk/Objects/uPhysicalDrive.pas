@@ -230,7 +230,9 @@ begin
   if NSTSupport = nil then
     TryToCreateAndSetNSTSupport;
   if NSTSupport = nil then
-    SupportStatusReadWrite.Supported := false;
+    SupportStatusReadWrite.Supported := false
+  else
+    SupportStatusReadWrite := NSTSupport.GetSupportStatus;
 end;
 
 procedure TPhysicalDrive.RequestSMARTInterpreted;
