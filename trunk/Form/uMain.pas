@@ -10,11 +10,11 @@ uses
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
   uSevenZip, uOptimizer,
-  uExeFunctions, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
+  uProcessOpener, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
   uPhysicalDrive, uPartitionListGetter, uPhysicalDriveList,
-  uFirmwareGetter, uGlobalSettings, uCodesignVerifier,
+  uFirmwareGetter, uVersionPublisher, uCodesignVerifier,
   uSSDLabelList, uSSDLabel, uMainformPhysicalDriveApplier,
   uSSDLabelListRefresher, uFirmwareDownloader, uRemovableDriveListGetter,
   uDriveListGetter, uVolumeLabelGetter;

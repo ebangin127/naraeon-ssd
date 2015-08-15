@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Windows, ShellApi,
-  uVersion, uHTTPWeb, uGlobalSettings, uDownloadThread, uDownloadPath,
+  uVersion, uHTTPWeb, uVersionPublisher, uDownloadThread, uDownloadPath,
   uCodesignVerifier, uLanguageSettings, uPathManager, uAlert, uDownloader,
   uDeleteDirectory;
 

@@ -119,7 +119,7 @@
         <DCCReference Include="..\Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
         <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
-        <DCCReference Include="..\Modules\Etc\uUINT64.pas"/>
+        <DCCReference Include="..\Modules\uUINT64.pas"/>
         <DCCReference Include="Classes\AverageLogger\TestAverageWriteLogger.pas"/>
         <DCCReference Include="ThreadHelper\TestPartitionTrimmer.pas"/>
         <DCCReference Include="ThreadHelper\uMockAutoTrimBasicsGetter.pas"/>
@@ -133,7 +133,7 @@
         <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\uStaticRegistry.pas"/>
         <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
-        <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
+        <DCCReference Include="..\Objects\uProcessOpener.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

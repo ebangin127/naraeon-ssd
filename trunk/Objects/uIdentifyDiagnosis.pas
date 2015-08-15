@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   uPhysicalDriveList, uPhysicalDrive, uLanguageSettings,
-  uGlobalSettings, uListChangeGetter;
+  uVersionPublisher, uListChangeGetter;
 
 type
   TIdentifyDiagnosis = class

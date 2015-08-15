@@ -120,10 +120,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Modules\Language\uLanguageSettings.pas"/>
-        <DCCReference Include="..\Modules\Windows\uExeFunctions.pas"/>
-        <DCCReference Include="..\Modules\Etc\uUINT64.pas"/>
-        <DCCReference Include="..\Modules\Etc\uDeleteWhitespace.pas"/>
+        <DCCReference Include="..\Resource\uLanguageSettings.pas"/>
+        <DCCReference Include="..\Objects\uProcessOpener.pas"/>
+        <DCCReference Include="..\Modules\uUINT64.pas"/>
+        <DCCReference Include="..\Modules\uDeleteWhitespace.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uDatasizeUnit.pas"/>
         <DCCReference Include="..\Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
@@ -154,7 +154,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\NSTSupport\Support\uSeagateNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <DCCReference Include="Objects\uDiagnosisService.pas"/>
-        <DCCReference Include="..\Classes\PathManager\uPathManager.pas"/>
+        <DCCReference Include="..\Objects\uPathManager.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas"/>

@@ -39,7 +39,7 @@ uses
   uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
-  uUINT64 in '..\Modules\Etc\uUINT64.pas',
+  uUINT64 in '..\Modules\uUINT64.pas',
   TestAverageWriteLogger in 'Classes\AverageLogger\TestAverageWriteLogger.pas',
   TestPartitionTrimmer in 'ThreadHelper\TestPartitionTrimmer.pas',
   uMockAutoTrimBasicsGetter in 'ThreadHelper\uMockAutoTrimBasicsGetter.pas',
@@ -53,7 +53,7 @@ uses
   uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
   uStaticRegistry in '..\Objects\uStaticRegistry.pas',
   uRegistryHelper in '..\Objects\uRegistryHelper.pas',
-  uExeFunctions in '..\Modules\Windows\uExeFunctions.pas';
+  uProcessOpener in '..\Objects\uProcessOpener.pas';
 
 {$R *.RES}
 

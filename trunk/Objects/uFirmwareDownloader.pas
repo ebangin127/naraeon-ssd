@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, SysUtils, IdURI, Dialogs, ShellApi,
-  uAlert, uLanguageSettings, uPathManager, uGlobalSettings,
-  uExeFunctions, uPhysicalDrive, uDownloadThread,
+  uAlert, uLanguageSettings, uPathManager, uVersionPublisher,
+  uProcessOpener, uPhysicalDrive, uDownloadThread,
   uDeleteDirectory, uDownloadPath, uFirmwareGetter, uCodesignVerifier,
   uDownloader, uRufus;
 
