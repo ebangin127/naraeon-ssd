@@ -1,4 +1,4 @@
-unit uMockAutoTrimBasicsGetter;
+unit uMockTrimBasicsGetterFactory;
 
 interface
 
@@ -24,28 +24,39 @@ type
     StartLBA: UInt64;
   end;
 
-  TAutoTrimBasicsGetter = class(TOSFile)
+  TTrimBasicsGetter = class(TOSFile)
   public
     function IsPartitionMyResponsibility: Boolean;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
+  end;
+
+  TTrimBasicsGetterFactory = class
+  public
+    class function GetSuitableTrimBasicsGetter(FileToGetAccess: String):
+      TTrimBasicsGetter;
   end;
 
   EUnknownPartition = class(Exception);
 
 implementation
 
-{ TAutoTrimBasicsGetter }
-
-function TAutoTrimBasicsGetter.IsPartitionMyResponsibility: Boolean;
+function TTrimBasicsGetter.IsPartitionMyResponsibility: Boolean;
 begin
   result := true;
 end;
 
-function TAutoTrimBasicsGetter.GetTrimBasicsToInitialize:
+function TTrimBasicsGetter.GetTrimBasicsToInitialize:
   TTrimBasicsToInitialize;
 begin
   result.StartLBA := 0;
   result.LBAPerCluster := 1;
   result.PaddingLBA := 0;
 end;
+
+class function TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
+  FileToGetAccess: String): TTrimBasicsGetter;
+begin
+  result := TTrimBasicsGetter.Create(FileToGetAccess);
+end;
+
 end.

@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Windows, Math,
   uOSFile
   {$IfNDef UNITTEST}, uPartition, uTrimThreadToModel,{$EndIf}
-  {$IfDef UNITTEST}, uMockAutoTrimBasicsGetter,
+  {$IfDef UNITTEST}, uMockTrimBasicsGetterFactory,
   {$Else}uTrimBasicsGetter, uTrimBasicsGetterFactory,{$EndIf}
   {$IfDef UNITTEST}uMockDeviceTrimmer,
   {$Else}uDeviceTrimmer,{$EndIf}

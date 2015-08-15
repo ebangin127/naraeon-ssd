@@ -35,14 +35,11 @@ uses
   uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
   uADATASandforceNSTSupport in '..\NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas',
   uADATANSTSupport in '..\NSTSupport\Support\uADATANSTSupport.pas',
-  TestAverageCountLogger in 'Classes\AverageLogger\TestAverageCountLogger.pas',
-  uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
-  uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
-  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
+  TestAverageCountLogger in 'Objects\AverageLogger\TestAverageCountLogger.pas',
   uUINT64 in '..\Modules\uUINT64.pas',
-  TestAverageWriteLogger in 'Classes\AverageLogger\TestAverageWriteLogger.pas',
+  TestAverageWriteLogger in 'Objects\AverageLogger\TestAverageWriteLogger.pas',
   TestPartitionTrimmer in 'ThreadHelper\TestPartitionTrimmer.pas',
-  uMockAutoTrimBasicsGetter in 'ThreadHelper\uMockAutoTrimBasicsGetter.pas',
+  uMockTrimBasicsGetterFactory in 'ThreadHelper\uMockTrimBasicsGetterFactory.pas',
   uMockDeviceTrimmer in 'ThreadHelper\uMockDeviceTrimmer.pas',
   uMockVolumeBitmapGetter in 'ThreadHelper\uMockVolumeBitmapGetter.pas',
   uPartitionTrimmer in '..\ThreadHelper\uPartitionTrimmer.pas',
@@ -53,7 +50,12 @@ uses
   uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
   uStaticRegistry in '..\Objects\uStaticRegistry.pas',
   uRegistryHelper in '..\Objects\uRegistryHelper.pas',
-  uProcessOpener in '..\Objects\uProcessOpener.pas';
+  uProcessOpener in '..\Objects\uProcessOpener.pas',
+  uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',
+  uAverageCountLogger in '..\Objects\AverageLogger\Specific\uAverageCountLogger.pas',
+  uAverageWriteLogger in '..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
+  uIs64Bit in '..\Modules\uIs64Bit.pas',
+  uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas';
 
 {$R *.RES}
 

@@ -5,10 +5,6 @@ uses
   Windows,
   uLanguageSettings in '..\Resource\uLanguageSettings.pas',
   uProcessOpener in '..\Objects\uProcessOpener.pas',
-  uUINT64 in '..\Modules\uUINT64.pas',
-  uDeleteWhitespace in '..\Modules\uDeleteWhitespace.pas',
-  uDatasizeUnit in '..\Classes\MeasureUnit\uDatasizeUnit.pas',
-  uTimeUnit in '..\Classes\MeasureUnit\uTimeUnit.pas',
   uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',
   uBufferInterpreter in '..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
   uIoControlFile in '..\WindowsFileAPI\Abstraction\uIoControlFile.pas',
@@ -55,14 +51,20 @@ uses
   uOCZSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas',
   uPatriotSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in '..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
-  uAverageLogger in '..\Classes\AverageLogger\Abstraction\uAverageLogger.pas',
-  uAverageCountLogger in '..\Classes\AverageLogger\Specific\uAverageCountLogger.pas',
-  uAverageWriteLogger in '..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas',
   uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
   uCommandSetFactory in '..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
   uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
   uRegistryHelper in '..\Objects\uRegistryHelper.pas',
-  uStaticRegistry in '..\Objects\uStaticRegistry.pas';
+  uStaticRegistry in '..\Objects\uStaticRegistry.pas',
+  uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas',
+  uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',
+  uAverageCountLogger in '..\Objects\AverageLogger\Specific\uAverageCountLogger.pas',
+  uAverageWriteLogger in '..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
+  uDatasizeUnit in '..\Modules\uDatasizeUnit.pas',
+  uDeleteWhitespace in '..\Modules\uDeleteWhitespace.pas',
+  uTimeUnit in '..\Modules\uTimeUnit.pas',
+  uUINT64 in '..\Modules\uUINT64.pas',
+  uIs64Bit in '..\Modules\uIs64Bit.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

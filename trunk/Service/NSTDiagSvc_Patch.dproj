@@ -122,10 +122,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DelphiCompile>
         <DCCReference Include="..\Resource\uLanguageSettings.pas"/>
         <DCCReference Include="..\Objects\uProcessOpener.pas"/>
-        <DCCReference Include="..\Modules\uUINT64.pas"/>
-        <DCCReference Include="..\Modules\uDeleteWhitespace.pas"/>
-        <DCCReference Include="..\Classes\MeasureUnit\uDatasizeUnit.pas"/>
-        <DCCReference Include="..\Classes\MeasureUnit\uTimeUnit.pas"/>
         <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
@@ -176,14 +172,20 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
-        <DCCReference Include="..\Classes\AverageLogger\Abstraction\uAverageLogger.pas"/>
-        <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageCountLogger.pas"/>
-        <DCCReference Include="..\Classes\AverageLogger\Specific\uAverageWriteLogger.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
         <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
         <DCCReference Include="..\Objects\uStaticRegistry.pas"/>
+        <DCCReference Include="..\Objects\uSecurityDescriptor.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger\Abstraction\uAverageLogger.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageCountLogger.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas"/>
+        <DCCReference Include="..\Modules\uDatasizeUnit.pas"/>
+        <DCCReference Include="..\Modules\uDeleteWhitespace.pas"/>
+        <DCCReference Include="..\Modules\uTimeUnit.pas"/>
+        <DCCReference Include="..\Modules\uUINT64.pas"/>
+        <DCCReference Include="..\Modules\uIs64Bit.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

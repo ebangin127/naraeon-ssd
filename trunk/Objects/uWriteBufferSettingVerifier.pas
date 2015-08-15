@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils,
   uNSTSupport, uSandforceNSTSupport, uNSTSupportFactory,
-  uRegistryHelper, uRegFunctions;
+  uRegistryHelper, uStaticRegistry;
 
 type
   TWriteBufferSettingVerifier = class
