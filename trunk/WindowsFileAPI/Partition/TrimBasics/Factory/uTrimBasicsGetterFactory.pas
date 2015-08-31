@@ -12,26 +12,33 @@ type
 
   TTrimBasicsGetterFactory = class
   public
-    class function GetSuitableTrimBasicsGetter(FileToGetAccess: String):
+    function GetSuitableTrimBasicsGetter(FileToGetAccess: String):
       TTrimBasicsGetter;
+    class function Create: TTrimBasicsGetterFactory;
 
   private
-    constructor Create;
-    class var FFileToGetAccess: String;
-    class function TryAndGetRightGetter: TTrimBasicsGetter;
-    class function TestGetterCompatibility(TTrimBasicsGetterToTry:
+    function TryAndGetRightGetter: TTrimBasicsGetter;
+    function TestGetterCompatibility(TTrimBasicsGetterToTry:
       TMetaTrimBasicsGetter; LastResult: TTrimBasicsGetter):
       TTrimBasicsGetter;
+    var
+      FFileToGetAccess: String;
   end;
+
+var
+  TrimBasicsGetterFactory: TTrimBasicsGetterFactory;
 
 implementation
 
-constructor TTrimBasicsGetterFactory.Create;
+class function TTrimBasicsGetterFactory.Create: TTrimBasicsGetterFactory;
 begin
-
+  if TrimBasicsGetterFactory = nil then
+    result := inherited Create as self
+  else
+    result := TrimBasicsGetterFactory;
 end;
 
-class function TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
+function TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
   FileToGetAccess: String): TTrimBasicsGetter;
 begin
   FFileToGetAccess := FileToGetAccess;
@@ -41,14 +48,14 @@ begin
       'TrimBasicsGetter is not set');
 end;
 
-class function TTrimBasicsGetterFactory.TryAndGetRightGetter: TTrimBasicsGetter;
+function TTrimBasicsGetterFactory.TryAndGetRightGetter: TTrimBasicsGetter;
 begin
   result := nil;
   result := TestGetterCompatibility(TFATTrimBasicsGetter, result);
   result := TestGetterCompatibility(TNTFSTrimBasicsGetter, result);
 end;
 
-class function TTrimBasicsGetterFactory.TestGetterCompatibility(
+function TTrimBasicsGetterFactory.TestGetterCompatibility(
   TTrimBasicsGetterToTry: TMetaTrimBasicsGetter;
   LastResult: TTrimBasicsGetter): TTrimBasicsGetter;
 begin
@@ -60,4 +67,9 @@ begin
   if not result.IsPartitionMyResponsibility then
     FreeAndNil(result);
 end;
+
+initialization
+  TrimBasicsGetterFactory := TTrimBasicsGetterFactory.Create;
+finalization
+  TrimBasicsGetterFactory.Free;
 end.

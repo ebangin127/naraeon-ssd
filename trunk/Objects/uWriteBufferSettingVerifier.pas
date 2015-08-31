@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils,
   uNSTSupport, uSandforceNSTSupport, uNSTSupportFactory,
-  uRegistryHelper, uStaticRegistry;
+  uRegistryHelper, uNSTRegistry;
 
 type
   TWriteBufferSettingVerifier = class
@@ -76,7 +76,7 @@ begin
   if not SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware) then
     exit(false);
 
-  NSTSupport := TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
+  NSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
   result :=
     (NSTSupport <> nil) and
     (NSTSupport.GetSupportStatus.Supported) and
@@ -90,7 +90,7 @@ const
   WriteBufferIsDisabled = 0;
 begin
   try
-    result := TStaticRegistry.GetRegInt(DevicePathInRegistry) =
+    result := NSTRegistry.GetRegInt(DevicePathInRegistry) =
       WriteBufferIsDisabled;
   except
     result := false;
@@ -102,7 +102,7 @@ function TWriteBufferSettingVerifier.CorrectDevice(
 const
   WriteBufferIsEnabled = 1;
 begin
-  result := TStaticRegistry.SetRegInt(DevicePathInRegistry,
+  result := NSTRegistry.SetRegInt(DevicePathInRegistry,
     WriteBufferIsEnabled);
 end;
 
@@ -110,7 +110,7 @@ function TWriteBufferSettingVerifier.GetDeviceFriendlyName(
   DevicePathInRegistry: TRegistryPath): String;
 begin
   DevicePathInRegistry.ValueName := 'FriendlyName';
-  result := TStaticRegistry.GetRegStr(DevicePathInRegistry);
+  result := NSTRegistry.GetRegStr(DevicePathInRegistry);
 end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrectByDevice(
@@ -147,7 +147,7 @@ begin
     
   InterfacePathInRegistry.PathUnderHKEY := InterfacePathInRegistry.PathUnderHKEY
     + '\' + ModelAndFirmware;
-  TStaticRegistry.GetKeyList(InterfacePathInRegistry, DeviceList);
+  NSTRegistry.GetKeyList(InterfacePathInRegistry, DeviceList);
   for CurrentDevice in DeviceList do
   begin
     CurrentDeviceResult :=
@@ -174,7 +174,7 @@ begin
   BasePathWithInterfaceName := DeviceBasePath;
   BasePathWithInterfaceName.PathUnderHKEY :=
     BasePathWithInterfaceName.PathUnderHKEY + InterfaceName;
-  TStaticRegistry.GetKeyList(BasePathWithInterfaceName, ModelList);
+  NSTRegistry.GetKeyList(BasePathWithInterfaceName, ModelList);
   
   for ModelAndFirmware in ModelList do
   begin

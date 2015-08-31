@@ -42,9 +42,9 @@ implementation
 
 constructor TDiagnosisService.Create;
 begin
-  TPathManager.SetPath(nil);
+  PathManager.SetPath(nil);
   DetermineLanguage;
-  ErrorFilePath := TPathManager.AllDesktopPath + '\!!!SSDError!!!.err';
+  ErrorFilePath := PathManager.AllDesktopPath + '\!!!SSDError!!!.err';
   IsFirstDiagnosis := true;
 end;
 
@@ -134,7 +134,7 @@ begin
 
   TotalWriteLog := TAverageWriteLogger.Create(
     TAverageWriteLogger.BuildFileName(
-      TPathManager.AppPath,
+      PathManager.AppPath,
       Entry.IdentifyDeviceResult.Serial));
   TotalWriteLog.ReadAndRefresh(UIntToStr(
     MBToLiteONUnit(
@@ -189,7 +189,8 @@ var
 begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-      TPathManager.AppPath,
+
+      PathManager.AppPath,
       Entry.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(
     Entry.SMARTInterpreted.ReplacedSectors));

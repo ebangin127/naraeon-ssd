@@ -9,19 +9,24 @@ uses
 type
   TProcessOpener = class
   public
-    class function OpenProcWithOutput(Path: String; Command: String):
+    function OpenProcWithOutput(Path: String; Command: String):
       AnsiString;
+    class function Create: TProcessOpener;
   private
-    class var SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
-    class function GetSecurityDescriptor: TSecurityAttributes;
-    class procedure CreatePipeWithHandles(
+    function GetSecurityDescriptor: TSecurityAttributes;
+    procedure CreatePipeWithHandles(
       var ReadHandle, WriteHandle: THandle);
-    class function ReadFromHandle(const ReadHandle: THandle): AnsiString; static;
+    function ReadFromHandle(const ReadHandle: THandle): AnsiString;
+    var
+      SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
   end;
+
+var
+  ProcessOpener: TProcessOpener;
 
 implementation
 
-class function TProcessOpener.GetSecurityDescriptor: TSecurityAttributes;
+function TProcessOpener.GetSecurityDescriptor: TSecurityAttributes;
 begin
   result.nLength := sizeof(result);
   result.lpSecurityDescriptor :=
@@ -29,7 +34,15 @@ begin
   result.bInheritHandle := true;
 end;
 
-class procedure TProcessOpener.CreatePipeWithHandles(
+class function TProcessOpener.Create: TProcessOpener;
+begin
+  if ProcessOpener = nil then
+    result := inherited Create as self
+  else
+    result := ProcessOpener;
+end;
+
+procedure TProcessOpener.CreatePipeWithHandles(
   var ReadHandle, WriteHandle: THandle);
 var
   SecurityAttributes: TSecurityAttributes;
@@ -39,7 +52,7 @@ begin
     raise EOSError.Create('CreatePipe Error (' + UIntToStr(GetLastError) + ')');
 end;
 
-class function TProcessOpener.ReadFromHandle(
+function TProcessOpener.ReadFromHandle(
   const ReadHandle: THandle): AnsiString;
 var
   Buffer: array[0..512] of AnsiChar;
@@ -55,7 +68,7 @@ begin
   end;
 end;
 
-class function TProcessOpener.OpenProcWithOutput(Path: String; Command: String):
+function TProcessOpener.OpenProcWithOutput(Path: String; Command: String):
   AnsiString;
 const
   StartupSettingsTemplate: TStartupInfo =
@@ -85,4 +98,9 @@ begin
 
   FreeAndNil(SecurityDescriptorManipulator);
 end;
+
+initialization
+  ProcessOpener := TProcessOpener.Create;
+finalization
+  ProcessOpener.Free;
 end.

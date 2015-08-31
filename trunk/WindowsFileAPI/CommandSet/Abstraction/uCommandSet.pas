@@ -28,7 +28,7 @@ implementation
 
 constructor TCommandSet.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, GetMinimumPrivilege);
+  CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 
 function TCommandSet.GetMinimumPrivilege: TCreateFileDesiredAccess;

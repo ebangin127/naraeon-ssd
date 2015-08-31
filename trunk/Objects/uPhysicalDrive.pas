@@ -58,8 +58,8 @@ type
     procedure ClearIdentifyDeviceResultCache;
     procedure ClearCache;
 
-    constructor Create(FileToGetAccess: String); reintroduce; overload;
-    constructor Create(DriveNumber: Cardinal); reintroduce; overload;
+    constructor Create(FileToGetAccess: String); override;
+    class function BuildFileAddressByNumber(DriveNumber: Cardinal): String;
     destructor Destroy; override;
 
   end;
@@ -71,16 +71,14 @@ implementation
 constructor TPhysicalDrive.Create(FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess);
-  CommandSet := TCommandSetFactory.GetSuitableCommandSet(FileToGetAccess);
+  CommandSet := CommandSetFactory.GetSuitableCommandSet(FileToGetAccess);
 end;
 
-constructor TPhysicalDrive.Create(DriveNumber: Cardinal);
-var
-  PathToAccess: String;
+class function TPhysicalDrive.BuildFileAddressByNumber(
+  DriveNumber: Cardinal): String;
 begin
-  PathToAccess :=
+  result :=
     ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber);
-  Create(PathToAccess);
 end;
 
 destructor TPhysicalDrive.Destroy;
@@ -217,7 +215,7 @@ procedure TPhysicalDrive.TryToCreateAndSetNSTSupport;
 begin
   try
     NSTSupport :=
-      TNSTSupportFactory.GetSuitableNSTSupport(
+      NSTSupportFactory.GetSuitableNSTSupport(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
   except

@@ -343,7 +343,7 @@ procedure TPartitionTrimmer.InitializeTrimBasicsGetter;
 var
   TrimBasicsGetter: TTrimBasicsGetter;
 begin
-  TrimBasicsGetter := TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
+  TrimBasicsGetter := TrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
     GetPathOfFileAccessing);
   if not TrimBasicsGetter.IsPartitionMyResponsibility then
     raise EUnknownPartition.Create

@@ -133,7 +133,7 @@ begin
   Request.Source.FFileAddress := '/Setup.exe';
   Request.Source.FType := dftPlain;
 
-  TempFolder := TPathManager.TempFolder(false);
+  TempFolder := PathManager.TempFolder(false);
   CreateDir(TempFolder);
   Request.Destination.FBaseAddress := TempFolder;
   Request.Destination.FFileAddress := 'Setup.exe';
@@ -161,10 +161,10 @@ procedure TUpdater.MoveSetupAndExecute;
 begin
   AlertCreate(fMain, AlrtUpdateExit[CurrLang]);
   MoveFile(PChar(DestinationPath),
-    PChar(TPathManager.AppPath + 'Setup.exe'));
+    PChar(PathManager.AppPath + 'Setup.exe'));
   DeleteDirectory(DestinationDirectory);
   ShellExecute(0, nil,
-    PChar(TPathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
+    PChar(PathManager.AppPath + 'Setup.exe'), nil, nil, SW_NORMAL);
   fMain.Close;
 end;
 

@@ -12,19 +12,21 @@ type
   private
     ACLPointer: PACL;
     SecurityDescriptor: SECURITY_DESCRIPTOR;
+    FExplicitAccess: Array of EXPLICIT_ACCESS;
     procedure AllocateSid(
       RIDs: Array of Cardinal;
       var IdentifierAuthority: _SID_IDENTIFIER_AUTHORITY;
       var SID: PSID);
     function CombineAccessTemplate(const AccessTemplate: EXPLICIT_ACCESS;
       const TrusteeTemplate: TRUSTEE): EXPLICIT_ACCESS;
-    procedure ApplyToAcl(ExplicitAccess: EXPLICIT_ACCESS);
+    procedure ApplyToAcl(const ExplicitAccess: EXPLICIT_ACCESS);
     procedure CopyRIDs(
       var FixedLengthRIDs: TFixedSIDArray;
       var RIDs: Array of Cardinal);
     procedure SetSecurityForEveryone;
     procedure SetSecurityForAdministrator;
     procedure SetACLToSecurityDescriptor;
+    procedure AddNewAccessToArray(ExplicitAccess: EXPLICIT_ACCESS);
 
   public
     function GetSecurityDescriptor: PSECURITY_DESCRIPTOR;
@@ -36,7 +38,8 @@ implementation
 
 { TSecurityDescriptor }
 
-function TSecurityDescriptorManipulator.GetSecurityDescriptor: PSECURITY_DESCRIPTOR;
+function TSecurityDescriptorManipulator.GetSecurityDescriptor:
+  PSECURITY_DESCRIPTOR;
 begin
   SetSecurityForEveryone;
   SetACLToSecurityDescriptor;
@@ -63,10 +66,21 @@ begin
 end;
 
 destructor TSecurityDescriptorManipulator.Destroy;
+var
+  CurrentItem: EXPLICIT_ACCESS;
 begin
+  for CurrentItem in FExplicitAccess do
+    FreeSid(CurrentItem.Trustee.ptstrName);
   if ACLPointer <> nil then
     LocalFree(NativeUInt(ACLPointer));
   inherited;
+end;
+
+procedure TSecurityDescriptorManipulator.AddNewAccessToArray(ExplicitAccess:
+  EXPLICIT_ACCESS);
+begin
+  SetLength(FExplicitAccess, Length(FExplicitAccess) + 1);
+  FExplicitAccess[Length(FExplicitAccess) - 1] := ExplicitAccess;
 end;
 
 procedure TSecurityDescriptorManipulator.AllocateSid(
@@ -98,9 +112,12 @@ begin
   result.Trustee := TrusteeTemplate;
 end;
 
-procedure TSecurityDescriptorManipulator.ApplyToAcl(ExplicitAccess: EXPLICIT_ACCESS);
+procedure TSecurityDescriptorManipulator.ApplyToAcl(const ExplicitAccess:
+  EXPLICIT_ACCESS);
 begin
-  if SetEntriesInAcl(1, @ExplicitAccess, ACLPointer, ACLPointer)
+  AddNewAccessToArray(ExplicitAccess);
+  if SetEntriesInAcl(Length(FExplicitAccess), @FExplicitAccess[0],
+    ACLPointer, ACLPointer)
       <> ERROR_SUCCESS then
   begin
     raise EOSError.Create('Set entry in ACL failed' +
@@ -136,20 +153,14 @@ begin
         EveryoneAccessTemplate, EveryoneAccessTrusteeTemplate);
     EveryoneAccess.Trustee.ptstrName := EveryoneSID;
     ApplyToAcl(EveryoneAccess);
-  finally
+  except
     if EveryoneSID <> nil then
       FreeSid(EveryoneSID);
   end;
 end;
 
 procedure TSecurityDescriptorManipulator.SetACLToSecurityDescriptor;
-var
-  ExplicitAccessArrayPointer: PEXPLICIT_ACCESS;
-  ExplicitAccessArray: Array of EXPLICIT_ACCESS;
-  CountOfEntries: Cardinal;
 begin
-  GetExplicitEntriesFromAcl(ACLPointer^, CountOfEntries, @ExplicitAccessArrayPointer);
-  ExplicitAccessArray := Pointer(ExplicitAccessArrayPointer);
   SetSecurityDescriptorDacl(
     @SecurityDescriptor, true, ACLPointer, false);
 end;
@@ -166,7 +177,7 @@ const
     DOMAIN_ALIAS_RID_ADMINS);
   AdminAccessTemplate: EXPLICIT_ACCESS =
     (grfAccessPermissions: GENERIC_ALL;
-     grfAccessMode: GRANT_ACCESS;
+     grfAccessMode: SET_ACCESS;
      grfInheritance: NO_INHERITANCE);
   AdminAccessTrusteeTemplate: TRUSTEE =
     (pMultipleTrustee: nil;
@@ -185,7 +196,7 @@ begin
         AdminAccessTemplate, AdminAccessTrusteeTemplate);
     AdminAccess.Trustee.ptstrName := AdminSID;
     ApplyToAcl(AdminAccess);
-  finally
+  except
     if AdminSID <> nil then
       FreeSid(AdminSID);
   end;

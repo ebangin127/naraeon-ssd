@@ -55,16 +55,16 @@ uses
   uCommandSetFactory in '..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
   uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
   uRegistryHelper in '..\Objects\uRegistryHelper.pas',
-  uStaticRegistry in '..\Objects\uStaticRegistry.pas',
   uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas',
   uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Objects\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
   uDatasizeUnit in '..\Modules\uDatasizeUnit.pas',
-  uDeleteWhitespace in '..\Modules\uDeleteWhitespace.pas',
+  uStringHelper in '..\Modules\uStringHelper.pas',
   uTimeUnit in '..\Modules\uTimeUnit.pas',
   uUINT64 in '..\Modules\uUINT64.pas',
-  uIs64Bit in '..\Modules\uIs64Bit.pas';
+  uIs64Bit in '..\Modules\uIs64Bit.pas',
+  uNSTRegistry in '..\Objects\uNSTRegistry.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

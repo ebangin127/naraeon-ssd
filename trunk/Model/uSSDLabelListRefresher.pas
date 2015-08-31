@@ -39,7 +39,7 @@ procedure TSSDLabelListRefresher.AlertAndExecuteNewDiagnosisInstance;
 begin
   AlertCreate(fMain, AlrtNoSupport[CurrLang]);
   ShellExecute(0, 'open',
-    PChar(TPathManager.AppPath + 'SSDTools.exe'),
+    PChar(PathManager.AppPath + 'SSDTools.exe'),
     PChar('/diag'), nil, SW_SHOW);
 end;
 

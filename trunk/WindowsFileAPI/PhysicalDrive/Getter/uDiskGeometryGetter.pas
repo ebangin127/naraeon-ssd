@@ -56,7 +56,7 @@ implementation
 
 constructor TDiskGeometryGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, GetMinimumPrivilege);
+  CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 
 function TDiskGeometryGetter.GetIOBufferToGetGeometry

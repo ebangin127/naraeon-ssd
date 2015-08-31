@@ -24,7 +24,7 @@ type
                     
   public
     property UserAgent: string read FUserAgent write SetUserAgent;
-    constructor Create(AOwner: TComponent); reintroduce; 
+    constructor Create(AOwner: TComponent); override;
     
   end;
 

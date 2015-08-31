@@ -114,7 +114,7 @@ begin
   WriteLog :=
     TAverageWriteLogger.Create(
       TAverageWriteLogger.BuildFileName(
-        TPathManager.AppPath,
+        PathManager.AppPath,
         fMain.PhysicalDrive.IdentifyDeviceResult.Serial));
   WriteLog.ReadAndRefresh(
     UIntToStr(MBToLiteONUnit(

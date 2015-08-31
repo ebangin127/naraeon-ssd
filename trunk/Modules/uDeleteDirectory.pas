@@ -23,14 +23,10 @@ function TryToDeleteFoundDirectory(const DirectoryToDelete,
 var
   CurrentDirectoryToDelete: String;
 begin
-  try
-    CurrentDirectoryToDelete := ExcludeTrailingPathDelimiter(
-      DirectoryToDelete + FoundFile);
-    result := (SHFileOperation(GetSHFileOpStruct(
-      CurrentDirectoryToDelete)) = 0);
-  except
-    result := False;
-  end;
+  CurrentDirectoryToDelete := ExcludeTrailingPathDelimiter(
+    DirectoryToDelete + FoundFile);
+  result := (SHFileOperation(GetSHFileOpStruct(
+    CurrentDirectoryToDelete)) = 0);
 end;
 
 function DeleteDirectory(const DirectoryToDelete: String): Boolean;

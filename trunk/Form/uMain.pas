@@ -9,7 +9,7 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uSevenZip, uOptimizer,
+  uSevenZip, uLegacyOptimizer,
   uProcessOpener, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
@@ -17,7 +17,7 @@ uses
   uFirmwareGetter, uVersionPublisher, uCodesignVerifier,
   uSSDLabelList, uSSDLabel, uMainformPhysicalDriveApplier,
   uSSDLabelListRefresher, uFirmwareDownloader, uRemovableDriveListGetter,
-  uDriveListGetter, uVolumeLabelGetter;
+  uDriveListGetter, uVolumeLabelGetter, uVersionHelper;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -186,17 +186,17 @@ begin
 
   tRefresh.Enabled := false;
 
-  FileName := TPathManager.AppPath + 'Erase\pmagic.7z';
+  FileName := PathManager.AppPath + 'Erase\pmagic.7z';
 
-  if (FileExists(FileName)) and (TRufus.CheckRufus) then
+  if (FileExists(FileName)) and (Rufus.CheckRufus) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
 
-    TempFolder := TPathManager.TempFolder(true);
+    TempFolder := PathManager.TempFolder(true);
     CreateDir(TempFolder);
 
-    TSevenZip.Extract(
-      TPathManager.AppPath + '7z\7z.exe',
+    SevenZip.Extract(
+      PathManager.AppPath + '7z\7z.exe',
       FileName,
       TempFolder,
       CapTrimName[LANG_ENGLISH] +
@@ -211,7 +211,7 @@ begin
 
     FileName := TempFolder + 'pmagic.iso';
 
-    TRufus.RunRufus(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
+    Rufus.RunRufus(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FileName);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
     DeleteDirectory(TempFolder);
   end
@@ -336,12 +336,13 @@ begin
   ShowSerial := false;
   ListEnter := 0;
 
+  TRufus.Create;
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
   RefreshDrives;
 
-  if FileExists(TPathManager.AppPath + 'Setup.exe') then
-    DeleteFile(TPathManager.AppPath + 'Setup.exe');
+  if FileExists(PathManager.AppPath + 'Setup.exe') then
+    DeleteFile(PathManager.AppPath + 'Setup.exe');
   ReportMemoryLeaksOnShutdown := DebugHook > 0;
 end;
 
@@ -647,7 +648,9 @@ function TfMain.TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer):
 begin
   try
     result := true;
-    fMain.PhysicalDrive := TPhysicalDrive.Create(DeviceNumber);
+    fMain.PhysicalDrive :=
+      TPhysicalDrive.Create(
+          TPhysicalDrive.BuildFileAddressByNumber(DeviceNumber));
   except
     result := false;
     FreeAndNil(fMain.PhysicalDrive);
@@ -766,11 +769,11 @@ var
   SchedResult: String;
 begin
   if cTrimRunning.Checked then
-    if Win32MajorVersion = 5 then
+    if VersionHelper.MajorVersion = 5 then
     begin
       SchedResult :=
-        string(TProcessOpener.OpenProcWithOutput(
-          TPathManager.WinDir + '\System32',
+        string(ProcessOpener.OpenProcWithOutput(
+          PathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
@@ -783,8 +786,8 @@ begin
     end
     else
       SchedResult :=
-        string(TProcessOpener.OpenProcWithOutput(
-          TPathManager.WinDir + '\System32',
+        string(ProcessOpener.OpenProcWithOutput(
+          PathManager.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
@@ -797,8 +800,8 @@ begin
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
-      string(TProcessOpener.OpenProcWithOutput(
-        TPathManager.WinDir + '\System32',
+      string(ProcessOpener.OpenProcWithOutput(
+        PathManager.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
         '/TN "MANTRIM' +                            //작업 이름
         PhysicalDrive.IdentifyDeviceResult.Serial +
@@ -823,8 +826,8 @@ begin
 
   cTrimRunning.Checked :=
     Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
-      UnicodeString(TProcessOpener.OpenProcWithOutput(
-        TPathManager.WinDir + '\System32',
+      UnicodeString(ProcessOpener.OpenProcWithOutput(
+        PathManager.WinDir + '\System32',
         'schtasks /query'))) > 0;
 end;
 end.

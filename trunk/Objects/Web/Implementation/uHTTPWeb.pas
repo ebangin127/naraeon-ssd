@@ -22,10 +22,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function GetToStringList(PathToGet: String): TStringList;
-      reintroduce; virtual;
-    function GetToStringStream(PathToGet: String): TStringStream;
-      reintroduce; virtual;
+    function GetToStringList(PathToGet: String): TStringList; override;
+    function GetToStringStream(PathToGet: String): TStringStream; override;
     function Head(PathToGet: String): Boolean; virtual;
     procedure SetOnWorkHandler(OnWorkHandler: TWorkEvent);
   end;

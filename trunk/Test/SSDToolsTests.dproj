@@ -128,7 +128,7 @@
         <DCCReference Include="NSTSupport\TestNSTSupport.pas"/>
         <DCCReference Include="Objects\TestWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
-        <DCCReference Include="..\Objects\uStaticRegistry.pas"/>
+        <DCCReference Include="..\Objects\uNSTRegistry.pas"/>
         <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
         <DCCReference Include="..\Objects\uProcessOpener.pas"/>
         <DCCReference Include="..\Objects\AverageLogger\Abstraction\uAverageLogger.pas"/>

@@ -2,7 +2,9 @@ unit uAverageLogger;
 
 interface
 
-uses Classes, Sysutils, Dialogs, Windows, Math, uUINT64;
+uses
+  Classes, Sysutils, Dialogs, Windows, Math,
+  uStringHelper;
 
 type
   TAveragePeriod = (Days30, Days90, Days180);

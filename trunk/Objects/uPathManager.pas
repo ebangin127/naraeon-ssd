@@ -4,36 +4,41 @@ interface
 
 uses
   Forms, Windows, SysUtils, Classes, ShlObj, Character,
-  uStaticRegistry, uRegistryHelper;
+  uNSTRegistry, uRegistryHelper, uStringHelper;
 
 type
   TPathManager = class
   private
-    class function AppendRandomNSTFooter(BasePath: String): String; static;
-    class function RootTempFolder: String; static;
+    function AppendRandomNSTFooter(BasePath: String): String;
+    function RootTempFolder: String;
+    procedure SetPathForNormalInstance(Application: TApplication);
+    procedure SetPathForServiceInstance;
 
-    class var FAppPath: String;
-    class var FWinDir: String;
-    class var FWinDrive: String;
-    class var FAllDesktopPath: String;
-    class var FDesktopPathInChar: array[0..MAX_PATH] of char;
-    class function IsValidPath(PathToValidate: String): Boolean; static;
-    class procedure SetPathForNormalInstance(Application: TApplication); static;
-    class procedure SetPathForServiceInstance; static;
+  var
+    FAppPath: String;
+    FWinDir: String;
+    FWinDrive: String;
+    FAllDesktopPath: String;
+    FDesktopPathInChar: array[0..MAX_PATH] of char;
 
   public
-    class procedure SetPath(Application: TApplication);
+    procedure SetPath(Application: TApplication);
 
-    class function AppPath: String;
-    class function WinDir: String;
-    class function WinDrive: String;
-    class function TempFolder(AnsiOnly: Boolean): String;
-    class function AllDesktopPath: String;
+    function AppPath: String;
+    function WinDir: String;
+    function WinDrive: String;
+    function TempFolder(AnsiOnly: Boolean): String;
+    function AllDesktopPath: String;
+
+    class function Create: TPathManager;
   end;
+
+var
+  PathManager: TPathManager;
 
 implementation
 
-class procedure TPathManager.SetPathForNormalInstance(
+procedure TPathManager.SetPathForNormalInstance(
   Application: TApplication);
 begin
   FAppPath := ExtractFilePath(Application.ExeName);
@@ -43,18 +48,18 @@ begin
     @FDesktopPathInChar[0]);
 end;
 
-class procedure TPathManager.SetPathForServiceInstance;
+procedure TPathManager.SetPathForServiceInstance;
 const
   ServiceInstancePath: TRegistryPath =
     (Root: LocalMachine;
      PathUnderHKEY: 'SYSTEM\CurrentControlSet\services\NaraeonSSDToolsDiag';
      ValueName: 'ImagePath');
 begin
-  FAppPath := ExtractFilePath(TStaticRegistry.GetRegStr(ServiceInstancePath));
+  FAppPath := ExtractFilePath(NSTRegistry.GetRegStr(ServiceInstancePath));
   FAllDesktopPath := FDesktopPathInChar;
 end;
 
-class procedure TPathManager.SetPath(Application: TApplication);
+procedure TPathManager.SetPath(Application: TApplication);
 begin
   Randomize;
   if Application <> nil then
@@ -63,27 +68,27 @@ begin
     SetPathForServiceInstance;
 end;
 
-class function TPathManager.AllDesktopPath: String;
+function TPathManager.AllDesktopPath: String;
 begin
   exit(FAllDesktopPath);
 end;
 
-class function TPathManager.AppPath: String;
+function TPathManager.AppPath: String;
 begin
   exit(FAppPath);
 end;
 
-class function TPathManager.WinDir: String;
+function TPathManager.WinDir: String;
 begin
   exit(FWinDir);
 end;
 
-class function TPathManager.WinDrive: String;
+function TPathManager.WinDrive: String;
 begin
   exit(FWinDrive);
 end;
 
-class function TPathManager.AppendRandomNSTFooter(BasePath: String): String;
+function TPathManager.AppendRandomNSTFooter(BasePath: String): String;
 var
   OptionalBackslash: String;
 begin
@@ -99,31 +104,33 @@ begin
       'NST' + IntToStr(Random(2147483647)) + '\';
 end;
 
-class function TPathManager.RootTempFolder: String;
+function TPathManager.RootTempFolder: String;
 begin
   result := AppendRandomNSTFooter(FWinDrive);
 end;
 
-class function TPathManager.IsValidPath(PathToValidate: String): Boolean;
-var
-  CurrentCharacter: Char;
-begin
-  result := true;
-  for CurrentCharacter in PathToValidate do
-    if Ord(CurrentCharacter) > Byte.MaxValue then
-      exit(false);
-end;
-
-class function TPathManager.TempFolder(AnsiOnly: Boolean): String;
+function TPathManager.TempFolder(AnsiOnly: Boolean): String;
 var
   TempPath: String;
 begin
   SetLength(TempPath, MAX_PATH + 1);
   SetLength(TempPath, GetTempPath(MAX_PATH, PChar(TempPath)));
-  if (not AnsiOnly) or (IsValidPath(TempPath)) then
+  if (not AnsiOnly) or (StringHelper.IsAscii(TempPath)) then
     result := AppendRandomNSTFooter(TempPath)
   else
     result := RootTempFolder;
 end;
 
+class function TPathManager.Create: TPathManager;
+begin
+  if PathManager = nil then
+    result := inherited Create as self
+  else
+    result := PathManager;
+end;
+
+initialization
+  PathManager := TPathManager.Create;
+finalization
+  PathManager.Free;
 end.

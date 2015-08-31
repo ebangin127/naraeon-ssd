@@ -26,7 +26,9 @@ implementation
 procedure TBruteForcePhysicalDriveListGetter.AddDriveToList
   (CurrentDrive: Integer);
 begin
-  PhysicalDriveList.Add(TPhysicalDrive.Create(CurrentDrive));
+  PhysicalDriveList.Add(
+    TPhysicalDrive.Create(
+      TPhysicalDrive.BuildFileAddressByNumber(CurrentDrive)));
 end;
 
 function TBruteForcePhysicalDriveListGetter.TryToGetIsDriveAccessible
@@ -34,7 +36,9 @@ function TBruteForcePhysicalDriveListGetter.TryToGetIsDriveAccessible
 var
   PhysicalDrive: TPhysicalDrive;
 begin
-  PhysicalDrive := TPhysicalDrive.Create(CurrentDrive);
+  PhysicalDrive :=
+    TPhysicalDrive.Create(
+      TPhysicalDrive.BuildFileAddressByNumber(CurrentDrive));
   result := PhysicalDrive.IsDriveAvailable;
   FreeAndNil(PhysicalDrive);
 end;

@@ -12,25 +12,32 @@ type
 
   TAutoPhysicalDriveListGetter = class
   private
-    class function TestCompatibilityAndGet(
+    function TestCompatibilityAndGet(
       TPhysicalDriveListGetterToTry: TMetaPhysicalDriveListGetter;
-      LastResult: TPhysicalDriveList): TPhysicalDriveList; static;
+      LastResult: TPhysicalDriveList): TPhysicalDriveList;
   public
-    constructor Create;
-    class function GetPhysicalDriveList: TPhysicalDriveList;
-    class function GetPhysicalDriveListInService: TPhysicalDriveList;
+    function GetPhysicalDriveList: TPhysicalDriveList;
+    function GetPhysicalDriveListInService: TPhysicalDriveList;
+    class function Create: TAutoPhysicalDriveListGetter;
   end;
+
+var
+  AutoPhysicalDriveListGetter: TAutoPhysicalDriveListGetter;
 
 implementation
 
 { TAutoPhysicalDriveListGetter }
 
-constructor TAutoPhysicalDriveListGetter.Create;
+class function TAutoPhysicalDriveListGetter.Create:
+  TAutoPhysicalDriveListGetter;
 begin
-
+  if AutoPhysicalDriveListGetter = nil then
+    result := inherited Create as self
+  else
+    result := AutoPhysicalDriveListGetter;
 end;
 
-class function TAutoPhysicalDriveListGetter.GetPhysicalDriveList:
+function TAutoPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
   result := nil;
@@ -40,7 +47,7 @@ begin
     result);
 end;
 
-class function TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService:
+function TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService:
   TPhysicalDriveList;
 begin
   result := nil;
@@ -48,7 +55,7 @@ begin
     result);
 end;
 
-class function TAutoPhysicalDriveListGetter.TestCompatibilityAndGet(
+function TAutoPhysicalDriveListGetter.TestCompatibilityAndGet(
   TPhysicalDriveListGetterToTry: TMetaPhysicalDriveListGetter;
   LastResult: TPhysicalDriveList): TPhysicalDriveList;
 var
@@ -67,4 +74,8 @@ begin
   FreeAndNil(PhysicalDriveListGetter);
 end;
 
+initialization
+  AutoPhysicalDriveListGetter := TAutoPhysicalDriveListGetter.Create;
+finalization
+  AutoPhysicalDriveListGetter.Free;
 end.

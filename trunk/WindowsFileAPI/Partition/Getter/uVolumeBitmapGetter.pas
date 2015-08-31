@@ -49,7 +49,7 @@ implementation
 
 constructor TVolumeBitmapGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, DesiredReadOnly);
+  CreateHandle(FileToGetAccess, DesiredReadOnly);
 end;
 
 function TVolumeBitmapGetter.GetIOBuffer(ResultBufferPointer: Pointer):

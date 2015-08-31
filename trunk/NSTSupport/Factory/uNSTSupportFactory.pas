@@ -19,27 +19,34 @@ type
   TMetaNSTSupport = class of TNSTSupport;
   TNSTSupportFactory = class
   public
-    class function GetSuitableNSTSupport(Model, Firmware: String):
+    function GetSuitableNSTSupport(Model, Firmware: String):
       TNSTSupport;
+    class function Create: TNSTSupportFactory;
   private
-    constructor Create;
-    class var FModel: String;
-    class var FFirmware: String;
-    class function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
-    class function TestNSTSupportCompatibility(
+    function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
+    function TestNSTSupportCompatibility(
       TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
+    var
+      FModel: String;
+      FFirmware: String;
   end;
+
+var
+  NSTSupportFactory: TNSTSupportFactory;
 
 implementation
 
 { TNSTSupportFactory }
 
-constructor TNSTSupportFactory.Create;
+class function TNSTSupportFactory.Create: TNSTSupportFactory;
 begin
-
+  if NSTSupportFactory = nil then
+    result := inherited Create as self
+  else
+    result := NSTSupportFactory;
 end;
 
-class function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
+function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
   TNSTSupport;
 begin
   FModel := Model;
@@ -47,7 +54,7 @@ begin
   result := TryNSTSupportAndGetRightNSTSupport;
 end;
 
-class function TNSTSupportFactory.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
+function TNSTSupportFactory.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
 begin
   result := nil;
   result := TestNSTSupportCompatibility(TCrucialNSTSupport, result);
@@ -68,7 +75,7 @@ begin
   result := TestNSTSupportCompatibility(TADATASandforceNSTSupport, result);
 end;
 
-class function TNSTSupportFactory.TestNSTSupportCompatibility(
+function TNSTSupportFactory.TestNSTSupportCompatibility(
   TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
 begin
   if LastResult <> nil then
@@ -80,4 +87,8 @@ begin
     FreeAndNil(result);
 end;
 
+initialization
+  NSTSupportFactory := TNSTSupportFactory.Create;
+finalization
+  NSTSupportFactory.Free;
 end.

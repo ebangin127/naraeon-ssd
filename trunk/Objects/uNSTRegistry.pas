@@ -1,4 +1,4 @@
-unit uStaticRegistry;
+unit uNSTRegistry;
 
 interface
 
@@ -7,36 +7,50 @@ uses
   uRegistryHelper, uIs64Bit;
 
 type
-  TStaticRegistry = class
+  TNSTRegistry = class
   public
-    class function GetRegInt(const Path: TRegistryPath):
+    function GetRegInt(const Path: TRegistryPath):
       Integer;
-    class function GetRegStr(const Path: TRegistryPath):
+    function GetRegStr(const Path: TRegistryPath):
       String;
-    class function GetKeyList(const Path: TRegistryPath;
+    function GetKeyList(const Path: TRegistryPath;
       PreparedList: TStringList): TStringList;
-    class function GetValueList(const Path: TRegistryPath;
+    function GetValueList(const Path: TRegistryPath;
       PreparedList: TStringList): TStringList;
-    class function SetRegInt(const Path: TRegistryPath; NewValue: Integer):
+    function SetRegInt(const Path: TRegistryPath; NewValue: Integer):
       Boolean;
-    class function SetRegStr(const Path: TRegistryPath; NewValue: String):
+    function SetRegStr(const Path: TRegistryPath; NewValue: String):
       Boolean;
-    class function LegacyPathToNew(Root: String; PathUnderHKEY: String;
+    function LegacyPathToNew(Root: String; PathUnderHKEY: String;
       ValueName: String): TRegistryPath;
-  private
-    class var Registry: TRegistry;
-    class var Path: TRegistryPath;
+    class function Create: TNSTRegistry;
 
-    class procedure SetPath(PathToSet: TRegistryPath);
-    class procedure OpenRegistryWithRight(Right: Cardinal);
-    class procedure CloseRegistry;
-    class function GetBitSpecificRight: Cardinal;
-    class function GetTRegistryWithRight(Right: Cardinal): TRegistry;
+  private
+    procedure SetPath(PathToSet: TRegistryPath);
+    procedure OpenRegistryWithRight(Right: Cardinal);
+    procedure CloseRegistry;
+    function GetBitSpecificRight: Cardinal;
+    function GetTRegistryWithRight(Right: Cardinal): TRegistry;
+
+    var
+      Registry: TRegistry;
+      Path: TRegistryPath;
   end;
+
+var
+  NSTRegistry: TNSTRegistry;
 
 implementation
 
-class function TStaticRegistry.GetBitSpecificRight: Cardinal;
+class function TNSTRegistry.Create: TNSTRegistry;
+begin
+  if NSTRegistry = nil then
+    result := inherited Create as self
+  else
+    result := NSTRegistry;
+end;
+
+function TNSTRegistry.GetBitSpecificRight: Cardinal;
 const
   KEY_WOW64_64KEY = $0100;
 begin
@@ -45,13 +59,13 @@ begin
   exit(0);
 end;
 
-class function TStaticRegistry.GetTRegistryWithRight(Right: Cardinal):
+function TNSTRegistry.GetTRegistryWithRight(Right: Cardinal):
   TRegistry;
 begin
   result := TRegistry.Create(Right or GetBitSpecificRight);
 end;
 
-class procedure TStaticRegistry.OpenRegistryWithRight(Right: Cardinal);
+procedure TNSTRegistry.OpenRegistryWithRight(Right: Cardinal);
 begin
   Registry := GetTRegistryWithRight(Right);
   if Right = KEY_READ then
@@ -60,7 +74,7 @@ begin
     Registry.OpenKeyWithRootAndPath(Path.Root, Path.PathUnderHKEY);
 end;
 
-class function TStaticRegistry.LegacyPathToNew(Root: String; PathUnderHKEY,
+function TNSTRegistry.LegacyPathToNew(Root: String; PathUnderHKEY,
   ValueName: String): TRegistryPath;
 begin
   if Root = 'CR' then result.Root := ClassesRoot
@@ -75,18 +89,18 @@ begin
   result.ValueName := ValueName;
 end;
 
-class procedure TStaticRegistry.CloseRegistry;
+procedure TNSTRegistry.CloseRegistry;
 begin
   Registry.CloseKey;
   FreeAndNil(Registry);
 end;
 
-class procedure TStaticRegistry.SetPath(PathToSet: TRegistryPath);
+procedure TNSTRegistry.SetPath(PathToSet: TRegistryPath);
 begin
   Path := PathToSet;
 end;
 
-class function TStaticRegistry.GetRegInt(const Path: TRegistryPath): Integer;
+function TNSTRegistry.GetRegInt(const Path: TRegistryPath): Integer;
 begin
   SetPath(Path);
   OpenRegistryWithRight(KEY_READ);
@@ -98,7 +112,7 @@ begin
   CloseRegistry;
 end;
 
-class function TStaticRegistry.GetRegStr(const Path: TRegistryPath): String;
+function TNSTRegistry.GetRegStr(const Path: TRegistryPath): String;
 begin
   SetPath(Path);
   OpenRegistryWithRight(KEY_READ);
@@ -110,7 +124,7 @@ begin
   CloseRegistry;
 end;
 
-class function TStaticRegistry.SetRegInt(const Path: TRegistryPath;
+function TNSTRegistry.SetRegInt(const Path: TRegistryPath;
   NewValue: Integer): Boolean;
 begin
   SetPath(Path);
@@ -124,7 +138,7 @@ begin
   CloseRegistry;
 end;
 
-class function TStaticRegistry.SetRegStr(const Path: TRegistryPath;
+function TNSTRegistry.SetRegStr(const Path: TRegistryPath;
   NewValue: String): Boolean;
 begin
   SetPath(Path);
@@ -138,7 +152,7 @@ begin
   CloseRegistry;
 end;
 
-class function TStaticRegistry.GetKeyList(const Path: TRegistryPath;
+function TNSTRegistry.GetKeyList(const Path: TRegistryPath;
   PreparedList: TStringList): TStringList;
 begin
   SetPath(Path);
@@ -150,7 +164,7 @@ begin
   CloseRegistry;
 end;
 
-class function TStaticRegistry.GetValueList(const Path: TRegistryPath;
+function TNSTRegistry.GetValueList(const Path: TRegistryPath;
   PreparedList: TStringList): TStringList;
 begin
   SetPath(Path);
@@ -162,4 +176,8 @@ begin
   CloseRegistry;
 end;
 
+initialization
+  NSTRegistry := TNSTRegistry.Create;
+finalization
+  NSTRegistry.Free;
 end.

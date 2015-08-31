@@ -42,7 +42,7 @@ procedure TMainformReplacedSectorApplier.CreateReplacedSectorLog;
 begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-      TPathManager.AppPath,
+      PathManager.AppPath,
       fMain.PhysicalDrive.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(ReplacedSectors));
 end;

@@ -30,7 +30,7 @@ type
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
   end;
 
-  TTrimBasicsGetterFactory = class
+  TrimBasicsGetterFactory = class
   public
     class function GetSuitableTrimBasicsGetter(FileToGetAccess: String):
       TTrimBasicsGetter;
@@ -53,7 +53,7 @@ begin
   result.PaddingLBA := 0;
 end;
 
-class function TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
+class function TrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
   FileToGetAccess: String): TTrimBasicsGetter;
 begin
   result := TTrimBasicsGetter.Create(FileToGetAccess);

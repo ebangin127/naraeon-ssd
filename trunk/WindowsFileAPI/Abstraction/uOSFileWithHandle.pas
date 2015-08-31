@@ -12,14 +12,11 @@ type
 
   TOSFileWithHandle = class abstract(TOSFile)
   public
-    constructor Create(FileToGetAccess: String); reintroduce;
-      overload; virtual; abstract;
-    constructor Create(FileToGetAccess: String;
-      DesiredAccess: TCreateFileDesiredAccess); reintroduce;
-      overload;
     destructor Destroy; override;
 
   protected
+    procedure CreateHandle(FileToGetAccess: String;
+      DesiredAccess: TCreateFileDesiredAccess);
     function GetFileHandle: THandle;
     function GetAccessPrivilege: TCreateFileDesiredAccess;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; virtual; abstract;
@@ -117,11 +114,13 @@ begin
       ('InsufficientPrevilege: More privilege is required');
 end;
 
-constructor TOSFileWithHandle.Create(FileToGetAccess: String;
+procedure TOSFileWithHandle.CreateHandle(FileToGetAccess: String;
   DesiredAccess: TCreateFileDesiredAccess);
 var
   DesiredAccessInDWORD: DWORD;
 begin
+  if FileHandle <> 0 then
+    raise EInvalidOp.Create('Invalid Operation: Don''t create handle twice');
   inherited Create(FileToGetAccess);
   DesiredAccessInDWORD :=
     GetDesiredAccessFromTCreateFileDesiredAccess(DesiredAccess);

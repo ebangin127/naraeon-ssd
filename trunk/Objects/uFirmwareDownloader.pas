@@ -38,7 +38,7 @@ uses uMain;
 
 procedure TFirmwareDownloader.PrepareTempFolder;
 begin
-  TempFolder := TPathManager.TempFolder(true);
+  TempFolder := PathManager.TempFolder(true);
   CreateDir(TempFolder);
 end;
 
@@ -114,7 +114,7 @@ begin
   begin
     NewPath := Copy(FirmwarePath, 1, Length(FirmwarePath) -
       Length(ExtractFileExt(FirmwarePath))) + '.iso';
-    TProcessOpener.OpenProcWithOutput(TPathManager.WinDir,
+    ProcessOpener.OpenProcWithOutput(PathManager.WinDir,
       'expand.exe "' + FirmwarePath + '" "' + NewPath + '"');
     DeleteFile(FirmwarePath);
     FirmwarePath := NewPath;
@@ -177,7 +177,7 @@ begin
     exit;
   end;
 
-  if TRufus.CheckRufus = false then
+  if Rufus.CheckRufus = false then
   begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
@@ -194,7 +194,7 @@ begin
   else
   begin
     AlertCreate(fMain, AlrtStartFormat[CurrLang]);
-    TRufus.RunRufus(Copy(fMain.cUSB.Items[fMain.cUSB.ItemIndex], 1, 3),
+    Rufus.RunRufus(Copy(fMain.cUSB.Items[fMain.cUSB.ItemIndex], 1, 3),
       FirmwarePath);
     AlertCreate(fMain, AlrtFirmEnd[CurrLang]);
     DeleteDirectory(ExtractFilePath(FirmwarePath));

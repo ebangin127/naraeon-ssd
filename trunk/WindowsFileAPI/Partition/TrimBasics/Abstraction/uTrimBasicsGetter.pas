@@ -75,7 +75,7 @@ end;
 
 constructor TTrimBasicsGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, DesiredReadOnly);
+  CreateHandle(FileToGetAccess, DesiredReadOnly);
 end;
 
 end.

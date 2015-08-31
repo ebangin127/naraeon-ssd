@@ -22,7 +22,7 @@ type
     function GetPartitionExtentList: TPartitionExtentList;
 
   protected
-    function GetMinimumPrivilege: TCreateFileDesiredAccess; reintroduce;
+    function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
 
   private
     PartitionExtentList: TPartitionExtentList;
@@ -61,7 +61,7 @@ implementation
 
 constructor TPartitionExtentGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, GetMinimumPrivilege);
+  CreateHandle(FileToGetAccess, DesiredReadWrite);
 end;
 
 function TPartitionExtentGetter.QueryDosDeviceSystemCall

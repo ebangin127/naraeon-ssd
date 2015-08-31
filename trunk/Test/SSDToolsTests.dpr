@@ -48,7 +48,7 @@ uses
   TestNSTSupport in 'NSTSupport\TestNSTSupport.pas',
   TestWriteBufferSettingVerifier in 'Objects\TestWriteBufferSettingVerifier.pas',
   uWriteBufferSettingVerifier in '..\Objects\uWriteBufferSettingVerifier.pas',
-  uStaticRegistry in '..\Objects\uStaticRegistry.pas',
+  uNSTRegistry in '..\Objects\uNSTRegistry.pas',
   uRegistryHelper in '..\Objects\uRegistryHelper.pas',
   uProcessOpener in '..\Objects\uProcessOpener.pas',
   uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',

@@ -26,7 +26,7 @@ implementation
 
 constructor TDriveAvailabilityGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, GetMinimumPrivilege);
+  CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 
 function TDriveAvailabilityGetter.GetNullBuffer: TIoControlIOBuffer;

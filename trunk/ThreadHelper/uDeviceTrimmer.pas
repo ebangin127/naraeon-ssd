@@ -48,7 +48,7 @@ end;
 
 procedure TDeviceTrimmer.SetCommandSet;
 begin
-  CommandSet := TCommandSetFactory.GetSuitableCommandSet(GetMotherDrivePath);
+  CommandSet := CommandSetFactory.GetSuitableCommandSet(GetMotherDrivePath);
   CommandSet.IdentifyDevice;
 end;
 

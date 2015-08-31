@@ -9,20 +9,24 @@ uses
 type
   TSevenZip = class
   private
-    class function BuildCommand
+    function BuildCommand
       (SzipPath, SrcFile, DestFolder, Password: String): String;
-    class function VerifySevenZip(SzipPath: String): Boolean; static;
+    function VerifySevenZip(SzipPath: String): Boolean;
   public
-    class function Extract
+    function Extract
       (SzipPath, SrcFile, DestFolder: String;
        Password: String = ''): AnsiString;
+    class function Create: TSevenZip;
   end;
+
+var
+  SevenZip: TSevenZip;
 
 implementation
 
 { TSevenZip }
 
-class function TSevenZip.BuildCommand(SzipPath, SrcFile, DestFolder,
+function TSevenZip.BuildCommand(SzipPath, SrcFile, DestFolder,
   Password: String): String;
 begin
   result :=
@@ -37,7 +41,7 @@ begin
     result + ' -p"' + Password + '"';
 end;
 
-class function TSevenZip.VerifySevenZip(SzipPath: String): Boolean;
+function TSevenZip.VerifySevenZip(SzipPath: String): Boolean;
 var
   CodesignVerifier: TCodesignVerifier;
 begin
@@ -46,13 +50,25 @@ begin
   FreeAndNil(CodesignVerifier);
 end;
 
-class function TSevenZip.Extract
+class function TSevenZip.Create: TSevenZip;
+begin
+  if SevenZip = nil then
+    result := inherited Create as self
+  else
+    result := SevenZip;
+end;
+
+function TSevenZip.Extract
   (SzipPath, SrcFile, DestFolder, Password: String): AnsiString;
 begin
   if VerifySevenZip(SzipPath) then
     result :=
-      TProcessOpener.OpenProcWithOutput('C:\',
+      ProcessOpener.OpenProcWithOutput('C:\',
         BuildCommand(SzipPath, SrcFile, DestFolder, Password));
 end;
 
+initialization
+  SevenZip := TSevenZip.Create;
+finalization
+  SevenZip.Free;
 end.

@@ -6,10 +6,8 @@ uses
   SysUtils,
   Classes,
   ShellAPI,
-  uUINT64 in 'Modules\uUINT64.pas',
   uLanguageSettings in 'Resource\uLanguageSettings.pas',
-  uDeleteWhitespace in 'Modules\uDeleteWhitespace.pas',
-  uOptimizer in 'Objects\uOptimizer.pas',
+  uStringHelper in 'Modules\uStringHelper.pas',
   uNSTSupport in 'NSTSupport\Abstraction\uNSTSupport.pas',
   uTrimThread in 'Threads\uTrimThread.pas',
   uUpdateThread in 'Threads\uUpdateThread.pas',
@@ -98,7 +96,7 @@ uses
   uDeleteDirectory in 'Modules\uDeleteDirectory.pas',
   uProcessOpener in 'Objects\uProcessOpener.pas',
   uPlugAndPlay in 'Modules\uPlugAndPlay.pas',
-  uStaticRegistry in 'Objects\uStaticRegistry.pas',
+  uNSTRegistry in 'Objects\uNSTRegistry.pas',
   uFixedDriveListGetter in 'WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
   uPartitionExtentGetter in 'WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas',
   uRemovableDriveListGetter in 'WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas',
@@ -121,7 +119,11 @@ uses
   uTimeUnit in 'Modules\uTimeUnit.pas',
   uAverageLogger in 'Objects\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in 'Objects\AverageLogger\Specific\uAverageCountLogger.pas',
-  uAverageWriteLogger in 'Objects\AverageLogger\Specific\uAverageWriteLogger.pas';
+  uAverageWriteLogger in 'Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
+  uOptimizationUnit in 'Objects\Optimizer\Abstraction\uOptimizationUnit.pas',
+  uLegacyOptimizer in 'Objects\uLegacyOptimizer.pas',
+  uOptimizer in 'Objects\Optimizer\uOptimizer.pas',
+  uVersionHelper in 'Modules\uVersionHelper.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}
@@ -158,7 +160,7 @@ end;
 
 procedure InitializePath;
 begin
-  TPathManager.SetPath(Application);
+  PathManager.SetPath(Application);
 end;
 
 procedure SetLanguageSettings;

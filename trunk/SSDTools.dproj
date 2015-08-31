@@ -144,10 +144,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Modules\uUINT64.pas"/>
         <DCCReference Include="Resource\uLanguageSettings.pas"/>
-        <DCCReference Include="Modules\uDeleteWhitespace.pas"/>
-        <DCCReference Include="Objects\uOptimizer.pas"/>
+        <DCCReference Include="Modules\uStringHelper.pas"/>
         <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
         <DCCReference Include="Threads\uTrimThread.pas"/>
         <DCCReference Include="Threads\uUpdateThread.pas"/>
@@ -248,7 +246,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\uDeleteDirectory.pas"/>
         <DCCReference Include="Objects\uProcessOpener.pas"/>
         <DCCReference Include="Modules\uPlugAndPlay.pas"/>
-        <DCCReference Include="Objects\uStaticRegistry.pas"/>
+        <DCCReference Include="Objects\uNSTRegistry.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas"/>
@@ -272,6 +270,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\AverageLogger\Abstraction\uAverageLogger.pas"/>
         <DCCReference Include="Objects\AverageLogger\Specific\uAverageCountLogger.pas"/>
         <DCCReference Include="Objects\AverageLogger\Specific\uAverageWriteLogger.pas"/>
+        <DCCReference Include="Objects\Optimizer\Abstraction\uOptimizationUnit.pas"/>
+        <DCCReference Include="Objects\uLegacyOptimizer.pas"/>
+        <DCCReference Include="Objects\Optimizer\uOptimizer.pas"/>
+        <DCCReference Include="Modules\uVersionHelper.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

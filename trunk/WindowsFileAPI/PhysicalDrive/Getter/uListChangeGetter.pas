@@ -71,9 +71,9 @@ function TListChangeGetter.GetPhysicalDriveList(IsService: Boolean):
   TPhysicalDriveList;
 begin
   if not IsService then
-    result := TAutoPhysicalDriveListGetter.GetPhysicalDriveList
+    result := AutoPhysicalDriveListGetter.GetPhysicalDriveList
   else
-    result := TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService;
+    result := AutoPhysicalDriveListGetter.GetPhysicalDriveListInService;
 end;
   
 function TListChangeGetter.RefreshListWithResultFrom(
@@ -116,8 +116,10 @@ begin
     IsExistsInPreviousList := ListToRefresh.IsExists(CurrentEntry);
 
     if IsSupportedOrNotNeededToCheck(CurrentEntry.SupportStatus.Supported) then
-      NewList.Add(TPhysicalDrive.Create
-        (StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix)));
+      NewList.Add(
+        TPhysicalDrive.Create(
+          TPhysicalDrive.BuildFileAddressByNumber(
+            StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix))));
 
     if not IsResultNeeded then
       Continue;
@@ -125,8 +127,10 @@ begin
     if (not IsExistsInPreviousList) and
        (IsSupportedOrNotNeededToCheck(CurrentEntry.SupportStatus.Supported))
        then
-      result.Add(TPhysicalDrive.Create
-        (StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix)));
+      result.Add(
+        TPhysicalDrive.Create(
+          TPhysicalDrive.BuildFileAddressByNumber(
+            StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix))));
   end;
 end;
   

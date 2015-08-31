@@ -55,8 +55,10 @@ var
   CurrPartition: Integer;
 begin
   result := TTrimList.Create;
-  PhysicalDrive := TPhysicalDrive.Create(
-    StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix));
+  PhysicalDrive :=
+    TPhysicalDrive.Create(
+      TPhysicalDrive.BuildFileAddressByNumber(
+        StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix)));
   Drives :=
     PhysicalDrive.GetPartitionList;
   for CurrPartition := 0 to Drives.Count - 1 do

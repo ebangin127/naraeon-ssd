@@ -76,7 +76,7 @@ implementation
 
 constructor TNCQAvailabilityGetter.Create(FileToGetAccess: String);
 begin
-  inherited Create(FileToGetAccess, GetMinimumPrivilege);
+  CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 
 function TNCQAvailabilityGetter.GetIOBufferToGetAdaptorDescriptor:

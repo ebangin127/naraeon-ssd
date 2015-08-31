@@ -76,7 +76,7 @@ end;
 
 procedure TestTNSTSupportFactory.TestNonSupport;
 begin
-  FNSTSupport := TNSTSupportFactory.GetSuitableNSTSupport('', '');
+  FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport('', '');
   CheckTrue(FNSTSupport = nil, 'Model & Firmware: Blank');
 end;
 
@@ -268,7 +268,7 @@ end;
 procedure TestTNSTSupportFactory.TestSupportStatusWithModelFirmware(Model,
   Firmware: String);
 begin
-  FNSTSupport := TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
+  FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
   CheckTrue(FNSTSupport <> nil, 'Model: ' + Model + ' Firmware: ' + Firmware);
 end;
 

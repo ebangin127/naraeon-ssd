@@ -4,34 +4,39 @@ interface
 
 uses
   Windows, SysUtils, Messages, Dialogs, IOUtils, Math, ShellAPI,
-  uPathManager, uCodesignVerifier;
+  uPathManager, uCodesignVerifier, uStringHelper;
 
 type
   TRufus = class
   public
-    class function CheckRufus: Boolean;
-    class procedure RunRufus(DestDrive, FromISO: String);
-    class procedure SetRufus
+    function CheckRufus: Boolean;
+    procedure RunRufus(DestDrive, FromISO: String);
+    procedure SetRufus
       (RufusPath, DriveName, ISOPath: String);
+    class function Create: TRufus;
+
   private
-    class function FindMainWindow: THandle;
+    function FindMainWindow: THandle;
 
-    class function FindFTCombo(MWHandle: THandle): THandle;
-    class function GetFTComboText(EDTHandle: THandle): String;
+    function FindFTCombo(MWHandle: THandle): THandle;
+    function GetFTComboText(EDTHandle: THandle): String;
 
-    class function FindDriveCombo(MWHandle: THandle): THandle;
-    class function EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
+    function FindDriveCombo(MWHandle: THandle): THandle;
+    function EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
 
-    class function FindStartButton(MWHandle: THandle): THandle;
-    class function ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
+    function FindStartButton(MWHandle: THandle): THandle;
+    function ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
 
-    class function FindSubWindow(MWHandle: THandle): THandle;
-    class function FindOKButton(SWHandle: THandle): THandle;
-    class function ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
+    function FindSubWindow(MWHandle: THandle): THandle;
+    function FindOKButton(SWHandle: THandle): THandle;
+    function ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
 
-    class function FindCloseButton(MWHandle: THandle): THandle;
-    class function ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
+    function FindCloseButton(MWHandle: THandle): THandle;
+    function ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
   end;
+
+var
+  Rufus: TRufus;
 
 implementation
 
@@ -43,32 +48,32 @@ const
   ComboDefaultText = 'FreeDOS';
   ComboISOText = 'ISO Image';
 
-class function TRufus.CheckRufus: Boolean;
+function TRufus.CheckRufus: Boolean;
 var
   CodesignVerifier: TCodesignVerifier;
 begin
-  result := FileExists(TPathManager.AppPath + 'Rufus\rufus.exe');
+  result := FileExists(PathManager.AppPath + 'Rufus\rufus.exe');
   if not result then
     exit;
 
   CodesignVerifier := TCodesignVerifier.Create;
   result := CodesignVerifier.VerifySignByPublisher(
-    TPathManager.AppPath + 'Rufus\rufus.exe', 'Akeo Consulting');
+    PathManager.AppPath + 'Rufus\rufus.exe', 'Akeo Consulting');
   FreeAndNil(CodesignVerifier);
 end;
 
-class procedure TRufus.RunRufus(DestDrive, FromISO: String);
+procedure TRufus.RunRufus(DestDrive, FromISO: String);
 begin
   DestDrive := Copy(DestDrive, 1, 2);
 
-  TRufus.SetRufus(
-    TPathManager.AppPath + '\Rufus\rufus.exe',
+  SetRufus(
+    PathManager.AppPath + '\Rufus\rufus.exe',
     DestDrive, FromISO);
 
   DeleteFile(FromISO);
 end;
 
-class function TRufus.FindMainWindow: THandle;
+function TRufus.FindMainWindow: THandle;
 begin
   repeat
     Sleep(100);
@@ -77,7 +82,7 @@ begin
         (result <> 0);
 end;
 
-class function TRufus.FindFTCombo(MWHandle: THandle): THandle;
+function TRufus.FindFTCombo(MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -95,7 +100,7 @@ begin
         (ReceivedCaptionStr = ComboISOText);
 end;
 
-class function TRufus.GetFTComboText(EDTHandle: THandle): String;
+function TRufus.GetFTComboText(EDTHandle: THandle): String;
 var
   ReceivedCaptionWC: Array of WideChar;
 begin
@@ -106,7 +111,7 @@ begin
   SetLength(ReceivedCaptionWC, 0);
 end;
 
-class function TRufus.FindDriveCombo(MWHandle: THandle): THandle;
+function TRufus.FindDriveCombo(MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -123,7 +128,7 @@ begin
   until Pos(':)', ReceivedCaptionStr) > 0;
 end;
 
-class function TRufus.EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
+function TRufus.EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -159,7 +164,7 @@ begin
   result := GetLastError = 0;
 end;
 
-class function TRufus.FindStartButton(MWHandle: THandle): THandle;
+function TRufus.FindStartButton(MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -176,14 +181,22 @@ begin
   until ReceivedCaptionStr = 'Start';
 end;
 
-class function TRufus.ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(MWHandle, WM_COMMAND,
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
-class function TRufus.FindSubWindow(MWHandle: THandle): THandle;
+class function TRufus.Create: TRufus;
+begin
+  if Rufus = nil then
+    result := inherited Create as self
+  else
+    result := Rufus;
+end;
+
+function TRufus.FindSubWindow(MWHandle: THandle): THandle;
 begin
   repeat
     Sleep(100);
@@ -192,20 +205,20 @@ begin
         (result <> 0);
 end;
 
-class function TRufus.FindOKButton(SWHandle: THandle): THandle;
+function TRufus.FindOKButton(SWHandle: THandle): THandle;
 begin
   result :=
     FindWindowEx(SWHandle, 0, 'Button', nil);
 end;
 
-class function TRufus.ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(SWHandle, WM_COMMAND,
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
-class function TRufus.FindCloseButton(MWHandle: THandle): THandle;
+function TRufus.FindCloseButton(MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -222,14 +235,14 @@ begin
   until ReceivedCaptionStr = 'Close';
 end;
 
-class function TRufus.ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(MWHandle, WM_COMMAND,
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
-class procedure TRufus.SetRufus
+procedure TRufus.SetRufus
   (RufusPath, DriveName, ISOPath: String);
 var
   MWHandle, SWHandle: THandle;
@@ -239,11 +252,14 @@ var
   CloseButtonHandle,
   OKButtonHandle: THandle;
 begin
+  if not StringHelper.IsAscii(ISOPath) then
+    raise EInvalidArgument.Create(
+      'Invalid argument: Don''t use unicode to rufus');
+
   ShellExecute(0, 'open',
     PChar(RufusPath),
-    PChar('-l en_US --iso="' + ISOPath + '"')
-    //한글경로 안됨.
-    , nil, SW_NORMAL);
+    PChar('-l en_US --iso="' + ISOPath + '"'),
+    nil, SW_NORMAL);
 
   MWHandle := FindMainWindow;
   FileTypeComboHandle := FindFTCombo(MWHandle);
@@ -269,4 +285,8 @@ begin
   ClickCloseButton(MWHandle, CloseButtonHandle);
 end;
 
+initialization
+  Rufus := TRufus.Create;
+finalization
+  Rufus.Free;
 end.

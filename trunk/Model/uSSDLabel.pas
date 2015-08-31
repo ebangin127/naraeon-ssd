@@ -52,7 +52,9 @@ procedure TSSDLabel.SetPhysicalDrive(PhysicalDriveToReplicate: TPhysicalDrive);
 begin
   PhysicalDrive :=
     TPhysicalDrive.Create(
-      StrToInt(PhysicalDriveToReplicate.GetPathOfFileAccessingWithoutPrefix));
+      TPhysicalDrive.BuildFileAddressByNumber(
+        StrToInt(
+          PhysicalDriveToReplicate.GetPathOfFileAccessingWithoutPrefix)));
 end;
 
 procedure TSSDLabel.SetFontAsInherited;

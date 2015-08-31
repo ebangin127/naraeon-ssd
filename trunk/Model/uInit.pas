@@ -5,7 +5,7 @@ interface
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
   WinCodec,
-  uAlert, uButtonGroup, uPathManager, uLanguageSettings;
+  uAlert, uButtonGroup, uPathManager, uLanguageSettings, uVersionHelper;
 
 procedure InitializeMainForm;
 procedure RefreshOptimizeList;
@@ -200,20 +200,20 @@ end;
 procedure TMainformInitializer.LoadAndProportionalStretchBackgroundXP;
 begin
   fMain.iBG.Proportional := true;
-  if FileExists(TPathManager.AppPath + BackgroundPath) then
-    fMain.iBG.Picture.LoadFromFile(TPathManager.AppPath + BackgroundPath);
+  if FileExists(PathManager.AppPath + BackgroundPath) then
+    fMain.iBG.Picture.LoadFromFile(PathManager.AppPath + BackgroundPath);
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchBackground;
 begin
   fMain.iBG.Picture.Bitmap.Assign(
-    StretchImage(TPathManager.AppPath + BackgroundPath,
+    StretchImage(PathManager.AppPath + BackgroundPath,
     fMain.ClientWidth, fMain.ClientHeight));
 end;
 
 procedure TMainformInitializer.LoadBackground;
 begin
-  if Win32MajorVersion = 5 then
+  if VersionHelper.MajorVersion = 5 then
     LoadAndProportionalStretchBackgroundXP
   else
     LoadAndProportionalStretchBackground;
@@ -222,20 +222,20 @@ end;
 procedure TMainformInitializer.LoadAndProportionalStretchLogo;
 begin
   fMain.iLogo.Picture.Bitmap.Assign(
-    StretchImage(TPathManager.AppPath + LogoPath,
+    StretchImage(PathManager.AppPath + LogoPath,
     fMain.iLogo.Width, fMain.iLogo.Height));
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchLogoXP;
 begin
   fMain.iLogo.Proportional := true;
-  if FileExists(TPathManager.AppPath + LogoPath) then
-    fMain.iLogo.Picture.LoadFromFile(TPathManager.AppPath + LogoPath);
+  if FileExists(PathManager.AppPath + LogoPath) then
+    fMain.iLogo.Picture.LoadFromFile(PathManager.AppPath + LogoPath);
 end;
 
 procedure TMainformInitializer.LoadLogoImage;
 begin
-  if Win32MajorVersion = 5 then
+  if VersionHelper.MajorVersion = 5 then
     LoadAndProportionalStretchLogoXP
   else
     LoadAndProportionalStretchLogo;
