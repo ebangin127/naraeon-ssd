@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Windows, Math,
   uOSFile
-  {$IfNDef UNITTEST}, uPartition, uTrimThreadToModel,{$EndIf}
+  {$IfNDef UNITTEST}, uPartition, uTrimThreadToView,{$EndIf}
   {$IfDef UNITTEST}, uMockTrimBasicsGetterFactory,
   {$Else}uTrimBasicsGetter, uTrimBasicsGetterFactory,{$EndIf}
   {$IfDef UNITTEST}uMockDeviceTrimmer,
@@ -52,7 +52,7 @@ type
     DeviceTrimmer: TDeviceTrimmer;
     CurrentPoint: TCurrentPoint;
     {$IfNDef UNITTEST}
-    TrimThreadToModel: TTrimThreadToModel;
+    TrimThreadToView: TTrimThreadToView;
     {$EndIf}
     VolumeSizeInCluster: LARGE_INTEGER;
     LastTick: Cardinal;
@@ -239,7 +239,7 @@ begin
     LastTick := CurrentTick;
     CalculateProgress;
     {$IfNDef UNITTEST}
-    TrimThreadToModel.ApplyProgressToUI(CurrentPartitionTrimProgress.Progress);
+    TrimThreadToView.ApplyProgressToUI(CurrentPartitionTrimProgress.Progress);
     {$EndIf}
   end;
 end;
@@ -365,8 +365,8 @@ procedure TPartitionTrimmer.InitializeModel;
 begin
   CalculateProgress;
   {$IfNDef UNITTEST}
-  TrimThreadToModel := TTrimThreadToModel.Create(TrimSynchronization);
-  TrimThreadToModel.ApplyNextDriveStartToUI(
+  TrimThreadToView := TTrimThreadToView.Create(TrimSynchronization);
+  TrimThreadToView.ApplyNextDriveStartToUI(
     CurrentPartitionTrimProgress.Progress);
   {$EndIf}
 end;
@@ -392,7 +392,7 @@ procedure TPartitionTrimmer.FreeClassesForTrim;
 begin
   FreeAndNil(VolumeBitmapGetter);
   {$IfNDef UNITTEST}
-  FreeAndNil(TrimThreadToModel);
+  FreeAndNil(TrimThreadToView);
   {$EndIf}
   FreeAndNil(DeviceTrimmer);
 end;

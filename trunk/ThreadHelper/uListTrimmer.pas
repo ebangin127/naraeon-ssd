@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  uTrimList, uPartitionTrimmer, uTrimThreadToModel, uProgressSection;
+  uTrimList, uPartitionTrimmer, uTrimThreadToView, uProgressSection;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);
@@ -14,7 +14,7 @@ type
     IsUIInteractionNeededReadWrite: Boolean;
     ProgressReadWrite: Integer;
     TrimStageReadWrite: TTrimStage;
-    TrimThreadToModel: TTrimThreadToModel;
+    TrimThreadToView: TTrimThreadToView;
 
     PartitionsToTrim: TTrimList;
     ThreadToSynchronize: TThread;
@@ -129,16 +129,16 @@ end;
 procedure TListTrimmer.IfNeedUICreateModelController;
 begin
   if ThreadToSynchronize <> nil then
-    TrimThreadToModel := TTrimThreadToModel.Create(GetTrimSynchronization);
+    TrimThreadToView := TTrimThreadToView.Create(GetTrimSynchronization);
 end;
 
 procedure TListTrimmer.IfNeedUIFreeModelController;
 begin
-  if TrimThreadToModel <> nil then
+  if TrimThreadToView <> nil then
   begin
-    TrimThreadToModel.ApplyOriginalUI;
+    TrimThreadToView.ApplyOriginalUI;
     ProgressSynchronizer.HideProgress;
-    FreeAndNil(TrimThreadToModel);
+    FreeAndNil(TrimThreadToView);
   end;
 end;
 
