@@ -122,7 +122,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DelphiCompile>
         <DCCReference Include="..\Resource\uLanguageSettings.pas"/>
         <DCCReference Include="..\Objects\uProcessOpener.pas"/>
-        <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
@@ -184,7 +184,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Modules\uStringHelper.pas"/>
         <DCCReference Include="..\Modules\uTimeUnit.pas"/>
         <DCCReference Include="..\Modules\uUINT64.pas"/>
-        <DCCReference Include="..\Modules\uIs64Bit.pas"/>
+        <DCCReference Include="..\Modules\uWindowsVersion.pas"/>
         <DCCReference Include="..\Objects\uNSTRegistry.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

@@ -7,7 +7,7 @@ uses
   uLanguageSettings,
   uMainformMainpartApplier, uMainformPartitionAlignApplier,
   uMainformReplacedSectorApplier, uMainformSMARTApplier,
-  uMainformTotalWriteApplier, uNSTSupport;
+  uMainformTotalWriteApplier, uNSTSupport, uWindowsVersion;
 
 type
   TMainformAlert = record
@@ -127,10 +127,10 @@ end;
 
 procedure TMainformPhysicalDriveApplier.ApplyDataSetManagementSetting;
 begin
-  fMain.lTrim.Visible := 
-    fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
-  fMain.iTrim.Visible := 
-    fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
+  fMain.lTrim.Visible :=
+    (fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported) and
+    (IsBelowWindows8);
+  fMain.iTrim.Visible := fMain.lTrim.Visible;
 end;
 
 procedure TMainformPhysicalDriveApplier.RevertLastChangesOfMainform;

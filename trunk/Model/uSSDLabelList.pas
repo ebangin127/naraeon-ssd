@@ -169,8 +169,9 @@ var
   CurrentEntry: Integer;
 begin
   for CurrentEntry := 0 to Count - 1 do
-    if Entry.IsPathEqual(self[CurrentEntry].PhysicalDrive) then
-      exit(CurrentEntry);
+    if Entry.IsPathEqual(
+      self[CurrentEntry].PhysicalDrive.GetPathOfFileAccessing) then
+        exit(CurrentEntry);
       
   raise EIndexOfNotFound.Create('EIndexOfNotFound: This list does not contain' +
     ' that item');
@@ -191,7 +192,7 @@ var
   CurrentEntry: Integer;
 begin
   for CurrentEntry := 0 to Count - 1 do
-    if Self[CurrentEntry].PhysicalDrive.IsPathEqual(Path) then
+    if Self[CurrentEntry].PhysicalDrive.GetPathOfFileAccessing = Path then
       exit(CurrentEntry);
 
   raise EIndexOfNotFound.Create('EIndexOfNotFound: This list does not contain' +

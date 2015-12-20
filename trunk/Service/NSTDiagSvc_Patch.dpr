@@ -5,7 +5,7 @@ uses
   Windows,
   uLanguageSettings in '..\Resource\uLanguageSettings.pas',
   uProcessOpener in '..\Objects\uProcessOpener.pas',
-  uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',
+  uBusPhysicalDrive in '..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas',
   uBufferInterpreter in '..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
   uIoControlFile in '..\WindowsFileAPI\Abstraction\uIoControlFile.pas',
   uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
@@ -63,7 +63,7 @@ uses
   uStringHelper in '..\Modules\uStringHelper.pas',
   uTimeUnit in '..\Modules\uTimeUnit.pas',
   uUINT64 in '..\Modules\uUINT64.pas',
-  uIs64Bit in '..\Modules\uIs64Bit.pas',
+  uWindowsVersion in '..\Modules\uWindowsVersion.pas',
   uNSTRegistry in '..\Objects\uNSTRegistry.pas';
 
 {$R *.RES}

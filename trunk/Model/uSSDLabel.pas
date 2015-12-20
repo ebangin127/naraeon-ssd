@@ -21,11 +21,11 @@ type
     procedure SetEvent;
     procedure SetFontAsInherited;
     procedure SetParentAsgSSDSel;
-    procedure SetPhysicalDrive(PhysicalDriveToReplicate: TPhysicalDrive);
+    procedure SetPhysicalDrive(PhysicalDriveToReplicate: IPhysicalDrive);
     procedure SetProperty;
   public
-    PhysicalDrive: TPhysicalDrive;
-    constructor Create(PhysicalDriveToReplicate: TPhysicalDrive); reintroduce;
+    PhysicalDrive: IPhysicalDrive;
+    constructor Create(PhysicalDriveToReplicate: IPhysicalDrive); reintroduce;
     destructor Destroy; override;
   end;
   
@@ -35,11 +35,10 @@ uses uMain;
 
 destructor TSSDLabel.Destroy;
 begin
-  FreeAndNil(PhysicalDrive);
   inherited;
 end;
 
-constructor TSSDLabel.Create(PhysicalDriveToReplicate: TPhysicalDrive);
+constructor TSSDLabel.Create(PhysicalDriveToReplicate: IPhysicalDrive);
 begin
   inherited Create(fMain.gSSDSel);
   SetPhysicalDrive(PhysicalDriveToReplicate);
@@ -48,13 +47,9 @@ begin
   SetCaption;
 end;
 
-procedure TSSDLabel.SetPhysicalDrive(PhysicalDriveToReplicate: TPhysicalDrive);
+procedure TSSDLabel.SetPhysicalDrive(PhysicalDriveToReplicate: IPhysicalDrive);
 begin
-  PhysicalDrive :=
-    TPhysicalDrive.Create(
-      TPhysicalDrive.BuildFileAddressByNumber(
-        StrToInt(
-          PhysicalDriveToReplicate.GetPathOfFileAccessingWithoutPrefix)));
+  PhysicalDrive := PhysicalDriveToReplicate;
 end;
 
 procedure TSSDLabel.SetFontAsInherited;

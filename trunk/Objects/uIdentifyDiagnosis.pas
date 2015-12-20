@@ -46,7 +46,7 @@ procedure TIdentifyDiagnosis.Body(Contents: TStringList);
 var
   SSDList: TPhysicalDriveList;
   ListChangeGetter: TListChangeGetter;
-  CurrEntry: TPhysicalDrive;
+  CurrEntry: IPhysicalDrive;
 begin
   SSDList := TPhysicalDriveList.Create;
 

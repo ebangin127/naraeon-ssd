@@ -12,7 +12,7 @@ type
   private
     ChangesList: TChangesList;
     procedure AddByAddedList;
-    procedure AddDevice(Entry: TPhysicalDrive);
+    procedure AddDevice(Entry: IPhysicalDrive);
     procedure AlertAndExecuteNewDiagnosisInstance;
     procedure DeleteAndAddDevicesByResultList;
     procedure DeleteByDeletedList;
@@ -81,7 +81,7 @@ end;
 
 procedure TSSDLabelListRefresher.AddByAddedList;
 var
-  CurrentEntry: TPhysicalDrive;
+  CurrentEntry: IPhysicalDrive;
 begin
   for CurrentEntry in ChangesList.Added do
     AddDevice(CurrentEntry);
@@ -95,7 +95,7 @@ begin
   fMain.SSDLabel.Delete(fMain.SSDLabel.IndexOfByPath(Path));
 end;
 
-procedure TSSDLabelListRefresher.AddDevice(Entry: TPhysicalDrive);
+procedure TSSDLabelListRefresher.AddDevice(Entry: IPhysicalDrive);
 begin
   fMain.SSDLabel.Add(TSSDLabel.Create(Entry));
 end;

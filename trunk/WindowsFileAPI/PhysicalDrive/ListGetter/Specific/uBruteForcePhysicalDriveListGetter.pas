@@ -34,13 +34,12 @@ end;
 function TBruteForcePhysicalDriveListGetter.TryToGetIsDriveAccessible
   (CurrentDrive: Integer): Boolean;
 var
-  PhysicalDrive: TPhysicalDrive;
+  PhysicalDrive: IPhysicalDrive;
 begin
   PhysicalDrive :=
     TPhysicalDrive.Create(
       TPhysicalDrive.BuildFileAddressByNumber(CurrentDrive));
   result := PhysicalDrive.IsDriveAvailable;
-  FreeAndNil(PhysicalDrive);
 end;
 
 function TBruteForcePhysicalDriveListGetter.IsDriveAccessible

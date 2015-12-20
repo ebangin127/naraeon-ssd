@@ -4,7 +4,7 @@ interface
 
 uses
   Registry, Windows, Classes, Dialogs, SysUtils,
-  uRegistryHelper, uIs64Bit;
+  uRegistryHelper, uWindowsVersion;
 
 type
   TNSTRegistry = class
@@ -103,8 +103,8 @@ end;
 function TNSTRegistry.GetRegInt(const Path: TRegistryPath): Integer;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ);
   try
+    OpenRegistryWithRight(KEY_READ);
     result := Registry.ReadInteger(Path.ValueName);
   except
     result := 0;
@@ -115,8 +115,8 @@ end;
 function TNSTRegistry.GetRegStr(const Path: TRegistryPath): String;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ);
   try
+    OpenRegistryWithRight(KEY_READ);
     result := Registry.ReadString(Path.ValueName);
   except
     result := '';
@@ -128,9 +128,9 @@ function TNSTRegistry.SetRegInt(const Path: TRegistryPath;
   NewValue: Integer): Boolean;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ or KEY_WRITE);
   result := true;
   try
+    OpenRegistryWithRight(KEY_READ or KEY_WRITE);
     Registry.WriteInteger(Path.ValueName, NewValue);
   except
     result := false;
@@ -142,9 +142,9 @@ function TNSTRegistry.SetRegStr(const Path: TRegistryPath;
   NewValue: String): Boolean;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ or KEY_WRITE);
   result := true;
   try
+    OpenRegistryWithRight(KEY_READ or KEY_WRITE);
     Registry.WriteString(Path.ValueName, NewValue);
   except
     result := false;

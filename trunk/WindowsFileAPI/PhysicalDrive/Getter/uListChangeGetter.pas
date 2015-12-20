@@ -106,7 +106,7 @@ end;
 function TListChangeGetter.ReturnAddedListAndRefreshList(
   var NewList: TPhysicalDriveList): TPhysicalDriveList;
 var
-  CurrentEntry: TPhysicalDrive;
+  CurrentEntry: IPhysicalDrive;
   IsExistsInPreviousList: Boolean;
 begin
   result := TPhysicalDriveList.Create;

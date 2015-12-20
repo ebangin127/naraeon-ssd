@@ -23,7 +23,7 @@ uses
   uSemiAutoTrimmer in 'Objects\uSemiAutoTrimmer.pas',
   uInitializer in 'Objects\uInitializer.pas',
   uLocaleApplier in 'Model\uLocaleApplier.pas',
-  uPhysicalDrive in 'Objects\uPhysicalDrive.pas',
+  uBusPhysicalDrive in 'WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas',
   uSMARTValueList in 'Objects\uSMARTValueList.pas',
   uATABufferInterpreter in 'WindowsFileAPI\Interpreter\uATABufferInterpreter.pas',
   uVersionPublisher in 'Resource\uVersionPublisher.pas',
@@ -56,7 +56,6 @@ uses
   uNTFSTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas',
   uFATTrimBasicsGetter in 'WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas',
   uTrimBasicsGetterFactory in 'WindowsFileAPI\Partition\TrimBasics\Factory\uTrimBasicsGetterFactory.pas',
-  uTrimThreadToModel in 'ThreadToModel\uTrimThreadToModel.pas',
   uSandforceNSTSupport in 'NSTSupport\Abstraction\uSandforceNSTSupport.pas',
   uToshibaSandforceNSTSupport in 'NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas',
   uHynixSandforceNSTSupport in 'NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas',
@@ -113,7 +112,7 @@ uses
   uDeviceTrimmer in 'ThreadHelper\uDeviceTrimmer.pas',
   uCommandSetFactory in 'WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas',
   uNSTSupportFactory in 'NSTSupport\Factory\uNSTSupportFactory.pas',
-  uIs64Bit in 'Modules\uIs64Bit.pas',
+  uWindowsVersion in 'Modules\uWindowsVersion.pas',
   uSecurityDescriptor in 'Objects\uSecurityDescriptor.pas',
   uDatasizeUnit in 'Modules\uDatasizeUnit.pas',
   uTimeUnit in 'Modules\uTimeUnit.pas',
@@ -121,9 +120,18 @@ uses
   uAverageCountLogger in 'Objects\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in 'Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
   uOptimizationUnit in 'Objects\Optimizer\Abstraction\uOptimizationUnit.pas',
-  uLegacyOptimizer in 'Objects\uLegacyOptimizer.pas',
-  uOptimizer in 'Objects\Optimizer\uOptimizer.pas',
-  uVersionHelper in 'Modules\uVersionHelper.pas';
+  uVersionHelper in 'Modules\uVersionHelper.pas',
+  uTrimThreadToView in 'ThreadToView\uTrimThreadToView.pas',
+  uPhysicalDrive in 'Objects\uPhysicalDrive.pas',
+  uOSPhysicalDrive in 'WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas',
+  uInterfacedOSFile in 'WindowsFileAPI\Abstraction\uInterfacedOSFile.pas',
+  Optimizer.Hibernation in 'Objects\Optimizer\Optimizer.Hibernation.pas',
+  Optimizer.LastAccess in 'Objects\Optimizer\Optimizer.LastAccess.pas',
+  Optimizer.Prefetch in 'Objects\Optimizer\Optimizer.Prefetch.pas',
+  Optimizer.Defrag in 'Objects\Optimizer\Optimizer.Defrag.pas',
+  Optimizer in 'Objects\Optimizer\Optimizer.pas',
+  Optimizer.Indexer in 'Objects\Optimizer\Optimizer.Indexer.pas',
+  Optimizer.SystemRestore in 'Objects\Optimizer\Optimizer.SystemRestore.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

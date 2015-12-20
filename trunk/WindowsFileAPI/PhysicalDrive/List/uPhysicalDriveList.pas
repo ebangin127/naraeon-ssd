@@ -7,7 +7,7 @@ uses
   uPhysicalDrive;
 
 type
-  TPhysicalDriveList = class sealed(TList<TPhysicalDrive>)
+  TPhysicalDriveList = class sealed(TList<IPhysicalDrive>)
   public
     destructor Destroy; override;
     procedure Delete(Index: Integer);
@@ -16,7 +16,7 @@ type
     function IndexOf(Entry: TPhysicalDrive): Integer; overload;
     function IndexOf(DeviceName: String): Integer; overload;
     
-    function IsExists(Entry: TPhysicalDrive): Boolean;
+    function IsExists(Entry: IPhysicalDrive): Boolean;
   end;
 
 implementation
@@ -55,7 +55,6 @@ end;
 
 procedure TPhysicalDriveList.Delete(Index: Integer);
 begin
-  Self[Index].Free;
   Self[Index] := nil;
   inherited Delete(Index);
 end;
@@ -83,7 +82,7 @@ begin
     exit(-1);
 end;
 
-function TPhysicalDriveList.IsExists(Entry: TPhysicalDrive): Boolean;
+function TPhysicalDriveList.IsExists(Entry: IPhysicalDrive): Boolean;
 begin
   result := IndexOf(Entry) > -1;
 end;

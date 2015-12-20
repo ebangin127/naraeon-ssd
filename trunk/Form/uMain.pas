@@ -9,7 +9,7 @@ uses
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   uAlert, uMessage, uBrowser, uLanguageSettings,
-  uSevenZip, uLegacyOptimizer,
+  uSevenZip, Optimizer,
   uProcessOpener, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
   uButtonGroup, uInit, uRufus, uPathManager,
   uUpdateThread, uTrimThread, uTrimList, uLocaleApplier,
@@ -139,7 +139,6 @@ type
     procedure RefreshDrives;
     function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
     procedure CreateNewPhysicalDrive;
-    procedure IfThisDriveNotValidSelectOther;
     procedure FindAndSelectValidDrive;
     procedure SetSelectedDriveLabelBold;
     function FirmwareUpdateNotAvailable: Boolean;
@@ -150,7 +149,7 @@ type
     CurrDrive: String;
     SSDLabel: TSSDLabelList;
     PhysicalDriveList: TPhysicalDriveList;
-    PhysicalDrive: TPhysicalDrive;
+    PhysicalDrive: IPhysicalDrive;
     FirmwareGetter: TFirmwareGetter;
     WICImage: TWICImage;
     ButtonGroup: TButtonGroup;
@@ -241,9 +240,9 @@ end;
 procedure TfMain.bStartClick(Sender: TObject);
 var
   CurrItem: Integer;
-  OptList: TOptList;
+  OptList: TOptimizeList;
 begin
-  OptList := TOptList.Create;
+  OptList := TOptimizeList.Create;
   for CurrItem := 0 to (lList.Items.Count - 1) do
     OptList.Add(lList.Checked[CurrItem]);
   Optimizer.Optimize(OptList);
@@ -255,7 +254,7 @@ end;
 
 procedure TfMain.bRtnClick(Sender: TObject);
 begin
-  Optimizer.OptimizeReturn;
+  Optimizer.CancelOptimization;
 
   RefreshOptimizeList;
   AlertCreate(Self, AlrtOptRetCmpl[CurrLang]);
@@ -350,12 +349,8 @@ procedure TfMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FirmwareGetter);
 
-  if PhysicalDrive <> nil then
-    FreeAndNil(PhysicalDrive);
-
   FreeAndNil(PhysicalDriveList);
   FreeAndNil(SSDLabel);
-  FreeAndNil(PhysicalDrive);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
   FreeAndNil(WICImage);
@@ -653,7 +648,7 @@ begin
           TPhysicalDrive.BuildFileAddressByNumber(DeviceNumber));
   except
     result := false;
-    FreeAndNil(fMain.PhysicalDrive);
+    fMain.PhysicalDrive := nil;
   end;
 end;
 
@@ -673,16 +668,10 @@ begin
   end;
 end;
 
-procedure TfMain.IfThisDriveNotValidSelectOther;
+procedure TfMain.CreateNewPhysicalDrive;
 begin
   if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrDrive)) = false then
     FindAndSelectValidDrive;
-end;
-
-procedure TfMain.CreateNewPhysicalDrive;
-begin
-  FreeAndNil(fMain.PhysicalDrive);
-  IfThisDriveNotValidSelectOther;
 end;
 
 procedure TfMain.tRefreshTimer(Sender: TObject);

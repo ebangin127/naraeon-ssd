@@ -14,8 +14,8 @@ type
     procedure SemiAutoTrim(Model, Serial: String);
 
   private
-    function GetDeviceEntry(Model, Serial: String): TPhysicalDrive;
-    function GetTrimList(SSDEntry: TPhysicalDrive): TTrimList;
+    function GetDeviceEntry(Model, Serial: String): IPhysicalDrive;
+    function GetTrimList(SSDEntry: IPhysicalDrive): TTrimList;
     procedure ExecuteTrim(TrimList: TTrimList);
   end;
 
@@ -23,7 +23,7 @@ implementation
 
 procedure TSemiAutoTrimmer.SemiAutoTrim(Model, Serial: String);
 var
-  SSDEntry: TPhysicalDrive;
+  SSDEntry: IPhysicalDrive;
   PartToTrim: TTrimList;
 begin
   SSDEntry := GetDeviceEntry(Model, Serial);
@@ -33,7 +33,7 @@ begin
 end;
 
 function TSemiAutoTrimmer.GetDeviceEntry(Model, Serial: String):
-  TPhysicalDrive;
+  IPhysicalDrive;
 var
   SSDList: TPhysicalDriveList;
   ListChangeGetter: TListChangeGetter;
@@ -47,24 +47,20 @@ begin
   FreeAndNil(SSDList);
 end;
 
-function TSemiAutoTrimmer.GetTrimList(SSDEntry: TPhysicalDrive):
+function TSemiAutoTrimmer.GetTrimList(SSDEntry: IPhysicalDrive):
   TTrimList;
 var
-  PhysicalDrive: TPhysicalDrive;
+  PhysicalDrive: IPhysicalDrive;
   Drives: TPartitionList;
   CurrPartition: Integer;
 begin
   result := TTrimList.Create;
-  PhysicalDrive :=
-    TPhysicalDrive.Create(
-      TPhysicalDrive.BuildFileAddressByNumber(
-        StrToInt(SSDEntry.GetPathOfFileAccessingWithoutPrefix)));
+  PhysicalDrive := SSDEntry;
   Drives :=
     PhysicalDrive.GetPartitionList;
   for CurrPartition := 0 to Drives.Count - 1 do
     result.Add(Drives[CurrPartition].Letter + ':');
   FreeAndNil(Drives);
-  FreeAndNil(PhysicalDrive);
 end;
 
 procedure TSemiAutoTrimmer.ExecuteTrim(TrimList: TTrimList);

@@ -54,8 +54,9 @@ uses
   uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Objects\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
-  uIs64Bit in '..\Modules\uIs64Bit.pas',
-  uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas';
+  uWindowsVersion in '..\Modules\uWindowsVersion.pas',
+  uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas',
+  uStringHelper in '..\Modules\uStringHelper.pas';
 
 {$R *.RES}
 

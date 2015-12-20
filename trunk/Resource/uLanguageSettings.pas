@@ -105,7 +105,7 @@ const
     CapAlreadyCompleted: Array[0..1] of String = (' (이미 완료됨)', ' (Already Completed)');
 
     CapOptHiber: Array[0..1] of String = ('하이버네이션 끄기', 'Disable Hibernation');
-    CapOptFilerec: Array[0..1] of String = ('파일 접근 기록 없애기', 'Disable Last access time attribute');
+    CapOptLastAccess: Array[0..1] of String = ('파일 접근 기록 없애기', 'Disable Last access time attribute');
     CapOptSupFetch: Array[0..1] of String = ('프리패치/슈퍼패치 끄기', 'Disable Prefetch/Superfetch Service');
 
     CapOptPrefetch: Array[0..1] of String = ('프리패치 끄기', 'Disable Prefetch Service');

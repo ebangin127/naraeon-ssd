@@ -124,14 +124,14 @@ procedure TMainformInitializer.RefreshOptimizeList;
 var
   CurrItem: Integer;
 begin
-  Mainform.lList.Items.Assign(Mainform.Optimizer.Descriptions);
-  for CurrItem := 0 to (Mainform.Optimizer.Descriptions.Count - 1) do
+  Mainform.lList.Items.Assign(Mainform.Optimizer.GetDescriptions);
+  for CurrItem := 0 to (Mainform.Optimizer.GetDescriptions.Count - 1) do
   begin
     Mainform.lList.Checked[CurrItem] :=
-      (not Mainform.Optimizer.Optimized[CurrItem]) and
-      (not Mainform.Optimizer.Selective[CurrItem]);
+      (not Mainform.Optimizer.GetApplied[CurrItem]) and
+      (not Mainform.Optimizer.GetIsOptional[CurrItem]);
 
-    if Mainform.Optimizer.Optimized[CurrItem] then
+    if Mainform.Optimizer.GetApplied[CurrItem] then
       Mainform.lList.Items[CurrItem] :=
         Mainform.lList.Items[CurrItem] +
         CapAlreadyCompleted[CurrLang];

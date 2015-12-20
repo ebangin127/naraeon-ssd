@@ -15,7 +15,7 @@ type
     TempFolder: String;
     DownloadThread: TDownloadThread;
     Request: TDownloadRequest;
-    PhysicalDrive: TPhysicalDrive;
+    PhysicalDrive: IPhysicalDrive;
     FirmwareGetter: TFirmwareGetter;
     FirmwareQueryResult: TFirmwareQueryResult;
     FirmwarePath: String;
