@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>NSTDiagSvc_Patch.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -93,8 +93,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <VerInfo_Release>6</VerInfo_Release>
-        <PostBuildEvent><![CDATA[signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode "$(OUTPUTPATH)"
-$(PostBuildEvent)]]></PostBuildEvent>
         <VerInfo_MajorVer>5</VerInfo_MajorVer>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
@@ -108,8 +106,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.8.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.8.0</VerInfo_Keys>
-        <VerInfo_Release>8</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.9.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.9.0</VerInfo_Keys>
+        <VerInfo_Release>9</VerInfo_Release>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
@@ -122,11 +120,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DelphiCompile>
         <DCCReference Include="..\Resource\uLanguageSettings.pas"/>
         <DCCReference Include="..\Objects\uProcessOpener.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
         <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
@@ -159,7 +152,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <FormType>dfm</FormType>
             <DesignClass>TService</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uADATANSTSupport.pas"/>
@@ -183,9 +175,18 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Modules\uDatasizeUnit.pas"/>
         <DCCReference Include="..\Modules\uStringHelper.pas"/>
         <DCCReference Include="..\Modules\uTimeUnit.pas"/>
-        <DCCReference Include="..\Modules\uUINT64.pas"/>
         <DCCReference Include="..\Modules\uWindowsVersion.pas"/>
         <DCCReference Include="..\Objects\uNSTRegistry.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas"/>
+        <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uDriveListGetter.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uInterfacedOSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
+        <DCCReference Include="..\Modules\uVersionHelper.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -593,20 +594,4 @@ $(PostBuildEvent)]]></PostBuildEvent>
     <Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
     <Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
 </Project>

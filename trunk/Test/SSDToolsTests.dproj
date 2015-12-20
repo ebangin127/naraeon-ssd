@@ -137,6 +137,7 @@
         <DCCReference Include="..\Modules\uWindowsVersion.pas"/>
         <DCCReference Include="..\Objects\uSecurityDescriptor.pas"/>
         <DCCReference Include="..\Modules\uStringHelper.pas"/>
+        <DCCReference Include="..\Modules\uVersionHelper.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

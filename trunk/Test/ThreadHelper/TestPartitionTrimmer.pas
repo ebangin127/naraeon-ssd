@@ -14,6 +14,7 @@ interface
 uses
   TestFramework,
   uMockAutoTrimBasicsGetter,
+  uMockTrimBasicsGetterFactory,
   uMockVolumeBitmapGetter,
   uMockDeviceTrimmer,
   uPartitionTrimmer;
@@ -50,7 +51,7 @@ end;
 
 procedure TestTPartitionTrimmer.TestBasicTrim;
 const
-  NullSyncronization: TTrimSynchronization =
+  NullSyncronization: uMockTrimBasicsGetterFactory.TTrimSynchronization =
     (IsUIInteractionNeeded: False);
 var
   BasicTest: TBitmapBuffer;

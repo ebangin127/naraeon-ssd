@@ -21,12 +21,12 @@ type
     function IsNeedDiagnosis: Boolean;
     procedure WriteBufferCheck;
     procedure LogAndCheckSMART;
-    procedure RefreshReplacedSectorLog(Entry: TPhysicalDrive);
-    procedure RefreshTotalWriteLog(Entry: TPhysicalDrive);
-    procedure IfNeedToAlertCreateAlertFile(Entry: TPhysicalDrive;
+    procedure RefreshReplacedSectorLog(Entry: IPhysicalDrive);
+    procedure RefreshTotalWriteLog(Entry: IPhysicalDrive);
+    procedure IfNeedToAlertCreateAlertFile(Entry: IPhysicalDrive;
       IsReplacedSectorDifferent: Boolean);
     function GetAlertFile: TStringList;
-    function GetPartitionLetters(Entry: TPhysicalDrive): String;
+    function GetPartitionLetters(Entry: IPhysicalDrive): String;
     procedure SaveWriteBufferCheckResult(WriteBufferErrors: TStringList);
   public
     constructor Create;
@@ -124,7 +124,7 @@ begin
   FreeAndNil(WriteBufferErrors);
 end;
 
-procedure TDiagnosisService.RefreshTotalWriteLog(Entry: TPhysicalDrive);
+procedure TDiagnosisService.RefreshTotalWriteLog(Entry: IPhysicalDrive);
 var
   TotalWriteLog: TAverageWriteLogger;
 begin
@@ -149,7 +149,7 @@ begin
     result.LoadFromFile(ErrorFilePath);
 end;
 
-function TDiagnosisService.GetPartitionLetters(Entry: TPhysicalDrive): String;
+function TDiagnosisService.GetPartitionLetters(Entry: IPhysicalDrive): String;
 var
   PartitionList: TPartitionList;
   CurrentPartition: Integer;
@@ -161,7 +161,7 @@ begin
   FreeAndNil(PartitionList);
 end;
 
-procedure TDiagnosisService.IfNeedToAlertCreateAlertFile(Entry: TPhysicalDrive;
+procedure TDiagnosisService.IfNeedToAlertCreateAlertFile(Entry: IPhysicalDrive;
   IsReplacedSectorDifferent: Boolean);
 var
   AlertFile: TStringList;
@@ -183,7 +183,7 @@ begin
   FreeAndNil(AlertFile);
 end;
 
-procedure TDiagnosisService.RefreshReplacedSectorLog(Entry: TPhysicalDrive);
+procedure TDiagnosisService.RefreshReplacedSectorLog(Entry: IPhysicalDrive);
 var
   ReplacedSectorLog: TAverageCountLogger;
 begin
@@ -201,7 +201,7 @@ end;
 
 procedure TDiagnosisService.LogAndCheckSMART;
 var
-  CurrentEntry: TPhysicalDrive;
+  CurrentEntry: IPhysicalDrive;
 begin
   for CurrentEntry in PhysicalDriveList do
   begin

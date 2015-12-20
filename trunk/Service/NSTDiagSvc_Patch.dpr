@@ -5,11 +5,6 @@ uses
   Windows,
   uLanguageSettings in '..\Resource\uLanguageSettings.pas',
   uProcessOpener in '..\Objects\uProcessOpener.pas',
-  uBusPhysicalDrive in '..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas',
-  uBufferInterpreter in '..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
-  uIoControlFile in '..\WindowsFileAPI\Abstraction\uIoControlFile.pas',
-  uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
-  uOSFileWithHandle in '..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
   uCommandSet in '..\WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas',
   uATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas',
   uSATCommandSet in '..\WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas',
@@ -38,7 +33,6 @@ uses
   uListChangeGetter in '..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas',
   uLegacyATACommandSet in '..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas',
   uMain in 'uMain.pas' {NaraeonSSDToolsDiag: TService},
-  uDriveListGetter in '..\WindowsFileAPI\Abstraction\uDriveListGetter.pas',
   uFixedDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas',
   uRemovableDriveListGetter in '..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas',
   uADATANSTSupport in '..\NSTSupport\Support\uADATANSTSupport.pas',
@@ -62,9 +56,18 @@ uses
   uDatasizeUnit in '..\Modules\uDatasizeUnit.pas',
   uStringHelper in '..\Modules\uStringHelper.pas',
   uTimeUnit in '..\Modules\uTimeUnit.pas',
-  uUINT64 in '..\Modules\uUINT64.pas',
   uWindowsVersion in '..\Modules\uWindowsVersion.pas',
-  uNSTRegistry in '..\Objects\uNSTRegistry.pas';
+  uNSTRegistry in '..\Objects\uNSTRegistry.pas',
+  uBusPhysicalDrive in '..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas',
+  uOSPhysicalDrive in '..\WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas',
+  uPhysicalDrive in '..\Objects\uPhysicalDrive.pas',
+  uBufferInterpreter in '..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas',
+  uDriveListGetter in '..\WindowsFileAPI\Abstraction\uDriveListGetter.pas',
+  uInterfacedOSFile in '..\WindowsFileAPI\Abstraction\uInterfacedOSFile.pas',
+  uIoControlFile in '..\WindowsFileAPI\Abstraction\uIoControlFile.pas',
+  uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
+  uOSFileWithHandle in '..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas',
+  uVersionHelper in '..\Modules\uVersionHelper.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}
