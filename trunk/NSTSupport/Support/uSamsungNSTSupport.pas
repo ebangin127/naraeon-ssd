@@ -41,7 +41,7 @@ end;
 function TSamsungNSTSupport.IsSamsungSATA: Boolean;
 begin
   result :=
-    Pos('EX', UpperCase(Firmware)) = 1;
+    Pos('BX', UpperCase(Firmware)) < 5;
 end;
 
 function TSamsungNSTSupport.IsProductOfSamsung: Boolean;

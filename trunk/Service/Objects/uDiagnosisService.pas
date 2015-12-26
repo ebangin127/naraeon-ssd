@@ -24,11 +24,14 @@ type
     procedure LogAndCheckSMART;
     procedure RefreshReplacedSectorLog(Entry: IPhysicalDrive);
     procedure RefreshTotalWriteLog(Entry: IPhysicalDrive);
-    procedure IfNeedToAlertCreateAlertFile(Entry: IPhysicalDrive;
+    procedure AlertIfNeedToReplacedSectors(Entry: IPhysicalDrive;
       IsReplacedSectorDifferent: Boolean);
     function GetAlertFile: TStringList;
     function GetPartitionLetters(Entry: IPhysicalDrive): String;
     procedure SaveWriteBufferCheckResult(WriteBufferErrors: TStringList);
+    procedure RefreshReadWriteErrorLog(Entry: IPhysicalDrive);
+    procedure AlertIfNeedToReadEraseError(Entry: IPhysicalDrive;
+      IsReadWriteErrorDifferent: Boolean);
   public
     constructor Create;
     destructor Destroy; override;
@@ -161,7 +164,7 @@ begin
   FreeAndNil(PartitionList);
 end;
 
-procedure TDiagnosisService.IfNeedToAlertCreateAlertFile(Entry: IPhysicalDrive;
+procedure TDiagnosisService.AlertIfNeedToReplacedSectors(Entry: IPhysicalDrive;
   IsReplacedSectorDifferent: Boolean);
 var
   AlertFile: TStringList;
@@ -170,14 +173,34 @@ begin
   if (Entry.SMARTInterpreted.SMARTAlert.ReplacedSector = false) or
      (not IsReplacedSectorDifferent) then
      exit;
-
   AlertFile := GetAlertFile;
   AllMountedPartitions := GetPartitionLetters(Entry);
   AlertFile.Add(
     GetLogLine(Now, ' !!!!! ' +
       AllMountedPartitions + ' ' + CapBck[CurrLang] + ' !!!!! ' +
-      CapBck2[CurrLang] + '(' +
+      CapBckRepSector[CurrLang] + '(' +
       UIntToStr(Entry.SMARTInterpreted.ReplacedSectors) +
+      CapCount[CurrLang] + ') ' + CapOcc[CurrLang]));
+  AlertFile.SaveToFile(ErrorFilePath);
+  FreeAndNil(AlertFile);
+end;
+
+procedure TDiagnosisService.AlertIfNeedToReadEraseError(Entry: IPhysicalDrive;
+  IsReadWriteErrorDifferent: Boolean);
+var
+  AlertFile: TStringList;
+  AllMountedPartitions: String;
+begin
+  if (Entry.SMARTInterpreted.SMARTAlert.ReadEraseError = false) or
+     (not IsReadWriteErrorDifferent) then
+     exit;
+  AlertFile := GetAlertFile;
+  AllMountedPartitions := GetPartitionLetters(Entry);
+  AlertFile.Add(
+    GetLogLine(Now, ' !!!!! ' +
+      AllMountedPartitions + ' ' + CapBck[CurrLang] + ' !!!!! ' +
+      CapBckREError[CurrLang] + '(' +
+      UIntToStr(Entry.SMARTInterpreted.ReadEraseError.Value) +
       CapCount[CurrLang] + ') ' + CapOcc[CurrLang]));
   AlertFile.SaveToFile(ErrorFilePath);
   FreeAndNil(AlertFile);
@@ -193,9 +216,24 @@ begin
       Entry.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(
     Entry.SMARTInterpreted.ReplacedSectors));
-  IfNeedToAlertCreateAlertFile(Entry,
+  AlertIfNeedToReplacedSectors(Entry,
     ReplacedSectorLog.GetFormattedTodayDelta <> '0.0');
   FreeAndNil(ReplacedSectorLog);
+end;
+
+procedure TDiagnosisService.RefreshReadWriteErrorLog(Entry: IPhysicalDrive);
+var
+  ReadWriteErrorLog: TAverageCountLogger;
+begin
+  ReadWriteErrorLog := TAverageCountLogger.Create(
+    TAverageCountLogger.BuildFileName(
+      PathManager.AppPath,
+      Entry.IdentifyDeviceResult.Serial + 'RELog'));
+  ReadWriteErrorLog.ReadAndRefresh(UIntToStr(
+    Entry.SMARTInterpreted.ReplacedSectors));
+  AlertIfNeedToReadEraseError(Entry,
+    ReadWriteErrorLog.GetFormattedTodayDelta <> '0.0');
+  FreeAndNil(ReadWriteErrorLog);
 end;
 
 procedure TDiagnosisService.LogAndCheckSMART;
@@ -211,6 +249,7 @@ begin
     end;
     RefreshTotalWriteLog(CurrentEntry);
     RefreshReplacedSectorLog(CurrentEntry);
+    RefreshReadWriteErrorLog(CurrentEntry);
   end;
 end;
 

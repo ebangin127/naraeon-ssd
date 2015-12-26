@@ -190,7 +190,8 @@ const
     CapWrongBuf2: Array[0..1] of String = ('비 샌드포스 SSD에서 절대 쓰기 캐시를 끄지 마세요' , 'Do NOT turn off write cache on non-sandforce SSDs.');
 
     CapBck: Array[0..1] of String = ('즉시 백업 요망' , 'requires BACKUP IMMEDIATELY');
-    CapBck2: Array[0..1] of String = ('SSD에서 죽은 섹터' , 'It has dead sector');
+    CapBckRepSector: Array[0..1] of String = ('SSD에서 죽은 섹터' , 'It has dead sector');
+    CapBckREError: Array[0..1] of String = ('SSD에서 죽은 섹터' , 'It has dead sector');
     CapOcc: Array[0..1] of String = ('발생' , '');
 
 

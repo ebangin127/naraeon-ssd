@@ -3,7 +3,7 @@ unit Getter.PhysicalDriveList.BruteForce;
 interface
 
 uses
-  SysUtils, Threading,
+  SysUtils, Threading, Classes, Dialogs,
   OSFile, Device.PhysicalDrive, Getter.PhysicalDriveList,
   Device.PhysicalDrive.List, CommandSet.Factory;
 
@@ -32,7 +32,9 @@ begin
       TPhysicalDrive.Create(
         TPhysicalDrive.BuildFileAddressByNumber(CurrentDrive)));
   except
-    on E: ENoCommandSetException do
+    on E: ENoCommandSetException do;
+    on OSError: EOSError do
+      if OSError.ErrorCode <> 2 then raise;
     else raise;
   end;
 end;
@@ -71,7 +73,12 @@ const
 begin
   TParallel.For(0, PHYSICALDRIVE_MAX, procedure (CurrentDrive: Integer)
   begin
-    IfThisDriveAccessibleAddToList(CurrentDrive)
+    try
+      IfThisDriveAccessibleAddToList(CurrentDrive);
+    except
+      on E: Exception do
+        raise E;
+    end;
   end);
 end;
 

@@ -176,8 +176,6 @@ implementation
 {$R *.dfm}
 
 procedure TfMain.bEraseUSBStartClick(Sender: TObject);
-var
-  FileName: String;
 begin
   if cEraseAgree.Checked = false then
   begin
@@ -185,8 +183,7 @@ begin
     exit;
   end;
   tRefresh.Enabled := false;
-  if PhysicalDrive.IdentifyDeviceResult.StorageInterface =
-    TStorageInterface.NVMe then
+  if PhysicalDrive.IdentifyDeviceResult.StorageInterface = NVMe then
     Erase('nvme')
   else
     Erase('pmagic');

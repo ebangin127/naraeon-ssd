@@ -123,7 +123,7 @@
         <DCCReference Include="ThreadHelper\uMockDeviceTrimmer.pas"/>
         <DCCReference Include="ThreadHelper\uMockVolumeBitmapGetter.pas"/>
         <DCCReference Include="..\ThreadHelper\uPartitionTrimmer.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\OSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <DCCReference Include="NSTSupport\TestNSTSupport.pas"/>
         <DCCReference Include="Objects\TestWriteBufferSettingVerifier.pas"/>
@@ -138,6 +138,8 @@
         <DCCReference Include="..\Objects\uSecurityDescriptor.pas"/>
         <DCCReference Include="..\Modules\uStringHelper.pas"/>
         <DCCReference Include="..\Modules\uVersionHelper.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\Support.Intel.NVMe.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\Support.Samsung.NVMe.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

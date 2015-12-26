@@ -102,12 +102,16 @@ begin
 end;
 
 function TNVMeCommandSet.GetSlotSpeed: TSlotMaxCurrSpeed;
+{$IFNDEF SERVICE}
 var
   SlotSpeedGetter: TSlotSpeedGetter;
+{$ENDIF}
 begin
+  {$IFNDEF SERVICE}
   SlotSpeedGetter := TSlotSpeedGetter.Create(GetPathOfFileAccessing);
   result := SlotSpeedGetter.GetSlotSpeed;
   FreeAndNil(SlotSpeedGetter);
+  {$ENDIF}
 end;
 
 function TNVMeCommandSet.GetCommonCommandDescriptorBlock:

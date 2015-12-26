@@ -17,6 +17,7 @@ type
   private
     DiagnosisService: TDiagnosisService;
     procedure WaitForTerminate;
+    procedure InitializeAndWaitForEnd;
   public
     function GetServiceController: TServiceController; override;
   end;
@@ -38,9 +39,16 @@ begin
   Result := ServiceController;
 end;
 
+procedure TNaraeonSSDToolsDiag.InitializeAndWaitForEnd;
+begin
+  DiagnosisService.InitializePhysicalDriveList;
+  WaitForTerminate;
+end;
+
 procedure TNaraeonSSDToolsDiag.ServiceCreate(Sender: TObject);
 begin
   DiagnosisService := TDiagnosisService.Create;
+  {$IFDEF DEBUG} InitializeAndWaitForEnd; {$ENDIF}
 end;
 
 procedure TNaraeonSSDToolsDiag.ServiceDestroy(Sender: TObject);
@@ -51,15 +59,19 @@ end;
 
 procedure TNaraeonSSDToolsDiag.ServiceExecute(Sender: TService);
 begin
-  DiagnosisService.InitializePhysicalDriveList;
-  WaitForTerminate;
+  InitializeAndWaitForEnd;
 end;
 
 procedure TNaraeonSSDToolsDiag.WaitForTerminate;
 begin
   tDiagnosis.Enabled := true;
+  {$IFNDEF DEBUG}
   while not Terminated do
     ServiceThread.ProcessRequests(true);
+  {$ELSE}
+  while true do
+    Sleep(1);
+  {$ENDIF}
   tDiagnosis.Enabled := false;
 end;
 

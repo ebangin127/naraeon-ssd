@@ -43,7 +43,7 @@ uses
   uMockDeviceTrimmer in 'ThreadHelper\uMockDeviceTrimmer.pas',
   uMockVolumeBitmapGetter in 'ThreadHelper\uMockVolumeBitmapGetter.pas',
   uPartitionTrimmer in '..\ThreadHelper\uPartitionTrimmer.pas',
-  OSFile in '..\WindowsFileAPI\Abstraction\OSFile.pas',
+  OSFile in '..\WindowsFileAPI\OSFile.pas',
   uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
   TestNSTSupport in 'NSTSupport\TestNSTSupport.pas',
   TestWriteBufferSettingVerifier in 'Objects\TestWriteBufferSettingVerifier.pas',
@@ -57,7 +57,9 @@ uses
   uWindowsVersion in '..\Modules\uWindowsVersion.pas',
   uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas',
   uStringHelper in '..\Modules\uStringHelper.pas',
-  uVersionHelper in '..\Modules\uVersionHelper.pas';
+  uVersionHelper in '..\Modules\uVersionHelper.pas',
+  Support.Intel.NVMe in '..\NSTSupport\Support\Support.Intel.NVMe.pas',
+  Support.Samsung.NVMe in '..\NSTSupport\Support\Support.Samsung.NVMe.pas';
 
 {$R *.RES}
 

@@ -64,6 +64,8 @@ type
     procedure TestPhisonCT7Support;
     procedure TestADATASP900Support;
     procedure TestADATASP920Support;
+    procedure TestIntel750Support;
+    procedure TestSamsung950ProSupport;
   end;
 
 implementation
@@ -222,6 +224,16 @@ end;
 procedure TestTNSTSupportFactory.TestSamsung850ProSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 850 PRO 512GB', 'EXM01B6Q');
+end;
+
+procedure TestTNSTSupportFactory.TestIntel750Support;
+begin
+  TestSupportStatusWithModelFirmware('INTEL SSDPEDMW400G4', '8EV10174');
+end;
+
+procedure TestTNSTSupportFactory.TestSamsung950ProSupport;
+begin
+  TestSupportStatusWithModelFirmware('SAMSUNG SSD 950 PRO 256GB', '1B0QBXX7');
 end;
 
 procedure TestTNSTSupportFactory.TestSandiskX110Support;
