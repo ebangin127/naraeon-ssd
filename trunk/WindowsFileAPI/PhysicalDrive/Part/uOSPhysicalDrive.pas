@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils,
-  uOSFile, uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
+  OSFile, uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
   uNCQAvailabilityGetter;
 
 type

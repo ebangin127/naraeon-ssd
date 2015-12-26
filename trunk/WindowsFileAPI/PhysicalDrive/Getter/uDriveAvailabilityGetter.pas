@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils,
-  uOSFileWithHandle, uIoControlFile;
+  OSFile.Handle, OSFile.IoControl;
 
 type
   TDriveAvailabilityGetter = class sealed(TIoControlFile)

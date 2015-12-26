@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Math,
-  uNSTSupport, uSMARTValueList;
+  uNSTSupport, Device.SMART.List;
 
 type
   TADATANSTSupport = class sealed(TNSTSupport)

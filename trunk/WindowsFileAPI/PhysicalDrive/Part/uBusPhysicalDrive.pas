@@ -4,28 +4,24 @@ interface
 
 uses
   Windows, SysUtils,
-  uOSFile, uSMARTValueList, uBufferInterpreter, uCommandSet, uCommandSetFactory;
+  OSFile, Device.SMART.List, BufferInterpreter, CommandSet,
+  CommandSet.Factory;
 
 type
   TBusPhysicalDrive = class(TOSFile)
   private
     IdentifyDeviceResultReadWrite: TIdentifyDeviceResult;
     SMARTValueListReadWrite: TSMARTValueList;
-
     CommandSet: TCommandSet;
-
     procedure RequestIdentifyDevice;
     procedure RequestSMARTReadData;
-
     function GetIdentifyDeviceResultOrRequestAndReturn: TIdentifyDeviceResult;
     function GetSMARTValueListOrRequestAndReturn: TSMARTValueList;
-
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
       read GetIdentifyDeviceResultOrRequestAndReturn;
     property SMARTValueList: TSMARTValueList
       read GetSMARTValueListOrRequestAndReturn;
-
     constructor Create(FileToGetAccess: String); override;
     destructor Destroy; override;
 

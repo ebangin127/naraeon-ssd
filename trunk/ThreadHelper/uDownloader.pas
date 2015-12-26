@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils, Classes, Windows, IdHttp, IdComponent,
-  uDatasizeUnit, uTimeUnit, uDeleteDirectory, uDownloadPath, uProgressSection,
-  uLanguageSettings;
+  MeasureUnit.DataSize, uTimeUnit, uDeleteDirectory, uDownloadPath,
+  Component.ProgressSection, uLanguageSettings;
 
 type
   TDownloadModelStrings = record
@@ -68,7 +68,7 @@ type
 implementation
 
 uses
-  uMain;
+  Form.Main;
 
 procedure TDownloader.SetRAWDownloadRequest;
 begin

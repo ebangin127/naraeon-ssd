@@ -15,7 +15,7 @@ program SSDToolsTests;
 uses
   uSandforceNSTSupport in '..\NSTSupport\Abstraction\uSandforceNSTSupport.pas',
   uNSTSupport in '..\NSTSupport\Abstraction\uNSTSupport.pas',
-  uSMARTValueList in '..\Objects\uSMARTValueList.pas',
+  Device.SMART.List in '..\Objects\Device.SMART.List.pas',
   DUnitTestRunner,
   ShellApi,
   Windows,
@@ -43,7 +43,7 @@ uses
   uMockDeviceTrimmer in 'ThreadHelper\uMockDeviceTrimmer.pas',
   uMockVolumeBitmapGetter in 'ThreadHelper\uMockVolumeBitmapGetter.pas',
   uPartitionTrimmer in '..\ThreadHelper\uPartitionTrimmer.pas',
-  uOSFile in '..\WindowsFileAPI\Abstraction\uOSFile.pas',
+  OSFile in '..\WindowsFileAPI\Abstraction\OSFile.pas',
   uNSTSupportFactory in '..\NSTSupport\Factory\uNSTSupportFactory.pas',
   TestNSTSupport in 'NSTSupport\TestNSTSupport.pas',
   TestWriteBufferSettingVerifier in 'Objects\TestWriteBufferSettingVerifier.pas',

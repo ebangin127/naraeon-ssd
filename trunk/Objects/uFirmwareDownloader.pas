@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, SysUtils, IdURI, Dialogs, ShellApi,
-  uAlert, uLanguageSettings, uPathManager, uVersionPublisher,
-  uProcessOpener, uPhysicalDrive, uDownloadThread,
+  Form.Alert, uLanguageSettings, uPathManager, uVersionPublisher,
+  uProcessOpener, Device.PhysicalDrive, Thread.Download,
   uDeleteDirectory, uDownloadPath, uFirmwareGetter, uCodesignVerifier,
-  uDownloader, uRufus;
+  uDownloader, Extern.Rufus;
 
 type
   TFirmwareDownloader = class
@@ -34,7 +34,7 @@ type
 
 implementation
 
-uses uMain;
+uses Form.Main;
 
 procedure TFirmwareDownloader.PrepareTempFolder;
 begin

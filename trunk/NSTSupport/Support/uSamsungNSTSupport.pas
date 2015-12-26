@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Math,
-  uNSTSupport, uSMARTValueList;
+  uNSTSupport, Device.SMART.List;
 
 type
   TSamsungNSTSupport = class sealed(TNSTSupport)
@@ -15,7 +15,7 @@ type
     function IsProductOfSamsung: Boolean;
     function IsSamsung470: Boolean;
     function IsSamsungOtherSSD: Boolean;
-
+    function IsSamsungSATA: Boolean;
   public
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -38,11 +38,18 @@ begin
     Pos('470', UpperCase(Model)) > 0;
 end;
 
+function TSamsungNSTSupport.IsSamsungSATA: Boolean;
+begin
+  result :=
+    Pos('EX', UpperCase(Firmware)) = 1;
+end;
+
 function TSamsungNSTSupport.IsProductOfSamsung: Boolean;
 begin
   result :=
     (Pos('SAMSUNG', UpperCase(Model)) > 0) and
-    (IsSamsungOtherSSD or IsSamsung470);
+    (IsSamsungOtherSSD or IsSamsung470) and
+    IsSamsungSATA;
 end;
 
 function TSamsungNSTSupport.GetSemiSupport: TSupportStatus;

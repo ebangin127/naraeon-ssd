@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, SysUtils,
-  uDatasizeUnit, uOSFile;
+  MeasureUnit.DataSize, OSFile;
 
 type
   TVolumeLabelGetter = class(TOSFile)

@@ -98,7 +98,7 @@
         </DelphiCompile>
         <DCCReference Include="..\NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
-        <DCCReference Include="..\Objects\uSMARTValueList.pas"/>
+        <DCCReference Include="..\Objects\Device.SMART.List.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uCrucialNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uLiteonNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uMachXtremeNSTSupport.pas"/>
@@ -123,7 +123,7 @@
         <DCCReference Include="ThreadHelper\uMockDeviceTrimmer.pas"/>
         <DCCReference Include="ThreadHelper\uMockVolumeBitmapGetter.pas"/>
         <DCCReference Include="..\ThreadHelper\uPartitionTrimmer.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Abstraction\OSFile.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
         <DCCReference Include="NSTSupport\TestNSTSupport.pas"/>
         <DCCReference Include="Objects\TestWriteBufferSettingVerifier.pas"/>

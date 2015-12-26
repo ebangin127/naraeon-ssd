@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  uOSFileWithHandle, uIoControlFile;
+  OSFile.Handle, OSFile.IoControl;
 
 type
   TPartitionExtentEntry = record

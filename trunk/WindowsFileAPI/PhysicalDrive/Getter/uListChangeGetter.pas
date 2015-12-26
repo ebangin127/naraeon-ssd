@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  uPhysicalDrive, uPhysicalDriveList, uPhysicalDriveListGetter;
+  Device.PhysicalDrive, Device.PhysicalDrive.List, Getter.PhysicalDriveList;
 
 type
   TChangesList = record
@@ -50,7 +50,7 @@ type
 implementation
 
 uses
-  uAutoPhysicalDriveListGetter, uBruteForcePhysicalDriveListGetter;
+  Getter.PhysicalDriveList.Auto, Getter.PhysicalDriveList.BruteForce;
 
 function TListChangeGetter.IsSupportedOrNotNeededToCheck(
   IsSupported: Boolean): Boolean;

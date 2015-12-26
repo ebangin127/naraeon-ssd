@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  uTrimList, uPartitionTrimmer, uTrimThreadToView, uProgressSection;
+  uTrimList, uPartitionTrimmer, ThreadToView.Trim, Component.ProgressSection;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);

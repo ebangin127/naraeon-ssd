@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFileWithHandle, uIoControlFile;
+  OSFile.Handle, OSFile.IoControl;
 
 const
   BitmapSizePerBuffer = 16384;

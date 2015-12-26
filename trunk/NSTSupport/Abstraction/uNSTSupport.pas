@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  uSMARTValueList;
+  Device.SMART.List;
 
 type
   TTotalWriteType =

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows,
-  uOSFileWithHandle, uIoControlFile;
+  OSFile.Handle, OSFile.IoControl;
 
 type
   TMediaType =

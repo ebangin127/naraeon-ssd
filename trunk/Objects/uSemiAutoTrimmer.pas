@@ -4,9 +4,9 @@ interface
 
 uses
   SysUtils, Classes, ClipBrd, Windows,
-  uTrimThread, uTrimList,
-  uPhysicalDriveList, uLanguageSettings,
-  uPhysicalDrive, uPartitionListGetter, uListChangeGetter;
+  Thread.Trim, uTrimList,
+  Device.PhysicalDrive.List, uLanguageSettings,
+  Device.PhysicalDrive, uPartitionListGetter, uListChangeGetter;
 
 type
   TSemiAutoTrimmer = class

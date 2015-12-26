@@ -13,7 +13,9 @@ uses
   uToshibaSandforceNSTSupport, uHynixSandforceNSTSupport,
   uOCZSandforceNSTSupport, uPatriotSandforceNSTSupport,
   uMachXtremeSandforceNSTSupport,
-  uADATASandforceNSTSupport;
+  uADATASandforceNSTSupport,
+  //NVMe//
+  Support.Samsung.NVMe, Support.Intel.NVMe;
 
 type
   TMetaNSTSupport = class of TNSTSupport;
@@ -73,6 +75,8 @@ begin
   result := TestNSTSupportCompatibility(TPatriotSandforceNSTSupport, result);
   result := TestNSTSupportCompatibility(TMachXtremeSandforceNSTSupport, result);
   result := TestNSTSupportCompatibility(TADATASandforceNSTSupport, result);
+  result := TestNSTSupportCompatibility(TSamsungNVMeSupport, result);
+  result := TestNSTSupportCompatibility(TIntelNVMeSupport, result);
 end;
 
 function TNSTSupportFactory.TestNSTSupportCompatibility(

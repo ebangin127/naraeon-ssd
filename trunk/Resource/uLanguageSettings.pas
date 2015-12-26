@@ -39,6 +39,7 @@ const
     CapNotSafeEraseErrors: Array[0..1] of String = ('SSD의 수명이 끝나가니, SSD 내의 자료 백업을 강력히 권고합니다.', 'SERIOUS ERRORS! PLEASE DO BACKUP!');
     CapBadPartition: Array[0..1] of String = ('파티션이 어긋났으니, 윈도 7에서 파티션을 다시 나눠주세요.', 'Partition align error. Re-partition with Win 7 setup tool.');
     CapOldVersion: Array[0..1] of String = (' (구버전)', ' (Old Version)');
+    CapUnsupNVMe: Array[0..1] of String = ('NVMe에서는 제공되지 않습니다', 'Unsupported by NVMe Specification');
 
     CapGood: Array[0..1] of String = (' (정상) ', ' (Good) ');
     CapBad: Array[0..1] of String = ('K - 어긋남) ', 'K - Bad) ');

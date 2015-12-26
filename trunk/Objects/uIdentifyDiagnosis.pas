@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ClipBrd, Windows,
-  uPhysicalDriveList, uPhysicalDrive, uLanguageSettings,
+  Device.PhysicalDrive.List, Device.PhysicalDrive, uLanguageSettings,
   uVersionPublisher, uListChangeGetter;
 
 type

@@ -24,14 +24,12 @@ type
     function LegacyPathToNew(Root: String; PathUnderHKEY: String;
       ValueName: String): TRegistryPath;
     class function Create: TNSTRegistry;
-
   private
     procedure SetPath(PathToSet: TRegistryPath);
     procedure OpenRegistryWithRight(Right: Cardinal);
     procedure CloseRegistry;
     function GetBitSpecificRight: Cardinal;
     function GetTRegistryWithRight(Right: Cardinal): TRegistry;
-
     var
       Registry: TRegistry;
       Path: TRegistryPath;
@@ -156,11 +154,15 @@ function TNSTRegistry.GetKeyList(const Path: TRegistryPath;
   PreparedList: TStringList): TStringList;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ);
-  result := PreparedList;
-  if result = nil then
+  try
+    OpenRegistryWithRight(KEY_READ);
+    result := PreparedList;
+    if result = nil then
+      result := TStringList.Create;
+    Registry.GetKeyNames(result);
+  except
     result := TStringList.Create;
-  Registry.GetKeyNames(result);
+  end;
   CloseRegistry;
 end;
 
@@ -168,11 +170,15 @@ function TNSTRegistry.GetValueList(const Path: TRegistryPath;
   PreparedList: TStringList): TStringList;
 begin
   SetPath(Path);
-  OpenRegistryWithRight(KEY_READ);
-  result := PreparedList;
-  if result = nil then
+  try
+    OpenRegistryWithRight(KEY_READ);
+    result := PreparedList;
+    if result = nil then
+      result := TStringList.Create;
+    Registry.GetKeyNames(result);
+  except
     result := TStringList.Create;
-  Registry.GetKeyNames(result);
+  end;
   CloseRegistry;
 end;
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  uOSFile, uDriveListGetter, uFixedDriveListGetter, uPartitionExtentGetter;
+  OSFile, Getter.DriveList, Getter.DriveList.Fixed, uPartitionExtentGetter;
 
 type
   TPartitionEntry = record

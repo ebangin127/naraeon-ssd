@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFile, uIoControlFile, uOSFileWithHandle,
+  OSFile, OSFile.IoControl, OSFile.Handle,
   uPartition, uPartitionExtentGetter;
 
 type

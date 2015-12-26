@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  uOSFile, uPartitionExtentGetter, uCommandSet, uCommandSetFactory;
+  OSFile, uPartitionExtentGetter, CommandSet, CommandSet.Factory;
 
 type
   TPendingTrimOperation = record

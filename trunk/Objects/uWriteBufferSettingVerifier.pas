@@ -144,7 +144,6 @@ begin
   result := TStringList.Create;
   if not CheckSupportStatus(ModelAndFirmware) then
     exit;
-    
   InterfacePathInRegistry.PathUnderHKEY := InterfacePathInRegistry.PathUnderHKEY
     + '\' + ModelAndFirmware;
   NSTRegistry.GetKeyList(InterfacePathInRegistry, DeviceList);
@@ -170,12 +169,10 @@ var
   ResultInModel: TStringList;
 begin
   result := TStringList.Create;
-  
   BasePathWithInterfaceName := DeviceBasePath;
   BasePathWithInterfaceName.PathUnderHKEY :=
     BasePathWithInterfaceName.PathUnderHKEY + InterfaceName;
   NSTRegistry.GetKeyList(BasePathWithInterfaceName, ModelList);
-  
   for ModelAndFirmware in ModelList do
   begin
     ResultInModel :=
@@ -195,10 +192,8 @@ var
   ResultInSpecificInterface: TStringList;
 begin
   result := TStringList.Create;
-
   ModelList := TStringList.Create;
   DeviceList := TStringList.Create;
-
   for CurrentInterfaceName in InterfaceSet do
   begin
     ResultInSpecificInterface :=
@@ -206,9 +201,9 @@ begin
     result.AddStrings(ResultInSpecificInterface);
     FreeAndNil(ResultInSpecificInterface);
   end;
-  
   FreeAndNil(ModelList);
   FreeAndNil(DeviceList);
 end;
 
 end.
+

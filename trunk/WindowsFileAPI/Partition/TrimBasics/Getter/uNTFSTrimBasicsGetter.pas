@@ -4,7 +4,7 @@ interface
 
 uses
   Windows,
-  uIoControlFile, uTrimBasicsGetter;
+  OSFile.IoControl, uTrimBasicsGetter;
 
 type
   TNTFSTrimBasicsGetter = class(TTrimBasicsGetter)

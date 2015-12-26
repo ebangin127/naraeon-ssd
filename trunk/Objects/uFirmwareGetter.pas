@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Windows, SysUtils, Generics.Collections,
-  uHTTPWeb;
+  Web.HTTP;
 
 type
   TFirmwareVersion = (NotMine, OldVersion, NewVersion, NotFound);

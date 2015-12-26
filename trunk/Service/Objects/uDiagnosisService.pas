@@ -4,9 +4,10 @@ interface
 
 uses
   Classes, SysUtils, ShlObj, Windows,
-  uPhysicalDrive, uPhysicalDriveList, uLanguageSettings, uPathManager,
-  uListChangeGetter, uDatasizeUnit, uAverageCountLogger, uAverageWriteLogger,
-  uNSTSupport, uPartitionListGetter, uWriteBufferSettingVerifier;
+  Device.PhysicalDrive, Device.PhysicalDrive.List, uLanguageSettings,
+  uPathManager, uListChangeGetter, MeasureUnit.Datasize, AverageLogger.Count,
+  AverageLogger.Write, uNSTSupport, uPartitionListGetter,
+  uWriteBufferSettingVerifier;
 
 type
   TDiagnosisService = class
@@ -131,7 +132,6 @@ begin
   if Entry.SupportStatus.TotalWriteType <>
      TTotalWriteType.WriteSupportedAsValue then
       exit;
-
   TotalWriteLog := TAverageWriteLogger.Create(
     TAverageWriteLogger.BuildFileName(
       PathManager.AppPath,
@@ -189,7 +189,6 @@ var
 begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-
       PathManager.AppPath,
       Entry.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(
@@ -210,7 +209,6 @@ begin
       SetPhysicalDriveList;
       exit;
     end;
-
     RefreshTotalWriteLog(CurrentEntry);
     RefreshReplacedSectorLog(CurrentEntry);
   end;

@@ -4,8 +4,8 @@ interface
 
 uses
   Classes, SysUtils, Windows, ShellApi,
-  uVersion, uHTTPWeb, uVersionPublisher, uDownloadThread, uDownloadPath,
-  uCodesignVerifier, uLanguageSettings, uPathManager, uAlert, uDownloader,
+  uVersion, Web.HTTP, uVersionPublisher, Thread.Download, uDownloadPath,
+  uCodesignVerifier, uLanguageSettings, uPathManager, Form.Alert, uDownloader,
   uDeleteDirectory;
 
 type
@@ -37,7 +37,7 @@ type
 
 implementation
 
-uses uMain;
+uses Form.Main;
 
 { TUpdater }
 

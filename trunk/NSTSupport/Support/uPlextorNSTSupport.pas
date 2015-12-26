@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  uNSTSupport, uSMARTValueList;
+  uNSTSupport, Device.SMART.List;
 
 type
   TPlextorNSTSupport = class sealed(TNSTSupport)

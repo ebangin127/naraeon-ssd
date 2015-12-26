@@ -120,21 +120,13 @@
         </DelphiCompile>
         <DCCReference Include="..\Resource\uLanguageSettings.pas"/>
         <DCCReference Include="..\Objects\uProcessOpener.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Abstraction\uCommandSet.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uATACommandSet.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uSATCommandSet.pas"/>
-        <DCCReference Include="..\Objects\uSMARTValueList.pas"/>
+        <DCCReference Include="..\Objects\Device.SMART.List.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uDiskGeometryGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Interpreter\uATABufferInterpreter.pas"/>
         <DCCReference Include="..\NSTSupport\Abstraction\uNSTSupport.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Abstraction\uPhysicalDriveListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Auto\uAutoPhysicalDriveListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uBruteForcePhysicalDriveListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\ListGetter\Specific\uWMIPhysicalDriveListGetter.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uLiteonNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uMachXtremeNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uPlextorNSTSupport.pas"/>
@@ -144,16 +136,12 @@
         <DCCReference Include="..\NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
         <DCCReference Include="Objects\uDiagnosisService.pas"/>
         <DCCReference Include="..\Objects\uPathManager.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\List\uPhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Specific\uLegacyATACommandSet.pas"/>
         <DCCReference Include="uMain.pas">
             <Form>NaraeonSSDToolsDiag</Form>
             <FormType>dfm</FormType>
             <DesignClass>TService</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uFixedDriveListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Partition\Getter\uRemovableDriveListGetter.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uADATANSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uCrucialNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Support\uPhisonNSTSupport.pas"/>
@@ -165,28 +153,52 @@
         <DCCReference Include="..\NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
         <DCCReference Include="..\NSTSupport\Factory\uNSTSupportFactory.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\CommandSet\Factory\uCommandSetFactory.pas"/>
         <DCCReference Include="..\Objects\uWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\uRegistryHelper.pas"/>
         <DCCReference Include="..\Objects\uSecurityDescriptor.pas"/>
-        <DCCReference Include="..\Objects\AverageLogger\Abstraction\uAverageLogger.pas"/>
-        <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageCountLogger.pas"/>
-        <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas"/>
-        <DCCReference Include="..\Modules\uDatasizeUnit.pas"/>
         <DCCReference Include="..\Modules\uStringHelper.pas"/>
         <DCCReference Include="..\Modules\uTimeUnit.pas"/>
         <DCCReference Include="..\Modules\uWindowsVersion.pas"/>
         <DCCReference Include="..\Objects\uNSTRegistry.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas"/>
         <DCCReference Include="..\WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas"/>
-        <DCCReference Include="..\Objects\uPhysicalDrive.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uBufferInterpreter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uDriveListGetter.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uInterfacedOSFile.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uIoControlFile.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFile.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Abstraction\uOSFileWithHandle.pas"/>
+        <DCCReference Include="..\Objects\Device.PhysicalDrive.pas"/>
         <DCCReference Include="..\Modules\uVersionHelper.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.Handle.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.Interfaced.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.IoControl.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.DriveList.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.DriveList.Fixed.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.ATA.Legacy.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.ATA.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.Factory.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.Intel.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.Intel.PortPart.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.Samsung.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.SAT.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\Support.Intel.NVMe.pas"/>
+        <DCCReference Include="..\NSTSupport\Support\Support.Samsung.NVMe.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger.Count.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger.pas"/>
+        <DCCReference Include="..\Objects\AverageLogger.Write.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.ATA.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.pas"/>
+        <DCCReference Include="..\Objects\Getter.SCSIAddress.pas"/>
+        <DCCReference Include="..\Objects\Getter.SlotSpeed.pas"/>
+        <DCCReference Include="..\Objects\Getter.SlotSpeedByDeviceID.pas"/>
+        <DCCReference Include="..\Modules\MeasureUnit.DataSize.pas"/>
+        <DCCReference Include="..\Modules\Device.SlotSpeed.pas"/>
+        <DCCReference Include="..\Modules\OS.SetupAPI.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Device.PhysicalDrive.List.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

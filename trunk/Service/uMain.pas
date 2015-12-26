@@ -10,10 +10,10 @@ uses
 type
   TNaraeonSSDToolsDiag = class(TService)
     tDiagnosis: TTimer;
-    procedure ServiceExecute(Sender: TService);
     procedure ServiceCreate(Sender: TObject);
     procedure ServiceDestroy(Sender: TObject);
     procedure tDiagnosisTimer(Sender: TObject);
+    procedure ServiceExecute(Sender: TService);
   private
     DiagnosisService: TDiagnosisService;
     procedure WaitForTerminate;

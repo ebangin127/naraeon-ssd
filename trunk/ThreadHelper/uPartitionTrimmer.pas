@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils, Classes, Windows, Math,
-  uOSFile
-  {$IfNDef UNITTEST}, uPartition, uTrimThreadToView,{$EndIf}
+  OSFile
+  {$IfNDef UNITTEST}, uPartition, ThreadToView.Trim,{$EndIf}
   {$IfDef UNITTEST}, uMockTrimBasicsGetterFactory,
   {$Else}uTrimBasicsGetter, uTrimBasicsGetterFactory,{$EndIf}
   {$IfDef UNITTEST}uMockDeviceTrimmer,
