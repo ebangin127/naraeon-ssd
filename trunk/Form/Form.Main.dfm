@@ -1755,4 +1755,11 @@ object fMain: TfMain
     Left = 444
     Top = 322
   end
+  object tRefreshList: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = tRefreshListTimer
+    Left = 503
+    Top = 375
+  end
 end

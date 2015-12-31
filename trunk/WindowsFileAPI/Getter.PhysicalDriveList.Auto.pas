@@ -65,13 +65,10 @@ var
 begin
   if LastResult <> nil then
     exit;
-
   PhysicalDriveListGetter := TPhysicalDriveListGetterToTry.Create;
   result := PhysicalDriveListGetter.GetPhysicalDriveList;
-
   if (result = nil) or (result.Count = 0) then
     FreeAndNil(result);
-
   FreeAndNil(PhysicalDriveListGetter);
 end;
 

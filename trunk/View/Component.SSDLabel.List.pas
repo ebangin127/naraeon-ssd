@@ -194,7 +194,6 @@ begin
   for CurrentEntry := 0 to Count - 1 do
     if Self[CurrentEntry].PhysicalDrive.GetPathOfFileAccessing = Path then
       exit(CurrentEntry);
-
   raise EIndexOfNotFound.Create('EIndexOfNotFound: This list does not contain' +
     ' that item');
 end;

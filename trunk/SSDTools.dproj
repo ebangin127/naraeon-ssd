@@ -128,8 +128,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <VerInfo_MinorVer>1</VerInfo_MinorVer>
         <DCC_MapFile>3</DCC_MapFile>
-        <VerInfo_Release>0</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.1.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.1.1.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>

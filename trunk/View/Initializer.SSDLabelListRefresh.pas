@@ -18,7 +18,7 @@ type
     procedure DeleteByDeletedList;
     procedure DeleteDevice(Path: String);
     procedure FreeChangesList;
-    function IsNoDeviceSelected: Boolean;
+    function ChangeExists: Boolean;
     function IsNoSupportedDriveExists: Boolean;
     procedure RefreshMainFormAndSetNewSelection;
     procedure SetChangesList;
@@ -91,7 +91,6 @@ procedure TSSDLabelListRefresher.DeleteDevice(Path: String);
 begin
   if not fMain.SSDLabel.IsExistsByPath(Path) then
     exit;
-    
   fMain.SSDLabel.Delete(fMain.SSDLabel.IndexOfByPath(Path));
 end;
 
@@ -100,9 +99,11 @@ begin
   fMain.SSDLabel.Add(TSSDLabel.Create(Entry));
 end;
 
-function TSSDLabelListRefresher.IsNoDeviceSelected: Boolean;
+function TSSDLabelListRefresher.ChangeExists: Boolean;
 begin
-  result := fMain.CurrDrive = '';
+  result :=
+    (ChangesList.Added.Count > 0) or
+    (ChangesList.Deleted.Count > 0);
 end;
 
 procedure TSSDLabelListRefresher.SetFirstDeviceAsSelected;
@@ -112,7 +113,7 @@ end;
 
 procedure TSSDLabelListRefresher.SetFirstDeviceAsSelectedIfNoDeviceSelected;
 begin
-  if IsNoDeviceSelected then
+  if ChangeExists then
     SetFirstDeviceAsSelected;
 end;
 

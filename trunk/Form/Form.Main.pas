@@ -94,6 +94,7 @@ type
     iBG: TImage;
     iHelp: TImage;
     lHelp: TLabel;
+    tRefreshList: TTimer;
 
     //생성자와 파괴자
     procedure FormCreate(Sender: TObject);
@@ -134,8 +135,10 @@ type
     procedure tRefreshTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure tRefreshListTimer(Sender: TObject);
 
   private
+    RefreshListDisabled: Boolean;
     procedure RefreshByPhysicalDrive;
     procedure RefreshDrives;
     function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
@@ -147,6 +150,7 @@ type
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
     procedure CreateBasicObjects;
     procedure Erase(const Filename: string);
+    procedure RefreshLabelList;
 
   public
     CurrDrive: String;
@@ -319,12 +323,9 @@ begin
 end;
 
 procedure TfMain.RefreshDrives;
-var
-  SSDLabelListRefresher: TSSDLabelListRefresher;
 begin
-  SSDLabelListRefresher := TSSDLabelListRefresher.Create;
-  SSDLabelListRefresher.RefreshDrives;
-  FreeAndNil(SSDLabelListRefresher);
+  if PhysicalDriveList.Count = 0 then
+    RefreshLabelList;
   if PhysicalDriveList.Count = 0 then
     exit;
   RefreshByPhysicalDrive;
@@ -628,6 +629,16 @@ begin
     FindAndSelectValidDrive;
 end;
 
+procedure TfMain.tRefreshListTimer(Sender: TObject);
+begin
+  RefreshListDisabled := true;
+  tRefreshList.Enabled := false;
+  RefreshLabelList;
+  RefreshByPhysicalDrive;
+  SetSelectedDriveLabelBold;
+  RefreshListDisabled := false;
+end;
+
 procedure TfMain.tRefreshTimer(Sender: TObject);
 const
   ORIGINAL_INTERVAL = 60000;
@@ -698,13 +709,10 @@ const
   DBT_DEVNODES_CHANGED = $0007;
   DBT_STORAGE = $0002;
 begin
-  if (Msg.WParam = DBT_DEVNODES_CHANGED) or
-     (((Msg.WParam = DBT_DEVICEARRIVAL) or
-       (Msg.WParam = DBT_DEVICEREMOVECOMPLETE)) and
-       (PDevBroadcastHdr(Msg.lParam)^.dbcd_devicetype = DBT_STORAGE)) then
-  begin
-    tRefresh.Interval := 1;
-  end;
+  if ((Msg.WParam = DBT_DEVICEARRIVAL) or
+      (Msg.WParam = DBT_DEVICEREMOVECOMPLETE)) and
+     (PDevBroadcastHdr(Msg.lParam)^.dbcd_devicetype = DBT_STORAGE) then
+    tRefreshList.Enabled := not RefreshListDisabled;
 end;
 
 procedure TfMain.CreateBasicObjects;
@@ -744,6 +752,15 @@ begin
     AlertCreate(Self, AlrtBootFail[CurrLang]);
     BrowserCreate(Self);
   end;
+end;
+
+procedure TfMain.RefreshLabelList;
+var
+  SSDLabelListRefresher: TSSDLabelListRefresher;
+begin
+  SSDLabelListRefresher := TSSDLabelListRefresher.Create;
+  SSDLabelListRefresher.RefreshDrives;
+  FreeAndNil(SSDLabelListRefresher);
 end;
 
 procedure TfMain.cTrimRunningClick(Sender: TObject);

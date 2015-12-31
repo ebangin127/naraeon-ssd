@@ -13,7 +13,7 @@ type
     procedure Delete(Index: Integer);
 
     function IndexOf(Model, Serial: String): Integer; overload;
-    function IndexOf(Entry: TPhysicalDrive): Integer; overload;
+    function IndexOf(Entry: IPhysicalDrive): Integer; overload;
     function IndexOf(DeviceName: String): Integer; overload;
     
     function IsExists(Entry: IPhysicalDrive): Boolean;
@@ -38,7 +38,7 @@ begin
     exit(-1);
 end;
 
-function TPhysicalDriveList.IndexOf(Entry: TPhysicalDrive): Integer;
+function TPhysicalDriveList.IndexOf(Entry: IPhysicalDrive): Integer;
 var
   CurrEntry: Integer;
 begin
