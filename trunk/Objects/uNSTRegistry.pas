@@ -105,7 +105,13 @@ begin
     OpenRegistryWithRight(KEY_READ);
     result := Registry.ReadInteger(Path.ValueName);
   except
-    result := 0;
+    on E: EOSError do
+      if E.ErrorCode = ERROR_BADKEY then
+        result := -1;
+    on E: ERegistryException do
+      result := -1;
+    else
+      result := 0;
   end;
   CloseRegistry;
 end;

@@ -65,6 +65,7 @@ end;
 procedure TNaraeonSSDToolsDiag.WaitForTerminate;
 begin
   tDiagnosis.Enabled := true;
+  tDiagnosis.OnTimer(self);
   {$IFNDEF DEBUG}
   while not Terminated do
     ServiceThread.ProcessRequests(true);

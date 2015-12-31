@@ -34,11 +34,11 @@ function TSystemRestoreOptimizer.IsApplied: Boolean;
 begin
   result :=
     ((NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
-                'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
-                'DisableConfig')) = 1) and
+      'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
+      'DisableConfig')) = 1) and
      (NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
-                'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
-                'DisableSR')) = 1));
+      'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
+      'DisableSR')) = 1));
 end;
 
 function TSystemRestoreOptimizer.GetName: String;

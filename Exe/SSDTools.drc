@@ -1300,10 +1300,10 @@ BEGIN
 	System_SysConst_SDivByZero,	L"Division by zero"
 END
 
-/* f:\delphi\embarcadero\studio\15.0\lib\Win32\release\Controls.res */
-/* E:\UnivProject\SSDTools\trunk\Form\Form.Alert.dfm */
-/* E:\UnivProject\SSDTools\trunk\Form\Form.Message.dfm */
-/* E:\UnivProject\SSDTools\trunk\Form\Form.Browser.dfm */
-/* E:\UnivProject\SSDTools\trunk\Form\Form.Main.dfm */
-/* E:\UnivProject\SSDTools\trunk\SSDTools.res */
-/* E:\UnivProject\SSDTools\trunk\SSDTools.drf */
+/* c:\program files (x86)\embarcadero\studio\15.0\lib\Win32\release\Controls.res */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Form\Form.Alert.dfm */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Form\Form.Message.dfm */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Form\Form.Browser.dfm */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Form\Form.Main.dfm */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\SSDTools.res */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\SSDTools.drf */

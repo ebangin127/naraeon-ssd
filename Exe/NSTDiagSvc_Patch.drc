@@ -748,7 +748,7 @@ BEGIN
 	System_SysConst_SDivByZero,	L"Division by zero"
 END
 
-/* f:\delphi\embarcadero\studio\15.0\lib\Win32\release\Controls.res */
-/* E:\UnivProject\SSDTools\trunk\Service\uMain.DFM */
-/* E:\UnivProject\SSDTools\trunk\Service\NSTDiagSvc_Patch.RES */
-/* E:\UnivProject\SSDTools\trunk\Service\NSTDiagSvc_Patch.drf */
+/* c:\program files (x86)\embarcadero\studio\15.0\lib\Win32\release\Controls.res */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Service\uMain.DFM */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Service\NSTDiagSvc_Patch.RES */
+/* C:\Users\Minkyu\Downloads\Projects\SSDTools\trunk\Service\NSTDiagSvc_Patch.drf */

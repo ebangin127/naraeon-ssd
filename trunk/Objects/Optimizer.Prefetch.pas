@@ -57,10 +57,10 @@ begin
   begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager' +
-      '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
+      '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager' +
-      '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 3);
+      '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 0);
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 2);
@@ -72,7 +72,7 @@ begin
   begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager\' +
-      'Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
+      'Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
   end;
 end;
 
@@ -84,10 +84,10 @@ begin
   begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager' +
-      '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
+      '\Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager' +
-      '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 0);
+      '\Memory Management\PrefetchParameters', 'EnableSuperfetch'), 3);
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 4);
@@ -99,7 +99,7 @@ begin
   begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\Control\Session Manager\' +
-      'Memory Management\PrefetchParameters', 'EnablePrefetcher'), 0);
+      'Memory Management\PrefetchParameters', 'EnablePrefetcher'), 3);
   end;
 end;
 

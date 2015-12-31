@@ -46,7 +46,7 @@ begin
   self.FileToGetAccess := FileToGetAccess;
   result := TryCommandSetsAndGetRightSet;
   if result = nil then
-    raise EArgumentNilException.Create('Argument Nil: CommandSet is not set');
+    raise ENoCommandSetException.Create('Argument Nil: CommandSet is not set');
 end;
 
 function TCommandSetFactory.TryCommandSetsAndGetRightSet: TCommandSet;

@@ -12,6 +12,8 @@ type
   TIntelNVMeCommandSet = class sealed(TNVMeCommandSet)
   private
     function GetPortIdentifyDevice: TIdentifyDeviceResult;
+    function SendPortIdentifyDevice(
+      const SCSIAddressGetter: TSCSIAddressGetter): TIdentifyDeviceResult;
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -30,6 +32,8 @@ var
   ReadCapacityResult: TIdentifyDeviceResult;
 begin
   result := GetPortIdentifyDevice;
+  if result.Model = '' then
+    exit;
   SetBufferAndReadCapacity;
   ReadCapacityResult := InterpretReadCapacityBuffer;
   result.UserSizeInKB := ReadCapacityResult.UserSizeInKB;
@@ -44,18 +48,13 @@ end;
 
 function TIntelNVMeCommandSet.GetPortIdentifyDevice: TIdentifyDeviceResult;
 var
-  PortCommandSet: TIntelNVMePortCommandSet;
   SCSIAddressGetter: TSCSIAddressGetter;
 begin
   SCSIAddressGetter := TSCSIAddressGetter.Create(
     GetPathOfFileAccessing);
-  PortCommandSet := TIntelNVMePortCommandSet.Create(
-    SCSIPrefix + IntToStr(SCSIAddressGetter.GetSCSIAddress.PortNumber) +
-    SCSIPostFix);
   try
-    result := PortCommandSet.IdentifyDevice;
+    result := SendPortIdentifyDevice(SCSIAddressGetter);
   finally
-    FreeAndNil(PortCommandSet);
     FreeAndNil(SCSIAddressGetter);
   end;
 end;
@@ -73,6 +72,22 @@ begin
   result := PortCommandSet.SMARTReadData;
   FreeAndNil(PortCommandSet);
   FreeAndNil(SCSIAddressGetter);
+end;
+
+function TIntelNVMeCommandSet.SendPortIdentifyDevice(
+  const SCSIAddressGetter: TSCSIAddressGetter): TIdentifyDeviceResult;
+var
+  PortCommandSet: TIntelNVMePortCommandSet;
+begin
+  result.Model := '';
+  PortCommandSet := TIntelNVMePortCommandSet.Create(
+    SCSIPrefix + IntToStr(SCSIAddressGetter.GetSCSIAddress.PortNumber) +
+    SCSIPostFix);
+  try
+    result := PortCommandSet.IdentifyDevice;
+  finally
+    FreeAndNil(PortCommandSet);
+  end;
 end;
 
 end.

@@ -49,21 +49,33 @@ begin
   RootKey := TOSRegistryRootKey[RegistryRootKey];
 end;
 
+procedure RaiseOSError(const ErrorCode: Cardinal; const Path: String);
+var
+  E: EOSError;
+begin
+  E := EOSError.Create(
+    'Registry Access Denied: (' + IntToStr(ERROR_BADKEY) + ') ' + Path);
+  E.ErrorCode := ErrorCode;
+  raise E;
+end;
+
 procedure TRegistryHelper.OpenKeyWithRootAndPath
   (Root: TRegistryRootKey; Path: String);
 begin 
   SetRootKey(Root);
+  if not KeyExists(Path) then
+    RaiseOSError(ERROR_BADKEY, Path);
   if not OpenKey(Path, false) then
-    raise EOSError.Create(
-      'Registry Access Denied: (' + IntToStr(GetLastError) + ') ' + Path);
+    RaiseOSError(GetLastError, Path);
 end;
 
 procedure TRegistryHelper.OpenKeyReadOnlyWithRootAndPath
   (Root: TRegistryRootKey; Path: String);
 begin
   SetRootKey(Root);
+  if not KeyExists(Path) then
+    RaiseOSError(ERROR_BADKEY, Path);
   if not OpenKeyReadOnly(Path) then
-    raise EOSError.Create(
-      'Registry Access Denied: (' + IntToStr(GetLastError) + ') ' + Path);
+    RaiseOSError(GetLastError, Path);
 end;
 end.
