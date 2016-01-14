@@ -4,9 +4,9 @@ interface
 
 uses
   Classes, SysUtils, Windows, ShellApi,
-  uVersion, Web.HTTP, uVersionPublisher, Thread.Download, uDownloadPath,
-  uCodesignVerifier, uLanguageSettings, uPathManager, Form.Alert, uDownloader,
-  uDeleteDirectory;
+  Version, Web.HTTP, uVersionPublisher, Thread.Download, uDownloadPath,
+  Getter.CodesignVerifier, uLanguageSettings, uPathManager, Form.Alert,
+  uDownloader, OS.DeleteDirectory;
 
 type
   TCheckUpdateResult = record

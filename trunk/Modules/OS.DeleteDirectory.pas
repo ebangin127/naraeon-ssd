@@ -1,4 +1,4 @@
-unit uDeleteDirectory;
+unit OS.DeleteDirectory;
 
 interface
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, Windows, SysUtils, Classes, ShlObj, Character,
-  uNSTRegistry, uRegistryHelper, uStringHelper;
+  uNSTRegistry, uRegistryHelper, AsciiCheck;
 
 type
   TPathManager = class

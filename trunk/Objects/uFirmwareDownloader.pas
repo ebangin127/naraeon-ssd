@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, IdURI, Dialogs, ShellApi,
   Form.Alert, uLanguageSettings, uPathManager, uVersionPublisher,
   uProcessOpener, Device.PhysicalDrive, Thread.Download,
-  uDeleteDirectory, uDownloadPath, uFirmwareGetter, uCodesignVerifier,
+  OS.DeleteDirectory, uDownloadPath, uFirmwareGetter, Getter.CodesignVerifier,
   uDownloader, Extern.Rufus;
 
 type

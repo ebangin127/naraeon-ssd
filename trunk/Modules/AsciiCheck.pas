@@ -1,4 +1,4 @@
-unit uStringHelper;
+unit AsciiCheck;
 
 interface
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Sysutils, Dialogs, Windows, Math,
-  uStringHelper;
+  AsciiCheck;
 
 type
   TAveragePeriod = (Days30, Days90, Days180);

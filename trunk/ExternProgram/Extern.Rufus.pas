@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Messages, Dialogs, IOUtils, Math, ShellAPI,
-  uPathManager, uCodesignVerifier, uStringHelper;
+  uPathManager, Getter.CodesignVerifier, AsciiCheck;
 
 type
   TRufus = class

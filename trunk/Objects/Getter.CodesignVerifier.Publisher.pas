@@ -1,10 +1,10 @@
-unit uCodesignPublisherVerifier;
+unit Getter.CodesignVerifier.Publisher;
 
 interface
 
 uses
   Windows,
-  uCodesignExtern;
+  OS.Codesign;
 
 type
   TCodesignPublisherVerifier = class

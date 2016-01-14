@@ -4,7 +4,7 @@ interface
 
 uses
   Registry, Windows, Classes, Dialogs, SysUtils,
-  uRegistryHelper, uWindowsVersion;
+  uRegistryHelper, OS.WindowsVersion;
 
 type
   TNSTRegistry = class

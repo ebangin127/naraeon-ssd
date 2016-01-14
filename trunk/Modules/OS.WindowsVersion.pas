@@ -1,10 +1,10 @@
-unit uWindowsVersion;
+unit OS.WindowsVersion;
 
 interface
 
 uses
   Windows,
-  uVersionHelper;
+  OS.VersionHelper;
 
 function Is64Bit: Boolean;
 function IsBelowWindows8: Boolean;

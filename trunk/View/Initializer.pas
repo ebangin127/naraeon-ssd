@@ -6,7 +6,7 @@ uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
   WinCodec,
   Form.Alert, Component.ButtonGroup, uPathManager, uLanguageSettings,
-  uVersionHelper;
+  OS.VersionHelper;
 
 procedure InitializeMainForm;
 procedure RefreshOptimizeList;

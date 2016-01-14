@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows,
-  Form.Alert, uLanguageSettings, uPathManager, uVersionHelper;
+  Form.Alert, uLanguageSettings, uPathManager, OS.VersionHelper;
 
 procedure CheckPrerequisite;
 

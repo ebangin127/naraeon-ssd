@@ -10,15 +10,15 @@ uses
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
   Form.Alert, Form.Message, Form.Browser, uLanguageSettings,
   Extern.SevenZip, Optimizer,
-  uProcessOpener, uDeleteDirectory, uDownloadPath, uPlugAndPlay,
+  uProcessOpener, OS.DeleteDirectory, uDownloadPath, OS.PlugAndPlay,
   Component.ButtonGroup, Initializer, Extern.Rufus, uPathManager,
   Thread.Update, Thread.Trim, uTrimList, Initializer.Locale,
   Device.PhysicalDrive, uPartitionListGetter, Device.PhysicalDrive.List,
-  uFirmwareGetter, uVersionPublisher, uCodesignVerifier,
+  uFirmwareGetter, uVersionPublisher, Getter.CodesignVerifier,
   Component.SSDLabel.List, Component.SSDLabel, Initializer.PhysicalDrive,
   Initializer.SSDLabelListRefresh, uFirmwareDownloader,
   Getter.DriveList.Removable, Getter.DriveList, uVolumeLabelGetter,
-  uVersionHelper, PrerequisiteChecker, BufferInterpreter;
+  OS.VersionHelper, PrerequisiteChecker, BufferInterpreter;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;

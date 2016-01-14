@@ -1,4 +1,4 @@
-unit uPlugAndPlay;
+unit OS.PlugAndPlay;
 
 interface
 

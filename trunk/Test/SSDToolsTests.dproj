@@ -134,10 +134,10 @@
         <DCCReference Include="..\Objects\AverageLogger\Abstraction\uAverageLogger.pas"/>
         <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageCountLogger.pas"/>
         <DCCReference Include="..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas"/>
-        <DCCReference Include="..\Modules\uWindowsVersion.pas"/>
+        <DCCReference Include="..\Modules\OS.WindowsVersion.pas"/>
         <DCCReference Include="..\Objects\uSecurityDescriptor.pas"/>
-        <DCCReference Include="..\Modules\uStringHelper.pas"/>
-        <DCCReference Include="..\Modules\uVersionHelper.pas"/>
+        <DCCReference Include="..\Modules\AsciiCheck.pas"/>
+        <DCCReference Include="..\Modules\OS.VersionHelper.pas"/>
         <DCCReference Include="..\NSTSupport\Support\Support.Intel.NVMe.pas"/>
         <DCCReference Include="..\NSTSupport\Support\Support.Samsung.NVMe.pas"/>
         <BuildConfiguration Include="Release">

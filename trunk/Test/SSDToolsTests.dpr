@@ -54,10 +54,10 @@ uses
   uAverageLogger in '..\Objects\AverageLogger\Abstraction\uAverageLogger.pas',
   uAverageCountLogger in '..\Objects\AverageLogger\Specific\uAverageCountLogger.pas',
   uAverageWriteLogger in '..\Objects\AverageLogger\Specific\uAverageWriteLogger.pas',
-  uWindowsVersion in '..\Modules\uWindowsVersion.pas',
+  OS.WindowsVersion in '..\Modules\OS.WindowsVersion.pas',
   uSecurityDescriptor in '..\Objects\uSecurityDescriptor.pas',
-  uStringHelper in '..\Modules\uStringHelper.pas',
-  uVersionHelper in '..\Modules\uVersionHelper.pas',
+  AsciiCheck in '..\Modules\AsciiCheck.pas',
+  OS.VersionHelper in '..\Modules\OS.VersionHelper.pas',
   Support.Intel.NVMe in '..\NSTSupport\Support\Support.Intel.NVMe.pas',
   Support.Samsung.NVMe in '..\NSTSupport\Support\Support.Samsung.NVMe.pas';
 

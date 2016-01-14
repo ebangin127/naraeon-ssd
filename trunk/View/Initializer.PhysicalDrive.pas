@@ -7,7 +7,7 @@ uses
   uLanguageSettings,
   Initializer.Mainpart, Initializer.PartitionAlign,
   Initializer.ReplacedSector, Initializer.SMART,
-  Initializer.TotalWrite, uNSTSupport, uWindowsVersion;
+  Initializer.TotalWrite, uNSTSupport, OS.WindowsVersion;
 
 type
   TMainformAlert = record

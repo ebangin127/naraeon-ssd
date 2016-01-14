@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Windows, IdHttp, IdComponent,
-  MeasureUnit.DataSize, uTimeUnit, uDeleteDirectory, uDownloadPath,
+  MeasureUnit.DataSize, MeasureUnit.Time, OS.DeleteDirectory, uDownloadPath,
   Component.ProgressSection, uLanguageSettings;
 
 type

@@ -147,9 +147,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="Resource\uLanguageSettings.pas"/>
-        <DCCReference Include="Modules\uStringHelper.pas"/>
+        <DCCReference Include="Modules\AsciiCheck.pas"/>
         <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
-        <DCCReference Include="Modules\uVersion.pas"/>
+        <DCCReference Include="Modules\Version.pas"/>
         <DCCReference Include="Objects\uDownloadPath.pas"/>
         <DCCReference Include="ExternProgram\Extern.SevenZip.pas"/>
         <DCCReference Include="Objects\uTrimList.pas"/>
@@ -196,7 +196,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas"/>
-        <DCCReference Include="Objects\uCodesignVerifier.pas"/>
         <DCCReference Include="Objects\uNSToolsMutex.pas"/>
         <DCCReference Include="Objects\uServiceController.pas"/>
         <DCCReference Include="Objects\uIdentifyDiagnosis.pas"/>
@@ -210,13 +209,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="NSTSupport\Support\uToshibaNSTSupport.pas"/>
         <DCCReference Include="NSTSupport\Support\uPhisonNSTSupport.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
-        <DCCReference Include="Objects\uCodesignPublisherVerifier.pas"/>
         <DCCReference Include="ThreadHelper\uDownloader.pas"/>
         <DCCReference Include="Objects\uFirmwareDownloader.pas"/>
-        <DCCReference Include="Modules\uCodesignExtern.pas"/>
-        <DCCReference Include="Modules\uDeleteDirectory.pas"/>
+        <DCCReference Include="Modules\OS.Codesign.pas"/>
+        <DCCReference Include="Modules\OS.DeleteDirectory.pas"/>
         <DCCReference Include="Objects\uProcessOpener.pas"/>
-        <DCCReference Include="Modules\uPlugAndPlay.pas"/>
+        <DCCReference Include="Modules\OS.PlugAndPlay.pas"/>
         <DCCReference Include="Objects\uNSTRegistry.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas"/>
@@ -226,11 +224,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>
         <DCCReference Include="ThreadHelper\uDeviceTrimmer.pas"/>
         <DCCReference Include="NSTSupport\Factory\uNSTSupportFactory.pas"/>
-        <DCCReference Include="Modules\uWindowsVersion.pas"/>
+        <DCCReference Include="Modules\OS.WindowsVersion.pas"/>
         <DCCReference Include="Objects\uSecurityDescriptor.pas"/>
         <DCCReference Include="Modules\MeasureUnit.DataSize.pas"/>
-        <DCCReference Include="Modules\uTimeUnit.pas"/>
-        <DCCReference Include="Modules\uVersionHelper.pas"/>
+        <DCCReference Include="Modules\MeasureUnit.Time.pas"/>
+        <DCCReference Include="Modules\OS.VersionHelper.pas"/>
         <DCCReference Include="Objects\Device.PhysicalDrive.pas"/>
         <DCCReference Include="WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas"/>
         <DCCReference Include="Objects\Web.HTTP.pas"/>
@@ -297,6 +295,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Getter.DriveList.Fixed.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.DriveList.Removable.pas"/>
         <DCCReference Include="Modules\Device.SlotSpeed.pas"/>
+        <DCCReference Include="Objects\Getter.CodesignVerifier.Publisher.pas"/>
+        <DCCReference Include="Objects\Getter.CodesignVerifier.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -1,10 +1,10 @@
-unit uCodesignVerifier;
+unit Getter.CodesignVerifier;
 
 interface
 
 uses
   SysUtils, Windows,
-  uCodesignPublisherVerifier;
+  Getter.CodesignVerifier.Publisher;
 
 type
   TCodesignVerifier = class

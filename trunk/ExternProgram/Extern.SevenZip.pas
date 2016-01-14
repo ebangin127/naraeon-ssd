@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  uProcessOpener, uCodesignVerifier;
+  uProcessOpener, Getter.CodesignVerifier;
 
 type
   TSevenZip = class
