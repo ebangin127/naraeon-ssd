@@ -12,13 +12,10 @@ type
 
   TNCQAvailabilityGetter = class sealed(TIoControlFile)
   public
-    constructor Create(FileToGetAccess: String); override;
-
+    constructor Create(const FileToGetAccess: String); override;
     function GetNCQStatus: TNCQAvailability;
-
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
-
   private
     type
       STORAGE_PROPERTY_QUERY = record
@@ -26,10 +23,8 @@ type
         QueryType: DWORD;
         AdditionalParameters: array[0..3] of Byte;
       end;
-
       TBusType = (UnknownBus = 0, SCSI, ATAPI, ATA, IEEE1394, SSA,
         Fibre, USB, RAID, iSCSI, SAS, SATA, BusTypeMaxReserved = $7F);
-
       STORAGE_ADAPTOR_DESCRIPTOR = record
         Version: DWORD;
         Size: DWORD;
@@ -44,26 +39,21 @@ type
         BusMajorVersion: WORD;
         BusMinorVersion: WORD;
       end;
-
       TStorageAdaptorDescriptorWithBuffer = record
         StorageAdaptorDescriptor: STORAGE_ADAPTOR_DESCRIPTOR;
         Buffer: Array[0..1023] of Byte;
       end;
-
   private
     InnerQueryBuffer: STORAGE_PROPERTY_QUERY;
     InnerOutputBuffer: STORAGE_ADAPTOR_DESCRIPTOR;
-
     procedure GetAdaptorDescriptorAndIfNotReturnedRaiseException(
-      IOBuffer: TIoControlIOBuffer);
-
+      const IOBuffer: TIoControlIOBuffer);
     procedure SetAdaptorDescriptor;
     function GetIOBufferToGetAdaptorDescriptor: TIoControlIOBuffer;
     procedure SetQueryBuffer;
     function DetermineNCQStatus: TNCQAvailability;
     function IsSCSIwithCommandQueuing: Boolean;
     function IsATAwithCommandQueuing: Boolean;
-
     function IsSATA: Boolean;
     function IsNCQ: Boolean;
     function IsUnknown: Boolean;
@@ -74,7 +64,7 @@ implementation
 
 { TDiskGeometry }
 
-constructor TNCQAvailabilityGetter.Create(FileToGetAccess: String);
+constructor TNCQAvailabilityGetter.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
@@ -93,8 +83,8 @@ begin
 end;
 
 procedure TNCQAvailabilityGetter.
-  GetAdaptorDescriptorAndIfNotReturnedRaiseException
-  (IOBuffer: TIoControlIOBuffer);
+  GetAdaptorDescriptorAndIfNotReturnedRaiseException(
+    const IOBuffer: TIoControlIOBuffer);
 var
   ReturnedBytes: Cardinal;
 begin

@@ -22,7 +22,6 @@ type
         BaseProgress: Integer;
         ProgressPerPartition: Integer;
       end;
-
       TCurrentPoint = record
         PartitionStartLBA: UInt64;
         OffsetInCluster: LARGE_INTEGER;
@@ -30,19 +29,16 @@ type
         BitLengthOfCurrentCardinal: Integer;
         CurrentCardinalInBuffer, CurrentBitInCardinal: Integer;
       end;
-
       TPendingTrimOperation = record
         IsUnusedSpaceFound: Boolean;
         StartLBA: UInt64;
         LengthInLBA: UInt64;
       end;
-
     const
       BitsPerByte = 8;
       BitsPerCardinal = 32;
       VolumeBitmapBufferSizeInBit = SizeOf(TBitmapBuffer) * BitsPerByte;
       BufferSizeInCluster = BitmapSizePerBuffer * BitsPerCardinal;
-
   private
     TrimSynchronization: TTrimSynchronization;
     VolumeBitmapGetter: TVolumeBitmapGetter;
@@ -58,12 +54,11 @@ type
     LastTick: Cardinal;
     
     procedure TryToTrimPartition(
-      TrimSynchronizationToApply: TTrimSynchronization);
+      const TrimSynchronizationToApply: TTrimSynchronization);
     procedure ProcessTrim;
     procedure TrimNextPartOfPartition;
     procedure TrimCurrentCardinal;
-    procedure TrimCurrentBit(IsCurrentClusterUnused: Boolean);
-    
+    procedure TrimCurrentBit(const IsCurrentClusterUnused: Boolean);
     procedure InitializeTrim;
     procedure InitializeTrimBasicsGetter;
     procedure InitializeVolumeBitmap;
@@ -71,31 +66,29 @@ type
     procedure InitializeDeviceTrimmer;
     procedure InitializeBitCardinalLength;
     procedure InitializeStartLBA;
-    
     function IsMoreTrimNeeded: Boolean;
-    function FoundUsedSpaceOrLastPart(IsCurrentClusterUnused: Boolean): Boolean;
-    function IsTrimNeeded(IsCurrentClusterUnused: Boolean): Boolean;
+    function FoundUsedSpaceOrLastPart(const IsCurrentClusterUnused: Boolean):
+      Boolean;
+    function IsTrimNeeded(const IsCurrentClusterUnused: Boolean): Boolean;
     function IsLastPartOfBuffer: Boolean;
     function IsMorePartLeftSetVolumeBitmapBuffer: Boolean;
-    
     function GetCurrentPositionInLBA: UInt64;
-    
     procedure SetVolumeSizeInCluster;
     procedure SetNextPartPosition;
     procedure SetBaseProgress;
     procedure IfLastPartSetCardinalBitLength;
-    function GetBitLengthOfLastCardinal(BitmapSizeInBit: LARGE_INTEGER): Integer;
+    function GetBitLengthOfLastCardinal(const BitmapSizeInBit: LARGE_INTEGER):
+      Integer;
     procedure CalculateProgress;
     procedure ProcessAndClearPendingTrim;
     procedure IfNeedToRestApplyToUI;
     procedure IncreaseOrSetTrimPosition;
-    procedure SetVolumeBitmapBuffer(StartingLCN: LARGE_INTEGER);
+    procedure SetVolumeBitmapBuffer(const StartingLCN: LARGE_INTEGER);
     procedure IfLastCardinalInBufferSetBitLength;
-    
     procedure FreeClassesForTrim;
-
   public
-    procedure TrimPartition(TrimSynchronizationToApply: TTrimSynchronization);
+    procedure TrimPartition(
+      const TrimSynchronizationToApply: TTrimSynchronization);
     function GetPathOfFileAccessing: String; override;
   end;
 
@@ -104,7 +97,7 @@ implementation
 { TPartitionTrimmer }
 
 procedure TPartitionTrimmer.SetVolumeBitmapBuffer
-  (StartingLCN: LARGE_INTEGER);
+  (const StartingLCN: LARGE_INTEGER);
 begin
   VolumeBitmapBufferWithErrorCode :=
     VolumeBitmapGetter.GetVolumeBitmap(StartingLCN);
@@ -156,7 +149,7 @@ begin
 end;
 
 function TPartitionTrimmer.GetBitLengthOfLastCardinal
-  (BitmapSizeInBit: LARGE_INTEGER): Integer;
+  (const BitmapSizeInBit: LARGE_INTEGER): Integer;
 begin
   result := BitmapSizeInBit.QuadPart and (BitsPerCardinal - 1);
 end;
@@ -199,7 +192,7 @@ begin
       TrimBasicsToInitialize.LBAPerCluster);
 end;
 
-function TPartitionTrimmer.IsTrimNeeded(IsCurrentClusterUnused: Boolean):
+function TPartitionTrimmer.IsTrimNeeded(const IsCurrentClusterUnused: Boolean):
   Boolean;
 begin
   result :=
@@ -216,7 +209,7 @@ begin
 end;
 
 function TPartitionTrimmer.FoundUsedSpaceOrLastPart(
-  IsCurrentClusterUnused: Boolean): Boolean;
+  const IsCurrentClusterUnused: Boolean): Boolean;
 begin
   result :=
     (not IsCurrentClusterUnused) or
@@ -250,7 +243,8 @@ begin
   IfNeedToRestApplyToUI;
 end;
 
-procedure TPartitionTrimmer.TrimCurrentBit(IsCurrentClusterUnused: Boolean);
+procedure TPartitionTrimmer.TrimCurrentBit(
+  const IsCurrentClusterUnused: Boolean);
 begin
   if IsCurrentClusterUnused then
     IncreaseOrSetTrimPosition;
@@ -381,7 +375,7 @@ begin
 end;
 
 procedure TPartitionTrimmer.TryToTrimPartition(
-  TrimSynchronizationToApply: TTrimSynchronization);
+  const TrimSynchronizationToApply: TTrimSynchronization);
 begin
   TrimSynchronization := TrimSynchronizationToApply;
   InitializeTrim;
@@ -398,7 +392,7 @@ begin
 end;
 
 procedure TPartitionTrimmer.TrimPartition(
-  TrimSynchronizationToApply: TTrimSynchronization);
+  const TrimSynchronizationToApply: TTrimSynchronization);
 begin
   try
     TryToTrimPartition(TrimSynchronizationToApply);

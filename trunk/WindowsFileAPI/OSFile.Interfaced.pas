@@ -10,7 +10,6 @@ type
   protected
     [Volatile] FRefCount: Integer;
     class procedure __MarkDestroying(const Obj); static; inline;
-
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;

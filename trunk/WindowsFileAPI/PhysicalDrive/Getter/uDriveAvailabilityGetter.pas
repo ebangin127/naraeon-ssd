@@ -9,7 +9,7 @@ uses
 type
   TDriveAvailabilityGetter = class sealed(TIoControlFile)
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
 
     function GetAvailability: Boolean;
 
@@ -24,7 +24,7 @@ implementation
 
 { TDriveAvailabilityGetter }
 
-constructor TDriveAvailabilityGetter.Create(FileToGetAccess: String);
+constructor TDriveAvailabilityGetter.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;

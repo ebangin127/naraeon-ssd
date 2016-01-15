@@ -9,7 +9,7 @@ uses
 type
   TCommandSet = class abstract(TIoControlFile)
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     function IdentifyDevice: TIdentifyDeviceResult; virtual; abstract;
     function SMARTReadData: TSMARTValueList; virtual; abstract;
     function IsDataSetManagementSupported: Boolean; virtual; abstract;
@@ -23,7 +23,7 @@ implementation
 
 { TCommandSet }
 
-constructor TCommandSet.Create(FileToGetAccess: String);
+constructor TCommandSet.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;

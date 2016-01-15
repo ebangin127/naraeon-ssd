@@ -12,14 +12,11 @@ type
 
   TDiskGeometryGetter = class sealed(TIoControlFile)
   public
-    constructor Create(FileToGetAccess: String); override;
-
+    constructor Create(const FileToGetAccess: String); override;
     function GetMediaType: TMediaType;
     function GetDiskSizeInByte: TLargeInteger;
-
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
-
   private
     type
       DISK_GEOMETRY = record
@@ -29,18 +26,15 @@ type
         SectorsPerTrack: DWORD;
         BytesPerSector: DWORD;
       end;
-
       DISK_GEOMETRY_EX = record
         Geometry: DISK_GEOMETRY;
         DiskSize: TLargeInteger;
         Data: Array[0..1] of UChar;
       end;
-
       TDiskGeometryResult = record
         MediaType: TMediaType;
         DiskSizeInByte: TLargeInteger;
       end;
-
     function GetDiskGeometry: TDiskGeometryResult;
     function GetIOBufferToGetGeometry(
       OutputBufferPointer: Pointer): TIoControlIOBuffer;
@@ -54,7 +48,7 @@ implementation
 
 { TDiskGeometry }
 
-constructor TDiskGeometryGetter.Create(FileToGetAccess: String);
+constructor TDiskGeometryGetter.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;

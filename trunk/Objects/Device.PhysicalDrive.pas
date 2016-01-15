@@ -65,8 +65,8 @@ type
     property NCQAvailability: TNCQAvailability
       read GetNCQAvailability;
     function GetPartitionList: TPartitionList;
-    constructor Create(FileToGetAccess: String); override;
-    class function BuildFileAddressByNumber(DriveNumber: Cardinal): String;
+    constructor Create(const FileToGetAccess: String); override;
+    class function BuildFileAddressByNumber(const DriveNumber: Cardinal): String;
     destructor Destroy; override;
   end;
 
@@ -74,7 +74,7 @@ implementation
 
 { TPhysicalDrive }
 
-constructor TPhysicalDrive.Create(FileToGetAccess: String);
+constructor TPhysicalDrive.Create(const FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess);
   BusPhysicalDrive := TBusPhysicalDrive.Create(FileToGetAccess);
@@ -82,7 +82,7 @@ begin
 end;
 
 class function TPhysicalDrive.BuildFileAddressByNumber(
-  DriveNumber: Cardinal): String;
+  const DriveNumber: Cardinal): String;
 begin
   result :=
     ThisComputerPrefix + PhysicalDrivePrefix + UIntToStr(DriveNumber);

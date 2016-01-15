@@ -14,16 +14,16 @@ type
   private
     VolumeLabelInNTBS: TNTBSVolumeName;
     procedure SetVolumeLabelInNTBS;
-    procedure IfVolumeLabelIsNullUseAlternative(AlternativeName: String);
+    procedure IfVolumeLabelIsNullUseAlternative(const AlternativeName: String);
     function GetSizeOfDiskInMB: Double;
-    function AppendSizeOfDiskInMB(AlternativeName: String): String;
+    function AppendSizeOfDiskInMB(const AlternativeName: String): String;
     function GetByteToMega: TDatasizeUnitChangeSetting;
   public
-    function GetVolumeLabel(AlternativeName: String): String;
+    function GetVolumeLabel(const AlternativeName: String): String;
   end;
 
-procedure PathListToVolumeLabel(PathList: TStrings;
-  AlternativeName: String);
+procedure PathListToVolumeLabel(const PathList: TStrings;
+  const AlternativeName: String);
 
 implementation
 
@@ -57,7 +57,7 @@ begin
 end;
 
 procedure TVolumeLabelGetter.IfVolumeLabelIsNullUseAlternative(
-  AlternativeName: String);
+  const AlternativeName: String);
 begin
   if VolumeLabelInNTBS[0] = #0 then
     CopyMemory(@VolumeLabelInNTBS, @AlternativeName[1],
@@ -65,7 +65,7 @@ begin
 end;
 
 function TVolumeLabelGetter.AppendSizeOfDiskInMB(
-  AlternativeName: String): String;
+  const AlternativeName: String): String;
 const
   DenaryInteger: TFormatSizeSetting =
     (FNumeralSystem: Denary; FPrecision: 0);
@@ -78,15 +78,16 @@ begin
       FormatSizeInMB(SizeOfDiskInMB, DenaryInteger) + ')';
 end;
 
-function TVolumeLabelGetter.GetVolumeLabel(AlternativeName: String): String;
+function TVolumeLabelGetter.GetVolumeLabel(const AlternativeName: String):
+  String;
 begin
   SetVolumeLabelInNTBS;
   IfVolumeLabelIsNullUseAlternative(AlternativeName);
   exit(AppendSizeOfDiskInMB(AlternativeName));
 end;
 
-procedure PathListToVolumeLabel(PathList: TStrings;
-  AlternativeName: String);
+procedure PathListToVolumeLabel(const PathList: TStrings;
+  const AlternativeName: String);
 var
   VolumeLabelGetter: TVolumeLabelGetter;
   CurrentPath: Integer;

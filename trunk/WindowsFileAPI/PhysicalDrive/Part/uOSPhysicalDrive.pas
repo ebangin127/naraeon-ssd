@@ -12,14 +12,11 @@ type
   private
     NCQAvailabilityReadWrite: TNCQAvailability;
     DiskSizeInByteReadWrite: Int64;
-
     procedure RequestNCQAvailability;
     procedure RequestDiskSizeInByte;
-
     function GetNCQAvailabilityOrRequestAndReturn: TNCQAvailability;
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
-
   public
     property DiskSizeInByte: TLargeInteger
       read GetDiskSizeInByte;
@@ -28,7 +25,6 @@ type
     property NCQAvailability: TNCQAvailability
       read GetNCQAvailabilityOrRequestAndReturn;
     function GetPartitionList: TPartitionList;
-
   end;
 
 implementation

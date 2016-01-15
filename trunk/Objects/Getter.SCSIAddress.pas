@@ -17,7 +17,7 @@ type
 
   TSCSIAddressGetter = class sealed(TIoControlFile)
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     function GetSCSIAddress: SCSI_ADDRESS;
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
@@ -27,7 +27,7 @@ implementation
 
 { TSCSIAddressGetter }
 
-constructor TSCSIAddressGetter.Create(FileToGetAccess: String);
+constructor TSCSIAddressGetter.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, DesiredReadWrite);
 end;

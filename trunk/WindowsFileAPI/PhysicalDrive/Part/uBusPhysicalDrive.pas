@@ -22,7 +22,7 @@ type
       read GetIdentifyDeviceResultOrRequestAndReturn;
     property SMARTValueList: TSMARTValueList
       read GetSMARTValueListOrRequestAndReturn;
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     destructor Destroy; override;
 
   end;
@@ -31,7 +31,7 @@ implementation
 
 { TBusPhysicalDrive }
 
-constructor TBusPhysicalDrive.Create(FileToGetAccess: String);
+constructor TBusPhysicalDrive.Create(const FileToGetAccess: String);
 begin
   inherited Create(FileToGetAccess);
   CommandSet := CommandSetFactory.GetSuitableCommandSet(FileToGetAccess);

@@ -19,13 +19,12 @@ type
     PendingTrimOperation: TPendingTrimOperation;
     class var TrimOperationList: TTrimOperationList;
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     procedure Flush;
     procedure SetStartPoint(StartLBA, LengthInLBA: UInt64);
     procedure IncreaseLength(LengthInLBA: UInt64);
     function IsUnusedSpaceFound: Boolean;
     function IsLBACountOverLimit: Boolean;
-
     class procedure CreateTrimOperationLogger;
     class procedure FreeTrimOperationLogger;
     class function GetTrimOperationLogger: TTrimOperationList;
@@ -35,7 +34,7 @@ implementation
 
 { TDeviceTrimmer }
 
-constructor TDeviceTrimmer.Create(FileToGetAccess: String); 
+constructor TDeviceTrimmer.Create(const FileToGetAccess: String); 
 begin
   inherited;
   ZeroMemory(@PendingTrimOperation, SizeOf(PendingTrimOperation));

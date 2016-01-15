@@ -17,11 +17,10 @@ type
   private
     PendingTrimOperation: TPendingTrimOperation;
     CommandSet: TCommandSet;
-
     function GetMotherDrivePath: String;
     procedure SetCommandSet;
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     destructor Destroy; override;
     procedure Flush;
     procedure SetStartPoint(StartLBA, LengthInLBA: UInt64);
@@ -34,7 +33,7 @@ implementation
 
 { TDeviceTrimmer }
 
-constructor TDeviceTrimmer.Create(FileToGetAccess: String); 
+constructor TDeviceTrimmer.Create(const FileToGetAccess: String); 
 begin
   inherited;
   SetCommandSet;

@@ -13,28 +13,24 @@ type
     LBAPerCluster: Cardinal;
     StartLBA: UInt64;
   end;
+  EUnknownPartition = class(Exception);
 
   TTrimBasicsGetter = class abstract(TIoControlFile)
   private
     FileSystemNameInCharArray: Array[0..MAX_PATH - 1] of Char;
     function GetStartLBA: UInt64;
-
   protected
     function GetFileSystemName: String;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
-
     const
       BytePerLBA = 512;
-
   public
-    constructor Create(FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String); override;
     function IsPartitionMyResponsibility: Boolean; virtual; abstract;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
       virtual;
   end;
-
-  EUnknownPartition = class(Exception);
-
+  
 implementation
 
 { TTrimBasicsGetter }
@@ -73,7 +69,7 @@ begin
   result.StartLBA := GetStartLBA;
 end;
 
-constructor TTrimBasicsGetter.Create(FileToGetAccess: String);
+constructor TTrimBasicsGetter.Create(const FileToGetAccess: String);
 begin
   CreateHandle(FileToGetAccess, DesiredReadOnly);
 end;
