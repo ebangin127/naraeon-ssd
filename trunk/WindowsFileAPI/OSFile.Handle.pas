@@ -13,22 +13,18 @@ type
   TOSFileWithHandle = class abstract(TOSFile)
   public
     destructor Destroy; override;
-
   protected
     procedure CreateHandle(const FileToGetAccess: String;
       const DesiredAccess: TCreateFileDesiredAccess);
     function GetFileHandle: THandle;
     function GetAccessPrivilege: TCreateFileDesiredAccess;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; virtual; abstract;
-
     function IsHandleValid(const HandleToCheck: THandle): Boolean;
     procedure IfInsufficientPrivilegeRaiseException(
       const DesiredAccess: TCreateFileDesiredAccess);
-
   private
     FileHandle: THandle;
     AccessPrivilege: TCreateFileDesiredAccess;
-
     function GetDesiredAccessFromTCreateFileDesiredAccess
       (const Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
