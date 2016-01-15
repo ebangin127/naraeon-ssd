@@ -4,15 +4,15 @@
   <Option Name="namespaceFolder.uAutoCommandSet" Type="System.String" Value="uAutoCommandSet" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uUSBDrive" Type="System.String" Value="uUSBDrive" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uTrimThread" Type="System.String" Value="uTrimThread" Category="General" IsBrowsable="False" />
-  <Option Name="namespaceFolder.uTrimList" Type="System.String" Value="uTrimList" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.TrimList" Type="System.String" Value="TrimList" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uTimeUnit" Type="System.String" Value="uTimeUnit" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uSemiAuto" Type="System.String" Value="uSemiAuto" Category="General" IsBrowsable="False" />
-  <Option Name="namespaceFolder.uPartitionTrimmer" Type="System.String" Value="uPartitionTrimmer" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.PartitionTrimmer" Type="System.String" Value="PartitionTrimmer" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uOSFileWithHandle" Type="System.String" Value="uOSFileWithHandle" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uHTTPSWeb" Type="System.String" Value="uHTTPSWeb" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uWeb" Type="System.String" Value="uWeb" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uSMARTValueList" Type="System.String" Value="uSMARTValueList" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uErase" Type="System.String" Value="uErase" Category="General" IsBrowsable="False" />
   <Option Name="namespaceFolder.uSATCommandSet" Type="System.String" Value="uSATCommandSet" Category="General" IsBrowsable="False" />
-  <Option Name="namespaceFolder.uToshibaNSTSupport" Type="System.String" Value="uToshibaNSTSupport" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.Support.Toshiba" Type="System.String" Value="Support.Toshiba" Category="General" IsBrowsable="False" />
 </TgConfig>

@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils, Windows, Classes, Graphics,
-  uLanguageSettings, Device.PhysicalDrive, uListChangeGetter,
-  uPartitionListGetter;
+  Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange,
+  Getter.PhysicalDrive.PartitionList;
 
 type
   TMainformPartitionAlignApplier = class

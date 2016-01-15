@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener, uNSTRegistry;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener, Registry.Helper;
 
 type
   TDefragOptimizer = class(TOptimizationUnit)

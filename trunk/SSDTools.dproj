@@ -146,29 +146,29 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Resource\uLanguageSettings.pas"/>
+        <DCCReference Include="Resource\Global.LanguageString.pas"/>
         <DCCReference Include="Modules\AsciiCheck.pas"/>
-        <DCCReference Include="NSTSupport\Abstraction\uNSTSupport.pas"/>
+        <DCCReference Include="Support\Support.pas"/>
         <DCCReference Include="Modules\Version.pas"/>
-        <DCCReference Include="Objects\uDownloadPath.pas"/>
+        <DCCReference Include="Objects\Getter.WebPath.pas"/>
         <DCCReference Include="ExternProgram\Extern.SevenZip.pas"/>
-        <DCCReference Include="Objects\uTrimList.pas"/>
+        <DCCReference Include="Objects\TrimList.pas"/>
         <DCCReference Include="ExternProgram\Extern.Rufus.pas"/>
-        <DCCReference Include="Objects\uPathManager.pas"/>
-        <DCCReference Include="Objects\uSemiAutoTrimmer.pas"/>
+        <DCCReference Include="Objects\OS.EnvironmentVariable.pas"/>
+        <DCCReference Include="Objects\SemiAutoTrimmer.pas"/>
         <DCCReference Include="Objects\PrerequisiteChecker.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Part\uBusPhysicalDrive.pas"/>
+        <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.Bus.pas"/>
         <DCCReference Include="Objects\Device.SMART.List.pas"/>
-        <DCCReference Include="Resource\uVersionPublisher.pas"/>
-        <DCCReference Include="Objects\uPartition.pas"/>
-        <DCCReference Include="Objects\uRegistryHelper.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDiskGeometryGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uDriveAvailabilityGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uPartitionListGetter.pas"/>
-        <DCCReference Include="Objects\uFirmwareGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uNCQAvailabilityGetter.pas"/>
-        <DCCReference Include="ThreadHelper\uUpdater.pas"/>
-        <DCCReference Include="Objects\uParameter.pas"/>
+        <DCCReference Include="Resource\Global.Constant.pas"/>
+        <DCCReference Include="Objects\Partition.pas"/>
+        <DCCReference Include="Objects\Registry.Helper.Internal.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.DiskGeometry.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.DriveAvailability.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.PartitionList.pas"/>
+        <DCCReference Include="Objects\Getter.LatestFirmware.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.NCQAvailability.pas"/>
+        <DCCReference Include="Objects\Thread.Update.Helper.pas"/>
+        <DCCReference Include="Objects\Parameter.pas"/>
         <DCCReference Include="Form\Form.Alert.pas">
             <Form>fAlert</Form>
             <FormType>dfm</FormType>
@@ -185,52 +185,52 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fMessage</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="ThreadHelper\uListTrimmer.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Abstraction\uTrimBasicsGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uNTFSTrimBasicsGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Getter\uFATTrimBasicsGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\TrimBasics\Factory\uTrimBasicsGetterFactory.pas"/>
-        <DCCReference Include="NSTSupport\Abstraction\uSandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uToshibaSandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uHynixSandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uOCZSandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uPatriotSandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uMachXtremeSandforceNSTSupport.pas"/>
-        <DCCReference Include="Objects\uNSToolsMutex.pas"/>
-        <DCCReference Include="Objects\uServiceController.pas"/>
-        <DCCReference Include="Objects\uIdentifyDiagnosis.pas"/>
-        <DCCReference Include="NSTSupport\Support\uCrucialNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uLiteonNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uMachXtremeNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uPlextorNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uSamsungNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uSandiskNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uSeagateNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uToshibaNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uPhisonNSTSupport.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Getter\uListChangeGetter.pas"/>
-        <DCCReference Include="ThreadHelper\uDownloader.pas"/>
-        <DCCReference Include="Objects\uFirmwareDownloader.pas"/>
+        <DCCReference Include="Objects\TThread.Trim.Helper.List.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.NTFS.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.FAT.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.Factory.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.Toshiba.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.Hynix.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.OCZ.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.Patriot.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.MachXtreme.pas"/>
+        <DCCReference Include="Objects\OS.MutexManager.pas"/>
+        <DCCReference Include="Objects\OS.ServiceController.pas"/>
+        <DCCReference Include="Objects\IdentifyDiagnosis.pas"/>
+        <DCCReference Include="Support\Support.Crucial.pas"/>
+        <DCCReference Include="Support\Support.Liteon.pas"/>
+        <DCCReference Include="Support\Support.MachXtreme.pas"/>
+        <DCCReference Include="Support\Support.Plextor.pas"/>
+        <DCCReference Include="Support\Support.Samsung.pas"/>
+        <DCCReference Include="Support\Support.Sandisk.pas"/>
+        <DCCReference Include="Support\Support.Seagate.pas"/>
+        <DCCReference Include="Support\Support.Toshiba.pas"/>
+        <DCCReference Include="Support\Support.Phison.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.ListChange.pas"/>
+        <DCCReference Include="Objects\Thread.Download.Helper.pas"/>
+        <DCCReference Include="Objects\Downloader.Firmware.pas"/>
         <DCCReference Include="Modules\OS.Codesign.pas"/>
         <DCCReference Include="Modules\OS.DeleteDirectory.pas"/>
-        <DCCReference Include="Objects\uProcessOpener.pas"/>
+        <DCCReference Include="Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="Modules\OS.PlugAndPlay.pas"/>
-        <DCCReference Include="Objects\uNSTRegistry.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\Getter\uPartitionExtentGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\Getter\uVolumeBitmapGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\Partition\Getter\uVolumeLabelGetter.pas"/>
-        <DCCReference Include="NSTSupport\SandforceSupport\uADATASandforceNSTSupport.pas"/>
-        <DCCReference Include="NSTSupport\Support\uADATANSTSupport.pas"/>
-        <DCCReference Include="ThreadHelper\uPartitionTrimmer.pas"/>
-        <DCCReference Include="ThreadHelper\uDeviceTrimmer.pas"/>
-        <DCCReference Include="NSTSupport\Factory\uNSTSupportFactory.pas"/>
+        <DCCReference Include="Objects\Registry.Helper.pas"/>
+        <DCCReference Include="WindowsFileAPI\PartitionExtentGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\uVolumeBitmapGetter.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.VolumeLabel.pas"/>
+        <DCCReference Include="Support\Support.Sandforce.ADATA.pas"/>
+        <DCCReference Include="Support\Support.ADATA.pas"/>
+        <DCCReference Include="Objects\PartitionTrimmer.pas"/>
+        <DCCReference Include="Objects\TThread.Trim.Helper.Device.pas"/>
+        <DCCReference Include="Support\Support.Factory.pas"/>
         <DCCReference Include="Modules\OS.WindowsVersion.pas"/>
-        <DCCReference Include="Objects\uSecurityDescriptor.pas"/>
+        <DCCReference Include="Objects\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="Modules\MeasureUnit.DataSize.pas"/>
         <DCCReference Include="Modules\MeasureUnit.Time.pas"/>
         <DCCReference Include="Modules\OS.VersionHelper.pas"/>
         <DCCReference Include="Objects\Device.PhysicalDrive.pas"/>
-        <DCCReference Include="WindowsFileAPI\PhysicalDrive\Part\uOSPhysicalDrive.pas"/>
+        <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.OS.pas"/>
         <DCCReference Include="Objects\Web.HTTP.pas"/>
         <DCCReference Include="Objects\Web.HTTPS.pas"/>
         <DCCReference Include="Objects\Web.pas"/>
@@ -272,8 +272,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.Samsung.pas"/>
         <DCCReference Include="Objects\Getter.SCSIAddress.pas"/>
-        <DCCReference Include="NSTSupport\Support\Support.Samsung.NVMe.pas"/>
-        <DCCReference Include="NSTSupport\Support\Support.Intel.NVMe.pas"/>
+        <DCCReference Include="Support\Support.NVMe.Samsung.pas"/>
+        <DCCReference Include="Support\Support.NVMe.Intel.pas"/>
         <DCCReference Include="Modules\OS.SetupAPI.pas"/>
         <DCCReference Include="Objects\Getter.SlotSpeed.pas"/>
         <DCCReference Include="Objects\Getter.SlotSpeedByDeviceID.pas"/>
@@ -709,7 +709,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -717,7 +718,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
+</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

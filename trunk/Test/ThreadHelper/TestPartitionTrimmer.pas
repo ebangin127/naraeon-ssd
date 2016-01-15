@@ -17,7 +17,7 @@ uses
   uMockTrimBasicsGetterFactory,
   uMockVolumeBitmapGetter,
   uMockDeviceTrimmer,
-  uPartitionTrimmer;
+  PartitionTrimmer;
 
 type
   // Test methods for class TPartitionTrimmer

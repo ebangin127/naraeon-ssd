@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener;
 
 type
   THibernationOptimizer = class(TOptimizationUnit)
@@ -35,7 +35,7 @@ begin
   if not IsBelowWindows8 then
     exit(false);
   result :=
-    not FileExists(PathManager.WinDrive + '\hiberfil.sys');
+    not FileExists(EnvironmentVariable.WinDrive + '\hiberfil.sys');
 end;
 
 function THibernationOptimizer.GetName: String;
@@ -46,15 +46,15 @@ end;
 procedure THibernationOptimizer.Apply;
 begin
   ProcessOpener.OpenProcWithOutput(
-    PathManager.WinDrive,
-    PathManager.WinDir + 'System32\cmd.exe /C powercfg -h off');
+    EnvironmentVariable.WinDrive,
+    EnvironmentVariable.WinDir + 'System32\cmd.exe /C powercfg -h off');
 end;
 
 procedure THibernationOptimizer.Undo;
 begin
   ProcessOpener.OpenProcWithOutput(
-    PathManager.WinDrive,
-    PathManager.WinDir + 'System32\cmd.exe /C powercfg -h on');
+    EnvironmentVariable.WinDrive,
+    EnvironmentVariable.WinDir + 'System32\cmd.exe /C powercfg -h on');
 end;
 
 end.

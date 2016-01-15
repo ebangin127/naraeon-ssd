@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener, uNSTRegistry;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener, Registry.Helper;
 
 type
   TSystemRestoreOptimizer = class(TOptimizationUnit)
@@ -52,7 +52,7 @@ var
 begin
   ProcOutput :=
     string(ProcessOpener.OpenProcWithOutput(
-      PathManager.WinDir + '\System32',
+      EnvironmentVariable.WinDir + '\System32',
       'schtasks /change /TN "Microsoft\Windows\SystemRestore\SR" /disable'));
   NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
     'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
@@ -68,7 +68,7 @@ var
 begin
   ProcOutput :=
     string(ProcessOpener.OpenProcWithOutput(
-      PathManager.WinDir + '\System32',
+      EnvironmentVariable.WinDir + '\System32',
       'schtasks /change /TN "Microsoft\Windows\SystemRestore\SR" /enable'));
   NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
     'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +

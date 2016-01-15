@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener;
 
 type
   TLastAccessOptimizer = class(TOptimizationUnit)
@@ -33,7 +33,7 @@ end;
 function TLastAccessOptimizer.IsApplied: Boolean;
 begin
   result := not (Pos('= 0',
-    string(ProcessOpener.OpenProcWithOutput(PathManager.WinDrive,
+    string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDrive,
       'FSUTIL behavior query disablelastaccess'))) > 0);
 end;
 
@@ -45,13 +45,13 @@ end;
 procedure TLastAccessOptimizer.Apply;
 begin
   ProcessOpener.OpenProcWithOutput(
-    PathManager.WinDrive, 'FSUTIL behavior set disablelastaccess 1');
+    EnvironmentVariable.WinDrive, 'FSUTIL behavior set disablelastaccess 1');
 end;
 
 procedure TLastAccessOptimizer.Undo;
 begin
   ProcessOpener.OpenProcWithOutput(
-    PathManager.WinDrive, 'FSUTIL behavior set disablelastaccess 0');
+    EnvironmentVariable.WinDrive, 'FSUTIL behavior set disablelastaccess 0');
 end;
 
 end.

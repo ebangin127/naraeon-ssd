@@ -4,9 +4,9 @@ interface
 
 uses
   SysUtils, Graphics,
-  uLanguageSettings, Device.PhysicalDrive, Initializer.SSDLabelListRefresh,
-  uFirmwareGetter, MeasureUnit.DataSize, BufferInterpreter,
-  uNCQAvailabilityGetter, Device.SlotSpeed;
+  Global.LanguageString, Device.PhysicalDrive, Initializer.SSDLabelListRefresh,
+  Getter.LatestFirmware, MeasureUnit.DataSize, BufferInterpreter,
+  Getter.PhysicalDrive.NCQAvailability, Device.SlotSpeed;
 
 type
   TMainformMainpartApplier = class

@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uLanguageSettings, Device.PhysicalDrive, uListChangeGetter, uNSTSupport,
-  AverageLogger.Write, AverageLogger, uPathManager, MeasureUnit.DataSize;
+  Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange, Support,
+  AverageLogger.Write, AverageLogger, OS.EnvironmentVariable, MeasureUnit.DataSize;
 
 type
   TMainformTotalWriteApplier = class
@@ -114,7 +114,7 @@ begin
   WriteLog :=
     TAverageWriteLogger.Create(
       TAverageWriteLogger.BuildFileName(
-        PathManager.AppPath,
+        EnvironmentVariable.AppPath,
         fMain.PhysicalDrive.IdentifyDeviceResult.Serial));
   WriteLog.ReadAndRefresh(
     UIntToStr(MBToLiteONUnit(

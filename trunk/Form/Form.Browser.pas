@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Component.UAWebbrowser,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.OleCtrls, SHDocVw,
-  uLanguageSettings;
+  Global.LanguageString;
 
 procedure BrowserCreate(Sender: TForm);
 

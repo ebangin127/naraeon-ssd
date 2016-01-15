@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils,
-  uTrimList, uListTrimmer;
+  TrimList, TThread.Trim.Helper.List;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);

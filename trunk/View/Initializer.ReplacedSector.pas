@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, uLanguageSettings, Device.PhysicalDrive, uListChangeGetter,
-  AverageLogger.Count, AverageLogger, uNSTSupport, BufferInterpreter;
+  OS.EnvironmentVariable, Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange,
+  AverageLogger.Count, AverageLogger, Support, BufferInterpreter;
 
 type
   TMainformReplacedSectorApplier = class
@@ -47,7 +47,7 @@ procedure TMainformReplacedSectorApplier.CreateReplacedSectorLog;
 begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-      PathManager.AppPath,
+      EnvironmentVariable.AppPath,
       fMain.PhysicalDrive.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(ReplacedSectors));
 end;

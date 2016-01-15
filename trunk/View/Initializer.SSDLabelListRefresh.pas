@@ -4,8 +4,8 @@ interface
 
 uses
   Classes, Forms, SysUtils, Generics.Collections, Windows, ShellAPI,
-  uLanguageSettings, uPathManager, Form.Alert, Device.PhysicalDrive,
-  uListChangeGetter, Component.SSDLabel;
+  Global.LanguageString, OS.EnvironmentVariable, Form.Alert, Device.PhysicalDrive,
+  Getter.PhysicalDrive.ListChange, Component.SSDLabel;
 
 type
   TSSDLabelListRefresher = class
@@ -39,7 +39,7 @@ procedure TSSDLabelListRefresher.AlertAndExecuteNewDiagnosisInstance;
 begin
   AlertCreate(fMain, AlrtNoSupport[CurrLang]);
   ShellExecute(0, 'open',
-    PChar(PathManager.AppPath + 'SSDTools.exe'),
+    PChar(EnvironmentVariable.AppPath + 'SSDTools.exe'),
     PChar('/diag'), nil, SW_SHOW);
 end;
 

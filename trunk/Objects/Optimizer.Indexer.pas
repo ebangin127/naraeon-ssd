@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener, uNSTRegistry;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener, Registry.Helper;
 
 type
   TIndexerOptimizer = class(TOptimizationUnit)
@@ -63,7 +63,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
       'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 4);
     ProcOutput :=
-      string(ProcessOpener.OpenProcWithOutput(PathManager.WinDrive,
+      string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDrive,
         'net stop WSearch'));
   end
   else if Win32MajorVersion = 5 then
@@ -71,7 +71,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
       'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 4);
     ProcOutput :=
-      string(ProcessOpener.OpenProcWithOutput(PathManager.WinDrive,
+      string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDrive,
         'net stop CiSvc'));
   end;
 end;
@@ -85,7 +85,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
       'LM', 'SYSTEM\CurrentControlSet\services\WSearch', 'Start'), 2);
     ProcOutput :=
-      string(ProcessOpener.OpenProcWithOutput(PathManager.WinDrive,
+      string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDrive,
         'net start WSearch'));
   end
   else if Win32MajorVersion = 5 then
@@ -93,7 +93,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
       'LM', 'SYSTEM\CurrentControlSet\services\CiSvc', 'Start'), 2);
     ProcOutput :=
-      string(ProcessOpener.OpenProcWithOutput(PathManager.WinDrive,
+      string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDrive,
         'net start CiSvc'));
   end;
 end;

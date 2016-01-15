@@ -3,10 +3,10 @@ unit Device.PhysicalDrive;
 interface
 
 uses
-  Windows, SysUtils, uBusPhysicalDrive, uOSPhysicalDrive, OSFile,
-  OSFile.Interfaced, uNSTSupport, uNSTSupportFactory,
-  uDiskGeometryGetter, uPartitionListGetter, uDriveAvailabilityGetter,
-  BufferInterpreter, Device.SMART.List, uNCQAvailabilityGetter;
+  Windows, SysUtils, Device.PhysicalDrive.Bus, Device.PhysicalDrive.OS, OSFile,
+  OSFile.Interfaced, Support, Support.Factory,
+  Getter.PhysicalDrive.DiskGeometry, Getter.PhysicalDrive.PartitionList, Getter.PhysicalDrive.DriveAvailability,
+  BufferInterpreter, Device.SMART.List, Getter.PhysicalDrive.NCQAvailability;
 
 type
   IPhysicalDrive = interface
@@ -144,7 +144,7 @@ procedure TPhysicalDrive.TryToCreateAndSetNSTSupport;
 begin
   try
     NSTSupport :=
-      NSTSupportFactory.GetSuitableNSTSupport(
+      NSTSupport.Factory.GetSuitableNSTSupport(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
   except

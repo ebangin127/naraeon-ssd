@@ -4,8 +4,8 @@ interface
 
 uses
   SysUtils,
-  uPathManager, Optimizer.Template, uLanguageSettings,
-  uProcessOpener, uNSTRegistry;
+  OS.EnvironmentVariable, Optimizer.Template, Global.LanguageString,
+  OS.ProcessOpener, Registry.Helper;
 
 type
   TPrefetchOptimizer = class(TOptimizationUnit)
@@ -64,7 +64,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 2);
-    ProcOutput := string(ProcessOpener.OpenProcWithOutput(PathManager.WinDir +
+    ProcOutput := string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDir +
       '\System32',
       'net start SysMain'));
   end
@@ -91,7 +91,7 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 4);
-    ProcOutput := string(ProcessOpener.OpenProcWithOutput(PathManager.WinDir +
+    ProcOutput := string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDir +
       '\System32',
       'net stop SysMain'));
   end

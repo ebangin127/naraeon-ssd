@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows,
-  Form.Alert, uLanguageSettings, uPathManager, OS.VersionHelper;
+  Form.Alert, Global.LanguageString, OS.EnvironmentVariable, OS.VersionHelper;
 
 procedure CheckPrerequisite;
 
@@ -23,14 +23,14 @@ end;
 
 procedure CheckEssentialDir;
 begin
-  if FileExists(PathManager.AppPath + 'Setup.exe') then
-    SysUtils.DeleteFile(PathManager.AppPath + 'Setup.exe');
-  if DirectoryExists(PathManager.AppPath + 'Image') = false then
-    CreateDirectory(PChar(PathManager.AppPath + 'Image'), nil);
-  if DirectoryExists(PathManager.AppPath + 'Erase') = false then
-    CreateDirectory(PChar(PathManager.AppPath + 'Erase'), nil);
-  if DirectoryExists(PathManager.AppPath + 'Rufus') = false then
-    CreateDirectory(PChar(PathManager.AppPath + 'Rufus'), nil);
+  if FileExists(EnvironmentVariable.AppPath + 'Setup.exe') then
+    SysUtils.DeleteFile(EnvironmentVariable.AppPath + 'Setup.exe');
+  if DirectoryExists(EnvironmentVariable.AppPath + 'Image') = false then
+    CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Image'), nil);
+  if DirectoryExists(EnvironmentVariable.AppPath + 'Erase') = false then
+    CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Erase'), nil);
+  if DirectoryExists(EnvironmentVariable.AppPath + 'Rufus') = false then
+    CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Rufus'), nil);
 end;
 
 procedure CheckPrerequisite;

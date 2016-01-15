@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  uLanguageSettings, Device.PhysicalDrive, uNSTSupport, uListChangeGetter;
+  Global.LanguageString, Device.PhysicalDrive, Support, Getter.PhysicalDrive.ListChange;
 
 type
   TMainformSMARTApplier = class

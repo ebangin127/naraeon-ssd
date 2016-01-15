@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils,
-  uUpdater;
+  Thread.Update.Helper;
 
 type
   TUpdateThread = class(TThread)

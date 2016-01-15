@@ -13,7 +13,7 @@ interface
 
 uses
   TestFramework,
-  uWriteBufferSettingVerifier;
+  OS.WriteBufferSettingVerifier;
 
 type
   // Test methods for class TWriteBufferSettingVerifier

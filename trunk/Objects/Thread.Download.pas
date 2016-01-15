@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils,
-  uDownloader;
+  Thread.Download.Helper;
 
 type
   TDownloadThread = class(TThread)
@@ -21,7 +21,6 @@ type
     constructor Create; overload;
     constructor Create(CreateSuspended: Boolean); overload;
     destructor Destroy; override;
-
     procedure SetRequest(Request: TDownloadRequest);
     procedure SetPostDownloadMethod(PostDownloadMethod: TThreadMethod);
   end;

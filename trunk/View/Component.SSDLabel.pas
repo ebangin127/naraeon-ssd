@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Controls, SysUtils, Windows, StdCtrls,
-  MeasureUnit.DataSize, uPartitionListGetter, Device.PhysicalDrive;
+  MeasureUnit.DataSize, Getter.PhysicalDrive.PartitionList, Device.PhysicalDrive;
 
 type
   TSSDLabel = class(TLabel)

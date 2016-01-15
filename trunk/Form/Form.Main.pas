@@ -8,16 +8,16 @@ uses
   Vcl.StdCtrls, Vcl.CheckLst, WinInet, UITypes,
   Vcl.OleCtrls, Vcl.ExtCtrls, IdHttp, IdComponent, ShellApi, Math,
   Vcl.Imaging.pngimage, ShlObj, Vcl.Mask, Vcl.ComCtrls,
-  Form.Alert, Form.Message, Form.Browser, uLanguageSettings,
+  Form.Alert, Form.Message, Form.Browser, Global.LanguageString,
   Extern.SevenZip, Optimizer,
-  uProcessOpener, OS.DeleteDirectory, uDownloadPath, OS.PlugAndPlay,
-  Component.ButtonGroup, Initializer, Extern.Rufus, uPathManager,
-  Thread.Update, Thread.Trim, uTrimList, Initializer.Locale,
-  Device.PhysicalDrive, uPartitionListGetter, Device.PhysicalDrive.List,
-  uFirmwareGetter, uVersionPublisher, Getter.CodesignVerifier,
+  OS.ProcessOpener, OS.DeleteDirectory, Getter.WebPath, OS.PlugAndPlay,
+  Component.ButtonGroup, Initializer, Extern.Rufus, OS.EnvironmentVariable,
+  Thread.Update, Thread.Trim, TrimList, Initializer.Locale,
+  Device.PhysicalDrive, Getter.PhysicalDrive.PartitionList, Device.PhysicalDrive.List,
+  Getter.LatestFirmware, Global.Constant, Getter.CodesignVerifier,
   Component.SSDLabel.List, Component.SSDLabel, Initializer.PhysicalDrive,
-  Initializer.SSDLabelListRefresh, uFirmwareDownloader,
-  Getter.DriveList.Removable, Getter.DriveList, uVolumeLabelGetter,
+  Initializer.SSDLabelListRefresh, Downloader.Firmware,
+  Getter.DriveList.Removable, Getter.DriveList, Getter.VolumeLabel,
   OS.VersionHelper, PrerequisiteChecker, BufferInterpreter;
 
 const
@@ -729,14 +729,14 @@ var
   FullPath: string;
   TempFolder: string;
 begin
-  FullPath := PathManager.AppPath + 'Erase\' + Filename + '.7z';
+  FullPath := EnvironmentVariable.AppPath + 'Erase\' + Filename + '.7z';
   if (FileExists(FullPath)) and (Rufus.CheckRufus) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
-    TempFolder := PathManager.TempFolder(true);
+    TempFolder := EnvironmentVariable.TempFolder(true);
     CreateDir(TempFolder);
     SevenZip.Extract(
-      PathManager.AppPath + '7z\7z.exe',
+      EnvironmentVariable.AppPath + '7z\7z.exe',
       FullPath, TempFolder,
       CapTrimName[LANG_ENGLISH] + CapStartManTrim[LANG_ENGLISH] +
       BtSemiAutoTrim[LANG_ENGLISH] + CapLocalDisk[LANG_ENGLISH] +
@@ -772,7 +772,7 @@ begin
     begin
       SchedResult :=
         string(ProcessOpener.OpenProcWithOutput(
-          PathManager.WinDir + '\System32',
+          EnvironmentVariable.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
@@ -786,7 +786,7 @@ begin
     else
       SchedResult :=
         string(ProcessOpener.OpenProcWithOutput(
-          PathManager.WinDir + '\System32',
+          EnvironmentVariable.WinDir + '\System32',
           'schtasks /create ' +                     //작업 생성
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
@@ -800,7 +800,7 @@ begin
   else
     SchedResult :=
       string(ProcessOpener.OpenProcWithOutput(
-        PathManager.WinDir + '\System32',
+        EnvironmentVariable.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
         '/TN "MANTRIM' +                            //작업 이름
         PhysicalDrive.IdentifyDeviceResult.Serial +
@@ -826,7 +826,7 @@ begin
   cTrimRunning.Checked :=
     Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
       UnicodeString(ProcessOpener.OpenProcWithOutput(
-        PathManager.WinDir + '\System32',
+        EnvironmentVariable.WinDir + '\System32',
         'schtasks /query'))) > 0;
 end;
 end.

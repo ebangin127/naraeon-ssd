@@ -4,10 +4,10 @@ interface
 
 uses
   SysUtils, Graphics,
-  uLanguageSettings,
+  Global.LanguageString,
   Initializer.Mainpart, Initializer.PartitionAlign,
   Initializer.ReplacedSector, Initializer.SMART,
-  Initializer.TotalWrite, uNSTSupport, OS.WindowsVersion;
+  Initializer.TotalWrite, Support, OS.WindowsVersion;
 
 type
   TMainformAlert = record

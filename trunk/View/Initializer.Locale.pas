@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
-  Form.Alert, Component.ButtonGroup, uLanguageSettings;
+  Form.Alert, Component.ButtonGroup, Global.LanguageString;
 
 procedure ApplyLocaleToMainformAndArrangeButton;
 

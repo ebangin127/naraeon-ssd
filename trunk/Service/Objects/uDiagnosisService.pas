@@ -4,10 +4,10 @@ interface
 
 uses
   Classes, SysUtils, ShlObj, Windows,
-  Device.PhysicalDrive, Device.PhysicalDrive.List, uLanguageSettings,
-  uPathManager, uListChangeGetter, MeasureUnit.Datasize, AverageLogger.Count,
-  AverageLogger.Write, uNSTSupport, uPartitionListGetter,
-  uWriteBufferSettingVerifier;
+  Device.PhysicalDrive, Device.PhysicalDrive.List, Global.LanguageString,
+  OS.EnvironmentVariable, Getter.PhysicalDrive.ListChange, MeasureUnit.Datasize, AverageLogger.Count,
+  AverageLogger.Write, Support, Getter.PhysicalDrive.PartitionList,
+  OS.WriteBufferSettingVerifier;
 
 type
   TDiagnosisService = class
@@ -46,9 +46,9 @@ implementation
 
 constructor TDiagnosisService.Create;
 begin
-  PathManager.SetPath(nil);
+  EnvironmentVariable.SetPath(nil);
   DetermineLanguage;
-  ErrorFilePath := PathManager.AllDesktopPath + '\!!!SSDError!!!.err';
+  ErrorFilePath := EnvironmentVariable.AllDesktopPath + '\!!!SSDError!!!.err';
   IsFirstDiagnosis := true;
 end;
 
@@ -137,7 +137,7 @@ begin
       exit;
   TotalWriteLog := TAverageWriteLogger.Create(
     TAverageWriteLogger.BuildFileName(
-      PathManager.AppPath,
+      EnvironmentVariable.AppPath,
       Entry.IdentifyDeviceResult.Serial));
   TotalWriteLog.ReadAndRefresh(UIntToStr(
     MBToLiteONUnit(
@@ -212,7 +212,7 @@ var
 begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-      PathManager.AppPath,
+      EnvironmentVariable.AppPath,
       Entry.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(
     Entry.SMARTInterpreted.ReplacedSectors));
@@ -227,7 +227,7 @@ var
 begin
   ReadWriteErrorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
-      PathManager.AppPath,
+      EnvironmentVariable.AppPath,
       Entry.IdentifyDeviceResult.Serial + 'RELog'));
   ReadWriteErrorLog.ReadAndRefresh(UIntToStr(
     Entry.SMARTInterpreted.ReplacedSectors));

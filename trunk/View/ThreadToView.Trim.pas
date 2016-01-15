@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, Windows,
-  uLanguageSettings;
+  Global.LanguageString;
 
 type
   TTrimProgress = record

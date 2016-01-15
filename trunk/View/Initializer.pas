@@ -5,7 +5,7 @@ interface
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
   WinCodec,
-  Form.Alert, Component.ButtonGroup, uPathManager, uLanguageSettings,
+  Form.Alert, Component.ButtonGroup, OS.EnvironmentVariable, Global.LanguageString,
   OS.VersionHelper;
 
 procedure InitializeMainForm;
@@ -201,14 +201,14 @@ end;
 procedure TMainformInitializer.LoadAndProportionalStretchBackgroundXP;
 begin
   fMain.iBG.Proportional := true;
-  if FileExists(PathManager.AppPath + BackgroundPath) then
-    fMain.iBG.Picture.LoadFromFile(PathManager.AppPath + BackgroundPath);
+  if FileExists(EnvironmentVariable.AppPath + BackgroundPath) then
+    fMain.iBG.Picture.LoadFromFile(EnvironmentVariable.AppPath + BackgroundPath);
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchBackground;
 begin
   fMain.iBG.Picture.Bitmap.Assign(
-    StretchImage(PathManager.AppPath + BackgroundPath,
+    StretchImage(EnvironmentVariable.AppPath + BackgroundPath,
     fMain.ClientWidth, fMain.ClientHeight));
 end;
 
@@ -223,15 +223,15 @@ end;
 procedure TMainformInitializer.LoadAndProportionalStretchLogo;
 begin
   fMain.iLogo.Picture.Bitmap.Assign(
-    StretchImage(PathManager.AppPath + LogoPath,
+    StretchImage(EnvironmentVariable.AppPath + LogoPath,
     fMain.iLogo.Width, fMain.iLogo.Height));
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchLogoXP;
 begin
   fMain.iLogo.Proportional := true;
-  if FileExists(PathManager.AppPath + LogoPath) then
-    fMain.iLogo.Picture.LoadFromFile(PathManager.AppPath + LogoPath);
+  if FileExists(EnvironmentVariable.AppPath + LogoPath) then
+    fMain.iLogo.Picture.LoadFromFile(EnvironmentVariable.AppPath + LogoPath);
 end;
 
 procedure TMainformInitializer.LoadLogoImage;
