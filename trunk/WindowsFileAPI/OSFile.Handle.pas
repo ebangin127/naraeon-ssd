@@ -15,25 +15,25 @@ type
     destructor Destroy; override;
 
   protected
-    procedure CreateHandle(FileToGetAccess: String;
-      DesiredAccess: TCreateFileDesiredAccess);
+    procedure CreateHandle(const FileToGetAccess: String;
+      const DesiredAccess: TCreateFileDesiredAccess);
     function GetFileHandle: THandle;
     function GetAccessPrivilege: TCreateFileDesiredAccess;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; virtual; abstract;
 
-    function IsHandleValid(HandleToCheck: THandle): Boolean;
+    function IsHandleValid(const HandleToCheck: THandle): Boolean;
     procedure IfInsufficientPrivilegeRaiseException(
-      DesiredAccess: TCreateFileDesiredAccess);
+      const DesiredAccess: TCreateFileDesiredAccess);
 
   private
     FileHandle: THandle;
     AccessPrivilege: TCreateFileDesiredAccess;
 
     function GetDesiredAccessFromTCreateFileDesiredAccess
-      (Source: TCreateFileDesiredAccess): DWORD;
+      (const Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-      DesiredAccessInDWORD: DWORD): THandle;
-    function IsPrivilegeValid(PrivilegeToTest: TCreateFileDesiredAccess):
+      const DesiredAccessInDWORD: DWORD): THandle;
+    function IsPrivilegeValid(const PrivilegeToTest: TCreateFileDesiredAccess):
       Boolean;
   end;
 
@@ -42,7 +42,7 @@ type
 implementation
 
 function TOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess
-  (Source: TCreateFileDesiredAccess): DWORD;
+  (const Source: TCreateFileDesiredAccess): DWORD;
 const
   AccessNothing = 0;
 begin
@@ -70,21 +70,21 @@ begin
   exit(AccessPrivilege);
 end;
 
-function TOSFileWithHandle.IsHandleValid(HandleToCheck: THandle): Boolean;
+function TOSFileWithHandle.IsHandleValid(const HandleToCheck: THandle): Boolean;
 begin
   result :=
-    (HandleToCheck <> INVALID_HANDLE_VALUE) or
+    (HandleToCheck <> INVALID_HANDLE_VALUE) and
     (HandleToCheck <> 0);
 end;
 
 function TOSFileWithHandle.IsPrivilegeValid(
-  PrivilegeToTest: TCreateFileDesiredAccess): Boolean;
+  const PrivilegeToTest: TCreateFileDesiredAccess): Boolean;
 begin
   result := PrivilegeToTest >= GetMinimumPrivilege;
 end;
 
-function TOSFileWithHandle.CreateFileSystemCall(FileToGetAccess: LPCWSTR;
-  DesiredAccessInDWORD: DWORD): THandle;
+function TOSFileWithHandle.CreateFileSystemCall(
+  const FileToGetAccess: LPCWSTR; const DesiredAccessInDWORD: DWORD): THandle;
 var
   SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
 const
@@ -107,7 +107,7 @@ begin
 end;
 
 procedure TOSFileWithHandle.IfInsufficientPrivilegeRaiseException
-  (DesiredAccess: TCreateFileDesiredAccess);
+  (const DesiredAccess: TCreateFileDesiredAccess);
 begin
   if not IsPrivilegeValid(DesiredAccess) then
     raise EInsufficientPrivilege.Create
@@ -115,11 +115,11 @@ begin
 end;
 
 procedure TOSFileWithHandle.CreateHandle(FileToGetAccess: String;
-  DesiredAccess: TCreateFileDesiredAccess);
+  const DesiredAccess: TCreateFileDesiredAccess);
 var
   DesiredAccessInDWORD: DWORD;
 begin
-  if FileHandle <> 0 then
+  if IsHandleValid(FileHandle) then
     raise EInvalidOp.Create('Invalid Operation: Don''t create handle twice');
   inherited Create(FileToGetAccess);
   DesiredAccessInDWORD :=
