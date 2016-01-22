@@ -1,4 +1,4 @@
-unit VolumeLabelGetter;
+unit Getter.VolumeBitmap;
 
 interface
 

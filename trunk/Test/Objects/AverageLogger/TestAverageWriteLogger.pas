@@ -12,7 +12,7 @@ unit TestAverageWriteLogger;
 interface
 
 uses
-  TestFramework, Windows, uAverageLogger, uAverageWriteLogger,
+  TestFramework, Windows, AverageLogger, AverageLogger.Write,
   TestAverageCountLogger, Sysutils, Classes;
 
 type

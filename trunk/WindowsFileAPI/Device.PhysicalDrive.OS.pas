@@ -71,11 +71,11 @@ end;
 
 function TOSPhysicalDrive.GetPartitionList: TPartitionList;
 var
-  Getter.PhysicalDrive.PartitionList: TGetter.PhysicalDrive.PartitionList;
+  PartitionList: TPartitionListGetter;
 begin
-  Getter.PhysicalDrive.PartitionList := TGetter.PhysicalDrive.PartitionList.Create(GetPathOfFileAccessing);
-  result := Getter.PhysicalDrive.PartitionList.GetPartitionList;
-  FreeAndNil(Getter.PhysicalDrive.PartitionList);
+  PartitionList := TPartitionListGetter.Create(GetPathOfFileAccessing);
+  result := PartitionList.GetPartitionList;
+  FreeAndNil(PartitionList);
 end;
 
 procedure TOSPhysicalDrive.RequestDiskSizeInByte;

@@ -131,7 +131,6 @@
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDrive.DriveAvailability.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDrive.NCQAvailability.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDrive.PartitionList.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\PartitionExtentGetter.pas"/>
         <DCCReference Include="..\Support\Support.pas"/>
         <DCCReference Include="..\Support\Support.Liteon.pas"/>
         <DCCReference Include="..\Support\Support.MachXtreme.pas"/>
@@ -205,6 +204,7 @@
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PartitionExtent.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  OSFile, Getter.DriveList, Getter.DriveList.Fixed, PartitionExtentGetter;
+  OSFile, Getter.DriveList, Getter.DriveList.Fixed, Getter.PartitionExtent;
 
 type
   TPartitionEntry = record
@@ -14,7 +14,7 @@ type
 
   TPartitionList = TList<TPartitionEntry>;
 
-  TGetter.PhysicalDrive.PartitionList = class sealed(TOSFile)
+  TPartitionListGetter = class sealed(TOSFile)
   public
     function GetPartitionList: TPartitionList;
 
@@ -50,7 +50,7 @@ type
 
 implementation
 
-function TGetter.PhysicalDrive.PartitionList.GetFixedDrives: TDriveList;
+function TPartitionListGetter.GetFixedDrives: TDriveList;
 var
   FixedDriveListGetter: TFixedDriveListGetter;
 begin
@@ -63,7 +63,7 @@ begin
   end;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.IsThisExtentDriveOfThisDriveNumber
+function TPartitionListGetter.IsThisExtentDriveOfThisDriveNumber
   (CurrentExtent: Cardinal): Boolean;
 begin
   result :=
@@ -71,7 +71,7 @@ begin
     PhysicalDriveNumber;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.FindPhysicalDriveNumberInPartitionExtentEntry:
+function TPartitionListGetter.FindPhysicalDriveNumberInPartitionExtentEntry:
   TPhysicalDriveNumberQueryResult;
 var
   CurrentExtent: Cardinal;
@@ -88,7 +88,7 @@ begin
   end;
 end;
 
-procedure TGetter.PhysicalDrive.PartitionList.AddThisDriveToList
+procedure TPartitionListGetter.AddThisDriveToList
   (CurrentDrive: Integer; PartitionExtentPosition: Cardinal);
 var
   PartitionToAdd: TPartitionEntry;
@@ -99,7 +99,7 @@ begin
   PartitionList.Add(PartitionToAdd);
 end;
 
-function TGetter.PhysicalDrive.PartitionList.DeleteLastBackslash
+function TPartitionListGetter.DeleteLastBackslash
   (Source: String): String;
 begin
   result := Source;
@@ -107,7 +107,7 @@ begin
     result := Copy(result, 1, Length(result) - 1);
 end;
 
-function TGetter.PhysicalDrive.PartitionList.PreparePhysicalDriveNumberQuery
+function TPartitionListGetter.PreparePhysicalDriveNumberQuery
   (CurrentDrive: Integer): Boolean;
 begin
   PartitionExtentGetter := TPartitionExtentGetter.Create
@@ -117,7 +117,7 @@ begin
   result := PartitionExtentList <> nil;
 end;
 
-procedure TGetter.PhysicalDrive.PartitionList.TryIfPartitionOfThisDriveAddToList
+procedure TPartitionListGetter.TryIfPartitionOfThisDriveAddToList
   (CurrentDrive: Integer);
 var
   PhysicalDriveNumberQueryResult: TPhysicalDriveNumberQueryResult;
@@ -130,7 +130,7 @@ begin
     AddThisDriveToList(CurrentDrive, PhysicalDriveNumberQueryResult.Position);
 end;
 
-procedure TGetter.PhysicalDrive.PartitionList.IfPartitionOfThisDriveAddToList
+procedure TPartitionListGetter.IfPartitionOfThisDriveAddToList
   (CurrentDrive: Integer);
 begin
   try
@@ -141,7 +141,7 @@ begin
   end;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.CreateAndReturnThisDrivesPartitionList:
+function TPartitionListGetter.CreateAndReturnThisDrivesPartitionList:
   TPartitionList;
 var
   CurrentDrive: Integer;
@@ -152,14 +152,14 @@ begin
   result := PartitionList;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.TryToGetPartitionList: TPartitionList;
+function TPartitionListGetter.TryToGetPartitionList: TPartitionList;
 begin
   FixedDriveList := GetFixedDrives;
   PhysicalDriveNumber := StrToInt(GetPathOfFileAccessingWithoutPrefix);
   result := CreateAndReturnThisDrivesPartitionList;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.TryAndIfFailReturnNil: TPartitionList;
+function TPartitionListGetter.TryAndIfFailReturnNil: TPartitionList;
 begin
   try
     result := TryToGetPartitionList;
@@ -168,7 +168,7 @@ begin
   end;
 end;
 
-function TGetter.PhysicalDrive.PartitionList.GetPartitionList: TPartitionList;
+function TPartitionListGetter.GetPartitionList: TPartitionList;
 begin
   try
     result := TryAndIfFailReturnNil;

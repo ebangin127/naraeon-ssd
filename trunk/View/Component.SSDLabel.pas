@@ -23,6 +23,7 @@ type
     procedure SetParentAsgSSDSel;
     procedure SetPhysicalDrive(PhysicalDriveToReplicate: IPhysicalDrive);
     procedure SetProperty;
+    procedure AppendFirst(PartitionList: TPartitionList);
   public
     PhysicalDrive: IPhysicalDrive;
     constructor Create(PhysicalDriveToReplicate: IPhysicalDrive); reintroduce;
@@ -117,26 +118,27 @@ end;
 procedure TSSDLabel.AppendCurrentPartitionToCaption(
   Position: TPartitionPosition; Letter: String);
 begin
-  if Position = TPartitionPosition.First then
-    Caption := Caption + '(';
-
   Caption := Caption + Letter;
 
   if Position = TPartitionPosition.Mid then
-    Caption := Caption + ' '
+    Caption := Caption + ', '
   else
     Caption := Caption + ') ';
+end;
+
+procedure TSSDLabel.AppendFirst(PartitionList: TPartitionList);
+begin
+  if PartitionList.Count > 0 then
+    Caption := Caption + '(';
 end;
 
 procedure TSSDLabel.AppendPartitionListToCaption(PartitionList: TPartitionList);
 var
   PartitionEntryNumber: Integer;
 begin
+  AppendFirst(PartitionList);
   for PartitionEntryNumber := 0 to (PartitionList.Count - 1) do
-    if PartitionEntryNumber = 0 then
-      AppendCurrentPartitionToCaption(TPartitionPosition.First,
-        PartitionList[PartitionEntryNumber].Letter)
-    else if PartitionEntryNumber = (PartitionList.Count - 1) then
+    if PartitionEntryNumber = (PartitionList.Count - 1) then
       AppendCurrentPartitionToCaption(TPartitionPosition.Last,
         PartitionList[PartitionEntryNumber].Letter)
     else

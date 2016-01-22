@@ -1,10 +1,10 @@
-unit TThread.Trim.Helper.Device;
+unit Thread.Trim.Helper.Device;
 
 interface
 
 uses
   SysUtils, Windows,
-  OSFile, PartitionExtentGetter, CommandSet, CommandSet.Factory;
+  OSFile, Getter.PartitionExtent, CommandSet, CommandSet.Factory;
 
 type
   TPendingTrimOperation = record

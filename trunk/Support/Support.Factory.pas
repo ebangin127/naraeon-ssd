@@ -19,11 +19,11 @@ uses
 
 type
   TMetaNSTSupport = class of TNSTSupport;
-  TNSTSupport.Factory = class
+  TNSTSupportFactory = class
   public
     function GetSuitableNSTSupport(Model, Firmware: String):
       TNSTSupport;
-    class function Create: TNSTSupport.Factory;
+    class function Create: TNSTSupportFactory;
   private
     function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
     function TestNSTSupportCompatibility(
@@ -34,21 +34,21 @@ type
   end;
 
 var
-  NSTSupport.Factory: TNSTSupport.Factory;
+  NSTSupportFactory: TNSTSupportFactory;
 
 implementation
 
-{ TNSTSupport.Factory }
+{ TNSTSupportFactory }
 
-class function TNSTSupport.Factory.Create: TNSTSupport.Factory;
+class function TNSTSupportFactory.Create: TNSTSupportFactory;
 begin
-  if NSTSupport.Factory = nil then
+  if NSTSupportFactory = nil then
     result := inherited Create as self
   else
-    result := NSTSupport.Factory;
+    result := NSTSupportFactory;
 end;
 
-function TNSTSupport.Factory.GetSuitableNSTSupport(Model, Firmware: String):
+function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
   TNSTSupport;
 begin
   FModel := Model;
@@ -56,7 +56,7 @@ begin
   result := TryNSTSupportAndGetRightNSTSupport;
 end;
 
-function TNSTSupport.Factory.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
+function TNSTSupportFactory.TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
 begin
   result := nil;
   result := TestNSTSupportCompatibility(TCrucialNSTSupport, result);
@@ -79,7 +79,7 @@ begin
   result := TestNSTSupportCompatibility(TIntelNVMeSupport, result);
 end;
 
-function TNSTSupport.Factory.TestNSTSupportCompatibility(
+function TNSTSupportFactory.TestNSTSupportCompatibility(
   TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
 begin
   if LastResult <> nil then
@@ -92,7 +92,7 @@ begin
 end;
 
 initialization
-  NSTSupport.Factory := TNSTSupport.Factory.Create;
+  NSTSupportFactory := TNSTSupportFactory.Create;
 finalization
-  NSTSupport.Factory.Free;
+  NSTSupportFactory.Free;
 end.

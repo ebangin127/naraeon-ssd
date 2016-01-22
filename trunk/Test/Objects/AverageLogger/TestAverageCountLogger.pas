@@ -12,8 +12,8 @@ unit TestAverageCountLogger;
 interface
 
 uses
-  TestFramework, Windows, uAverageLogger, uAverageCountLogger,
-  Dialogs, Classes, Sysutils, uUINT64, Math;
+  TestFramework, Windows, AverageLogger, AverageLogger.Count,
+  Dialogs, Classes, Sysutils, Math;
 
 type
   TInput = record

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils,
-  OSFile, PartitionExtentGetter;
+  OSFile, Getter.PartitionExtent;
 
 type
   TPartition = class(TOSFile)

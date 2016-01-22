@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Generics.Collections, Windows,
-  uOSFile;
+   OSFile;
 
 type
   TPendingTrimOperation = record

@@ -9,9 +9,9 @@ uses
   {$IfDef UNITTEST}, uMockTrimBasicsGetterFactory,
   {$Else}Getter.TrimBasics, Getter.TrimBasics.Factory,{$EndIf}
   {$IfDef UNITTEST}uMockDeviceTrimmer,
-  {$Else}TThread.Trim.Helper.Device,{$EndIf}
+  {$Else}Thread.Trim.Helper.Device,{$EndIf}
   {$IfDef UNITTEST}uMockVolumeBitmapGetter
-  {$Else}uVolumeBitmapGetter{$EndIf};
+  {$Else}Getter.VolumeBitmap{$EndIf};
 
 type
   TPartitionTrimmer = class(TOSFile)

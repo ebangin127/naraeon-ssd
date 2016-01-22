@@ -27,7 +27,7 @@ type
     AccessPrivilege: TCreateFileDesiredAccess;
     function GetDesiredAccessFromTCreateFileDesiredAccess
       (const Source: TCreateFileDesiredAccess): DWORD;
-    function CreateFileSystemCall(FileToGetAccess: LPCWSTR;
+    function CreateFileSystemCall(const FileToGetAccess: LPCWSTR;
       const DesiredAccessInDWORD: DWORD): THandle;
     function IsPrivilegeValid(const PrivilegeToTest: TCreateFileDesiredAccess):
       Boolean;
@@ -110,7 +110,7 @@ begin
       ('InsufficientPrevilege: More privilege is required');
 end;
 
-procedure TOSFileWithHandle.CreateHandle(FileToGetAccess: String;
+procedure TOSFileWithHandle.CreateHandle(const FileToGetAccess: String;
   const DesiredAccess: TCreateFileDesiredAccess);
 var
   DesiredAccessInDWORD: DWORD;

@@ -10,7 +10,6 @@ uses
   Getter.PhysicalDrive.DriveAvailability in '..\WindowsFileAPI\Getter.PhysicalDrive.DriveAvailability.pas',
   Getter.PhysicalDrive.NCQAvailability in '..\WindowsFileAPI\Getter.PhysicalDrive.NCQAvailability.pas',
   Getter.PhysicalDrive.PartitionList in '..\WindowsFileAPI\Getter.PhysicalDrive.PartitionList.pas',
-  PartitionExtentGetter in '..\WindowsFileAPI\PartitionExtentGetter.pas',
   Support in '..\Support\Support.pas',
   Support.Liteon in '..\Support\Support.Liteon.pas',
   Support.MachXtreme in '..\Support\Support.MachXtreme.pas',
@@ -79,7 +78,8 @@ uses
   Getter.PhysicalDriveList.Auto in '..\WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas',
   Getter.PhysicalDriveList.BruteForce in '..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas',
   Getter.PhysicalDriveList in '..\WindowsFileAPI\Getter.PhysicalDriveList.pas',
-  Getter.PhysicalDriveList.WMI in '..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas';
+  Getter.PhysicalDriveList.WMI in '..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas',
+  Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

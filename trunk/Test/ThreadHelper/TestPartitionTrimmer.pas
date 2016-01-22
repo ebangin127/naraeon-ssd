@@ -13,11 +13,10 @@ interface
 
 uses
   TestFramework,
-  uMockAutoTrimBasicsGetter,
   uMockTrimBasicsGetterFactory,
   uMockVolumeBitmapGetter,
   uMockDeviceTrimmer,
-  PartitionTrimmer;
+  Thread.Trim.Helper.Partition;
 
 type
   // Test methods for class TPartitionTrimmer

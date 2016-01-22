@@ -39,7 +39,8 @@ type
       const IOBuffer: TIoControlIOBuffer);
     function SetIOBufferToGetPartitionExtent(
       const OutputBufferPointer: Pointer): TIoControlIOBuffer;
-    procedure ExtentsToTPartitionExtentList(DiskExtents: VOLUME_DISK_EXTENTS);
+    procedure ExtentsToTPartitionExtentList(
+      const DiskExtents: VOLUME_DISK_EXTENTS);
     procedure SetVolumeNameBuffer;
     function QueryDosDeviceSystemCall
       (const VolumePath: String;

@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Windows,
   OSFile, OSFile.IoControl, OSFile.Handle,
-  Partition, PartitionExtentGetter;
+  Partition, Getter.PartitionExtent;
 
 type
   TTrimBasicsToInitialize = record

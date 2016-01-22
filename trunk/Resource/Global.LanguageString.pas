@@ -1,4 +1,4 @@
-unit Global.LanguageString;
+﻿unit Global.LanguageString;
 
 interface
 

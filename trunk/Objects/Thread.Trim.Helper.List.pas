@@ -1,4 +1,4 @@
-unit TThread.Trim.Helper.List;
+unit Thread.Trim.Helper.List;
 
 interface
 

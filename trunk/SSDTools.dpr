@@ -33,7 +33,6 @@ uses
   Form.Browser in 'Form\Form.Browser.pas' {fBrowser},
   Form.Main in 'Form\Form.Main.pas' {fMain},
   Form.Message in 'Form\Form.Message.pas' {fMessage},
-  TThread.Trim.Helper.List in 'Objects\TThread.Trim.Helper.List.pas',
   Getter.TrimBasics in 'WindowsFileAPI\Getter.TrimBasics.pas',
   Getter.TrimBasics.NTFS in 'WindowsFileAPI\Getter.TrimBasics.NTFS.pas',
   Getter.TrimBasics.FAT in 'WindowsFileAPI\Getter.TrimBasics.FAT.pas',
@@ -64,13 +63,9 @@ uses
   OS.ProcessOpener in 'Objects\OS.ProcessOpener.pas',
   OS.PlugAndPlay in 'Modules\OS.PlugAndPlay.pas',
   Registry.Helper in 'Objects\Registry.Helper.pas',
-  PartitionExtentGetter in 'WindowsFileAPI\PartitionExtentGetter.pas',
-  uVolumeBitmapGetter in 'WindowsFileAPI\uVolumeBitmapGetter.pas',
   Getter.VolumeLabel in 'WindowsFileAPI\Getter.VolumeLabel.pas',
   Support.Sandforce.ADATA in 'Support\Support.Sandforce.ADATA.pas',
   Support.ADATA in 'Support\Support.ADATA.pas',
-  PartitionTrimmer in 'Objects\PartitionTrimmer.pas',
-  TThread.Trim.Helper.Device in 'Objects\TThread.Trim.Helper.Device.pas',
   Support.Factory in 'Support\Support.Factory.pas',
   OS.WindowsVersion in 'Modules\OS.WindowsVersion.pas',
   OS.SecurityDescriptor in 'Objects\OS.SecurityDescriptor.pas',
@@ -144,7 +139,12 @@ uses
   Getter.DriveList.Removable in 'WindowsFileAPI\Getter.DriveList.Removable.pas',
   Device.SlotSpeed in 'Modules\Device.SlotSpeed.pas',
   Getter.CodesignVerifier.Publisher in 'Objects\Getter.CodesignVerifier.Publisher.pas',
-  Getter.CodesignVerifier in 'Objects\Getter.CodesignVerifier.pas';
+  Getter.CodesignVerifier in 'Objects\Getter.CodesignVerifier.pas',
+  Thread.Trim.Helper.Device in 'Objects\Thread.Trim.Helper.Device.pas',
+  Thread.Trim.Helper.List in 'Objects\Thread.Trim.Helper.List.pas',
+  Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
+  Getter.PartitionExtent in 'WindowsFileAPI\Getter.PartitionExtent.pas',
+  Getter.VolumeBitmap in 'WindowsFileAPI\Getter.VolumeBitmap.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SSDTools.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -147,6 +147,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="Resource\Global.LanguageString.pas"/>
+        <DCCReference Include="Resource\Global.Constant.pas"/>
         <DCCReference Include="Modules\AsciiCheck.pas"/>
         <DCCReference Include="Support\Support.pas"/>
         <DCCReference Include="Modules\Version.pas"/>
@@ -159,7 +160,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\PrerequisiteChecker.pas"/>
         <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.Bus.pas"/>
         <DCCReference Include="Objects\Device.SMART.List.pas"/>
-        <DCCReference Include="Resource\Global.Constant.pas"/>
         <DCCReference Include="Objects\Partition.pas"/>
         <DCCReference Include="Objects\Registry.Helper.Internal.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.DiskGeometry.pas"/>
@@ -185,7 +185,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fMessage</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Objects\TThread.Trim.Helper.List.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.NTFS.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.TrimBasics.FAT.pas"/>
@@ -216,13 +215,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="Modules\OS.PlugAndPlay.pas"/>
         <DCCReference Include="Objects\Registry.Helper.pas"/>
-        <DCCReference Include="WindowsFileAPI\PartitionExtentGetter.pas"/>
-        <DCCReference Include="WindowsFileAPI\uVolumeBitmapGetter.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.VolumeLabel.pas"/>
         <DCCReference Include="Support\Support.Sandforce.ADATA.pas"/>
         <DCCReference Include="Support\Support.ADATA.pas"/>
-        <DCCReference Include="Objects\PartitionTrimmer.pas"/>
-        <DCCReference Include="Objects\TThread.Trim.Helper.Device.pas"/>
         <DCCReference Include="Support\Support.Factory.pas"/>
         <DCCReference Include="Modules\OS.WindowsVersion.pas"/>
         <DCCReference Include="Objects\OS.SecurityDescriptor.pas"/>
@@ -297,6 +292,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\Device.SlotSpeed.pas"/>
         <DCCReference Include="Objects\Getter.CodesignVerifier.Publisher.pas"/>
         <DCCReference Include="Objects\Getter.CodesignVerifier.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.Device.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.List.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PartitionExtent.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.VolumeBitmap.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -709,8 +709,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
-</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -718,8 +717,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;
-</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /t http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

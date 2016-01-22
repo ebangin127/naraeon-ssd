@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Windows,
-  uOSFile;
+  OSFile;
 
 type
   TTrimProgress = record

@@ -36,10 +36,10 @@ end;
 
 class function TProcessOpener.Create: TProcessOpener;
 begin
-  if OS.ProcessOpener = nil then
+  if ProcessOpener = nil then
     result := inherited Create as self
   else
-    result := OS.ProcessOpener;
+    result := ProcessOpener;
 end;
 
 procedure TProcessOpener.CreatePipeWithHandles(
@@ -100,7 +100,7 @@ begin
 end;
 
 initialization
-  OS.ProcessOpener := TProcessOpener.Create;
+  ProcessOpener := TProcessOpener.Create;
 finalization
-  OS.ProcessOpener.Free;
+  ProcessOpener.Free;
 end.

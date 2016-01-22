@@ -18,12 +18,10 @@ type
     function GetNCQAvailability: TNCQAvailability;
     function GetPathOfFileAccessing: String;
     function GetPathOfFileAccessingWithoutPrefix: String;
-
     property IdentifyDeviceResult: TIdentifyDeviceResult
       read GetIdentifyDeviceResult;
     property SMARTInterpreted: TSMARTInterpreted
       read GetSMARTInterpretedOrRequestAndReturn;
-
     property SupportStatus: TSupportStatus
       read GetSupportStatusOrRequestAndReturn;
     property DiskSizeInByte: TLargeInteger
@@ -144,7 +142,7 @@ procedure TPhysicalDrive.TryToCreateAndSetNSTSupport;
 begin
   try
     NSTSupport :=
-      NSTSupport.Factory.GetSuitableNSTSupport(
+      NSTSupportFactory.GetSuitableNSTSupport(
         IdentifyDeviceResult.Model,
         IdentifyDeviceResult.Firmware);
   except

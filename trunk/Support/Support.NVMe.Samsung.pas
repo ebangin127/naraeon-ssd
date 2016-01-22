@@ -13,8 +13,12 @@ type
     function GetSemiSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSamsung: Boolean;
-    function IsSamsungOtherSSD: Boolean;
+    function IsModelContainsSSD: Boolean;
     function IsSamsungNVMe: Boolean;
+    function IsRetailSamsungNVMeProduct: Boolean;
+    function IsOEMSamsungNVMeProduct: Boolean;
+    function IsModelContainsSamsung: Boolean;
+    function IsSM951: Boolean;
   public
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -25,23 +29,47 @@ implementation
 
 { TSamsungNVMeSupport }
 
-function TSamsungNVMeSupport.IsSamsungOtherSSD: Boolean;
+function TSamsungNVMeSupport.IsModelContainsSSD: Boolean;
 begin
   result :=
     Pos('SSD', UpperCase(Model)) > 0;
 end;
 
+function TSamsungNVMeSupport.IsModelContainsSamsung: Boolean;
+begin
+  result :=
+    (Pos('SAMSUNG', UpperCase(Model)) > 0);
+end;
+
 function TSamsungNVMeSupport.IsSamsungNVMe: Boolean;
 begin
   result :=
-    Pos('BX', UpperCase(Firmware)) = 5;
+    (Pos('BX', UpperCase(Firmware)) = 5);
+end;
+
+function TSamsungNVMeSupport.IsRetailSamsungNVMeProduct: Boolean;
+begin
+  result :=
+    IsModelContainsSamsung and
+    IsModelContainsSSD and IsSamsungNVMe;
+end;
+
+function TSamsungNVMeSupport.IsSM951: Boolean;
+begin
+  result :=
+    (Pos('SAMSUNG MZVLV', UpperCase(Model)) = 1);
+end;
+
+function TSamsungNVMeSupport.IsOEMSamsungNVMeProduct: Boolean;
+begin
+  result :=
+    IsModelContainsSamsung and IsSM951;
 end;
 
 function TSamsungNVMeSupport.IsProductOfSamsung: Boolean;
 begin
   result :=
-    (Pos('SAMSUNG', UpperCase(Model)) > 0) and
-    IsSamsungOtherSSD and IsSamsungNVMe;
+    IsRetailSamsungNVMeProduct or IsOEMSamsungNVMeProduct;
 end;
 
 function TSamsungNVMeSupport.GetSemiSupport: TSupportStatus;

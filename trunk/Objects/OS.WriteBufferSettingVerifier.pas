@@ -76,7 +76,7 @@ begin
   if not SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware) then
     exit(false);
 
-  NSTSupport := NSTSupport.Factory.GetSuitableNSTSupport(Model, Firmware);
+  NSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
   result :=
     (NSTSupport <> nil) and
     (NSTSupport.GetSupportStatus.Supported) and
