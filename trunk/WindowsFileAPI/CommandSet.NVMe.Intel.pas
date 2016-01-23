@@ -6,7 +6,7 @@ uses
   Windows, SysUtils,
   OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List,
   CommandSet.NVMe, CommandSet.NVMe.Intel.PortPart,
-  Getter.SCSIAddress;
+  Getter.SCSIAddress, Device.SlotSpeed;
 
 type
   TIntelNVMeCommandSet = class sealed(TNVMeCommandSet)
@@ -30,6 +30,7 @@ const
 function TIntelNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 var
   ReadCapacityResult: TIdentifyDeviceResult;
+  SlotSpeed: TSlotMaxCurrSpeed;
 begin
   result := GetPortIdentifyDevice;
   if result.Model = '' then
@@ -40,7 +41,8 @@ begin
   result.LBASize := ReadCapacityResult.LBASize;
   result.IsDataSetManagementSupported := IsDataSetManagementSupported;
   try
-    result.SlotSpeed := GetSlotSpeed.Current;
+    SlotSpeed := GetSlotSpeed;
+    result.SlotSpeed := SlotSpeed.Current;
   except
     FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
   end;
