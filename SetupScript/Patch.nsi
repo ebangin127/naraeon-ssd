@@ -47,6 +47,7 @@ SetCompressor /solid lzma
 !insertmacro MUI_LANGUAGE "English"
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+!finalize 'signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode "%1"'
 
 ; MUI end ------
 
