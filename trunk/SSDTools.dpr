@@ -144,7 +144,8 @@ uses
   Thread.Trim.Helper.List in 'Objects\Thread.Trim.Helper.List.pas',
   Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
   Getter.PartitionExtent in 'WindowsFileAPI\Getter.PartitionExtent.pas',
-  Getter.VolumeBitmap in 'WindowsFileAPI\Getter.VolumeBitmap.pas';
+  Getter.VolumeBitmap in 'WindowsFileAPI\Getter.VolumeBitmap.pas',
+  Getter.DeviceDriver in 'WindowsFileAPI\Getter.DeviceDriver.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

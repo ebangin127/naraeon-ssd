@@ -14,25 +14,21 @@ type
     procedure SetRufus
       (RufusPath, DriveName, ISOPath: String);
     class function Create: TRufus;
-
   private
     function FindMainWindow: THandle;
-
     function FindFTCombo(MWHandle: THandle): THandle;
     function GetFTComboText(EDTHandle: THandle): String;
-
     function FindDriveCombo(MWHandle: THandle): THandle;
     function EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
-
     function FindStartButton(MWHandle: THandle): THandle;
     function ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
-
     function FindSubWindow(MWHandle: THandle): THandle;
     function FindOKButton(SWHandle: THandle): THandle;
     function ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
-
     function FindCloseButton(MWHandle: THandle): THandle;
     function ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
+    procedure SetRufusToHandle(MWHandle: THandle; DriveName: String);
+    function IsValidHandle(const Handle: THandle): Boolean;
   end;
 
 var
@@ -44,6 +40,7 @@ implementation
 
 const
   RufusWinCap = 'Rufus 2.5.799';
+  RufusWinCap2 = 'Rufus 2.5.799 ';
   MAX_LENGTH = 1024;
   ComboDefaultText = 'FreeDOS';
   ComboISOText = 'ISO Image';
@@ -73,13 +70,19 @@ begin
   DeleteFile(FromISO);
 end;
 
+function TRufus.IsValidHandle(const Handle: THandle): Boolean;
+begin
+  result := (Handle <> INVALID_HANDLE_VALUE) and (Handle <> 0);
+end;
+
 function TRufus.FindMainWindow: THandle;
 begin
   repeat
     Sleep(100);
-    result := FindWindow(Nil, RufusWinCap);
-  until (result <> INVALID_HANDLE_VALUE) and
-        (result <> 0);
+    result := FindWindow(nil, RufusWinCap);
+    if not IsValidHandle(result) then
+      result := FindWindow(nil, RufusWinCap2);
+  until IsValidHandle(result);
 end;
 
 function TRufus.FindFTCombo(MWHandle: THandle): THandle;
@@ -242,15 +245,37 @@ begin
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
+procedure TRufus.SetRufusToHandle(MWHandle: THandle; DriveName: String);
+var
+  FileTypeComboHandle: THandle;
+  DriveComboHandle: THandle;
+  StartButtonHandle: THandle;
+  SWHandle: THandle;
+  OKButtonHandle: THandle;
+  CloseButtonHandle: THandle;
+begin
+  FileTypeComboHandle := FindFTCombo(MWHandle);
+  repeat
+    Sleep(10);
+  until GetFTComboText(FileTypeComboHandle) = ComboISOText;
+  DriveComboHandle := FindDriveCombo(MWHandle);
+  EditDriveCombo(DriveComboHandle, DriveName);
+  StartButtonHandle := FindStartButton(MWHandle);
+  ClickStartButton(MWHandle, StartButtonHandle);
+  SWHandle := FindSubWindow(MWHandle);
+  OKButtonHandle := FindOKButton(SWHandle);
+  ClickOKButton(SWHandle, OKButtonHandle);
+  repeat
+    Sleep(100);
+  until IsWindowEnabled(DriveComboHandle);
+  CloseButtonHandle := FindCloseButton(MWHandle);
+  ClickCloseButton(MWHandle, CloseButtonHandle);
+end;
+
 procedure TRufus.SetRufus
   (RufusPath, DriveName, ISOPath: String);
 var
-  MWHandle, SWHandle: THandle;
-  DriveComboHandle,
-  FileTypeComboHandle: THandle;
-  StartButtonHandle,
-  CloseButtonHandle,
-  OKButtonHandle: THandle;
+  MWHandle: THandle;
 begin
   if not StringHelper.IsAscii(ISOPath) then
     raise EInvalidArgument.Create(
@@ -262,27 +287,7 @@ begin
     nil, SW_NORMAL);
 
   MWHandle := FindMainWindow;
-  FileTypeComboHandle := FindFTCombo(MWHandle);
-  repeat
-    Sleep(10);
-  until GetFTComboText(FileTypeComboHandle) = ComboISOText;
-
-  DriveComboHandle := FindDriveCombo(MWHandle);
-  EditDriveCombo(DriveComboHandle, DriveName);
-
-  StartButtonHandle := FindStartButton(MWHandle);
-  ClickStartButton(MWHandle, StartButtonHandle);
-
-  SWHandle := FindSubWindow(MWHandle);
-  OKButtonHandle := FindOKButton(SWHandle);
-  ClickOKButton(SWHandle, OKButtonHandle);
-
-  repeat
-    Sleep(100);
-  until IsWindowEnabled(DriveComboHandle);
-
-  CloseButtonHandle := FindCloseButton(MWHandle);
-  ClickCloseButton(MWHandle, CloseButtonHandle);
+  SetRufusToHandle(MWHandle, DriveName);
 end;
 
 initialization

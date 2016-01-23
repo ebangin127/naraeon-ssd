@@ -81,17 +81,16 @@ var
   ProcessInformation: _PROCESS_INFORMATION;
 begin
   SecurityDescriptorManipulator := TSecurityDescriptorManipulator.Create;
-
   CreatePipeWithHandles(ReadHandle, WriteHandle);
   StartupSettings := StartupSettingsTemplate;
   StartupSettings.hStdOutput := WriteHandle;
   StartupSettings.hStdError := WriteHandle;
-
   if not CreateProcess(nil,
     PWideChar(WideString(Command)), nil, nil, True, 0, nil,
     PWideChar(WideString(Path)), StartupSettings, ProcessInformation) then
       raise EOSError.Create(
-        'CreateProcess Error (' + UIntToStr(GetLastError) + ')');
+        'CreateProcess Error(Command: ' + Command + ' Path: ' + Path +
+        ' ErrorCode: ' + UIntToStr(GetLastError) + ')');
   CloseHandle(WriteHandle);
   result := ReadFromHandle(ReadHandle);
   CloseHandle(ReadHandle);

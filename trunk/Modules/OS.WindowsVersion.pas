@@ -8,8 +8,13 @@ uses
 
 function Is64Bit: Boolean;
 function IsBelowWindows8: Boolean;
+function GetWindowsVersionString: String;
+function GetWindowsArchitectureString: String;
 
 implementation
+
+uses
+  Registry.Helper, Registry.Helper.Internal;
 
 function Is64Bit: Boolean;
 type
@@ -40,5 +45,40 @@ begin
   result :=
     (VersionHelper.MajorVersion < 6) or
     ((VersionHelper.MajorVersion = 6) and (VersionHelper.MinorVersion = 1));
+end;
+
+function GetWindowsVersionString: String;
+const
+  Path: TRegistryPath = (
+    Root: TRegistryRootKey.LocalMachine;
+    PathUnderHKEY: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\';
+    ValueName: 'ProductName');
+  PathToBuildLab: TRegistryPath = (
+    Root: TRegistryRootKey.LocalMachine;
+    PathUnderHKEY: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\';
+    ValueName: 'BuildLab');
+  PathToBuildLabEx: TRegistryPath = (
+    Root: TRegistryRootKey.LocalMachine;
+    PathUnderHKEY: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\';
+    ValueName: 'BuildLabEx');
+var
+  BuildLab: String;
+begin
+  result := NSTRegistry.GetRegStr(Path);
+  BuildLab := NSTRegistry.GetRegStr(PathToBuildLabEx);
+  if BuildLab = '' then
+    BuildLab := NSTRegistry.GetRegStr(PathToBuildLab);
+  result := result + ' ' + BuildLab;
+end;
+
+function GetWindowsArchitectureString: String;
+const
+  Path: TRegistryPath = (
+    Root: TRegistryRootKey.LocalMachine;
+    PathUnderHKEY: 'SYSTEM\CurrentControlSet\Control\Session Manager' +
+      '\Environment';
+    ValueName: 'PROCESSOR_ARCHITECTURE');
+begin
+  result := NSTRegistry.GetRegStr(Path);
 end;
 end.

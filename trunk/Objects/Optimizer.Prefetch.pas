@@ -64,8 +64,8 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 2);
-    ProcOutput := string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDir +
-      '\System32',
+    ProcOutput := string(ProcessOpener.OpenProcWithOutput(
+      EnvironmentVariable.WinDir + '\System32',
       'net start SysMain'));
   end
   else if Win32MajorVersion = 5 then
@@ -91,8 +91,8 @@ begin
     NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SYSTEM\CurrentControlSet\services\SysMain',
       'Start'), 4);
-    ProcOutput := string(ProcessOpener.OpenProcWithOutput(EnvironmentVariable.WinDir +
-      '\System32',
+    ProcOutput := string(ProcessOpener.OpenProcWithOutput(
+      EnvironmentVariable.WinDir + '\System32',
       'net stop SysMain'));
   end
   else if Win32MajorVersion = 5 then
