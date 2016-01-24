@@ -31502,7 +31502,7 @@ Line numbers for OS.SetupAPI(OS.SetupAPI.pas) segment .text
 
 Line numbers for Getter.SlotSpeedByDeviceID(Getter.SlotSpeedByDeviceID.pas) segment .text
 
-   122 0001:00000000
+   120 0001:00000000
 
 Line numbers for Getter.SlotSpeed(Getter.SlotSpeed.pas) segment .text
 

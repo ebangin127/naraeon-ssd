@@ -19,7 +19,6 @@ type
   private
     FClassDeviceInformations: THDEVINFO;
     DeviceInfoData: TSP_DEVINFO_DATA;
-    PDeviceInfoData: PSP_DevInfo_Data;
     ResultCache: TOSSlotMaxCurrSpeed;
     FDeviceID: String;
     function DeviceIDFound: Boolean;
@@ -44,7 +43,6 @@ begin
   SCSIAdaptorGUID := StringToGUID(SCSIAdapterGUIDInString);
   FClassDeviceInformations := SetupDiGetClassDevsW(@SCSIAdaptorGUID, nil, 0,
     DIGCF_PRESENT);
-  PDeviceInfoData := @DeviceInfoData;
 end;
 
 function TIDtoSlotSpeedGetter.GetSlotSpeed(const DeviceID: String):
@@ -89,7 +87,7 @@ end;
 
 function TIDtoSlotSpeedGetter.GetMaximumSpeed: TOSSlotSpeed;
 var
-  ResultBuffer: array[0..1023] of char;
+  ResultBuffer: array[0..1023] of Char;
   RequiredSize: DWORD;
   PropertyType: DEVPROPTYPE;
 begin
@@ -105,7 +103,7 @@ end;
 
 function TIDtoSlotSpeedGetter.GetCurrentSpeed: TOSSlotSpeed;
 var
-  ResultBuffer: array[0..1023] of char;
+  ResultBuffer: array[0..1023] of Char;
   RequiredSize: DWORD;
   PropertyType: DEVPROPTYPE;
 begin

@@ -47,14 +47,14 @@ procedure THibernationOptimizer.Apply;
 begin
   ProcessOpener.OpenProcWithOutput(
     EnvironmentVariable.WinDrive,
-    EnvironmentVariable.WinDir + 'System32\cmd.exe /C powercfg -h off');
+    EnvironmentVariable.WinDir + '\System32\cmd.exe /C powercfg -h off');
 end;
 
 procedure THibernationOptimizer.Undo;
 begin
   ProcessOpener.OpenProcWithOutput(
     EnvironmentVariable.WinDrive,
-    EnvironmentVariable.WinDir + 'System32\cmd.exe /C powercfg -h on');
+    EnvironmentVariable.WinDir + '\System32\cmd.exe /C powercfg -h on');
 end;
 
 end.
