@@ -66,6 +66,7 @@ type
     procedure TestADATASP920Support;
     procedure TestIntel750Support;
     procedure TestSamsung950ProSupport;
+    procedure TestSamsungSM951Support;
   end;
 
 implementation
@@ -234,6 +235,11 @@ end;
 procedure TestTNSTSupportFactory.TestSamsung950ProSupport;
 begin
   TestSupportStatusWithModelFirmware('SAMSUNG SSD 950 PRO 256GB', '1B0QBXX7');
+end;
+
+procedure TestTNSTSupportFactory.TestSamsungSM951Support;
+begin
+  TestSupportStatusWithModelFirmware('SAMSUNG MZVLV128HCGR-00000', 'BXV7000Q');
 end;
 
 procedure TestTNSTSupportFactory.TestSandiskX110Support;
