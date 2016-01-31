@@ -65,6 +65,7 @@ const
   IDOfEraseError = 12;
   IDOfReplacedSector = 5;
   IDOfUsedHour = 10;
+  IDOfCriticalError = 0;
   ReplacedSectorThreshold = 50;
   EraseErrorThreshold = 10;
 begin
@@ -80,6 +81,8 @@ begin
   result.ReplacedSectors := 0;
   result.SMARTAlert.ReplacedSector :=
     result.ReplacedSectors >= ReplacedSectorThreshold;
+  result.SMARTAlert.CriticalError :=
+    InterpretingSMARTValueList.GetRAWByID(IDOfCriticalError) > 0;
 end;
 
 end.

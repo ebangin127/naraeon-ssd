@@ -57,7 +57,15 @@ uses
   uMockDeviceTrimmer in 'ThreadHelper\uMockDeviceTrimmer.pas',
   uMockTrimBasicsGetterFactory in 'ThreadHelper\uMockTrimBasicsGetterFactory.pas',
   uMockVolumeBitmapGetter in 'ThreadHelper\uMockVolumeBitmapGetter.pas',
-  Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas';
+  Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
+  BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas',
+  TestBufferInterpreter.SCSI in 'TestBufferInterpreter.SCSI.pas',
+  TestBufferInterpreter.NVMe in 'TestBufferInterpreter.NVMe.pas',
+  BufferInterpreter.NVMe in '..\WindowsFileAPI\BufferInterpreter.NVMe.pas',
+  TestBufferInterpreter.NVMe.Intel in 'TestBufferInterpreter.NVMe.Intel.pas',
+  BufferInterpreter.NVMe.Intel in '..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas',
+  TestBufferInterpreter.ATA in 'TestBufferInterpreter.ATA.pas',
+  BufferInterpreter.ATA in '..\WindowsFileAPI\BufferInterpreter.ATA.pas';
 
 {$R *.RES}
 

@@ -17,7 +17,6 @@ type
       (Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
     function LargeBufferToSMARTValueList
       (Buffer: TLargeBuffer): TSMARTValueList; override;
-
   private
     SMARTValueList: TSMARTValueList;
     BufferInterpreting: TSmallBuffer;

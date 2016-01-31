@@ -145,7 +145,10 @@ uses
   Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
   Getter.PartitionExtent in 'WindowsFileAPI\Getter.PartitionExtent.pas',
   Getter.VolumeBitmap in 'WindowsFileAPI\Getter.VolumeBitmap.pas',
-  Getter.DeviceDriver in 'WindowsFileAPI\Getter.DeviceDriver.pas';
+  Getter.DeviceDriver in 'WindowsFileAPI\Getter.DeviceDriver.pas',
+  Initializer.CriticalWarning in 'View\Initializer.CriticalWarning.pas',
+  CommandSet.NVMe.WithoutDriver in 'WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas',
+  BufferInterpreter.SCSI in 'WindowsFileAPI\BufferInterpreter.SCSI.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

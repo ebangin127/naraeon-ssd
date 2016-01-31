@@ -13,12 +13,12 @@ uses
   OS.ProcessOpener, OS.DeleteDirectory, Getter.WebPath, OS.PlugAndPlay,
   Component.ButtonGroup, Initializer, Extern.Rufus, OS.EnvironmentVariable,
   Thread.Update, Thread.Trim, TrimList, Initializer.Locale,
-  Device.PhysicalDrive, Getter.PhysicalDrive.PartitionList, Device.PhysicalDrive.List,
-  Getter.LatestFirmware, Global.Constant, Getter.CodesignVerifier,
-  Component.SSDLabel.List, Component.SSDLabel, Initializer.PhysicalDrive,
-  Initializer.SSDLabelListRefresh, Downloader.Firmware,
-  Getter.DriveList.Removable, Getter.DriveList, Getter.VolumeLabel,
-  OS.VersionHelper, PrerequisiteChecker, BufferInterpreter;
+  Device.PhysicalDrive, Getter.PhysicalDrive.PartitionList,
+  Device.PhysicalDrive.List, Getter.LatestFirmware, Global.Constant,
+  Getter.CodesignVerifier, Component.SSDLabel.List, Component.SSDLabel,
+  Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
+  Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
+  Getter.VolumeLabel, OS.VersionHelper, PrerequisiteChecker, BufferInterpreter;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;

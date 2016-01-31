@@ -6,17 +6,17 @@ uses
   Windows, SysUtils, Dialogs,
   CommandSet, BufferInterpreter,
   CommandSet.ATA, CommandSet.ATA.Legacy, CommandSet.SAT,
-  CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung;
+  CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung, CommandSet.NVMe.WithoutDriver;
 
 type
   TMetaCommandSet = class of TCommandSet;
   ENoCommandSetException = class(EArgumentNilException);
+  ENoNVMeDriverException = class(EArgumentOutOfRangeException);
   TCommandSetFactory = class
   public
     function GetSuitableCommandSet(FileToGetAccess: String):
       TCommandSet;
     class function Create: TCommandSetFactory;
-
   private
     function TryCommandSetsAndGetRightSet: TCommandSet;
     function TestCommandSetCompatibility(
@@ -52,11 +52,21 @@ end;
 function TCommandSetFactory.TryCommandSetsAndGetRightSet: TCommandSet;
 begin
   result := nil;
-  result := TestCommandSetCompatibility(TSamsungNVMeCommandSet, result);
   result := TestCommandSetCompatibility(TIntelNVMeCommandSet, result);
+  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
   result := TestCommandSetCompatibility(TATACommandSet, result);
   result := TestCommandSetCompatibility(TLegacyATACommandSet, result);
   result := TestCommandSetCompatibility(TSATCommandSet, result);
+  if result = nil then
+  begin
+    result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
+    if result <> nil then
+    begin
+      FreeAndNil(result);
+      raise ENoNVMeDriverException.Create('No NVMe Driver with: ' +
+        FileToGetAccess);
+    end;
+  end;
 end;
 
 function TCommandSetFactory.TestCommandSetCompatibility

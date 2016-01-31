@@ -138,6 +138,14 @@
         <DCCReference Include="ThreadHelper\uMockTrimBasicsGetterFactory.pas"/>
         <DCCReference Include="ThreadHelper\uMockVolumeBitmapGetter.pas"/>
         <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
+        <DCCReference Include="TestBufferInterpreter.SCSI.pas"/>
+        <DCCReference Include="TestBufferInterpreter.NVMe.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.pas"/>
+        <DCCReference Include="TestBufferInterpreter.NVMe.Intel.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas"/>
+        <DCCReference Include="TestBufferInterpreter.ATA.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.ATA.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

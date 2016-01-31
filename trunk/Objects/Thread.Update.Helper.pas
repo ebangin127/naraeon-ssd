@@ -56,11 +56,14 @@ var
   LatestSSDToolGetResult: TStringList;
 begin
   LatestSSDToolGetResult := HTTPWeb.GetToStringList(AddrUpdChk[CurrLang]);
-  if LatestSSDToolGetResult.Count = 0 then
-    result.IsUpdateNeeded := false
-  else
-    result := GetUpdateCheckResultByGottenPage(LatestSSDToolGetResult);
-  FreeAndNil(LatestSSDToolGetResult);
+  try
+    if LatestSSDToolGetResult.Count = 0 then
+      result.IsUpdateNeeded := false
+    else
+      result := GetUpdateCheckResultByGottenPage(LatestSSDToolGetResult);
+  finally
+    FreeAndNil(LatestSSDToolGetResult);
+  end;
 end;
 
 function TUpdater.GetUpdateNoticeByGottenPage(GottenPage: TStringStream):

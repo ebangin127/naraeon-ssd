@@ -23,8 +23,12 @@ implementation
 { THTTPWeb }
 
 constructor THTTPSWeb.Create;
+const
+  Timeout = 1500;
 begin
   SSLIoHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  SSLIoHandler.ConnectTimeout := Timeout;
+  SSLIoHandler.ReadTimeout := Timeout;
 end;
 
 destructor THTTPSWeb.Destroy;

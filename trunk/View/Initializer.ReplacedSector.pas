@@ -4,8 +4,9 @@ interface
 
 uses
   SysUtils,
-  OS.EnvironmentVariable, Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange,
-  AverageLogger.Count, AverageLogger, Support, BufferInterpreter;
+  OS.EnvironmentVariable, Global.LanguageString, Device.PhysicalDrive,
+  Getter.PhysicalDrive.ListChange, AverageLogger.Count, AverageLogger,
+  Support;
 
 type
   TMainformReplacedSectorApplier = class
@@ -24,8 +25,6 @@ type
     procedure SetAnalyticsLabelAsLifeAnalysis;
     procedure ApplyUsageByLog;
     procedure ApplyReplacedSector;
-    procedure ShowUnsupportedByNVMe;
-    function IsNotNVMe: Boolean;
     procedure FillSectorLabel;
     procedure RefreshAnalyticsSection;
   public
@@ -132,10 +131,7 @@ end;
 
 procedure TMainformReplacedSectorApplier.FillSectorLabel;
 begin
-  if IsNotNVMe then
-    ApplyReplacedSector
-  else
-    ShowUnsupportedByNVMe;
+  ApplyReplacedSector;
 end;
 
 procedure TMainformReplacedSectorApplier.ApplyReplacedSector;
@@ -143,18 +139,6 @@ begin
   SetReplacedSectors;
   CreateReplacedSectorLog;
   FreeReplacedSectorLog;
-end;
-
-procedure TMainformReplacedSectorApplier.ShowUnsupportedByNVMe;
-begin
-  fMain.lSectors.Caption :=
-    CapRepSect[CurrLang] + CapUnsupNVMe[CurrLang];
-end;
-
-function TMainformReplacedSectorApplier.IsNotNVMe: Boolean;
-begin
-  result := fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface
-    <> TStorageInterface.NVMe;
 end;
 
 end.

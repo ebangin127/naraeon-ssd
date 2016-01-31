@@ -33,6 +33,7 @@ begin
         TPhysicalDrive.BuildFileAddressByNumber(CurrentDrive)));
   except
     on E: ENoCommandSetException do;
+    on E: ENoNVMeDriverException do;
     on OSError: EOSError do
       if OSError.ErrorCode <> 2 then raise;
     else raise;

@@ -22,6 +22,7 @@ type
     UnsafeShutdowns,
     MediaErrors,
     NumberOfErrorInformationLogEntries);
+
   TNVMeBufferInterpreter = class sealed(TBufferInterpreter)
   public
     function BufferToIdentifyDeviceResult

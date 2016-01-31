@@ -15,7 +15,7 @@ type
   SP_DEVINFO_DATA = packed record
     cbSize: DWORD;
     ClassGuid: TGUID;
-    DevInst: DWORD;
+    DevInst: NativeInt;
     Reserved: LongWord;
   end;
   TSP_DevInfo_Data = SP_DEVINFO_DATA;

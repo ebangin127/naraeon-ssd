@@ -39,6 +39,7 @@ type
   TSMARTAlert = record
     ReplacedSector: Boolean;
     ReadEraseError: Boolean;
+    CriticalError: Boolean;
   end;
 
   TSMARTInterpreted = record

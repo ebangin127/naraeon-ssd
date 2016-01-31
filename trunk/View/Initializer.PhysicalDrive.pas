@@ -6,8 +6,9 @@ uses
   SysUtils, Graphics,
   Global.LanguageString,
   Initializer.Mainpart, Initializer.PartitionAlign,
-  Initializer.ReplacedSector, Initializer.SMART,
-  Initializer.TotalWrite, Support, OS.WindowsVersion;
+  Initializer.ReplacedSector, Initializer.SMART, BufferInterpreter,
+  Initializer.TotalWrite, Initializer.CriticalWarning, Support,
+  OS.WindowsVersion;
 
 type
   TMainformAlert = record
@@ -31,6 +32,10 @@ type
     procedure SetAlertLabelBadReadWriteError;
     procedure SetAlertLabelBadReplacedSector;
     procedure SetSMARTAlert;
+    function IsNotNVMe: Boolean;
+    procedure ApplyCriticalWarning;
+    function IsNVMeCriticalWarning: Boolean;
+    procedure SetAlertLabelBadCriticalWarning;
   public
     procedure ApplyMainformPhysicalDrive(IsSerialOpened: Boolean);
   end;
@@ -65,6 +70,15 @@ begin
   ReplacedSectorApplier := TMainformReplacedSectorApplier.Create;
   ReplacedSectorApplier.ApplyMainformReplacedSector;
   FreeAndNil(ReplacedSectorApplier);
+end;
+
+procedure TMainformPhysicalDriveApplier.ApplyCriticalWarning;
+var
+  CriticalWarningApplier: TMainformCriticalWarningApplier;
+begin
+  CriticalWarningApplier := TMainformCriticalWarningApplier.Create;
+  CriticalWarningApplier.ApplyMainformCriticalWarning;
+  FreeAndNil(CriticalWarningApplier);
 end;
 
 procedure TMainformPhysicalDriveApplier.ApplySMARTAndSetSMARTAlert;
@@ -103,8 +117,16 @@ procedure TMainformPhysicalDriveApplier.SetAlertLabelBadReadWriteError;
 begin
   fMain.lPError.Font.Color := clRed;
   fMain.lNotsafe.Font.Color := clRed;
-  fMain.lNotsafe.Caption := CapNotSafeEraseErrors[CurrLang] +
-    CapNotSafeRepSect[CurrLang];
+  fMain.lNotsafe.Caption := CapStatus[CurrLang] +
+    CapNotSafeCritical[CurrLang];
+end;
+
+procedure TMainformPhysicalDriveApplier.SetAlertLabelBadCriticalWarning;
+begin
+  fMain.lSectors.Font.Color := clRed;
+  fMain.lNotsafe.Font.Color := clRed;
+  fMain.lNotsafe.Caption := CapStatus[CurrLang] +
+    CapNotSafeCritical[CurrLang];
 end;
 
 procedure TMainformPhysicalDriveApplier.SetSMARTAlert;
@@ -113,23 +135,33 @@ begin
     fMain.PhysicalDrive.SMARTInterpreted.SMARTAlert;
 end;
 
+function TMainformPhysicalDriveApplier.IsNVMeCriticalWarning: Boolean;
+begin
+  result :=
+    (fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface =
+      TStorageInterface.NVMe) and
+    (MainformAlert.SMARTAlert.CriticalError);
+end;
+
 procedure TMainformPhysicalDriveApplier.ApplyAlert;
 begin
   if MainformAlert.IsMisalignedPartitionExists then
     SetAlertLabelBadPartition;
-    
+
   if MainformAlert.SMARTAlert.ReplacedSector then
     SetAlertLabelBadReplacedSector;
-  
+
   if MainformAlert.SMARTAlert.ReadEraseError then
     SetAlertLabelBadReadWriteError;
+
+  if IsNVMeCriticalWarning then
+    SetAlertLabelBadCriticalWarning;
 end;
 
 procedure TMainformPhysicalDriveApplier.ApplyDataSetManagementSetting;
 begin
   fMain.lTrim.Visible :=
-    (fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported) and
-    (IsBelowWindows8);
+    (fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported);
   fMain.iTrim.Visible := fMain.lTrim.Visible;
 end;
 
@@ -147,6 +179,12 @@ begin
   fMain.lNotsafe.Caption := CapStatus[CurrLang] + CapSafe[CurrLang];
 end;
 
+function TMainformPhysicalDriveApplier.IsNotNVMe: Boolean;
+begin
+  result := fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface
+    <> TStorageInterface.NVMe;
+end;
+
 procedure TMainformPhysicalDriveApplier.ApplyMainformPhysicalDrive(
   IsSerialOpened: Boolean);
 begin
@@ -155,7 +193,10 @@ begin
   RevertLastChangesOfMainform;
   ApplyMainpart;
   ApplyPartitionAlign;
-  ApplyReplacedSector;
+  if IsNotNVMe then
+    ApplyReplacedSector
+  else
+    ApplyCriticalWarning;
   ApplySMARTAndSetSMARTAlert;
   ApplyTotalWrite;
   ApplyDataSetManagementSetting;

@@ -3,7 +3,7 @@ unit Web.HTTP;
 interface
 
 uses
-  SysUtils, Classes, IdComponent, IdHttp, IdURI,
+  SysUtils, Classes, IdComponent, IdException, IdHttp, IdURI,
   Web;
 
 type
@@ -33,8 +33,12 @@ implementation
 { THTTPWeb }
 
 constructor THTTPWeb.Create;
+const
+  Timeout = 1500;
 begin
   InnerConnector := TIdHttp.Create(nil);
+  InnerConnector.ReadTimeout := Timeout;
+  InnerConnector.ConnectTimeout := Timeout;
 end;
 
 destructor THTTPWeb.Destroy;
@@ -56,12 +60,17 @@ end;
 function THTTPWeb.GetFromEncodedURIToStringList: TStringList;
 begin
   result := TStringList.Create;
-  result.Text := InnerConnector.Get(InnerEncodedURI);
+  try
+    result.Text := InnerConnector.Get(InnerEncodedURI);
+  except
+    on E: EIdException do;
+    else raise;
+  end;
 end;
 
 function THTTPWeb.GetFromEncodedURIToStringStream: TStringStream;
 begin
-  result := TStringStream.Create('', TEncoding.Unicode);;
+  result := TStringStream.Create('', TEncoding.Unicode);
   InnerConnector.Get(InnerEncodedURI, result);
 end;
 
