@@ -161,7 +161,8 @@ end;
 procedure TMainformPhysicalDriveApplier.ApplyDataSetManagementSetting;
 begin
   fMain.lTrim.Visible :=
-    (fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported);
+    (fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported) and
+    (IsBelowWindows8);
   fMain.iTrim.Visible := fMain.lTrim.Visible;
 end;
 
