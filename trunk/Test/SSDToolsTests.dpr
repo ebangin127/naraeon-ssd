@@ -60,7 +60,6 @@ uses
   Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
   BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas',
   TestBufferInterpreter.SCSI in 'TestBufferInterpreter.SCSI.pas',
-  TestBufferInterpreter.NVMe in 'TestBufferInterpreter.NVMe.pas',
   BufferInterpreter.NVMe in '..\WindowsFileAPI\BufferInterpreter.NVMe.pas',
   TestBufferInterpreter.NVMe.Intel in 'TestBufferInterpreter.NVMe.Intel.pas',
   BufferInterpreter.NVMe.Intel in '..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas',

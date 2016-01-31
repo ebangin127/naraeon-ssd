@@ -23,7 +23,7 @@ type
     MediaErrors,
     NumberOfErrorInformationLogEntries);
 
-  TNVMeBufferInterpreter = class sealed(TBufferInterpreter)
+  TNVMeBufferInterpreter = class(TBufferInterpreter)
   public
     function BufferToIdentifyDeviceResult
       (Buffer: TSmallBuffer): TIdentifyDeviceResult; override;

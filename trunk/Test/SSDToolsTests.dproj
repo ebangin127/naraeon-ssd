@@ -140,7 +140,6 @@
         <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
         <DCCReference Include="TestBufferInterpreter.SCSI.pas"/>
-        <DCCReference Include="TestBufferInterpreter.NVMe.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.pas"/>
         <DCCReference Include="TestBufferInterpreter.NVMe.Intel.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas"/>

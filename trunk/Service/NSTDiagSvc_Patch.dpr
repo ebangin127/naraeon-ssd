@@ -79,7 +79,9 @@ uses
   Getter.PhysicalDriveList.BruteForce in '..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas',
   Getter.PhysicalDriveList in '..\WindowsFileAPI\Getter.PhysicalDriveList.pas',
   Getter.PhysicalDriveList.WMI in '..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas',
-  Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas';
+  Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas',
+  CommandSet.NVMe.WithoutDriver in '..\WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas',
+  BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

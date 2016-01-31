@@ -239,6 +239,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PartitionExtent.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -303,6 +305,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="..\..\EXE\NSTDiagSvc_Patch.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\Exe\NSTDiagSvc_Patch.exe" Configuration="ReleaseCodesign" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>NSTDiagSvc_Patch.exe</RemoteName>
                         <Overwrite>true</Overwrite>

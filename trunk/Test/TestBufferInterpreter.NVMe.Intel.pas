@@ -24,6 +24,10 @@ type
   private
     procedure CompareWithOriginalIdentify(
       const ReturnValue: TIdentifyDeviceResult);
+    procedure CompareWithOriginalSMART(const ReturnValue: TSMARTValueList);
+    procedure CheckIDEquals(const Expected, Actual: TSMARTValueEntry;
+      const Msg: String);
+    procedure CompareWithOriginalIntelSMART(const ReturnValue: TSMARTValueList);
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -228,7 +232,6 @@ begin
   CheckEquals(512, ReturnValue.LBASize);
 end;
 
-(((0, 0, 0, 0, 0), (1, 0, 0, 0, 305), (2, 0, 0, 10, 100), (3, 0, 0, 0, 0), (4, 0, 0, 0, 1473), (5, 0, 0, 0, 141976), (6, 0, 0, 0, 38232), (7, 0, 0, 0, 1113255), (8, 0, 0, 0, 0), (9, 0, 0, 0, 131), (10, 0, 0, 0, 264), (11, 0, 0, 0, 42), (12, 0, 0, 0, 0), (13, 0, 0, 0, 0), (0, 0, 0, 0, 0), (0, 0, 0, 0, 0)), 14, Pointer($3493980) as {System.Generics.Defaults}IComparer<Device.SMART.List.TSMARTValueEntry>, (nil,nil), $34936A0)
 procedure TestTIntelBufferInterpreter.TestLargeBufferToSMARTValueList;
 var
   ReturnValue: TSMARTValueList;
@@ -237,7 +240,53 @@ begin
   FillChar(Buffer, SizeOf(Buffer), #0);
   Move(Intel750SMART, Buffer, SizeOf(Intel750SMART));
   ReturnValue := FIntelBufferInterpreter.LargeBufferToSMARTValueList(Buffer);
-  // TODO: Validate method results
+  CompareWithOriginalSMART(ReturnValue);
+end;
+
+procedure TestTIntelBufferInterpreter.CheckIDEquals(
+  const Expected, Actual: TSMARTValueEntry;
+  const Msg: String);
+begin
+  CheckEquals(Expected.ID, Actual.ID, Msg);
+  CheckEquals(Expected.Current, Actual.Current, Msg);
+  CheckEquals(Expected.Worst, Actual.Worst, Msg);
+  CheckEquals(Expected.Threshold, Actual.Threshold, Msg);
+  CheckEquals(Expected.RAW, Actual.RAW, Msg);
+end;
+
+procedure TestTIntelBufferInterpreter.CompareWithOriginalSMART(
+  const ReturnValue: TSMARTValueList);
+const
+  ID0: TSMARTValueEntry = (ID: 0; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID1: TSMARTValueEntry = (ID: 1; Current: 0; Worst: 0; Threshold: 0; RAW: 305);
+  ID2: TSMARTValueEntry = (ID: 2; Current: 0; Worst: 0; Threshold: 10; RAW: 100);
+  ID3: TSMARTValueEntry = (ID: 3; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID4: TSMARTValueEntry = (ID: 4; Current: 0; Worst: 0; Threshold: 0; RAW: 1176);
+  ID5: TSMARTValueEntry = (ID: 5; Current: 0; Worst: 0; Threshold: 0; RAW: 138379);
+  ID6: TSMARTValueEntry = (ID: 6; Current: 0; Worst: 0; Threshold: 0; RAW: 35041);
+  ID7: TSMARTValueEntry = (ID: 7; Current: 0; Worst: 0; Threshold: 0; RAW: 1084021);
+  ID8: TSMARTValueEntry = (ID: 8; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID9: TSMARTValueEntry = (ID: 9; Current: 0; Worst: 0; Threshold: 0; RAW: 129);
+  ID10: TSMARTValueEntry = (ID: 10; Current: 0; Worst: 0; Threshold: 0; RAW: 248);
+  ID11: TSMARTValueEntry = (ID: 11; Current: 0; Worst: 0; Threshold: 0; RAW: 42);
+  ID12: TSMARTValueEntry = (ID: 12; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID13: TSMARTValueEntry = (ID: 13; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+begin
+  CheckEquals(14, ReturnValue.Count, 'ReturnValue.Count');
+  CheckIDEquals(ID0, ReturnValue[0], 'ReturnValue[0]');
+  CheckIDEquals(ID1, ReturnValue[1], 'ReturnValue[1]');
+  CheckIDEquals(ID2, ReturnValue[2], 'ReturnValue[2]');
+  CheckIDEquals(ID3, ReturnValue[3], 'ReturnValue[3]');
+  CheckIDEquals(ID4, ReturnValue[4], 'ReturnValue[4]');
+  CheckIDEquals(ID5, ReturnValue[5], 'ReturnValue[5]');
+  CheckIDEquals(ID6, ReturnValue[6], 'ReturnValue[6]');
+  CheckIDEquals(ID7, ReturnValue[7], 'ReturnValue[7]');
+  CheckIDEquals(ID8, ReturnValue[8], 'ReturnValue[8]');
+  CheckIDEquals(ID9, ReturnValue[9], 'ReturnValue[9]');
+  CheckIDEquals(ID10, ReturnValue[10], 'ReturnValue[10]');
+  CheckIDEquals(ID11, ReturnValue[11], 'ReturnValue[11]');
+  CheckIDEquals(ID12, ReturnValue[12], 'ReturnValue[12]');
+  CheckIDEquals(ID13, ReturnValue[13], 'ReturnValue[13]');
 end;
 
 procedure TestTIntelBufferInterpreter.TestBufferToCapacityAndLBA;
@@ -248,9 +297,9 @@ begin
   Buffer := Intel750Capacity;
   ReturnValue := FIntelBufferInterpreter.BufferToCapacityAndLBA(Buffer);
   CheckEquals(ReturnValue.UserSizeInKB, 400088457);
+  CheckEquals(ReturnValue.LBASize, 512);
 end;
 
-(((171, 100, 0, 0, 0), (172, 0, 0, 0, 0), (173, 0, 0, 0, 12885229569), (184, 0, 0, 0, 0), (199, 0, 0, 0, 99), (226, 0, 0, 0, 65535), (227, 0, 0, 0, 65535), (228, 0, 0, 0, 65535), (234, 0, 0, 0, 0), (240, 0, 0, 0, 0), (243, 0, 0, 0, 1), (244, 0, 0, 0, 23498), (245, 0, 0, 0, 2166), (0, 0, 0, 0, 0), (0, 0, 0, 0, 0), (0, 0, 0, 0, 0)), 13, Pointer($2E71560) as {System.Generics.Defaults}IComparer<Device.SMART.List.TSMARTValueEntry>, (nil,nil), $2E71550)
 procedure TestTIntelBufferInterpreter.TestVendorSpecificSMARTValueList;
 var
   ReturnValue: TSMARTValueList;
@@ -259,7 +308,40 @@ begin
   FillChar(Buffer, SizeOf(Buffer), #0);
   Move(Intel750AdditionalSMART, Buffer, SizeOf(Intel750AdditionalSMART));
   ReturnValue := FIntelBufferInterpreter.VendorSpecificSMARTValueList(Buffer);
-  // TODO: Validate method results
+  CompareWithOriginalIntelSMART(ReturnValue);
+end;
+
+procedure TestTIntelBufferInterpreter.CompareWithOriginalIntelSMART(
+  const ReturnValue: TSMARTValueList);
+const
+  ID0: TSMARTValueEntry = (ID: 171; Current: 100; Worst: 0; Threshold: 0; RAW: 0);
+  ID1: TSMARTValueEntry = (ID: 172; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID2: TSMARTValueEntry = (ID: 173; Current: 0; Worst: 0; Threshold: 0; RAW: 12885229569);
+  ID3: TSMARTValueEntry = (ID: 184; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID4: TSMARTValueEntry = (ID: 199; Current: 0; Worst: 0; Threshold: 0; RAW: 99);
+  ID5: TSMARTValueEntry = (ID: 226; Current: 0; Worst: 0; Threshold: 0; RAW: 65535);
+  ID6: TSMARTValueEntry = (ID: 227; Current: 0; Worst: 0; Threshold: 0; RAW: 65535);
+  ID7: TSMARTValueEntry = (ID: 228; Current: 0; Worst: 0; Threshold: 0; RAW: 65535);
+  ID8: TSMARTValueEntry = (ID: 234; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID9: TSMARTValueEntry = (ID: 240; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID10: TSMARTValueEntry = (ID: 243; Current: 0; Worst: 0; Threshold: 0; RAW: 1);
+  ID11: TSMARTValueEntry = (ID: 244; Current: 0; Worst: 0; Threshold: 0; RAW: 23498);
+  ID12: TSMARTValueEntry = (ID: 245; Current: 0; Worst: 0; Threshold: 0; RAW: 2166);
+begin
+  CheckEquals(13, ReturnValue.Count, 'ReturnValue.Count');
+  CheckIDEquals(ID0, ReturnValue[0], 'ReturnValue[0]');
+  CheckIDEquals(ID1, ReturnValue[1], 'ReturnValue[1]');
+  CheckIDEquals(ID2, ReturnValue[2], 'ReturnValue[2]');
+  CheckIDEquals(ID3, ReturnValue[3], 'ReturnValue[3]');
+  CheckIDEquals(ID4, ReturnValue[4], 'ReturnValue[4]');
+  CheckIDEquals(ID5, ReturnValue[5], 'ReturnValue[5]');
+  CheckIDEquals(ID6, ReturnValue[6], 'ReturnValue[6]');
+  CheckIDEquals(ID7, ReturnValue[7], 'ReturnValue[7]');
+  CheckIDEquals(ID8, ReturnValue[8], 'ReturnValue[8]');
+  CheckIDEquals(ID9, ReturnValue[9], 'ReturnValue[9]');
+  CheckIDEquals(ID10, ReturnValue[10], 'ReturnValue[10]');
+  CheckIDEquals(ID11, ReturnValue[11], 'ReturnValue[11]');
+  CheckIDEquals(ID12, ReturnValue[12], 'ReturnValue[12]');
 end;
 
 initialization

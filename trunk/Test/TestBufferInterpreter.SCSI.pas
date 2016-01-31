@@ -21,6 +21,9 @@ type
   TestTSCSIBufferInterpreter = class(TTestCase)
   strict private
     FSCSIBufferInterpreter: TSCSIBufferInterpreter;
+  private
+    procedure CompareWithOriginalIdentify(
+      const ReturnValue: TIdentifyDeviceResult);
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -30,6 +33,31 @@ type
     procedure TestLargeBufferToIdentifyDeviceResult;
     procedure TestLargeBufferToSMARTValueList;
   end;
+
+const
+  SM951IdentifyDevice: TSmallBuffer =
+    (0, 0, 6, 2, 55, 0, 0, 2, 78, 86, 77, 101, 32, 32, 32, 32, 83, 65, 77, 83
+    , 85, 78, 71, 32, 77, 90, 86, 76, 86, 49, 50, 56, 48, 48, 48, 81, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 192, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    );
 
 implementation
 
@@ -49,9 +77,20 @@ var
   ReturnValue: TIdentifyDeviceResult;
   Buffer: TSmallBuffer;
 begin
-  // TODO: Setup method call parameters
+  Buffer := SM951IdentifyDevice;
   ReturnValue := FSCSIBufferInterpreter.BufferToIdentifyDeviceResult(Buffer);
-  // TODO: Validate method results
+  CompareWithOriginalIdentify(ReturnValue);
+end;
+
+procedure TestTSCSIBufferInterpreter.CompareWithOriginalIdentify(
+  const ReturnValue: TIdentifyDeviceResult);
+begin
+  CheckEquals('NVMe    SAMSUNG MZVLV128', ReturnValue.Model);
+  CheckEquals('000Q', ReturnValue.Firmware);
+  CheckEquals('', ReturnValue.Serial);
+  CheckTrue(TSATASpeed.NotSATA = ReturnValue.SATASpeed,
+    'TSATASpeed.NotSATA = ReturnValue.SATASpeed');
+  CheckEquals(512, ReturnValue.LBASize);
 end;
 
 procedure TestTSCSIBufferInterpreter.TestBufferToSMARTValueList;
@@ -70,9 +109,10 @@ var
   ReturnValue: TIdentifyDeviceResult;
   Buffer: TLargeBuffer;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSCSIBufferInterpreter.LargeBufferToIdentifyDeviceResult(Buffer);
-  // TODO: Validate method results
+  Move(SM951IdentifyDevice, Buffer, SizeOf(Buffer));
+  ReturnValue :=
+    FSCSIBufferInterpreter.LargeBufferToIdentifyDeviceResult(Buffer);
+  CompareWithOriginalIdentify(ReturnValue);
 end;
 
 procedure TestTSCSIBufferInterpreter.TestLargeBufferToSMARTValueList;
