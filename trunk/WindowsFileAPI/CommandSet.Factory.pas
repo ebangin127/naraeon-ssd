@@ -53,7 +53,7 @@ function TCommandSetFactory.TryCommandSetsAndGetRightSet: TCommandSet;
 begin
   result := nil;
   result := TestCommandSetCompatibility(TIntelNVMeCommandSet, result);
-  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
+  result := TestCommandSetCompatibility(TSamsungNVMeCommandSet, result);
   result := TestCommandSetCompatibility(TATACommandSet, result);
   result := TestCommandSetCompatibility(TLegacyATACommandSet, result);
   result := TestCommandSetCompatibility(TSATCommandSet, result);
