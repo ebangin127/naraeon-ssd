@@ -36,12 +36,27 @@ begin
 end;
 
 procedure TestTCommandSetFactory.TestCreatingOrder;
-var
-  CurrentCommandIndex: TCommandOrder;
 begin
-  for CurrentCommandIndex in TCommandOrder do
-    CommandSetFactory.GetSuitableCommandSet('');
-  CheckEquals(True, IsCommandSetFinished);
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfNVMeIntel,
+    'CommandOrderOfNVMeIntel');
+  CommandSetFactory.GetSuitableCommandSet('');
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfNVMeSamsung,
+    'CommandOrderOfNVMeSamsung');
+  CommandSetFactory.GetSuitableCommandSet('');
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfATA,
+    'CommandOrderOfATA');
+  CommandSetFactory.GetSuitableCommandSet('');
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfATALegacy,
+    'CommandOrderOfATALegacy');
+  CommandSetFactory.GetSuitableCommandSet('');
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfSAT,
+    'CommandOrderOfSAT');
+  CommandSetFactory.GetSuitableCommandSet('');
+  CheckEquals(True, GetCurrentCommandSet = CommandOrderOfNVMeWithoutDriver,
+    'CommandOrderOfNVMeWithoutDriver');
+  StartExpectingException(ENoNVMeDriverException);
+  CommandSetFactory.GetSuitableCommandSet('');
+  StopExpectingException('ENoNVMeDriverException');
 end;
 
 initialization

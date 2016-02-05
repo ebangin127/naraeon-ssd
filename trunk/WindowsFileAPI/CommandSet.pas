@@ -4,7 +4,12 @@ interface
 
 uses
   SysUtils,
-  OSFile.Handle, OSFile.IoControl, Device.SMART.List, BufferInterpreter;
+  Device.SMART.List, BufferInterpreter,
+  {$IfDef UNITTEST}
+  Mock.OSFile.IoControl;
+  {$Else}
+  OSFile.Handle, OSFile.IoControl;
+  {$EndIf}
 
 type
   TCommandSet = class abstract(TIoControlFile)

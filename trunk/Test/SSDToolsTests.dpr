@@ -64,7 +64,12 @@ uses
   TestBufferInterpreter.NVMe.Intel in 'TestBufferInterpreter.NVMe.Intel.pas',
   BufferInterpreter.NVMe.Intel in '..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas',
   TestBufferInterpreter.ATA in 'TestBufferInterpreter.ATA.pas',
-  BufferInterpreter.ATA in '..\WindowsFileAPI\BufferInterpreter.ATA.pas';
+  BufferInterpreter.ATA in '..\WindowsFileAPI\BufferInterpreter.ATA.pas',
+  Mock.CommandSets in 'Mock.CommandSets.pas',
+  TestCommandSet.Factory in 'TestCommandSet.Factory.pas',
+  CommandSet.Factory in '..\WindowsFileAPI\CommandSet.Factory.pas',
+  CommandSet in '..\WindowsFileAPI\CommandSet.pas',
+  Mock.OSFile.IoControl in 'Mock.OSFile.IoControl.pas';
 
 {$R *.RES}
 

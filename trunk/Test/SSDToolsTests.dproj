@@ -70,6 +70,10 @@
         <DCC_UsePackage>FireDACASADriver;FireDACSqliteDriver;bindcompfmx;DBXSqliteDriver;FireDACPgDriver;FireDACODBCDriver;RESTBackendComponents;emsclientfiredac;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;FireDACCommon;bindcomp;inetdb;tethering;TeeDB;vclib;DBXInterBaseDriver;Tee;vclFireDAC;xmlrtl;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;dbxcds;DBXMySQLDriver;FireDACCommonDriver;MetropolisUILiveTile;bindcompdbx;bindengine;vclactnband;vcldb;soaprtl;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;fmxFireDAC;FireDACADSDriver;vcltouch;emsclient;CustomIPTransport;vclribbon;VCLRESTComponents;FireDAC;VclSmp;dsnap;Intraweb;fmxase;vcl;IndyCore;IndyIPServer;IndyIPCommon;CloudService;dsnapcon;FireDACIBDriver;FmxTeeUI;inet;fmxobj;FireDACMySQLDriver;soapmidas;vclx;soapserver;inetdbxpress;dsnapxml;fmxdae;RESTComponents;FireDACMSAccDriver;dbexpress;adortl;IndyIPClient;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <VerInfo_Locale>1042</VerInfo_Locale>
+        <DCC_MapFile>3</DCC_MapFile>
+        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+        <VerInfo_Keys>FileVersion=1.0.0.0</VerInfo_Keys>
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_Optimize>false</DCC_Optimize>
@@ -145,6 +149,11 @@
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas"/>
         <DCCReference Include="TestBufferInterpreter.ATA.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.ATA.pas"/>
+        <DCCReference Include="Mock.CommandSets.pas"/>
+        <DCCReference Include="TestCommandSet.Factory.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.Factory.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\CommandSet.pas"/>
+        <DCCReference Include="Mock.OSFile.IoControl.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

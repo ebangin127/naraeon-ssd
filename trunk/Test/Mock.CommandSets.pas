@@ -49,8 +49,6 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-
-type
   TCommandOrder = (
     CommandOrderOfNVMeIntel,
     CommandOrderOfNVMeSamsung,
@@ -61,31 +59,26 @@ type
     CommandOrderFinished);
   EWrongOrderException = class(Exception);  
 
-function IsCommandSetFinished: Boolean;
-    
-var
-  CurrentCommandSet: TCommandOrder;
+function GetCurrentCommandSet: TCommandOrder;
 
 implementation
 
+var
+  CurrentCommandSet: TCommandOrder;
 
-function IsCommandSetFinished: Boolean;
+function GetCurrentCommandSet: TCommandOrder;
 begin
-  if CurrentCommandSet = TCommandOrder.CommandOrderFinished then
-    result := true
-  else
-    EWrongOrderException.Create(
-      'Expected: ' + IntToStr(Ord(CurrentCommandSet)) + ' ' +
-      'Current: ' + IntToStr(Ord(CurrentCommandSet)));
+  result := CurrentCommandSet;
 end;
 
 function TIntelNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfNVMeIntel) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfNVMeIntel then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TIntelNVMeCommandSet.SMARTReadData: TSMARTValueList;
@@ -102,11 +95,12 @@ end;
 
 function TSamsungNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfNVMeSamsung) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfNVMeSamsung then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TSamsungNVMeCommandSet.SMARTReadData: TSMARTValueList;
@@ -123,11 +117,12 @@ end;
 
 function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfATA) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfATA then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TATACommandSet.SMARTReadData: TSMARTValueList;
@@ -144,11 +139,12 @@ end;
 
 function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfATALegacy) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfATALegacy then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TLegacyATACommandSet.SMARTReadData: TSMARTValueList;
@@ -166,11 +162,12 @@ end;
 
 function TSATCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfSAT) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfSAT then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TSATCommandSet.SMARTReadData: TSMARTValueList;
@@ -187,11 +184,12 @@ end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  if CurrentCommandSet = Ord(TCommandOrder.CommandOrderOfNVMeWithoutDriver) then
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfNVMeWithoutDriver then
     result.Model := 'Right!'
   else
-    result.Model := '';
-  CurrentCommandSet := CurrentCommandSet + 1;
+    exit;
+  Inc(CurrentCommandSet);
 end;
 
 function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;

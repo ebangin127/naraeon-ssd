@@ -138,7 +138,10 @@ begin
     PhysicalDrive := TPhysicalDrive.Create(String(CurrentDrive.DeviceID));
     PhysicalDriveList.Add(PhysicalDrive);
   except
-    on E: ENoCommandSetException do
+    on E: ENoCommandSetException do;
+    on E: ENoNVMeDriverException do;
+    on OSError: EOSError do
+      if OSError.ErrorCode <> 2 then raise;
     else raise;
   end;
 end;

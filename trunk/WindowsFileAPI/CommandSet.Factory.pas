@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Dialogs,
   CommandSet, BufferInterpreter,
   {$IfDef UNITTEST}
-  Mock.CommandSets,
+  Mock.CommandSets;
   {$Else}
   CommandSet.ATA, CommandSet.ATA.Legacy, CommandSet.SAT,
   CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung, CommandSet.NVMe.WithoutDriver;
@@ -68,7 +68,7 @@ end;
 
 function TCommandSetFactory.TryNVMeWithoutDriverCommandSet: TCommandSet;
 begin
-  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
+  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, nil);
   if result <> nil then
   begin
     FreeAndNil(result);
