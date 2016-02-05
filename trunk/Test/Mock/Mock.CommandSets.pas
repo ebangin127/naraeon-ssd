@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Dialogs,
-  OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List;
+  Mock.OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List;
 
 type
   TIntelNVMeCommandSet = class sealed(TCommandSet)

@@ -1,4 +1,4 @@
-unit uMockVolumeBitmapGetter;
+unit Mock.Getter.VolumeBitmap;
 
 interface
 

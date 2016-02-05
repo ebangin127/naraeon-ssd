@@ -1,4 +1,4 @@
-unit uMockTrimBasicsGetterFactory;
+unit Mock.Getter.TrimBasics.Factory;
 
 interface
 

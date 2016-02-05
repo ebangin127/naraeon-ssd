@@ -1,4 +1,4 @@
-unit uMockDeviceTrimmer;
+unit Mock.DeviceTrimmer;
 
 interface
 
