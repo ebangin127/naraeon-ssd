@@ -5,8 +5,12 @@ interface
 uses
   Windows, SysUtils, Dialogs,
   CommandSet, BufferInterpreter,
+  {$IfDef UNITTEST}
+  Mock.CommandSets,
+  {$Else}
   CommandSet.ATA, CommandSet.ATA.Legacy, CommandSet.SAT,
   CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung, CommandSet.NVMe.WithoutDriver;
+  {$EndIf}
 
 type
   TMetaCommandSet = class of TCommandSet;
@@ -19,6 +23,7 @@ type
     class function Create: TCommandSetFactory;
   private
     function TryCommandSetsAndGetRightSet: TCommandSet;
+    function TryNVMeWithoutDriverCommandSet: TCommandSet;
     function TestCommandSetCompatibility(
       TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
     var
@@ -58,19 +63,22 @@ begin
   result := TestCommandSetCompatibility(TLegacyATACommandSet, result);
   result := TestCommandSetCompatibility(TSATCommandSet, result);
   if result = nil then
+    result := TryNVMeWithoutDriverCommandSet;
+end;
+
+function TCommandSetFactory.TryNVMeWithoutDriverCommandSet: TCommandSet;
+begin
+  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
+  if result <> nil then
   begin
-    result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, result);
-    if result <> nil then
-    begin
-      FreeAndNil(result);
-      raise ENoNVMeDriverException.Create('No NVMe Driver with: ' +
-        FileToGetAccess);
-    end;
+    FreeAndNil(result);
+    raise ENoNVMeDriverException.Create('No NVMe Driver with: ' +
+      FileToGetAccess);
   end;
 end;
 
-function TCommandSetFactory.TestCommandSetCompatibility
-  (TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
+function TCommandSetFactory.TestCommandSetCompatibility(
+  TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
 var
   IdentifyDeviceResult: TIdentifyDeviceResult;
 begin
