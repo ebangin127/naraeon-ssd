@@ -219,6 +219,7 @@ const
   //나래온 넷 주소
     AddrSecureErase: TLanguageString = ('http://naraeon.net/plugin/plugin_kor.htm', 'http://naraeon.net/plugin/plugin_eng.htm');
     AddrUpdChk: TLanguageString = ('http://nstupdate.naraeon.net/latestSSDTools.htm', 'http://nstupdate.naraeon.net/latestSSDTools_eng.htm');
+    HelpLanguage: TLanguageString = ('ko/', 'en/');
 
   //진단
     DiagName: TLanguageString = ('나래온 툴 진단도구', 'NSTools Diagnosis');

@@ -18,7 +18,8 @@ uses
   Getter.CodesignVerifier, Component.SSDLabel.List, Component.SSDLabel,
   Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
   Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
-  Getter.VolumeLabel, OS.VersionHelper, PrerequisiteChecker, BufferInterpreter;
+  Getter.VolumeLabel, OS.VersionHelper, PrerequisiteChecker, BufferInterpreter,
+  Global.HelpPage;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -470,20 +471,31 @@ begin
   CloseDriveList;
 
   if ButtonGroup.FindEntry(iFirmUp).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/firmupdate/', '',
+    ShellExecute(0, 'open',
+      PChar(HelpHeader + HelpLanguage[CurrLang] + FirmwareUpdatePage), '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iErase).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/erase-pm/', '',
-      nil, SW_NORMAL)
+    if PhysicalDrive.IdentifyDeviceResult.StorageInterface =
+      TStorageInterface.NVMe then
+      ShellExecute(0, 'open',
+        PChar(HelpHeader + HelpLanguage[CurrLang] + NVMeSecureErasePage), '',
+        nil, SW_NORMAL)
+    else
+      ShellExecute(0, 'open',
+        PChar(HelpHeader + HelpLanguage[CurrLang] + SecureErasePage), '',
+        nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iTrim).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/mantrim/', '',
+    ShellExecute(0, 'open',
+      PChar(HelpHeader + HelpLanguage[CurrLang] + ManualTrimPage), '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iOptimize).Selected then
-    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/optimize/', '',
+    ShellExecute(0, 'open',
+      PChar(HelpHeader + HelpLanguage[CurrLang] + OptimizePage), '',
       nil, SW_NORMAL)
   else
-    ShellExecute(0, 'open', 'http://naraeon.net/naraeon-help-ko-main/', '',
-      nil, SW_NORMAL);
+    ShellExecute(0, 'open',
+      PChar(HelpHeader + HelpLanguage[CurrLang] + MainPage), '',
+      nil, SW_NORMAL)
 end;
 
 procedure TfMain.iOptimizeClick(Sender: TObject);

@@ -432,69 +432,6 @@ object fMain: TfMain
       ParentFont = False
     end
   end
-  object gTrim: TGroupBox
-    Left = 8
-    Top = 290
-    Width = 584
-    Height = 240
-    TabOrder = 5
-    Visible = False
-    object lTrimName: TLabel
-      Left = 15
-      Top = 4
-      Width = 7
-      Height = 30
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -21
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object bSchedule: TButton
-      Left = 312
-      Top = 180
-      Width = 260
-      Height = 46
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -20
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      OnClick = bScheduleClick
-    end
-    object bTrimStart: TButton
-      Left = 15
-      Top = 180
-      Width = 260
-      Height = 46
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -20
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      OnClick = bTrimStartClick
-    end
-    object cTrimList: TCheckListBox
-      Left = 15
-      Top = 45
-      Width = 557
-      Height = 125
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = #47569#51008' '#44256#46357
-      Font.Style = []
-      ImeName = 'Microsoft IME 2010'
-      ItemHeight = 20
-      ParentFont = False
-      TabOrder = 1
-    end
-  end
   object gInfo: TGroupBox
     Left = 8
     Top = 44
@@ -1740,6 +1677,69 @@ object fMain: TfMain
       ImeName = 'Microsoft IME 2010'
       ParentFont = False
       TabOrder = 2
+    end
+  end
+  object gTrim: TGroupBox
+    Left = 8
+    Top = 290
+    Width = 584
+    Height = 240
+    TabOrder = 5
+    Visible = False
+    object lTrimName: TLabel
+      Left = 15
+      Top = 4
+      Width = 7
+      Height = 30
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -21
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object bSchedule: TButton
+      Left = 312
+      Top = 180
+      Width = 260
+      Height = 46
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = bScheduleClick
+    end
+    object bTrimStart: TButton
+      Left = 15
+      Top = 180
+      Width = 260
+      Height = 46
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -20
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = bTrimStartClick
+    end
+    object cTrimList: TCheckListBox
+      Left = 15
+      Top = 45
+      Width = 557
+      Height = 125
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = #47569#51008' '#44256#46357
+      Font.Style = []
+      ImeName = 'Microsoft IME 2010'
+      ItemHeight = 20
+      ParentFont = False
+      TabOrder = 1
     end
   end
   object tRefresh: TTimer

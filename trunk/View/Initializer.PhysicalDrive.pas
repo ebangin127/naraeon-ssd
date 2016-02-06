@@ -163,6 +163,12 @@ begin
   fMain.lTrim.Visible :=
     fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
   fMain.iTrim.Visible := fMain.lTrim.Visible;
+  fMain.bSchedule.Visible := IsBelowWindows8;
+  if fMain.bSchedule.Visible = false then
+  begin
+    fMain.bTrimStart.Width :=
+      fMain.bSchedule.Left - fMain.bTrimStart.Left + fMain.bSchedule.Width;
+  end;
 end;
 
 procedure TMainformPhysicalDriveApplier.RevertLastChangesOfMainform;
