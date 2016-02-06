@@ -1,9 +1,10 @@
 # Naraeon SSD Tools
 
-Naraeon SSD Tools(a.k.a NSTools) is a toolbox for SSD.
+Naraeon SSD Tools(a.k.a NSTools) is a SSD Management Utility.
 
-### License
-The MIT License
+### Features
+
+It does Manual trim, Secure erase, Firmware update. And it also provides automatic endurance monitor so you can be warned when the SSD goes wrong.
 
 ### Supported Products
 
@@ -28,6 +29,9 @@ Seagate 600
 ADATA SP920, SP900
 
 Phison Solution CP7.
+
+### License
+The MIT License
 
 ### Win32 Binary Download
 http://naraeon.net/en/latest-naraeon-ssd-tools
