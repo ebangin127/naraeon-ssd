@@ -78,7 +78,7 @@ procedure TProgressSection.ChangeProgress(ProgressToApply: TProgressToApply);
 begin
   self.ProgressToApply := ProgressToApply;
   if ThreadToSynchronize <> nil then
-    TThread.Synchronize(ThreadToSynchronize, SynchronizedApplyProgress)
+    TThread.Queue(ThreadToSynchronize, SynchronizedApplyProgress)
   else
     SynchronizedApplyProgress;
 end;

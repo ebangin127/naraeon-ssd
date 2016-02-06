@@ -516,7 +516,7 @@ object fMain: TfMain
     end
     object lSerial: TLabel
       Left = 15
-      Top = 93
+      Top = 95
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -529,7 +529,7 @@ object fMain: TfMain
     end
     object lSectors: TLabel
       Left = 15
-      Top = 150
+      Top = 155
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -541,7 +541,7 @@ object fMain: TfMain
     end
     object lFirmware: TLabel
       Left = 15
-      Top = 69
+      Top = 71
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -553,7 +553,7 @@ object fMain: TfMain
     end
     object lNotsafe: TLabel
       Left = 15
-      Top = 203
+      Top = 208
       Width = 5
       Height = 20
       Font.Charset = DEFAULT_CHARSET
@@ -1099,7 +1099,7 @@ object fMain: TfMain
     end
     object lPartitionAlign: TLabel
       Left = 15
-      Top = 173
+      Top = 178
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -1329,7 +1329,7 @@ object fMain: TfMain
     end
     object lPError: TLabel
       Left = 15
-      Top = 126
+      Top = 131
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET
@@ -1509,7 +1509,7 @@ object fMain: TfMain
     end
     object lConnState: TLabel
       Left = 15
-      Top = 45
+      Top = 47
       Width = 5
       Height = 17
       Font.Charset = DEFAULT_CHARSET

@@ -24,7 +24,6 @@ type
     procedure ApplyOriginalUI;
     procedure ApplyProgressToUI(ProgressToApply: Integer);
     procedure ApplyNextDriveStartToUI(ProgressToApply: Integer);
-
   private
     Progress: Integer;
     TrimSynchronization: TTrimSynchronization;
@@ -51,7 +50,7 @@ begin
   if TrimSynchronization.IsUIInteractionNeeded then
   begin
     Progress := ProgressToApply;
-    TThread.Synchronize(
+    TThread.Queue(
       TrimSynchronization.ThreadToSynchronize,
       SynchronizedApplyProgressToUI);
   end;
@@ -62,7 +61,7 @@ begin
   if TrimSynchronization.IsUIInteractionNeeded then
   begin
     Progress := ProgressToApply;
-    TThread.Synchronize(
+    TThread.Queue(
       TrimSynchronization.ThreadToSynchronize,
       SynchronizedApplyNextDriveStartToUI);
   end;

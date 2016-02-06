@@ -134,7 +134,7 @@
         <DCCReference Include="..\Objects\AverageLogger.Count.pas"/>
         <DCCReference Include="..\Objects\AverageLogger.pas"/>
         <DCCReference Include="..\Objects\AverageLogger.Write.pas"/>
-        <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.Direct.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas"/>
@@ -150,7 +150,6 @@
         <DCCReference Include="TestBufferInterpreter.SCSI.pas"/>
         <DCCReference Include="TestCommandSet.Factory.pas"/>
         <DCCReference Include="TestNSTSupport.pas"/>
-        <DCCReference Include="TestPartitionTrimmer.pas"/>
         <DCCReference Include="TestWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="Mock\Mock.DeviceTrimmer.pas"/>
         <DCCReference Include="Mock\Mock.Getter.TrimBasics.Factory.pas"/>
@@ -158,6 +157,10 @@
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.pas"/>
         <DCCReference Include="..\Modules\Device.SlotSpeed.pas"/>
         <DCCReference Include="..\Modules\MeasureUnit.DataSize.pas"/>
+        <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.OS.pas"/>
+        <DCCReference Include="..\Objects\Thread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="TestThread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="TestDirectPartitionTrimmer.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

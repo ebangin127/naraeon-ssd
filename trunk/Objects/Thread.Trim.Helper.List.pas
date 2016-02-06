@@ -4,8 +4,9 @@ interface
 
 uses
   SysUtils, Classes,
-  TrimList, Thread.Trim.Helper.Partition, ThreadToView.Trim,
-  Component.ProgressSection;
+  TrimList, Thread.Trim.Helper.Partition, Thread.Trim.Helper.Partition.Direct,
+  Thread.Trim.Helper.Partition.OS, ThreadToView.Trim, Component.ProgressSection,
+  OS.WindowsVersion;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);
@@ -177,7 +178,10 @@ var
   PartitionTrimmer: TPartitionTrimmer;
   TrimSynchronization: TTrimSynchronization;
 begin
-  PartitionTrimmer := TPartitionTrimmer.Create(PartitionPathToTrim);
+  if IsBelowWindows8 then
+    PartitionTrimmer := TDirectPartitionTrimmer.Create(PartitionPathToTrim)
+  else
+    PartitionTrimmer := TOSPartitionTrimmer.Create(PartitionPathToTrim);
   TrimSynchronization := GetTrimSynchronization;
   PartitionTrimmer.TrimPartition(TrimSynchronization);
   FreeAndNil(PartitionTrimmer);

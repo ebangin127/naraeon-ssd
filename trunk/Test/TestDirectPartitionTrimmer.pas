@@ -1,4 +1,4 @@
-unit TestPartitionTrimmer;
+unit TestDirectPartitionTrimmer;
 {
 
   Delphi DUnit Test Case
@@ -13,17 +13,17 @@ interface
 
 uses
   TestFramework,
-  uMockTrimBasicsGetterFactory,
-  uMockVolumeBitmapGetter,
-  uMockDeviceTrimmer,
-  Thread.Trim.Helper.Partition;
+  Mock.Getter.TrimBasics.Factory,
+  Mock.Getter.VolumeBitmap,
+  Mock.DeviceTrimmer,
+  Thread.Trim.Helper.Partition.Direct;
 
 type
   // Test methods for class TPartitionTrimmer
 
-  TestTPartitionTrimmer = class(TTestCase)
+  TestTDirectPartitionTrimmer = class(TTestCase)
   strict private
-    FPartitionTrimmer: TPartitionTrimmer;
+    FPartitionTrimmer: TDirectPartitionTrimmer;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -33,14 +33,14 @@ type
 
 implementation
 
-procedure TestTPartitionTrimmer.SetUp;
+procedure TestTDirectPartitionTrimmer.SetUp;
 begin
   TVolumeBitmapGetter.CreateBitmapStorage;
   TDeviceTrimmer.CreateTrimOperationLogger;
-  FPartitionTrimmer := TPartitionTrimmer.Create('');
+  FPartitionTrimmer := TDirectPartitionTrimmer.Create('');
 end;
 
-procedure TestTPartitionTrimmer.TearDown;
+procedure TestTDirectPartitionTrimmer.TearDown;
 begin
   FPartitionTrimmer.Free;
   FPartitionTrimmer := nil;
@@ -48,9 +48,9 @@ begin
   TDeviceTrimmer.FreeTrimOperationLogger;
 end;
 
-procedure TestTPartitionTrimmer.TestBasicTrim;
+procedure TestTDirectPartitionTrimmer.TestBasicTrim;
 const
-  NullSyncronization: uMockTrimBasicsGetterFactory.TTrimSynchronization =
+  NullSyncronization: Mock.Getter.TrimBasics.Factory.TTrimSynchronization =
     (IsUIInteractionNeeded: False);
 var
   BasicTest: TBitmapBuffer;
@@ -73,6 +73,6 @@ end;
 
 initialization
   // Register any test cases with the test runner
-  RegisterTest(TestTPartitionTrimmer.Suite);
+  RegisterTest(TestTDirectPartitionTrimmer.Suite);
 end.
 

@@ -142,13 +142,15 @@ uses
   Getter.CodesignVerifier in 'Objects\Getter.CodesignVerifier.pas',
   Thread.Trim.Helper.Device in 'Objects\Thread.Trim.Helper.Device.pas',
   Thread.Trim.Helper.List in 'Objects\Thread.Trim.Helper.List.pas',
-  Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
   Getter.PartitionExtent in 'WindowsFileAPI\Getter.PartitionExtent.pas',
   Getter.VolumeBitmap in 'WindowsFileAPI\Getter.VolumeBitmap.pas',
   Getter.DeviceDriver in 'WindowsFileAPI\Getter.DeviceDriver.pas',
   Initializer.CriticalWarning in 'View\Initializer.CriticalWarning.pas',
   CommandSet.NVMe.WithoutDriver in 'WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas',
-  BufferInterpreter.SCSI in 'WindowsFileAPI\BufferInterpreter.SCSI.pas';
+  BufferInterpreter.SCSI in 'WindowsFileAPI\BufferInterpreter.SCSI.pas',
+  Thread.Trim.Helper.Partition.OS in 'Objects\Thread.Trim.Helper.Partition.OS.pas',
+  Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
+  Thread.Trim.Helper.Partition.Direct in 'Objects\Thread.Trim.Helper.Partition.Direct.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

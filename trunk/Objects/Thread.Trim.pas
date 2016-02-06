@@ -13,18 +13,14 @@ type
   private
     class var InnerTrimStage: TTrimStage;
     ListTrimmer: TListTrimmer;
-
   public
     class property TrimStage: TTrimStage read InnerTrimStage;
-
     constructor Create
       (CreateSuspended: Boolean; IsUIInteractionNeeded: Boolean);
     destructor Destroy; override;
     function SetPartitionList(PartitionsToTrim: TTrimList): Boolean;
-
   protected
     procedure Execute; override;
-
   end;
 
 implementation

@@ -7,12 +7,16 @@ uses
   OS.SecurityDescriptor;
 
 type
+  TProcessBuffer = reference to procedure (const CurrentBuffer: String;
+    var CurrentResult: AnsiString);
   TProcessOpener = class
   public
-    function OpenProcWithOutput(Path: String; Command: String):
-      AnsiString;
+    function OpenProcWithProcessFunction(const Path, Command: String;
+      const ProcessBufferFunction: TProcessBuffer): AnsiString;
+    function OpenProcWithOutput(const Path, Command: String): AnsiString;
     class function Create: TProcessOpener;
   private
+    ProcessBuffer: TProcessBuffer;
     function GetSecurityDescriptor: TSecurityAttributes;
     procedure CreatePipeWithHandles(
       var ReadHandle, WriteHandle: THandle);
@@ -20,6 +24,8 @@ type
     var
       SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
   end;
+  procedure DefaultProcessBuffer(const CurrentBuffer: String;
+    var CurrentResult: AnsiString);
 
 var
   ProcessOpener: TProcessOpener;
@@ -64,12 +70,19 @@ begin
     (BytesRead > 0) do
   begin
     Buffer[BytesRead] := #0;
-    result := result + Buffer;
+    ProcessBuffer(String(Buffer), result);
   end;
 end;
 
-function TProcessOpener.OpenProcWithOutput(Path: String; Command: String):
-  AnsiString;
+function TProcessOpener.OpenProcWithOutput(const Path, Command: String
+  ): AnsiString;
+begin
+  result := OpenProcWithProcessFunction(Path, Command, DefaultProcessBuffer);
+end;
+
+function TProcessOpener.OpenProcWithProcessFunction(
+  const Path, Command: String;
+  const ProcessBufferFunction: TProcessBuffer): AnsiString;
 const
   StartupSettingsTemplate: TStartupInfo =
     (cb: sizeof(STARTUPINFO);
@@ -80,6 +93,7 @@ var
   WriteHandle, ReadHandle: THandle;
   ProcessInformation: _PROCESS_INFORMATION;
 begin
+  ProcessBuffer := ProcessBufferFunction;
   SecurityDescriptorManipulator := TSecurityDescriptorManipulator.Create;
   CreatePipeWithHandles(ReadHandle, WriteHandle);
   StartupSettings := StartupSettingsTemplate;
@@ -94,8 +108,13 @@ begin
   CloseHandle(WriteHandle);
   result := ReadFromHandle(ReadHandle);
   CloseHandle(ReadHandle);
-
   FreeAndNil(SecurityDescriptorManipulator);
+end;
+
+procedure DefaultProcessBuffer(const CurrentBuffer: String;
+  var CurrentResult: AnsiString);
+begin
+  CurrentResult := AnsiString(String(CurrentResult) + CurrentBuffer);
 end;
 
 initialization

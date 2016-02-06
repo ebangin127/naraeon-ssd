@@ -77,7 +77,7 @@ end;
 procedure TDownloader.SetMainformCaption;
 begin
   if ThreadToSynchronize <> nil then
-    TThread.Synchronize(ThreadToSynchronize, SynchronizedSetMainformCaption)
+    TThread.Queue(ThreadToSynchronize, SynchronizedSetMainformCaption)
   else
     SynchronizedSetMainformCaption;
 end;

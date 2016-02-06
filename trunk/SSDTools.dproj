@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SSDTools.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">ReleaseCodesign</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -349,13 +349,15 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\Getter.CodesignVerifier.pas"/>
         <DCCReference Include="Objects\Thread.Trim.Helper.Device.pas"/>
         <DCCReference Include="Objects\Thread.Trim.Helper.List.pas"/>
-        <DCCReference Include="Objects\Thread.Trim.Helper.Partition.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PartitionExtent.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.VolumeBitmap.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.DeviceDriver.pas"/>
         <DCCReference Include="View\Initializer.CriticalWarning.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas"/>
         <DCCReference Include="WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.Partition.OS.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.Partition.pas"/>
+        <DCCReference Include="Objects\Thread.Trim.Helper.Partition.Direct.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -435,15 +437,21 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win32">
+                        <RemoteName>SSDTools.rsm</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
-                    <Platform Name="Win64">
-                        <RemoteName>SSDTools.rsm</RemoteName>
+                <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="ReleaseCodesign" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>SSDTools.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -50,7 +50,7 @@ uses
   AverageLogger.Count in '..\Objects\AverageLogger.Count.pas',
   AverageLogger in '..\Objects\AverageLogger.pas',
   AverageLogger.Write in '..\Objects\AverageLogger.Write.pas',
-  Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
+  Thread.Trim.Helper.Partition.Direct in '..\Objects\Thread.Trim.Helper.Partition.Direct.pas',
   BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas',
   BufferInterpreter.NVMe in '..\WindowsFileAPI\BufferInterpreter.NVMe.pas',
   BufferInterpreter.NVMe.Intel in '..\WindowsFileAPI\BufferInterpreter.NVMe.Intel.pas',
@@ -66,14 +66,17 @@ uses
   TestBufferInterpreter.SCSI in 'TestBufferInterpreter.SCSI.pas',
   TestCommandSet.Factory in 'TestCommandSet.Factory.pas',
   TestNSTSupport in 'TestNSTSupport.pas',
-  TestPartitionTrimmer in 'TestPartitionTrimmer.pas',
   TestWriteBufferSettingVerifier in 'TestWriteBufferSettingVerifier.pas',
   Mock.DeviceTrimmer in 'Mock\Mock.DeviceTrimmer.pas',
   Mock.Getter.TrimBasics.Factory in 'Mock\Mock.Getter.TrimBasics.Factory.pas',
   Mock.Getter.VolumeBitmap in 'Mock\Mock.Getter.VolumeBitmap.pas',
   BufferInterpreter in '..\WindowsFileAPI\BufferInterpreter.pas',
   Device.SlotSpeed in '..\Modules\Device.SlotSpeed.pas',
-  MeasureUnit.DataSize in '..\Modules\MeasureUnit.DataSize.pas';
+  MeasureUnit.DataSize in '..\Modules\MeasureUnit.DataSize.pas',
+  Thread.Trim.Helper.Partition.OS in '..\Objects\Thread.Trim.Helper.Partition.OS.pas',
+  Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
+  TestThread.Trim.Helper.Partition in 'TestThread.Trim.Helper.Partition.pas',
+  TestDirectPartitionTrimmer in 'TestDirectPartitionTrimmer.pas';
 
 {$R *.RES}
 
