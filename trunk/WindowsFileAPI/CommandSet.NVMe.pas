@@ -109,8 +109,11 @@ var
 begin
   {$IFNDEF SERVICE}
   SlotSpeedGetter := TSlotSpeedGetter.Create(GetPathOfFileAccessing);
-  result := SlotSpeedGetter.GetSlotSpeed;
-  FreeAndNil(SlotSpeedGetter);
+  try
+    result := SlotSpeedGetter.GetSlotSpeed;
+  finally
+    FreeAndNil(SlotSpeedGetter);
+  end;
   {$ENDIF}
 end;
 

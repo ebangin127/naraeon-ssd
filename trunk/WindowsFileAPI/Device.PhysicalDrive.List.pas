@@ -7,15 +7,13 @@ uses
   Device.PhysicalDrive;
 
 type
+  TThreadedPhysicalDriveList = class sealed(TThreadList<IPhysicalDrive>);
   TPhysicalDriveList = class sealed(TList<IPhysicalDrive>)
   public
     destructor Destroy; override;
-    procedure Delete(Index: Integer);
-
     function IndexOf(Model, Serial: String): Integer; overload;
     function IndexOf(Entry: IPhysicalDrive): Integer; overload;
     function IndexOf(DeviceName: String): Integer; overload;
-    
     function IsExists(Entry: IPhysicalDrive): Boolean;
   end;
 
@@ -51,12 +49,6 @@ begin
     exit(CurrEntry)
   else
     exit(-1);
-end;
-
-procedure TPhysicalDriveList.Delete(Index: Integer);
-begin
-  Self[Index] := nil;
-  inherited Delete(Index);
 end;
 
 destructor TPhysicalDriveList.Destroy;

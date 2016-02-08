@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils,
   OSFile.IoControl, CommandSet.NVMe, BufferInterpreter, Device.SMART.List,
-  BufferInterpreter.NVMe;
+  BufferInterpreter.NVMe, OS.SetupAPI;
 
 type
   TSamsungNVMeCommandSet = class sealed(TNVMeCommandSet)
@@ -219,7 +219,9 @@ begin
   try
     result.SlotSpeed := GetSlotSpeed.Current;
   except
-    FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
+    on EBelowVistaException do
+      FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
+    else raise;
   end;
 end;
 

@@ -5,7 +5,7 @@ interface
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
   OSFile, Getter.PhysicalDriveList, Device.PhysicalDrive,
-  Device.PhysicalDrive.List, CommandSet.Factory;
+  Device.PhysicalDrive.List, CommandSet.Factory, WMI;
 
 type
   TDeviceDriver = record
@@ -21,14 +21,7 @@ type
     function GetDeviceDriver: TDeviceDriver;
   private
     DeviceDriver: TDeviceDriver;
-    function ConnectToWMIObjectByMoniker: IDispatch;
     function GetStorageDeviceID(WMIObject: IDispatch): String;
-    function GetDefaultMonikerFromObjectPath(ObjectPath: String;
-      BindableContext: IBindCtx): IMoniker;
-    function GetLocalhostWMIRepositoryURI: String;
-    function GetMonikerBindableContext: IBindCtx;
-    function GetReferredObjectByMoniker(DefaultMoniker: IMoniker;
-      BindableContext: IBindCtx): IDispatch;
     procedure TryToGetDeviceDriver;
     function GetSCSIControllerDeviceID(WMIObject: IDispatch;
       StorageDeviceID: String): String;
@@ -59,7 +52,7 @@ var
   StorageDeviceID: String;
   ControllerDeviceID: String;
 begin
-  WMIObject := ConnectToWMIObjectByMoniker;
+  WMIObject := WMIConnection.GetWMIConnection;
   StorageDeviceID := GetStorageDeviceID(WMIObject);
   try
     ControllerDeviceID := GetSCSIControllerDeviceID(WMIObject,
@@ -70,57 +63,6 @@ begin
   end;
   DeviceDriver := GetDeviceDriverInformation(WMIObject,
     ControllerDeviceID);
-end;
-
-function TDeviceDriverGetter.ConnectToWMIObjectByMoniker: IDispatch;
-var
-  ContextToBindMoniker: IBindCtx;
-  DefaultMoniker: IMoniker;
-begin
-  ContextToBindMoniker := GetMonikerBindableContext;
-  DefaultMoniker :=
-    GetDefaultMonikerFromObjectPath(
-      GetLocalhostWMIRepositoryURI,
-      ContextToBindMoniker);
-  result :=
-    GetReferredObjectByMoniker(
-      DefaultMoniker,
-      ContextToBindMoniker);
-end;
-
-function TDeviceDriverGetter.GetMonikerBindableContext: IBindCtx;
-const
-  ReservedAndMustBeZero = 0;
-begin
-  OleCheck(CreateBindCtx(ReservedAndMustBeZero, result));
-end;
-
-function TDeviceDriverGetter.GetDefaultMonikerFromObjectPath
-  (ObjectPath: String; BindableContext: IBindCtx): IMoniker;
-var
-  LengthOfURISuccessfullyParsed: Integer;
-begin
-  OleCheck(
-    MkParseDisplayName(BindableContext,
-      PWideChar(ObjectPath),
-      LengthOfURISuccessfullyParsed,
-      result));
-end;
-
-function TDeviceDriverGetter.GetLocalhostWMIRepositoryURI: String;
-const
-  WMIService = 'winmgmts:\\';
-  Localhost = 'localhost\';
-  WMIRepositoryPrefix = 'root\cimv2';
-begin
-  result := WMIService + Localhost + WMIRepositoryPrefix;
-end;
-
-function TDeviceDriverGetter.GetReferredObjectByMoniker
-  (DefaultMoniker: IMoniker; BindableContext: IBindCtx): IDispatch;
-begin
-  OleCheck(
-    DefaultMoniker.BindToObject(BindableContext, nil, IUnknown, result));
 end;
 
 function TDeviceDriverGetter.GetStorageDeviceID(WMIObject: IDispatch):

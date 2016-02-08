@@ -32,9 +32,14 @@ implementation
 { TBusPhysicalDrive }
 
 constructor TBusPhysicalDrive.Create(const FileToGetAccess: String);
+var
+  CommandSetWithIdentifyDevice: TCommandSetWithIdentifyDevice;
 begin
   inherited Create(FileToGetAccess);
-  CommandSet := CommandSetFactory.GetSuitableCommandSet(FileToGetAccess);
+  CommandSetWithIdentifyDevice :=
+    CommandSetFactory.GetSuitableCommandSetWithIdentifyDevice(FileToGetAccess);
+  CommandSet := CommandSetWithIdentifyDevice.CommandSet;
+  IdentifyDeviceResultReadWrite := CommandSetWithIdentifyDevice.IdentifyDevice;
 end;
 
 destructor TBusPhysicalDrive.Destroy;

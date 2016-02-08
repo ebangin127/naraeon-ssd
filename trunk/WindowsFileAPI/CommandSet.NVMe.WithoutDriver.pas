@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils,
   OSFile.IoControl, CommandSet.NVMe, BufferInterpreter, Device.SMART.List,
-  BufferInterpreter.SCSI;
+  BufferInterpreter.SCSI, OS.SetupAPI;
 
 type
   TNVMeWithoutDriverCommandSet = class sealed(TNVMeCommandSet)
@@ -63,6 +63,7 @@ type
     IoInnerBuffer: SCSI_WITH_BUFFER;
     function GetCommonBuffer: SCSI_WITH_BUFFER;
     function GetCommonCommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK;
+    procedure IfRealSCSIDeleteModel(var Model: String);
     procedure SetInnerBufferAsFlagsAndCdb(Flags: ULONG;
       CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK);
     function InterpretIdentifyDeviceBuffer: TIdentifyDeviceResult;
@@ -81,8 +82,8 @@ begin
   FillChar(result, SizeOf(result), #0);
 	result.Parameter.Length :=
     SizeOf(result.Parameter);
-  result.Parameter.TargetId := SATTargetId;
-  result.Parameter.CdbLength := SizeOf(result.Parameter.CommandDescriptorBlock);
+  result.Parameter.TargetId := 0;
+  result.Parameter.CdbLength := 6;
 	result.Parameter.SenseInfoLength :=
     SizeOf(result.SenseBuffer);
 	result.Parameter.DataTransferLength :=
@@ -116,17 +117,27 @@ begin
       IoInnerBuffer));
 end;
 
-procedure TNVMeWithoutDriverCommandSet.SetInnerBufferToSendIdentifyDeviceCommand;
+procedure TNVMeWithoutDriverCommandSet.
+  SetInnerBufferToSendIdentifyDeviceCommand;
 const
   InquiryCommand = $12;
-  TransferLength = $0;
 var
   CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK;
 begin
   CommandDescriptorBlock := GetCommonCommandDescriptorBlock;
   CommandDescriptorBlock.SCSICommand := InquiryCommand;
-  CommandDescriptorBlock.LogicalBlockAddress[7] := TransferLength;
+  CommandDescriptorBlock.LogicalBlockAddress[2] :=
+    SizeOf(IoInnerBuffer.Buffer) shr 8;
+  CommandDescriptorBlock.LogicalBlockAddress[3] :=
+    SizeOf(IoInnerBuffer.Buffer) and $FF;
   SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_IN, CommandDescriptorBlock);
+end;
+
+procedure TNVMeWithoutDriverCommandSet.IfRealSCSIDeleteModel(
+  var Model: String);
+begin
+  if Copy(Model, 1, 4) <> 'NVMe' then
+    Model := '';
 end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -135,17 +146,13 @@ var
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
+  IfRealSCSIDeleteModel(result.Model);
   result.StorageInterface := TStorageInterface.NVMe;
   SetBufferAndReadCapacity;
   ReadCapacityResult := InterpretReadCapacityBuffer;
   result.UserSizeInKB := ReadCapacityResult.UserSizeInKB;
   result.LBASize := ReadCapacityResult.LBASize;
   result.IsDataSetManagementSupported := false;
-  try
-    result.SlotSpeed := GetSlotSpeed.Current;
-  except
-    FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
-  end;
 end;
 
 function TNVMeWithoutDriverCommandSet.InterpretIdentifyDeviceBuffer:

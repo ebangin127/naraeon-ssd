@@ -81,7 +81,8 @@ uses
   Getter.PhysicalDriveList.WMI in '..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas',
   Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas',
   CommandSet.NVMe.WithoutDriver in '..\WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas',
-  BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas';
+  BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas',
+  WMI in '..\WindowsFileAPI\WMI.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

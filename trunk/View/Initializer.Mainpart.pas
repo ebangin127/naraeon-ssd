@@ -99,6 +99,10 @@ end;
 
 function TMainformMainpartApplier.GetNVMeConnectionSpeedString: String;
 begin
+  if fMain.PhysicalDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion =
+    TPCIeSpecification.PCIeUnknownSpec then
+      exit(CapUnknown[CurrLang]);
+
   result :=
     SlotSpecificationString[
       fMain.PhysicalDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion] + ' x' +

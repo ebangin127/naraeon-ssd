@@ -7,6 +7,7 @@ uses
   OS.VersionHelper;
 
 function Is64Bit: Boolean;
+function IsBelowVista: Boolean;
 function IsBelowWindows8: Boolean;
 function GetWindowsVersionString: String;
 function GetWindowsArchitectureString: String;
@@ -38,6 +39,11 @@ begin
   finally
     FreeLibrary(vKernel32Handle);
   end;
+end;
+
+function IsBelowVista: Boolean;
+begin
+  result := VersionHelper.MajorVersion = 10;
 end;
 
 function IsBelowWindows8: Boolean;

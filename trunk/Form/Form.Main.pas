@@ -96,7 +96,6 @@ type
     iHelp: TImage;
     lHelp: TLabel;
     tRefreshList: TTimer;
-
     //생성자와 파괴자
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -137,9 +136,11 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure tRefreshListTimer(Sender: TObject);
-
   private
+    CurrentDrivePath: String;
     RefreshListDisabled: Boolean;
+    ShowSerial: Boolean;
+    ListEnter: Integer;
     procedure RefreshByPhysicalDrive;
     procedure RefreshDrives;
     function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
@@ -154,7 +155,6 @@ type
     procedure RefreshLabelList;
 
   public
-    CurrDrive: String;
     SSDLabel: TSSDLabelList;
     PhysicalDriveList: TPhysicalDriveList;
     PhysicalDrive: IPhysicalDrive;
@@ -164,13 +164,12 @@ type
     OnlineFirmwareUpdateAvailable: Boolean;
     UpdateThread: TUpdateThread;
     TrimThread: TTrimThread;
-    ShowSerial: Boolean;
-    ListEnter: Integer;
     Optimizer: TNSTOptimizer;
   end;
 
 var
   fMain: TfMain;
+  StartTime: TLargeInteger;
 
 const
   MinimumSize = 290;
@@ -260,7 +259,7 @@ begin
 
   gTrim.Visible := false;
 
-  CurrDrive := '';
+  CurrentDrivePath := '';
   PartitionsToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
     if cTrimList.Checked[CurrPartition] then
@@ -298,6 +297,7 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  StartTime := GetTickCount;
   CreateBasicObjects;
   CheckPrerequisite;
   InitializeMainForm;
@@ -557,7 +557,7 @@ procedure TfMain.SSDLabelClick(Sender: TObject);
 begin
   CloseDriveList;
 
-  if CurrDrive =
+  if CurrentDrivePath =
     TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix then
   begin
     gSSDSel.Visible := false;
@@ -567,7 +567,7 @@ begin
   lFirmware.Font.Color := clWindowText;
   ButtonGroup.CloseAll;
 
-  CurrDrive :=
+  CurrentDrivePath :=
     TSSDLabel(Sender).PhysicalDrive.GetPathOfFileAccessingWithoutPrefix;
   tRefreshTimer(Self);
 
@@ -637,7 +637,7 @@ end;
 
 procedure TfMain.CreateNewPhysicalDrive;
 begin
-  if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrDrive)) = false then
+  if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrentDrivePath)) = false then
     FindAndSelectValidDrive;
 end;
 
@@ -658,7 +658,7 @@ begin
   if tRefresh.Interval < ORIGINAL_INTERVAL then
     tRefresh.Interval := ORIGINAL_INTERVAL;
 
-  if Length(fMain.CurrDrive) = 0 then
+  if Length(fMain.CurrentDrivePath) = 0 then
     exit;
 
   CreateNewPhysicalDrive;
@@ -712,6 +712,7 @@ begin
     UpdateThread.Priority := tpLower;
     UpdateThread.Start;
   end;
+  ShowMessage(UIntToStr(GetTickCount - StartTime));
 end;
 
 procedure TfMain.WMDeviceChange(var Msg: TMessage);

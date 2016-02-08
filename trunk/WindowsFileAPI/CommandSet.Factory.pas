@@ -13,21 +13,30 @@ uses
   {$EndIf}
 
 type
+  TCommandSetWithIdentifyDevice = record
+    CommandSet: TCommandSet;
+    IdentifyDevice: TIdentifyDeviceResult;
+  end;
   TMetaCommandSet = class of TCommandSet;
   ENoCommandSetException = class(EArgumentNilException);
   ENoNVMeDriverException = class(EArgumentOutOfRangeException);
   TCommandSetFactory = class
   public
-    function GetSuitableCommandSet(FileToGetAccess: String):
+    function GetSuitableCommandSet(const FileToGetAccess: String):
       TCommandSet;
+    function GetSuitableCommandSetWithIdentifyDevice(
+      const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
     class function Create: TCommandSetFactory;
   private
-    function TryCommandSetsAndGetRightSet: TCommandSet;
-    function TryNVMeWithoutDriverCommandSet: TCommandSet;
+    procedure TryNVMeWithoutDriverCommandSet(
+      const FileToGetAccess: String);
+    function TryCommandSetsAndGetRightSet(
+      const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
     function TestCommandSetCompatibility(
-      TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
-    var
-      FileToGetAccess: String;
+      const FileToGetAccess: String;
+      const TCommandSetToTry: TMetaCommandSet;
+      const LastResult: TCommandSetWithIdentifyDevice):
+      TCommandSetWithIdentifyDevice;
   end;
 
 var
@@ -46,54 +55,73 @@ begin
 end;
 
 function TCommandSetFactory.GetSuitableCommandSet(
-  FileToGetAccess: String): TCommandSet;
+  const FileToGetAccess: String): TCommandSet;
 begin
-  self.FileToGetAccess := FileToGetAccess;
-  result := TryCommandSetsAndGetRightSet;
-  if result = nil then
+  result :=
+    GetSuitableCommandSetWithIdentifyDevice(FileToGetAccess).CommandSet;
+end;
+
+function TCommandSetFactory.GetSuitableCommandSetWithIdentifyDevice(
+  const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
+begin
+  result := TryCommandSetsAndGetRightSet(FileToGetAccess);
+  if result.CommandSet = nil then
     raise ENoCommandSetException.Create('Argument Nil: CommandSet is not set');
 end;
 
-function TCommandSetFactory.TryCommandSetsAndGetRightSet: TCommandSet;
+function TCommandSetFactory.TryCommandSetsAndGetRightSet(
+  const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
 begin
-  result := nil;
-  result := TestCommandSetCompatibility(TIntelNVMeCommandSet, result);
-  result := TestCommandSetCompatibility(TSamsungNVMeCommandSet, result);
-  result := TestCommandSetCompatibility(TATACommandSet, result);
-  result := TestCommandSetCompatibility(TLegacyATACommandSet, result);
-  result := TestCommandSetCompatibility(TSATCommandSet, result);
-  if result = nil then
-    result := TryNVMeWithoutDriverCommandSet;
+  result.CommandSet := nil;
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TIntelNVMeCommandSet, result);
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TSamsungNVMeCommandSet, result);
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TATACommandSet, result);
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TLegacyATACommandSet, result);
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TSATCommandSet, result);
+  if result.CommandSet = nil then
+    TryNVMeWithoutDriverCommandSet(FileToGetAccess);
 end;
 
-function TCommandSetFactory.TryNVMeWithoutDriverCommandSet: TCommandSet;
+procedure TCommandSetFactory.TryNVMeWithoutDriverCommandSet(
+  const FileToGetAccess: String);
+var
+  NVMeWithoutDriver: TCommandSet;
+  Dummy: TCommandSetWithIdentifyDevice;
 begin
-  result := TestCommandSetCompatibility(TNVMeWithoutDriverCommandSet, nil);
-  if result <> nil then
+  FillChar(Dummy, SizeOf(Dummy), #0);
+  NVMeWithoutDriver := TestCommandSetCompatibility(
+    FileToGetAccess, TNVMeWithoutDriverCommandSet, Dummy).CommandSet;
+  if NVMeWithoutDriver <> nil then
   begin
-    FreeAndNil(result);
+    FreeAndNil(NVMeWithoutDriver);
     raise ENoNVMeDriverException.Create('No NVMe Driver with: ' +
       FileToGetAccess);
   end;
 end;
 
 function TCommandSetFactory.TestCommandSetCompatibility(
-  TCommandSetToTry: TMetaCommandSet; LastResult: TCommandSet): TCommandSet;
-var
-  IdentifyDeviceResult: TIdentifyDeviceResult;
+  const FileToGetAccess: String;
+  const TCommandSetToTry: TMetaCommandSet;
+  const LastResult: TCommandSetWithIdentifyDevice):
+  TCommandSetWithIdentifyDevice;
 begin
-  if LastResult <> nil then
+  if LastResult.CommandSet <> nil then
     exit(LastResult);
-  
-  result := TCommandSetToTry.Create(FileToGetAccess);
+
+  result.CommandSet := TCommandSetToTry.Create(FileToGetAccess);
   
   try
-    IdentifyDeviceResult := result.IdentifyDevice;
+    result.IdentifyDevice := result.CommandSet.IdentifyDevice;
   except
-    IdentifyDeviceResult.Model := '';
+    result.IdentifyDevice.Model := '';
   end;
 
-  if IdentifyDeviceResult.Model = '' then
+  if result.IdentifyDevice.Model = '' then
     FreeAndNil(result);
 end;
 

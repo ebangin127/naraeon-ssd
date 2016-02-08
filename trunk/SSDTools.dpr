@@ -151,7 +151,8 @@ uses
   Thread.Trim.Helper.Partition.OS in 'Objects\Thread.Trim.Helper.Partition.OS.pas',
   Thread.Trim.Helper.Partition in 'Objects\Thread.Trim.Helper.Partition.pas',
   Thread.Trim.Helper.Partition.Direct in 'Objects\Thread.Trim.Helper.Partition.Direct.pas',
-  Global.HelpPage in 'Resource\Global.HelpPage.pas';
+  Global.HelpPage in 'Resource\Global.HelpPage.pas',
+  WMI in 'WindowsFileAPI\WMI.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

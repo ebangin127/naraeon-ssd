@@ -6,14 +6,14 @@ uses
   Windows, SysUtils,
   OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List,
   CommandSet.NVMe, CommandSet.NVMe.Intel.PortPart,
-  Getter.SCSIAddress, Device.SlotSpeed;
+  Getter.SCSIAddress, Device.SlotSpeed, OS.SetupAPI;
 
 type
   TIntelNVMeCommandSet = class sealed(TNVMeCommandSet)
   private
+    SCSIPath: String;
     function GetPortIdentifyDevice: TIdentifyDeviceResult;
-    function SendPortIdentifyDevice(
-      const SCSIAddressGetter: TSCSIAddressGetter): TIdentifyDeviceResult;
+    procedure SetSCSIPathIfNeeded;
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -44,18 +44,37 @@ begin
     SlotSpeed := GetSlotSpeed;
     result.SlotSpeed := SlotSpeed.Current;
   except
-    FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
+    on EBelowVistaException do
+      FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
+    else raise;
   end;
 end;
 
 function TIntelNVMeCommandSet.GetPortIdentifyDevice: TIdentifyDeviceResult;
 var
+  PortCommandSet: TIntelNVMePortCommandSet;
+begin
+  result.Model := '';
+  SetSCSIPathIfNeeded;
+  PortCommandSet := TIntelNVMePortCommandSet.Create(SCSIPath);
+  try
+    result := PortCommandSet.IdentifyDevice;
+  finally
+    FreeAndNil(PortCommandSet);
+  end;
+end;
+
+procedure TIntelNVMeCommandSet.SetSCSIPathIfNeeded;
+var
   SCSIAddressGetter: TSCSIAddressGetter;
 begin
-  SCSIAddressGetter := TSCSIAddressGetter.Create(
-    GetPathOfFileAccessing);
+  if SCSIPath <> '' then
+    exit;
+  SCSIAddressGetter := TSCSIAddressGetter.Create(GetPathOfFileAccessing);
   try
-    result := SendPortIdentifyDevice(SCSIAddressGetter);
+    SCSIPath :=
+      SCSIPrefix + IntToStr(SCSIAddressGetter.GetSCSIAddress.PortNumber) +
+      SCSIPostFix;
   finally
     FreeAndNil(SCSIAddressGetter);
   end;
@@ -64,29 +83,11 @@ end;
 function TIntelNVMeCommandSet.SMARTReadData: TSMARTValueList;
 var
   PortCommandSet: TIntelNVMePortCommandSet;
-  SCSIAddressGetter: TSCSIAddressGetter;
 begin
-  SCSIAddressGetter := TSCSIAddressGetter.Create(
-    GetPathOfFileAccessing);
-  PortCommandSet := TIntelNVMePortCommandSet.Create(
-    SCSIPrefix + IntToStr(SCSIAddressGetter.GetSCSIAddress.PortNumber) +
-    SCSIPostFix);
-  result := PortCommandSet.SMARTReadData;
-  FreeAndNil(PortCommandSet);
-  FreeAndNil(SCSIAddressGetter);
-end;
-
-function TIntelNVMeCommandSet.SendPortIdentifyDevice(
-  const SCSIAddressGetter: TSCSIAddressGetter): TIdentifyDeviceResult;
-var
-  PortCommandSet: TIntelNVMePortCommandSet;
-begin
-  result.Model := '';
-  PortCommandSet := TIntelNVMePortCommandSet.Create(
-    SCSIPrefix + IntToStr(SCSIAddressGetter.GetSCSIAddress.PortNumber) +
-    SCSIPostFix);
+  SetSCSIPathIfNeeded;
+  PortCommandSet := TIntelNVMePortCommandSet.Create(SCSIPath);
   try
-    result := PortCommandSet.IdentifyDevice;
+    result := PortCommandSet.SMARTReadData;
   finally
     FreeAndNil(PortCommandSet);
   end;

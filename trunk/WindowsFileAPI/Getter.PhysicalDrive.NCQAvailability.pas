@@ -57,6 +57,7 @@ type
     function IsSATA: Boolean;
     function IsNCQ: Boolean;
     function IsUnknown: Boolean;
+    function IsRAIDwithCommandQueuing: Boolean;
   end;
 
 
@@ -131,6 +132,13 @@ begin
     (InnerOutputBuffer.BusType = TBusType.ATA);
 end;
 
+function TNCQAvailabilityGetter.IsRAIDwithCommandQueuing: Boolean;
+begin
+  result :=
+    (InnerOutputBuffer.CommandQueuing) and
+    (InnerOutputBuffer.BusType = TBusType.RAID);
+end;
+
 function TNCQAvailabilityGetter.IsSATA: Boolean;
 begin
   result :=
@@ -141,6 +149,7 @@ function TNCQAvailabilityGetter.IsUnknown: Boolean;
 begin
   result :=
     (InnerOutputBuffer.BusType <> TBusType.SATA) and
+    (InnerOutputBuffer.BusType <> TBusType.RAID) and
     (InnerOutputBuffer.BusType <> TBusType.ATA) and
     (InnerOutputBuffer.BusType <> TBusType.SCSI);
 end;
@@ -150,6 +159,7 @@ begin
   result :=
     IsSCSIwithCommandQueuing or
     IsATAwithCommandQueuing or
+    IsRAIDwithCommandQueuing or
     IsSATA;
 end;
 

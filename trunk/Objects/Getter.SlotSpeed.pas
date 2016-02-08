@@ -4,21 +4,14 @@ interface
 
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
-  OSFile, Getter.SlotSpeedByDeviceID, Device.SlotSpeed;
+  OSFile, Getter.SlotSpeedByDeviceID, Device.SlotSpeed, WMI;
 
 type
   TSlotSpeedGetter = class sealed(TOSFile)
   public
     function GetSlotSpeed: TSlotMaxCurrSpeed;
   private
-    function ConnectToWMIObjectByMoniker: IDispatch;
     function GetStorageDeviceID(WMIObject: IDispatch): String;
-    function GetDefaultMonikerFromObjectPath(ObjectPath: String;
-      BindableContext: IBindCtx): IMoniker;
-    function GetLocalhostWMIRepositoryURI: String;
-    function GetMonikerBindableContext: IBindCtx;
-    function GetReferredObjectByMoniker(DefaultMoniker: IMoniker;
-      BindableContext: IBindCtx): IDispatch;
     function TryToGetSlotDataWidth: TSlotMaxCurrSpeed;
     function GetControllerDeviceID(WMIObject: IDispatch;
       StorageDeviceID: String): String;
@@ -26,6 +19,9 @@ type
       const ControllerDeviceID: String): TOSSlotMaxCurrSpeed;
     function InterpretOSSlotSpeed(
       const OSSlotSpeed: TOSSlotMaxCurrSpeed): TSlotMaxCurrSpeed;
+    procedure FreeWMIConnectionIfNeeded(
+      const ThisThreadWMIConnection: TWMIConnection);
+    function GetWMIConnection: TWMIConnection;
   end;
 
 implementation
@@ -43,16 +39,37 @@ end;
 
 function TSlotSpeedGetter.TryToGetSlotDataWidth: TSlotMaxCurrSpeed;
 var
+  WMIConnection: TWMIConnection;
   WMIObject: IDispatch;
   StorageDeviceID: String;
   ControllerDeviceID: String;
   OSSlotSpeed: TOSSlotMaxCurrSpeed;
 begin
-  WMIObject := ConnectToWMIObjectByMoniker;
-  StorageDeviceID := GetStorageDeviceID(WMIObject);
-  ControllerDeviceID := GetControllerDeviceID(WMIObject, StorageDeviceID);
-  OSSlotSpeed := GetOSSlotInformationByDeviceID(ControllerDeviceID);
-  result := InterpretOSSlotSpeed(OSSlotSpeed);
+  WMIConnection := GetWMIConnection;
+  try
+    WMIObject := WMIConnection.GetWMIConnection;
+    StorageDeviceID := GetStorageDeviceID(WMIObject);
+    ControllerDeviceID := GetControllerDeviceID(WMIObject, StorageDeviceID);
+    OSSlotSpeed := GetOSSlotInformationByDeviceID(ControllerDeviceID);
+    result := InterpretOSSlotSpeed(OSSlotSpeed);
+  finally
+    FreeWMIConnectionIfNeeded(WMIConnection);
+  end;
+end;
+
+function TSlotSpeedGetter.GetWMIConnection: TWMIConnection;
+begin
+  if WMIConnection.IsMyConnection then
+    exit(WMIConnection)
+  else
+    exit(TWMIConnection.Create);
+end;
+
+procedure TSlotSpeedGetter.FreeWMIConnectionIfNeeded(
+  const ThisThreadWMIConnection: TWMIConnection);
+begin
+  if WMIConnection.IsMyConnection = false then
+    ThisThreadWMIConnection.Free;
 end;
 
 function TSlotSpeedGetter.GetOSSlotInformationByDeviceID(
@@ -74,57 +91,6 @@ begin
   result.Current.SpecVersion := TPCIeSpecification(
     OSSlotSpeed.Current.SpecVersion);
   result.Current.LinkWidth := TPCIeDataWidth(OSSlotSpeed.Current.LinkWidth);
-end;
-
-function TSlotSpeedGetter.ConnectToWMIObjectByMoniker: IDispatch;
-var
-  ContextToBindMoniker: IBindCtx;
-  DefaultMoniker: IMoniker;
-begin
-  ContextToBindMoniker := GetMonikerBindableContext;
-  DefaultMoniker :=
-    GetDefaultMonikerFromObjectPath(
-      GetLocalhostWMIRepositoryURI,
-      ContextToBindMoniker);
-  result :=
-    GetReferredObjectByMoniker(
-      DefaultMoniker,
-      ContextToBindMoniker);
-end;
-
-function TSlotSpeedGetter.GetMonikerBindableContext: IBindCtx;
-const
-  ReservedAndMustBeZero = 0;
-begin
-  OleCheck(CreateBindCtx(ReservedAndMustBeZero, result));
-end;
-
-function TSlotSpeedGetter.GetDefaultMonikerFromObjectPath
-  (ObjectPath: String; BindableContext: IBindCtx): IMoniker;
-var
-  LengthOfURISuccessfullyParsed: Integer;
-begin
-  OleCheck(
-    MkParseDisplayName(BindableContext,
-      PWideChar(ObjectPath),
-      LengthOfURISuccessfullyParsed,
-      result));
-end;
-
-function TSlotSpeedGetter.GetLocalhostWMIRepositoryURI: String;
-const
-  WMIService = 'winmgmts:\\';
-  Localhost = 'localhost\';
-  WMIRepositoryPrefix = 'root\cimv2';
-begin
-  result := WMIService + Localhost + WMIRepositoryPrefix;
-end;
-
-function TSlotSpeedGetter.GetReferredObjectByMoniker
-  (DefaultMoniker: IMoniker; BindableContext: IBindCtx): IDispatch;
-begin
-  OleCheck(
-    DefaultMoniker.BindToObject(BindableContext, nil, IUnknown, result));
 end;
 
 function TSlotSpeedGetter.GetStorageDeviceID(WMIObject: IDispatch):

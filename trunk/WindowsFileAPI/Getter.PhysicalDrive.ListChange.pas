@@ -109,7 +109,6 @@ var
   CurrentEntry: IPhysicalDrive;
   IsExistsInPreviousList: Boolean;
   CanBeListed: Boolean;
-  NewPath: String;
 begin
   result := TPhysicalDriveList.Create;
 
@@ -118,15 +117,12 @@ begin
     IsExistsInPreviousList := ListToRefresh.IsExists(CurrentEntry);
     CanBeListed :=
       IsSupportedOrNotNeededToCheck(CurrentEntry.SupportStatus.Supported);
-    NewPath :=
-      TPhysicalDrive.BuildFileAddressByNumber(
-        StrToInt(CurrentEntry.GetPathOfFileAccessingWithoutPrefix));
     if CanBeListed then
-      NewList.Add(TPhysicalDrive.Create(NewPath));
+      NewList.Add(CurrentEntry);
     if not IsResultNeeded then
       Continue;
     if (not IsExistsInPreviousList) and (CanBeListed) then
-      result.Add(TPhysicalDrive.Create(NewPath));
+      result.Add(CurrentEntry);
   end;
 end;
   

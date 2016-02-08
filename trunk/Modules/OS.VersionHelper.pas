@@ -59,7 +59,7 @@ end;
 
 function TVersionHelper.GuessMinorVersion: Boolean;
 const
-  MinorVersionMax = 10;
+  MinorVersionMax = 20;
 var
   CurrentVersion: WORD;
 begin
@@ -105,18 +105,19 @@ var
   osvi: OSVERSIONINFOEXW;
   dwlConditionMask: DWORDLONG;
 begin
-  dwlConditionMask := VerSetConditionMask(
-    VerSetConditionMask(
-      VerSetConditionMask(0, VER_MAJORVERSION, VER_EQUAL),
-      VER_MINORVERSION, VER_EQUAL),
-    VER_SERVICEPACKMAJOR, VER_EQUAL);
+  dwlConditionMask :=
+    VerSetConditionMask(0, VER_MAJORVERSION, VER_EQUAL);
+  dwlConditionMask :=
+    VerSetConditionMask(dwlConditionMask, VER_MINORVERSION, VER_EQUAL);
+  dwlConditionMask :=
+    VerSetConditionMask(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_EQUAL);
 
   osvi.dwMajorVersion := Major;
   osvi.dwMinorVersion := Minor;
   osvi.wServicePackMajor := ServicePack;
 
   result :=
-    VerifyVersionInfoW(
+    VerifyVersionInfo(
       &osvi,
       VER_MAJORVERSION or VER_MINORVERSION or VER_SERVICEPACKMAJOR,
       dwlConditionMask);

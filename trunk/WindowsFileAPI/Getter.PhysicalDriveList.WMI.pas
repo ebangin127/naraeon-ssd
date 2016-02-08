@@ -3,9 +3,10 @@ unit Getter.PhysicalDriveList.WMI;
 interface
 
 uses
-  Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
+  Classes, Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
+  Generics.Collections, Threading,
   OSFile, Getter.PhysicalDriveList, Device.PhysicalDrive,
-  Device.PhysicalDrive.List, CommandSet.Factory;
+  Device.PhysicalDrive.List, CommandSet.Factory, WMI;
 
 type
   TWMIPhysicalDriveListGetter = class sealed(TPhysicalDriveListGetter)
@@ -13,19 +14,13 @@ type
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
     CurrentDrive: OleVariant;
-    PhysicalDriveList: TPhysicalDriveList;
-    procedure AddDriveToList;
+    PhysicalDriveList: TThreadedPhysicalDriveList;
+    DeviceIDList: TStringList;
+    procedure AddDriveToDeviceIDList;
     procedure CheckMediaTypeAndAddIfRequirementMet;
-    function ConnectToWMIObjectByMoniker: IDispatch;
-    function GetDefaultMonikerFromObjectPath(ObjectPath: String;
-      BindableContext: IBindCtx): IMoniker;
     function GetDiskDriveSearchResult(WMIObject: IDispatch): IEnumVARIANT;
-    function GetLocalhostWMIRepositoryURI: String;
-    function GetMonikerBindableContext: IBindCtx;
     function GetNextDriveAndReturnResult(
       DiskDriveSearchResult: IEnumVARIANT): Boolean;
-    function GetReferredObjectByMoniker(DefaultMoniker: IMoniker;
-      BindableContext: IBindCtx): IDispatch;
     procedure IfDriveConnectedByKnownInterfaceAddToList;
     procedure IfFixedOrUSBDriveAddToList;
     function IsCurrentDriveAvailable: Boolean;
@@ -38,62 +33,13 @@ type
     procedure TraverseResultAndAddFixedOrUSBDrive(
       DiskDriveSearchResult: IEnumVARIANT);
     procedure TryToGetPhysicalDriveList;
+    function LockAndTransfer: TPhysicalDriveList;
+    procedure AddDriveToList(const DeviceID: String);
   end;
 
 implementation
 
 { TWMIPhysicalDriveListGetter }
-
-function TWMIPhysicalDriveListGetter.GetMonikerBindableContext: IBindCtx;
-const
-  ReservedAndMustBeZero = 0;
-begin
-  OleCheck(CreateBindCtx(ReservedAndMustBeZero, result));
-end;
-
-function TWMIPhysicalDriveListGetter.GetDefaultMonikerFromObjectPath
-  (ObjectPath: String; BindableContext: IBindCtx): IMoniker;
-var
-  LengthOfURISuccessfullyParsed: Integer;
-begin
-  OleCheck(
-    MkParseDisplayName(BindableContext,
-      PWideChar(ObjectPath),
-      LengthOfURISuccessfullyParsed,
-      result));
-end;
-
-function TWMIPhysicalDriveListGetter.GetReferredObjectByMoniker
-  (DefaultMoniker: IMoniker; BindableContext: IBindCtx): IDispatch;
-begin
-  OleCheck(
-    DefaultMoniker.BindToObject(BindableContext, nil, IUnknown, result));
-end;
-
-function TWMIPhysicalDriveListGetter.GetLocalhostWMIRepositoryURI: String;
-const
-  WMIService = 'winmgmts:\\';
-  Localhost = 'localhost\';
-  WMIRepositoryPrefix = 'root\cimv2';
-begin
-  result := WMIService + Localhost + WMIRepositoryPrefix;
-end;
-
-function TWMIPhysicalDriveListGetter.ConnectToWMIObjectByMoniker: IDispatch;
-var
-  ContextToBindMoniker: IBindCtx;
-  DefaultMoniker: IMoniker;
-begin
-  ContextToBindMoniker := GetMonikerBindableContext;
-  DefaultMoniker :=
-    GetDefaultMonikerFromObjectPath(
-      GetLocalhostWMIRepositoryURI,
-      ContextToBindMoniker);
-  result :=
-    GetReferredObjectByMoniker(
-      DefaultMoniker,
-      ContextToBindMoniker);
-end;
 
 function TWMIPhysicalDriveListGetter.GetDiskDriveSearchResult
   (WMIObject: IDispatch): IEnumVARIANT;
@@ -117,11 +63,11 @@ var
   DriveReturned: Cardinal;
 begin
   result :=
-    DiskDriveSearchResult.Next
-      (OneDriveInformationNeeded,
-       CurrentDrive,
-       DriveReturned) =
-       ThereIsAnotherDrive;
+    DiskDriveSearchResult.Next(
+      OneDriveInformationNeeded,
+      CurrentDrive,
+      DriveReturned) =
+      ThereIsAnotherDrive;
 end;
 
 function TWMIPhysicalDriveListGetter.IsHarddrive(MediaType: String): Boolean;
@@ -130,12 +76,17 @@ begin
   result := Pos('hard', LowerCase(MediaType)) >= 0;
 end;
 
-procedure TWMIPhysicalDriveListGetter.AddDriveToList;
+procedure TWMIPhysicalDriveListGetter.AddDriveToDeviceIDList;
+begin
+  DeviceIDList.Add(CurrentDrive.DeviceID);
+end;
+
+procedure TWMIPhysicalDriveListGetter.AddDriveToList(const DeviceID: String);
 var
   PhysicalDrive: TPhysicalDrive;
 begin
   try
-    PhysicalDrive := TPhysicalDrive.Create(String(CurrentDrive.DeviceID));
+    PhysicalDrive := TPhysicalDrive.Create(String(DeviceID));
     PhysicalDriveList.Add(PhysicalDrive);
   except
     on E: ENoCommandSetException do;
@@ -163,7 +114,7 @@ end;
 procedure TWMIPhysicalDriveListGetter.IfDriveConnectedByKnownInterfaceAddToList;
 begin
   if IsDriveConnectedByKnownInterface then
-     AddDriveToList;
+     AddDriveToDeviceIDList;
 end;
 
 procedure TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet;
@@ -184,7 +135,7 @@ end;
 
 function TWMIPhysicalDriveListGetter.IsDriveSetValidID: Boolean;
 begin
-  result := (not VarIsNull(CurrentDrive.DeviceID <> ''));
+  result := (not VarIsNull(CurrentDrive.DeviceID));
 end;
 
 function TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable: Boolean;
@@ -199,15 +150,23 @@ procedure TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList;
 begin
   if IsCurrentDriveAvailable then
     CheckMediaTypeAndAddIfRequirementMet;
-
   CurrentDrive := Unassigned;
 end;
 
 procedure TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
   (DiskDriveSearchResult: IEnumVARIANT);
 begin
-  while GetNextDriveAndReturnResult(DiskDriveSearchResult) do
-    IfFixedOrUSBDriveAddToList;
+  DeviceIDList := TStringList.Create;
+  try
+    while GetNextDriveAndReturnResult(DiskDriveSearchResult) do
+      IfFixedOrUSBDriveAddToList;
+    TParallel.For(0, DeviceIDList.Count - 1, procedure (DeviceIDIndex: Integer)
+    begin
+      AddDriveToList(DeviceIDList[DeviceIDIndex]);
+    end);
+  finally
+    FreeAndNil(DeviceIDList);
+  end;
 end;
 
 procedure TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList;
@@ -215,21 +174,33 @@ var
   WMIObject: IDispatch;
   DiskDriveSearchResult: IEnumVARIANT;
 begin
-  WMIObject := ConnectToWMIObjectByMoniker;
+  WMIObject := WMIConnection.GetWMIConnection;
   DiskDriveSearchResult := GetDiskDriveSearchResult(WMIObject);
   TraverseResultAndAddFixedOrUSBDrive(DiskDriveSearchResult);
+end;
+
+function TWMIPhysicalDriveListGetter.LockAndTransfer:
+  TPhysicalDriveList;
+var
+  LockedList: TList<IPhysicalDrive>;
+begin
+  LockedList := PhysicalDriveList.LockList;
+  result := TPhysicalDriveList.Create;
+  result.AddRange(LockedList.ToArray);
+  PhysicalDriveList.UnlockList;
 end;
 
 function TWMIPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
-  PhysicalDriveList := TPhysicalDriveList.Create;
+  PhysicalDriveList := TThreadedPhysicalDriveList.Create;
   try
     TryToGetPhysicalDriveList;
   except
     PhysicalDriveList.Clear;
   end;
-  result := PhysicalDriveList;
+  result := LockAndTransfer;
+  FreeAndNil(PhysicalDriveList);
 end;
 
 end.
