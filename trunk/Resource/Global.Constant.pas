@@ -3,7 +3,7 @@ unit Global.Constant;
 interface
 
 const
-  CurrentVersion = '5.1.5';
+  CurrentVersion = '5.1.6';
   NaraeonPublisher = 'Minkyu Kim';
 
 implementation

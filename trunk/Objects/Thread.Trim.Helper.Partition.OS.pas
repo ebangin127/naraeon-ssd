@@ -34,6 +34,7 @@ type
     property Progress: Integer read CurrentProgress;
   {$EndIf}
     procedure ParseProgress(const OptimizerOutput: String);
+    procedure SetBaseProgressToStart;
   public
     procedure TrimPartition(
       const TrimSynchronizationToApply: TTrimSynchronization);
@@ -60,6 +61,12 @@ begin
   finally
     FreeClassesForTrim;
   end;
+end;
+
+procedure TOSPartitionTrimmer.SetBaseProgressToStart;
+begin
+  SetBaseProgress;
+  CalculateProgress('0%');
 end;
 
 procedure TOSPartitionTrimmer.ApplyProgress(const ProgressInString: String);
@@ -156,6 +163,7 @@ end;
 
 procedure TOSPartitionTrimmer.InitializeTrim;
 begin
+  SetBaseProgressToStart;
   {$IfNDef UNITTEST}
   TrimThreadToView := TTrimThreadToView.Create(TrimSynchronization);
   TrimThreadToView.ApplyNextDriveStartToUI(

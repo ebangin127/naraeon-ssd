@@ -141,6 +141,7 @@ type
     RefreshListDisabled: Boolean;
     ShowSerial: Boolean;
     ListEnter: Integer;
+    IsConnected: Boolean;
     procedure RefreshByPhysicalDrive;
     procedure RefreshDrives;
     function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
@@ -153,7 +154,12 @@ type
     procedure CreateBasicObjects;
     procedure Erase(const Filename: string);
     procedure RefreshLabelList;
-
+    procedure IfConnectedStartUpdateThread;
+    procedure ApplyPartitionCountToTrim(var CurrPartition: Integer);
+    procedure PrepareFormToTrim;
+    procedure StartTrimThread(const PartitionsToTrim: TTrimList);
+    procedure StartUpdateThread;
+    procedure SetIsConnected;
   public
     SSDLabel: TSSDLabelList;
     PhysicalDriveList: TPhysicalDriveList;
@@ -169,7 +175,6 @@ type
 
 var
   fMain: TfMain;
-  StartTime: TLargeInteger;
 
 const
   MinimumSize = 290;
@@ -240,36 +245,17 @@ end;
 procedure TfMain.bTrimStartClick(Sender: TObject);
 var
   CurrPartition: Integer;
-  PartitionCount: Integer;
   PartitionsToTrim: TTrimList;
 begin
-  PartitionCount := 0;
-  for CurrPartition := 0 to cTrimList.Items.Count - 1 do
-    if cTrimList.Checked[CurrPartition] then
-      PartitionCount := PartitionCount + 1;
-
-  lDownload.Caption := CapTrimName[CurrLang];
-  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartitionCount);
-  bCancel.Visible := false;
-  lSpeed.Visible := true;
-
-  lSpeed.Font.Color := clRed;
-  lSpeed.Font.Style := [fsBold];
-  lSpeed.Caption := CapProg2[CurrLang];
-
-  gTrim.Visible := false;
-
+  ApplyPartitionCountToTrim(CurrPartition);
+  PrepareFormToTrim;
   CurrentDrivePath := '';
   PartitionsToTrim := TTrimList.Create;
   for CurrPartition := 0 to cTrimList.Items.Count - 1 do
     if cTrimList.Checked[CurrPartition] then
       PartitionsToTrim.Add(
         Copy(cTrimList.Items[CurrPartition], 1, 2));
-
-  TrimThread := TTrimThread.Create(true, true);
-  TrimThread.SetPartitionList(PartitionsToTrim);
-  TrimThread.Priority := tpLower;
-  TrimThread.Start;
+  StartTrimThread(PartitionsToTrim);
 end;
 
 procedure TfMain.CloseDriveList;
@@ -297,7 +283,8 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
-  StartTime := GetTickCount;
+  SetIsConnected;
+  IfConnectedStartUpdateThread;
   CreateBasicObjects;
   CheckPrerequisite;
   InitializeMainForm;
@@ -357,7 +344,7 @@ end;
 
 procedure TfMain.iFirmUpClick(Sender: TObject);
 var
-  ifConnected: DWORD;
+  IsConnected: DWORD;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
   RemovableDriveListGetter: TRemovableDriveListGetter;
@@ -377,9 +364,9 @@ begin
     exit;
   end;
 
-  InternetGetConnectedState(@ifConnected, 0);
-  if (ifConnected = INTERNET_CONNECTION_OFFLINE) or
-      (ifConnected = 0) then
+  InternetGetConnectedState(@IsConnected, 0);
+  if (IsConnected = INTERNET_CONNECTION_OFFLINE) or
+      (IsConnected = 0) then
   begin
     AlertCreate(Self, AlrtNoInternet[CurrLang]);
     exit;
@@ -694,8 +681,6 @@ end;
 procedure TfMain.WmAfterShow(var Msg: TMessage);
 const
   INTERNET_CONNECTION_LAN = 2;
-var
-  ifConnected: DWORD;
 begin
   if lName.Caption = '' then
   begin
@@ -704,15 +689,6 @@ begin
   end;
 
   Top := Top - (MinimumSize div 2);
-
-  InternetGetConnectedState(@ifConnected, 0);
-  if (ifConnected and INTERNET_CONNECTION_LAN) = INTERNET_CONNECTION_LAN then
-  begin
-    UpdateThread := TUpdateThread.Create(True);
-    UpdateThread.Priority := tpLower;
-    UpdateThread.Start;
-  end;
-  ShowMessage(UIntToStr(GetTickCount - StartTime));
 end;
 
 procedure TfMain.WMDeviceChange(var Msg: TMessage);
@@ -774,6 +750,58 @@ begin
   SSDLabelListRefresher := TSSDLabelListRefresher.Create;
   SSDLabelListRefresher.RefreshDrives;
   FreeAndNil(SSDLabelListRefresher);
+end;
+
+procedure TfMain.IfConnectedStartUpdateThread;
+begin
+  if IsConnected then
+    StartUpdateThread;
+end;
+
+procedure TfMain.ApplyPartitionCountToTrim(var CurrPartition: Integer);
+var
+  PartitionCount: Integer;
+  Local_CurrPartition: Integer;
+begin
+  PartitionCount := 0;
+  for Local_CurrPartition := 0 to cTrimList.Items.Count - 1 do
+    if cTrimList.Checked[Local_CurrPartition] then
+      PartitionCount := PartitionCount + 1;
+  lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartitionCount);
+end;
+
+procedure TfMain.PrepareFormToTrim;
+begin
+  lDownload.Caption := CapTrimName[CurrLang];
+  bCancel.Visible := false;
+  lSpeed.Visible := true;
+  lSpeed.Font.Color := clRed;
+  lSpeed.Font.Style := [fsBold];
+  lSpeed.Caption := CapProg2[CurrLang];
+  gTrim.Visible := false;
+end;
+
+procedure TfMain.StartTrimThread(const PartitionsToTrim: TTrimList);
+begin
+  TrimThread := TTrimThread.Create(true, true);
+  TrimThread.SetPartitionList(PartitionsToTrim);
+  TrimThread.Priority := tpLower;
+  TrimThread.Start;
+end;
+
+procedure TfMain.StartUpdateThread;
+begin
+  UpdateThread := TUpdateThread.Create(True);
+  UpdateThread.Priority := tpLower;
+  UpdateThread.Start;
+end;
+
+procedure TfMain.SetIsConnected;
+var
+  IsConnectedDWORD: Cardinal;
+begin
+  InternetGetConnectedState(@IsConnectedDWORD, 0);
+  IsConnected := (IsConnectedDWORD and INTERNET_CONNECTION_LAN) = INTERNET_CONNECTION_LAN;
 end;
 
 procedure TfMain.cTrimRunningClick(Sender: TObject);

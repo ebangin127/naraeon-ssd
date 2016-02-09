@@ -13,8 +13,7 @@ type
   TOSFile = class abstract(TObject)
   public
     constructor Create(const FileToGetAccess: String); virtual;
-    function IsPathEqual(const OSFileToCompare: TOSFile): Boolean; overload;
-    function IsPathEqual(const PathToCompare: String): Boolean; overload;
+    function IsPathEqual(const PathToCompare: String): Boolean;
     function GetPathOfFileAccessing: String; virtual;
     function GetPathOfFileAccessingWithoutPrefix: String; virtual;
   protected
@@ -31,11 +30,6 @@ type
   EInsufficientPrivilege = class(Exception);
 
 implementation
-
-function TOSFile.IsPathEqual(const OSFileToCompare: TOSFile): Boolean;
-begin
-  result := IsPathEqual(OSFileToCompare.GetPathOfFileAccessing);
-end;
 
 function TOSFile.IsPathEqual(const PathToCompare: String): Boolean;
 begin
@@ -82,8 +76,8 @@ begin
       Length(PathToDeletePrefix) - Length(PrefixToDelete));
 end;
 
-function TOSFile.IsPathOfFileAccessingHavePrefix
-  (const PrefixToCheck: String): Boolean;
+function TOSFile.IsPathOfFileAccessingHavePrefix(
+  const PrefixToCheck: String): Boolean;
 begin
   result :=
     Copy(GetPathOfFileAccessing, 0, Length(PrefixToCheck)) = PrefixToCheck;
@@ -91,9 +85,9 @@ end;
 
 function TOSFile.GetPathOfFileAccessingWithoutPrefix: String;
 begin
-  if IsPathOfFileAccessingHavePrefix
-    (ThisComputerPrefix + PhysicalDrivePrefix) then
-    exit(DeletePrefix(ThisComputerPrefix + PhysicalDrivePrefix))
+  if IsPathOfFileAccessingHavePrefix(
+    ThisComputerPrefix + PhysicalDrivePrefix) then
+      exit(DeletePrefix(ThisComputerPrefix + PhysicalDrivePrefix))
   else if IsPathOfFileAccessingHavePrefix(ThisComputerPrefix) then
     exit(DeletePrefix(ThisComputerPrefix))
   else

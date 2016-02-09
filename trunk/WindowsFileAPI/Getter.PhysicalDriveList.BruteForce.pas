@@ -71,10 +71,8 @@ end;
 procedure TBruteForcePhysicalDriveListGetter.TryToGetPhysicalDriveList;
 const
   PHYSICALDRIVE_MAX = 99;
-var
-  CurrentDrive: Integer;
 begin
-  for CurrentDrive := 0 to PHYSICALDRIVE_MAX do
+  TParallel.For(0, PHYSICALDRIVE_MAX, procedure (CurrentDrive: Integer)
   begin
     try
       IfThisDriveAccessibleAddToList(CurrentDrive);
@@ -82,7 +80,7 @@ begin
       on E: Exception do
         raise E;
     end;
-  end;
+  end);
 end;
 
 function TBruteForcePhysicalDriveListGetter.GetPhysicalDriveList:

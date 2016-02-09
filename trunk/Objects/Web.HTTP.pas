@@ -3,8 +3,8 @@ unit Web.HTTP;
 interface
 
 uses
-  SysUtils, Classes, IdComponent, IdException, IdHttp, IdURI,
-  Web;
+  SysUtils, Classes, IdComponent, IdExceptionCore, IdHttp, IdURI,
+  IdStack, Web;
 
 type
   THTTPWeb = class(TWeb)
@@ -63,7 +63,9 @@ begin
   try
     result.Text := InnerConnector.Get(InnerEncodedURI);
   except
-    on E: EIdException do;
+    on E: EIdReadTimeout do;
+    on E: EIdConnectTimeout do;
+    on E: EIdNotASocket do;
     else raise;
   end;
 end;

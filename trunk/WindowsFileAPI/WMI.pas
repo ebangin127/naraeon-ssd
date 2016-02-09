@@ -9,7 +9,7 @@ type
   TWMIConnection = class
   private
     Owner: TThread;
-    WMIObject: IDispatch;
+    WMIObject: OleVariant;
     ContextToBindMoniker: IBindCtx;
     DefaultMoniker: IMoniker;
     function GetDefaultMonikerFromObjectPath(ObjectPath: String;
@@ -21,7 +21,7 @@ type
     procedure SetMoniker;
   public
     function IsMyConnection: Boolean;
-    function GetWMIConnection: IDispatch;
+    function GetWMIConnection: OleVariant;
     constructor Create;
   end;
 
@@ -93,7 +93,7 @@ begin
     DefaultMoniker.BindToObject(BindableContext, nil, IUnknown, result));
 end;
 
-function TWMIConnection.GetWMIConnection: IDispatch;
+function TWMIConnection.GetWMIConnection: OleVariant;
 begin
   result := WMIObject;
 end;

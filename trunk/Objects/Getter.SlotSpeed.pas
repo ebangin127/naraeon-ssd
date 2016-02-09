@@ -11,9 +11,9 @@ type
   public
     function GetSlotSpeed: TSlotMaxCurrSpeed;
   private
-    function GetStorageDeviceID(WMIObject: IDispatch): String;
+    function GetStorageDeviceID(const WMIObject: OleVariant): String;
     function TryToGetSlotDataWidth: TSlotMaxCurrSpeed;
-    function GetControllerDeviceID(WMIObject: IDispatch;
+    function GetControllerDeviceID(const WMIObject: OleVariant;
       StorageDeviceID: String): String;
     function GetOSSlotInformationByDeviceID(
       const ControllerDeviceID: String): TOSSlotMaxCurrSpeed;
@@ -40,7 +40,7 @@ end;
 function TSlotSpeedGetter.TryToGetSlotDataWidth: TSlotMaxCurrSpeed;
 var
   WMIConnection: TWMIConnection;
-  WMIObject: IDispatch;
+  WMIObject: OleVariant;
   StorageDeviceID: String;
   ControllerDeviceID: String;
   OSSlotSpeed: TOSSlotMaxCurrSpeed;
@@ -93,7 +93,7 @@ begin
   result.Current.LinkWidth := TPCIeDataWidth(OSSlotSpeed.Current.LinkWidth);
 end;
 
-function TSlotSpeedGetter.GetStorageDeviceID(WMIObject: IDispatch):
+function TSlotSpeedGetter.GetStorageDeviceID(const WMIObject: OleVariant):
   String;
 const
   PreQuery = 'ASSOCIATORS OF {Win32_DiskDrive.DeviceID=''';
@@ -106,8 +106,7 @@ var
   DeviceReturned: Cardinal;
 begin
   ResultAsOleVariant :=
-    OleVariant(WMIObject).ExecQuery(PreQuery + GetPathOfFileAccessing +
-      PostQuery);
+    WMIObject.ExecQuery(PreQuery + GetPathOfFileAccessing + PostQuery);
   EnumVariant :=
     IUnknown(ResultAsOleVariant._NewEnum) as IEnumVARIANT;
   EnumVariant.Next(OneDeviceInformationNeeded, CurrentDevice,
@@ -115,7 +114,7 @@ begin
   result := CurrentDevice.DeviceID;
 end;
 
-function TSlotSpeedGetter.GetControllerDeviceID(WMIObject: IDispatch;
+function TSlotSpeedGetter.GetControllerDeviceID(const WMIObject: OleVariant;
   StorageDeviceID: String): String;
 const
   PreQuery = 'ASSOCIATORS OF {Win32_PnPEntity.DeviceID=''';
@@ -128,8 +127,7 @@ var
   DeviceReturned: Cardinal;
 begin
   ResultAsOleVariant :=
-    OleVariant(WMIObject).ExecQuery(PreQuery + StorageDeviceID +
-      PostQuery);
+    WMIObject.ExecQuery(PreQuery + StorageDeviceID + PostQuery);
   EnumVariant :=
     IUnknown(ResultAsOleVariant._NewEnum) as IEnumVARIANT;
   EnumVariant.Next(OneDeviceInformationNeeded, CurrentDevice,

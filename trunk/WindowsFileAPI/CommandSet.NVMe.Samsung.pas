@@ -210,6 +210,8 @@ var
 begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
+  if result.Model = '' then
+    exit;
   result.StorageInterface := TStorageInterface.NVMe;
   SetBufferAndReadCapacity;
   ReadCapacityResult := InterpretReadCapacityBuffer;
