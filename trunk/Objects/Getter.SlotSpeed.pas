@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
-  OSFile, Getter.SlotSpeedByDeviceID, Device.SlotSpeed, WMI;
+  OSFile.ForInternal, Getter.SlotSpeedByDeviceID, Device.SlotSpeed, WMI;
 
 type
-  TSlotSpeedGetter = class sealed(TOSFile)
+  TSlotSpeedGetter = class sealed(TOSFileForInternal)
   public
     function GetSlotSpeed: TSlotMaxCurrSpeed;
   private

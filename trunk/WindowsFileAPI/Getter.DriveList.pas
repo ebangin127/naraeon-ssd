@@ -4,24 +4,20 @@ interface
 
 uses
   Windows, SysUtils, Classes,
-  OSFile;
+  OSFile.ForInternal;
 
 type
   TDriveList = TStringList;
 
-  TDriveListGetter = class abstract(TOSFile)
+  TDriveListGetter = class abstract(TOSFileForInternal)
   public
     function GetDriveList: TDriveList;
-  
   protected
     function GetDriveTypeToGet: Cardinal; virtual; abstract;
-
   private
     SpecifiedDriveList: TDriveList;
     LogicalDriveString: Array of WideChar;
-
     CurrentCharPosition: Cardinal;
-
     procedure SetLogicalDriveInConcatString;
     procedure ConcatStringToTDriveList;
     procedure AddNextDrive;

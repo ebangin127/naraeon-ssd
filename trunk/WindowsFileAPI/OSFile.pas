@@ -33,7 +33,7 @@ implementation
 
 function TOSFile.IsPathEqual(const PathToCompare: String): Boolean;
 begin
-  result := GetPathOfFileAccessing = PathToCompare;
+  result := GetPathOfFileAccessing = UpperCase(PathToCompare);
 end;
 
 function TOSFile.IsLastSystemCallSucceed: Boolean;

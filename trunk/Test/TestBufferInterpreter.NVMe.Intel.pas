@@ -201,11 +201,10 @@ end;
 
 procedure TestTIntelBufferInterpreter.TestBufferToSMARTValueList;
 var
-  ReturnValue: TSMARTValueList;
   Buffer: TSmallBuffer;
 begin
   StartExpectingException(ESmallBufferException);
-  ReturnValue := FIntelBufferInterpreter.BufferToSMARTValueList(Buffer);
+  FIntelBufferInterpreter.BufferToSMARTValueList(Buffer);
   StopExpectingException;
 end;
 

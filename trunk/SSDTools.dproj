@@ -361,6 +361,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\Thread.Trim.Helper.Partition.Direct.pas"/>
         <DCCReference Include="Resource\Global.HelpPage.pas"/>
         <DCCReference Include="WindowsFileAPI\WMI.pas"/>
+        <DCCReference Include="WindowsFileAPI\OSFile.ForInternal.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -437,12 +438,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
-                    <Platform Name="Win32">
-                        <RemoteName>SSDTools.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

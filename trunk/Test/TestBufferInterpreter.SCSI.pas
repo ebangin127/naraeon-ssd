@@ -95,12 +95,10 @@ end;
 
 procedure TestTSCSIBufferInterpreter.TestBufferToSMARTValueList;
 var
-  ReturnValue: TSMARTValueList;
   Buffer: TSmallBuffer;
 begin
   StartExpectingException(ENotSupportedException);
-  ReturnValue :=
-    FSCSIBufferInterpreter.BufferToSMARTValueList(Buffer);
+  FSCSIBufferInterpreter.BufferToSMARTValueList(Buffer);
   StopExpectingException;
 end;
 
@@ -117,12 +115,10 @@ end;
 
 procedure TestTSCSIBufferInterpreter.TestLargeBufferToSMARTValueList;
 var
-  ReturnValue: TSMARTValueList;
   Buffer: TLargeBuffer;
 begin
   StartExpectingException(ENotSupportedException);
-  ReturnValue :=
-    FSCSIBufferInterpreter.LargeBufferToSMARTValueList(Buffer);
+  FSCSIBufferInterpreter.LargeBufferToSMARTValueList(Buffer);
   StopExpectingException;
 end;
 

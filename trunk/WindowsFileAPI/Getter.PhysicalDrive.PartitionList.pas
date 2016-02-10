@@ -4,34 +4,30 @@ interface
 
 uses
   Windows, SysUtils, Generics.Collections,
-  OSFile, Getter.DriveList, Getter.DriveList.Fixed, Getter.PartitionExtent;
+  OSFile, OSFile.ForInternal, Getter.DriveList, Getter.DriveList.Fixed,
+  Getter.PartitionExtent;
 
 type
   TPartitionEntry = record
     Letter: String;
     StartingOffset: TLargeInteger;
   end;
-
   TPartitionList = TList<TPartitionEntry>;
-
-  TPartitionListGetter = class sealed(TOSFile)
+  TPartitionListGetter = class sealed(TOSFileForInternal)
   public
     function GetPartitionList: TPartitionList;
-
   private
     type
       TPhysicalDriveNumberQueryResult = record
         Found: Boolean;
         Position: Cardinal;
       end;
-      
   private
     PartitionList: TPartitionList;
     PartitionExtentList: TPartitionExtentList;
     FixedDriveList: TDriveList;
     PhysicalDriveNumber: Cardinal;
     PartitionExtentGetter: TPartitionExtentGetter;
-
     function GetFixedDrives: TDriveList;
     procedure AddThisDriveToList
       (CurrentDrive: Integer; PartitionExtentPosition: Cardinal);
@@ -55,8 +51,8 @@ var
   FixedDriveListGetter: TFixedDriveListGetter;
 begin
   try
-    FixedDriveListGetter := TFixedDriveListGetter.Create
-      (GetPathOfFileAccessing);
+    FixedDriveListGetter := TFixedDriveListGetter.Create(
+      GetPathOfFileAccessing);
     result := FixedDriveListGetter.GetDriveList;
   finally
     FreeAndNil(FixedDriveListGetter);

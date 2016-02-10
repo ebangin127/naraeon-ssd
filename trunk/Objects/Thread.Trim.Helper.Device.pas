@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Windows,
-  OSFile, Getter.PartitionExtent, CommandSet, CommandSet.Factory;
+  OSFile, OSFile.ForInternal, Getter.PartitionExtent, CommandSet,
+  CommandSet.Factory;
 
 type
   TPendingTrimOperation = record
@@ -12,8 +13,8 @@ type
     StartLBA: UInt64;
     LengthInLBA: UInt64;
   end;
-  
-  TDeviceTrimmer = class(TOSFile)
+
+  TDeviceTrimmer = class(TOSFileForInternal)
   private
     PendingTrimOperation: TPendingTrimOperation;
     CommandSet: TCommandSet;
@@ -43,6 +44,7 @@ end;
 destructor TDeviceTrimmer.Destroy;
 begin
   FreeAndNil(CommandSet);
+  inherited;
 end;
 
 procedure TDeviceTrimmer.SetCommandSet;

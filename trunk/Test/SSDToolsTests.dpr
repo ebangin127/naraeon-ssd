@@ -76,7 +76,8 @@ uses
   Thread.Trim.Helper.Partition.OS in '..\Objects\Thread.Trim.Helper.Partition.OS.pas',
   Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
   TestThread.Trim.Helper.Partition in 'TestThread.Trim.Helper.Partition.pas',
-  TestDirectPartitionTrimmer in 'TestDirectPartitionTrimmer.pas';
+  TestDirectPartitionTrimmer in 'TestDirectPartitionTrimmer.pas',
+  TestOSFile in 'TestOSFile.pas';
 
 {$R *.RES}
 

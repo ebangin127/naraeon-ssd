@@ -33,8 +33,8 @@ function TPartition.RequestPartitionExtentList: TPartitionExtentList;
 var
   PartitionExtentGetter: TPartitionExtentGetter;
 begin
-  PartitionExtentGetter := TPartitionExtentGetter.Create
-    (GetPathOfFileAccessing);
+  PartitionExtentGetter := TPartitionExtentGetter.Create(
+    GetPathOfFileAccessing);
   result := PartitionExtentGetter.GetPartitionExtentList;
   FreeAndNil(PartitionExtentGetter);
 end;

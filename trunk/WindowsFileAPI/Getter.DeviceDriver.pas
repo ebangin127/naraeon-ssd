@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
-  OSFile, Getter.PhysicalDriveList, Device.PhysicalDrive,
+  OSFile.ForInternal, Getter.PhysicalDriveList, Device.PhysicalDrive,
   Device.PhysicalDrive.List, CommandSet.Factory, WMI;
 
 type
@@ -16,7 +16,7 @@ type
     Version: String;
   end;
 
-  TDeviceDriverGetter = class sealed(TOSFile)
+  TDeviceDriverGetter = class sealed(TOSFileForInternal)
   public
     function GetDeviceDriver: TDeviceDriver;
   private

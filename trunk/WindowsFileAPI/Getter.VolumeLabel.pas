@@ -4,10 +4,10 @@ interface
 
 uses
   Classes, Windows, SysUtils,
-  MeasureUnit.DataSize, OSFile;
+  MeasureUnit.DataSize, OSFile.ForInternal;
 
 type
-  TVolumeLabelGetter = class(TOSFile)
+  TVolumeLabelGetter = class(TOSFileForInternal)
   private
     type
       TNTBSVolumeName = Array[0..MAX_PATH] of Char;
