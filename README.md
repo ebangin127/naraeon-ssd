@@ -1,6 +1,6 @@
 # Naraeon SSD Tools
 
-Naraeon SSD Tools(a.k.a NSTools) is a SSD Management Tool.
+Naraeon SSD Tools is a SSD Management Tool.
 
 ### Features
 
