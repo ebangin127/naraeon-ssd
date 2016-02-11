@@ -151,6 +151,7 @@
         <DCCReference Include="TestCommandSet.Factory.pas"/>
         <DCCReference Include="TestNSTSupport.pas"/>
         <DCCReference Include="TestWriteBufferSettingVerifier.pas"/>
+        <DCCReference Include="TestSecurityDescriptorManipulator.pas"/>
         <DCCReference Include="Mock\Mock.DeviceTrimmer.pas"/>
         <DCCReference Include="Mock\Mock.Getter.TrimBasics.Factory.pas"/>
         <DCCReference Include="Mock\Mock.Getter.VolumeBitmap.pas"/>

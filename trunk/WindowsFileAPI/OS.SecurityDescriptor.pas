@@ -27,7 +27,6 @@ type
     procedure SetSecurityForAdministrator;
     procedure SetACLToSecurityDescriptor;
     procedure AddNewAccessToArray(ExplicitAccess: EXPLICIT_ACCESS);
-
   public
     function GetSecurityDescriptor: PSECURITY_DESCRIPTOR;
     constructor Create;

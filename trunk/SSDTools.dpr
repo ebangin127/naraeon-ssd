@@ -68,7 +68,7 @@ uses
   Support.ADATA in 'Support\Support.ADATA.pas',
   Support.Factory in 'Support\Support.Factory.pas',
   OS.WindowsVersion in 'Modules\OS.WindowsVersion.pas',
-  OS.SecurityDescriptor in 'Objects\OS.SecurityDescriptor.pas',
+  OS.SecurityDescriptor in 'WindowsFileAPI\OS.SecurityDescriptor.pas',
   MeasureUnit.DataSize in 'Modules\MeasureUnit.DataSize.pas',
   MeasureUnit.Time in 'Modules\MeasureUnit.Time.pas',
   OS.VersionHelper in 'Modules\OS.VersionHelper.pas',

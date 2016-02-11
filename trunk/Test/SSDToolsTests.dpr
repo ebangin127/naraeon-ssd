@@ -67,6 +67,7 @@ uses
   TestCommandSet.Factory in 'TestCommandSet.Factory.pas',
   TestNSTSupport in 'TestNSTSupport.pas',
   TestWriteBufferSettingVerifier in 'TestWriteBufferSettingVerifier.pas',
+  TestSecurityDescriptorManipulator in 'TestSecurityDescriptorManipulator.pas',
   Mock.DeviceTrimmer in 'Mock\Mock.DeviceTrimmer.pas',
   Mock.Getter.TrimBasics.Factory in 'Mock\Mock.Getter.TrimBasics.Factory.pas',
   Mock.Getter.VolumeBitmap in 'Mock\Mock.Getter.VolumeBitmap.pas',

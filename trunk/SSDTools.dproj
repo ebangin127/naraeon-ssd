@@ -276,7 +276,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Support\Support.ADATA.pas"/>
         <DCCReference Include="Support\Support.Factory.pas"/>
         <DCCReference Include="Modules\OS.WindowsVersion.pas"/>
-        <DCCReference Include="Objects\OS.SecurityDescriptor.pas"/>
+        <DCCReference Include="WindowsFileAPI\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="Modules\MeasureUnit.DataSize.pas"/>
         <DCCReference Include="Modules\MeasureUnit.Time.pas"/>
         <DCCReference Include="Modules\OS.VersionHelper.pas"/>
