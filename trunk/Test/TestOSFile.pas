@@ -12,7 +12,8 @@ unit TestOSFile;
 interface
 
 uses
-  TestFramework, SysUtils, OSFile, Windows;
+  TestFramework, SysUtils, OSFile, Windows, Dialogs, OS.SecurityDescriptor,
+  OSFile.Handle;
 
 type
   // Test methods for class TOSFile

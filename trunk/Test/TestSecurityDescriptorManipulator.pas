@@ -12,18 +12,24 @@ unit TestSecurityDescriptorManipulator;
 interface
 
 uses
-  TestFramework, OS.SecurityDescriptor;
+  SysUtils, TestFramework, Windows,
+  OS.SecurityDescriptor;
 
 type
   // Test methods for class TSCSIBufferInterpreter
 
   TestTSecurityDescriptorManipulator = class(TTestCase)
   public
-    FSecurityDescriptorManipulator: TWriteBufferSettingVerifier;
+    FSecurityDescriptorManipulator: TSecurityDescriptorManipulator;
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestSecurityDescriptor;
+  end;
+
+  ACLWithBuffer = record
+    Header: ACL;
+    Contents: Array[0..63] of Byte;
   end;
 
 implementation
@@ -41,12 +47,37 @@ end;
 
 procedure TestTSecurityDescriptorManipulator.TestSecurityDescriptor;
 var
-  TestResult: PSECURITY_DESCRIPTOR;
+  TestResultPointer: PSECURITY_DESCRIPTOR;
+  TestResult: SECURITY_DESCRIPTOR;
+  ACLResult: ACLWithBuffer;
+  ExpectedACL: ACLWithBuffer;
+const
+  ExpectedResult: SECURITY_DESCRIPTOR = (
+    Revision: 1; Sbz1: 0; Control: 4);
+  ExpectedACLHeader: ACL = (AclRevision: 2; Sbz1: 0; AclSize: 52; AceCount: 2;
+    Sbz2: 0);
+  ExpectedACLContents: Array[0..63] of Byte = (
+    0, 0, 20, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 24, 0, 0,
+    0, 0, 16, 1, 2, 0, 0, 0, 0, 0, 5, 32, 0, 0, 0, 32, 2, 0, 0, 171, 171, 171,
+    171, 171, 171, 171, 171, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 begin
-  TestResult := FSecurityDescriptorManipulator.GetSecurityDescriptor;
+  TestResultPointer := FSecurityDescriptorManipulator.GetSecurityDescriptor;
+  CopyMemory(@TestResult, TestResultPointer, SizeOf(SECURITY_DESCRIPTOR));
   CheckEquals(true,
-    CompareMem(TestResult, @ExpectedResult, SizeOf(SECURITY_DESCRIPTOR)),
+    CompareMem(@TestResult, @ExpectedResult,
+      SizeOf(SECURITY_DESCRIPTOR) - SizeOf(Pointer)),
     'Unexpected Security Descriptor');
+  ZeroMemory(@ACLResult, SizeOf(ACLResult));
+  ExpectedACL.Header := ExpectedACLHeader;
+  Move(ExpectedACLContents, ExpectedACL.Contents,
+    SizeOf(ExpectedACL.Contents));
+  CopyMemory(@ACLResult, TestResult.Dacl, SizeOf(ACL));
+  CopyMemory(@ACLResult, TestResult.Dacl,
+    SizeOf(ACL) + ACLResult.Header.AclSize);
+  CheckEquals(true,
+    CompareMem(@ACLResult, TestResult.Dacl,
+      SizeOf(ACL) + ACLResult.Header.AclSize),
+    'Unexpected ACL');
 end;
 
 initialization

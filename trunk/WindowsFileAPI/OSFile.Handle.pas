@@ -20,17 +20,16 @@ type
     function GetAccessPrivilege: TCreateFileDesiredAccess;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; virtual; abstract;
     function IsHandleValid(const HandleToCheck: THandle): Boolean;
-    procedure IfInsufficientPrivilegeRaiseException(
-      const DesiredAccess: TCreateFileDesiredAccess);
   private
     FileHandle: THandle;
     AccessPrivilege: TCreateFileDesiredAccess;
-    function GetDesiredAccessFromTCreateFileDesiredAccess
-      (const Source: TCreateFileDesiredAccess): DWORD;
     function CreateFileSystemCall(const FileToGetAccess: LPCWSTR;
       const DesiredAccessInDWORD: DWORD): THandle;
-    function IsPrivilegeValid(const PrivilegeToTest: TCreateFileDesiredAccess):
-      Boolean;
+  {$IfDef UNITTEST}
+  public
+  {$EndIf}
+    function GetDesiredAccessFromTCreateFileDesiredAccess
+      (const Source: TCreateFileDesiredAccess): DWORD;
   end;
 
   EInsufficientPrivilege = class(Exception);
@@ -73,12 +72,6 @@ begin
     (HandleToCheck <> 0);
 end;
 
-function TOSFileWithHandle.IsPrivilegeValid(
-  const PrivilegeToTest: TCreateFileDesiredAccess): Boolean;
-begin
-  result := PrivilegeToTest >= GetMinimumPrivilege;
-end;
-
 function TOSFileWithHandle.CreateFileSystemCall(
   const FileToGetAccess: LPCWSTR; const DesiredAccessInDWORD: DWORD): THandle;
 var
@@ -100,14 +93,6 @@ begin
        NoFileAttributeFlag,
        NoTemplateFile);
   FreeAndNil(SecurityDescriptorManipulator);
-end;
-
-procedure TOSFileWithHandle.IfInsufficientPrivilegeRaiseException
-  (const DesiredAccess: TCreateFileDesiredAccess);
-begin
-  if not IsPrivilegeValid(DesiredAccess) then
-    raise EInsufficientPrivilege.Create
-      ('InsufficientPrevilege: More privilege is required');
 end;
 
 procedure TOSFileWithHandle.CreateHandle(const FileToGetAccess: String;

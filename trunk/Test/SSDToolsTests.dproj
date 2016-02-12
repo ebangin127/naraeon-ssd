@@ -126,7 +126,6 @@
         <DCCReference Include="..\Objects\Registry.Helper.Internal.pas"/>
         <DCCReference Include="..\Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="..\Modules\OS.WindowsVersion.pas"/>
-        <DCCReference Include="..\Objects\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="..\Modules\AsciiCheck.pas"/>
         <DCCReference Include="..\Modules\OS.VersionHelper.pas"/>
         <DCCReference Include="..\Support\Support.NVMe.Intel.pas"/>
@@ -163,6 +162,11 @@
         <DCCReference Include="TestThread.Trim.Helper.Partition.pas"/>
         <DCCReference Include="TestDirectPartitionTrimmer.pas"/>
         <DCCReference Include="TestOSFile.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OS.SecurityDescriptor.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.Handle.pas"/>
+        <DCCReference Include="TestOSFile.Handle.pas"/>
+        <DCCReference Include="TestOSFile.IoControl.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.IoControl.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

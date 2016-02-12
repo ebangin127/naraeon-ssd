@@ -15,27 +15,25 @@ type
     InputBuffer: TIoControlSingleBuffer;
     OutputBuffer: TIoControlSingleBuffer;
   end;
+  TIoControlCode =
+    (ATAPassThrough,
+     ATAPassThroughDirect,
+     SCSIPassThrough,
+     StorageQueryProperty,
+     StorageCheckVerify,
+     GetVolumeBitmap,
+     GetVolumeDiskExtents,
+     GetNTFSVolumeData,
+     GetDriveGeometryEX,
+     OSLevelTrim,
+     ScsiMiniport,
+     GetScsiAddress,
+     Unknown);
 
   EInvalidIoControlCode = class(Exception);
   ENoDataReturnedFromIO = class(Exception);
-
   TIoControlFile = class abstract(TOSFileWithHandle)
   protected
-    type
-      TIoControlCode =
-        (ATAPassThrough,
-         ATAPassThroughDirect,
-         SCSIPassThrough,
-         StorageQueryProperty,
-         StorageCheckVerify,
-         GetVolumeBitmap,
-         GetVolumeDiskExtents,
-         GetNTFSVolumeData,
-         GetDriveGeometryEX,
-         OSLevelTrim,
-         ScsiMiniport,
-         GetScsiAddress,
-         Unknown);
     function IoControl(
       ControlCode: TIoControlCode;
       IOBuffer: TIoControlIOBuffer): Cardinal;
@@ -50,6 +48,10 @@ type
     function DeviceIoControlSystemCall(
       OSControlCode: Integer;
       IOBuffer: TIoControlIOBuffer): Cardinal;
+    function IsOutOfRange(const ControlCode: TIoControlCode): Boolean;
+  {$IfDef UNITTEST}
+  public
+  {$EndIf}
     function TDeviceIoControlCodeToOSControlCode
       (ControlCode: TIoControlCode): Integer;
   end;
@@ -110,8 +112,16 @@ begin
   result.OutputBuffer.Buffer := @OutputBuffer;
 end;
 
-function TIoControlFile.TDeviceIoControlCodeToOSControlCode
-  (ControlCode: TIoControlCode): Integer;
+function TIoControlFile.IsOutOfRange(
+  const ControlCode: TIoControlCode): Boolean;
+begin
+  result :=
+    (Integer(ControlCode) > Integer(High(TIoControlCode))) or
+    (Integer(ControlCode) < Integer(Low(TIoControlCode)));
+end;
+
+function TIoControlFile.TDeviceIoControlCodeToOSControlCode(
+  ControlCode: TIoControlCode): Integer;
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
   IOCTL_STORAGE_BASE = $2D;
@@ -152,7 +162,7 @@ const
      IOCTL_SCSI_GET_ADDRESS,
      0);
 begin
-  if ControlCode = TIoControlCode.Unknown then
+  if (ControlCode = TIoControlCode.Unknown) or (IsOutOfRange(ControlCode)) then
     raise EInvalidIoControlCode.Create
       ('InvalidIoControlCode: There''s no such IoControlCode - ' +
        IntToStr(Cardinal(ControlCode)));

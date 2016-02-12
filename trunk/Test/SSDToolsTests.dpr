@@ -42,7 +42,6 @@ uses
   Registry.Helper.Internal in '..\Objects\Registry.Helper.Internal.pas',
   OS.ProcessOpener in '..\Objects\OS.ProcessOpener.pas',
   OS.WindowsVersion in '..\Modules\OS.WindowsVersion.pas',
-  OS.SecurityDescriptor in '..\Objects\OS.SecurityDescriptor.pas',
   AsciiCheck in '..\Modules\AsciiCheck.pas',
   OS.VersionHelper in '..\Modules\OS.VersionHelper.pas',
   Support.NVMe.Intel in '..\Support\Support.NVMe.Intel.pas',
@@ -78,7 +77,12 @@ uses
   Thread.Trim.Helper.Partition in '..\Objects\Thread.Trim.Helper.Partition.pas',
   TestThread.Trim.Helper.Partition in 'TestThread.Trim.Helper.Partition.pas',
   TestDirectPartitionTrimmer in 'TestDirectPartitionTrimmer.pas',
-  TestOSFile in 'TestOSFile.pas';
+  TestOSFile in 'TestOSFile.pas',
+  OS.SecurityDescriptor in '..\WindowsFileAPI\OS.SecurityDescriptor.pas',
+  OSFile.Handle in '..\WindowsFileAPI\OSFile.Handle.pas',
+  TestOSFile.Handle in 'TestOSFile.Handle.pas',
+  TestOSFile.IoControl in 'TestOSFile.IoControl.pas',
+  OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas';
 
 {$R *.RES}
 
