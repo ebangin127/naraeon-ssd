@@ -13,9 +13,7 @@ type
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
-
     function IsDataSetManagementSupported: Boolean; override;
-
   private
     type
       ATA_SINGLE_TASK_FILE = record
@@ -49,7 +47,6 @@ type
         Parameter: ATA_PASS_THROUGH_DIRECT;
         Buffer: TSmallBuffer;
       end;
-
     const
       ATA_FLAGS_DRDY_REQUIRED = 1;
       ATA_FLAGS_DATA_IN = 1 shl 1;
@@ -57,11 +54,9 @@ type
       ATA_FLAGS_48BIT_COMMAND = 1 shl 3;
       ATA_FLAGS_USE_DMA = 1 shl 4;
       ATA_FLAGS_NO_MULTIPLE = 1 shl 5;
-
   private
     IoInnerBuffer: ATA_WITH_BUFFER;
     IoOSBuffer: TIoControlIOBuffer;
-
     function GetCommonBuffer: ATA_WITH_BUFFER;
     function GetCommonTaskFile: ATA_TASK_FILES;
     procedure SetOSBufferByInnerBuffer;
@@ -222,8 +217,8 @@ begin
   IoInnerBuffer.Buffer[LBACountHi] := LBACount shr 8;
 end;
 
-procedure TATACommandSet.SetDataSetManagementBuffer
-  (StartLBA, LBACount: Int64);
+procedure TATACommandSet.SetDataSetManagementBuffer(
+  StartLBA, LBACount: Int64);
 begin
   SetStartLBAToDataSetManagementBuffer(StartLBA);
   SetLBACountToDataSetManagementBuffer(LBACount);
