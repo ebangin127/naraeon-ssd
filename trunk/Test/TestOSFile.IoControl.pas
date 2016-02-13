@@ -30,7 +30,9 @@ type
   published
     procedure TestBuildOSBufferBy;
     procedure TestBuildOSBufferByOutput;
-    procedure TestTDeviceIoControlCodeToOSControlCode;
+    procedure TestNormalOSControlCode;
+    procedure TestUnknownIoControlCode;
+    procedure TestIntMax;
   end;
 
 implementation
@@ -73,7 +75,7 @@ begin
     NativeUInt(ReturnValue.OutputBuffer.Buffer), 'OutputBuffer Pointer');
 end;
 
-procedure TestTIoControlFile.TestTDeviceIoControlCodeToOSControlCode;
+procedure TestTIoControlFile.TestNormalOSControlCode;
 const
   IOCTL_SCSI_BASE = FILE_DEVICE_CONTROLLER;
   IOCTL_STORAGE_BASE = $2D;
@@ -159,13 +161,10 @@ begin
     FIoControlFile.TDeviceIoControlCodeToOSControlCode(
       TIoControlCode.GetScsiAddress),
     'GetScsiAddress');
-  StartExpectingException(EInvalidIoControlCode);
-  CheckEquals(
-    0,
-    FIoControlFile.TDeviceIoControlCodeToOSControlCode(
-      TIoControlCode.Unknown),
-    'Unknown');
-  StopExpectingException('ControlCode: TIoControlCode.Unknown');
+end;
+
+procedure TestTIoControlFile.TestIntMax;
+begin
   StartExpectingException(EInvalidIoControlCode);
   CheckEquals(
     0,
@@ -173,6 +172,17 @@ begin
       TIoControlCode(Integer.MaxValue)),
     'Out of range');
   StopExpectingException('ControlCode: Integer.MaxValue');
+end;
+
+procedure TestTIoControlFile.TestUnknownIoControlCode;
+begin
+  StartExpectingException(EInvalidIoControlCode);
+  CheckEquals(
+    0,
+    FIoControlFile.TDeviceIoControlCodeToOSControlCode(
+      TIoControlCode.Unknown),
+    'Unknown');
+  StopExpectingException('ControlCode: TIoControlCode.Unknown');
 end;
 
 { TConcreteIoControlFile }
