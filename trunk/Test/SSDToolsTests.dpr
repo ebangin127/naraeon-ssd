@@ -84,7 +84,8 @@ uses
   TestOSFile.IoControl in 'TestOSFile.IoControl.pas',
   OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas',
   TestOS.Version.Helper in 'TestOS.Version.Helper.pas',
-  Version in '..\Modules\Version.pas';
+  Version in '..\Modules\Version.pas',
+  TestSupport.Toshiba in 'TestSupport.Toshiba.pas';
 
 {$R *.RES}
 

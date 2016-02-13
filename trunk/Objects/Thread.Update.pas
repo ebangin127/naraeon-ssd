@@ -24,9 +24,6 @@ type
 
 implementation
 
-
-
-
 constructor TUpdateThread.Create;
 begin
   Create(true);

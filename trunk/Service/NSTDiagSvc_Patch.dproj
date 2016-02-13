@@ -144,10 +144,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
-        <VerInfo_Release>7</VerInfo_Release>
+        <VerInfo_Release>8</VerInfo_Release>
         <Manifest_File>..\GetAdmin.manifest</Manifest_File>
         <VerInfo_MinorVer>1</VerInfo_MinorVer>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.1.7.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.1.8.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">

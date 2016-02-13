@@ -381,7 +381,6 @@ end;
 
 procedure TfMain.iFirmUpClick(Sender: TObject);
 var
-  IsConnected: DWORD;
   Query: TFirmwareQuery;
   QueryResult: TFirmwareQueryResult;
   RemovableDriveListGetter: TRemovableDriveListGetter;
@@ -401,9 +400,8 @@ begin
     exit;
   end;
 
-  InternetGetConnectedState(@IsConnected, 0);
-  if (IsConnected = INTERNET_CONNECTION_OFFLINE) or
-      (IsConnected = 0) then
+  SetIsConnected;
+  if not IsConnected then
   begin
     AlertCreate(Self, AlrtNoInternet[CurrLang]);
     exit;

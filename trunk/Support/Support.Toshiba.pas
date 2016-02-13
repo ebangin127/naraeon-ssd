@@ -12,13 +12,11 @@ type
     InterpretingSMARTValueList: TSMARTValueList;
     function GetEraseError: TReadEraseError;
     function GetFullSupport: TSupportStatus;
-    function GetTotalWrite: TTotalWrite;
     function IsModelHasToshibaString: Boolean;
     function IsProductOfToshiba: Boolean;
     function IsTHNSNF: Boolean;
     function IsTHNSNH: Boolean;
     function IsTHNSNJ: Boolean;
-
   public
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -59,7 +57,6 @@ function TToshibaNSTSupport.GetFullSupport: TSupportStatus;
 begin
   result.Supported := true;
   result.FirmwareUpdate := true;
-  
   result.TotalWriteType := TTotalWriteType.WriteNotSupported;
 end;
 
@@ -70,27 +67,11 @@ begin
     result := GetFullSupport;
 end;
 
-function TToshibaNSTSupport.GetTotalWrite: TTotalWrite;
-const
-  GiBToMiB = 1024;
-  IDOfHostWrite = 241;
-var
-  RAWValue: UInt64;
-begin
-  result.InValue.TrueHostWriteFalseNANDWrite := true;
-
-  RAWValue :=
-    InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
-
-  result.InValue.ValueInMiB := RAWValue * GiBToMiB;
-end;
-
 function TToshibaNSTSupport.GetEraseError: TReadEraseError;
 const
-  IDOfEraseErrorTHNSNS = 172;
-  IDOfEraseErrorElse = 182;
+  IDOfEraseErrorElse = 1;
 begin
-  result.TrueReadErrorFalseEraseError := false;
+  result.TrueReadErrorFalseEraseError := true;
   result.Value :=
     InterpretingSMARTValueList.GetRAWByID(IDOfEraseErrorElse);
 end;
@@ -104,14 +85,12 @@ const
   EraseErrorThreshold = 10;
 begin
   InterpretingSMARTValueList := SMARTValueList;
-  result.TotalWrite := GetTotalWrite;
-
+  result.TotalWrite.InValue.ValueInMiB := 0;
   result.UsedHour := 
     InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.ReadEraseError := GetEraseError;
   result.SMARTAlert.ReadEraseError :=
     result.ReadEraseError.Value >= EraseErrorThreshold;
-
   result.ReplacedSectors :=
     InterpretingSMARTValueList.GetRAWByID(IDOfReplacedSector);
   result.SMARTAlert.ReplacedSector :=

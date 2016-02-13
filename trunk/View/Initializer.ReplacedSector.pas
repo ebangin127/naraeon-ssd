@@ -25,7 +25,6 @@ type
     procedure SetAnalyticsLabelAsLifeAnalysis;
     procedure ApplyUsageByLog;
     procedure ApplyReplacedSector;
-    procedure FillSectorLabel;
     procedure RefreshAnalyticsSection;
   public
     procedure ApplyMainformReplacedSector;
@@ -34,6 +33,19 @@ type
 implementation
 
 uses Form.Main;
+
+procedure TMainformReplacedSectorApplier.ApplyMainformReplacedSector;
+begin
+  ApplyReplacedSector;
+  RefreshAnalyticsSection;
+  FreeReplacedSectorLog;
+end;
+
+procedure TMainformReplacedSectorApplier.ApplyReplacedSector;
+begin
+  SetReplacedSectors;
+  CreateReplacedSectorLog;
+end;
 
 procedure TMainformReplacedSectorApplier.SetReplacedSectors;
 begin
@@ -72,7 +84,7 @@ begin
   fMain.l1Month.Caption :=
     CapAvg[Integer(MaxPeriodAverage.Period)][CurrLang] +
     MaxPeriodAverage.FormattedAverageValue +
-    CapCount[CurrLang] +
+    CapCount[CurrLang] + '/' +
     CapDay[CurrLang];
 end;
 
@@ -115,30 +127,12 @@ begin
   fMain.lAnaly.Caption := CapAnaly[CurrLang];
 end;
 
-procedure TMainformReplacedSectorApplier.ApplyMainformReplacedSector;
-begin
-  FillSectorLabel;
-  RefreshAnalyticsSection;
-end;
-
 procedure TMainformReplacedSectorApplier.RefreshAnalyticsSection;
 begin
   if IsTotalWriteNotSupported then
     ApplyReplacedSectorsAsTotalWrite
   else
     RecoverAnalyticsLabel;
-end;
-
-procedure TMainformReplacedSectorApplier.FillSectorLabel;
-begin
-  ApplyReplacedSector;
-end;
-
-procedure TMainformReplacedSectorApplier.ApplyReplacedSector;
-begin
-  SetReplacedSectors;
-  CreateReplacedSectorLog;
-  FreeReplacedSectorLog;
 end;
 
 end.
