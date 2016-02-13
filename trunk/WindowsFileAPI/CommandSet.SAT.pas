@@ -13,9 +13,7 @@ type
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
-
     function IsDataSetManagementSupported: Boolean; override;
-
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -87,6 +85,10 @@ type
     procedure SetBufferAndIdentifyDevice;
     function InterpretSMARTReadDataBuffer: TSMARTValueList;
     procedure SetBufferAndSMARTReadData;
+    function InterpretSMARTThresholdBuffer(
+      const OriginalResult: TSMARTValueList): TSMARTValueList;
+    procedure SetBufferAndSMARTReadThreshold;
+    procedure SetInnerBufferToSMARTReadThreshold;
   end;
 
 implementation
@@ -231,10 +233,56 @@ begin
   FreeAndNil(ATABufferInterpreter);
 end;
 
+procedure TSATCommandSet.SetInnerBufferToSMARTReadThreshold;
+const
+  SMARTFeatures = $D1;
+  SMARTCycleLo = $4F;
+  SMARTCycleHi = $C2;
+  SMARTReadDataCommand = $B0;
+var
+  IoTaskFile: SCSI_COMMAND_DESCRIPTOR_BLOCK;
+begin
+  IoTaskFile := GetCommonCommandDescriptorBlock;
+  IoTaskFile.Features := SMARTFeatures;
+  IoTaskFile.LBAMid := SMARTCycleLo;
+  IoTaskFile.LBAHi := SMARTCycleHi;
+  IoTaskFile.ATACommand := SMARTReadDataCommand;
+  SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_IN, IoTaskFile);
+end;
+
+procedure TSATCommandSet.SetBufferAndSMARTReadThreshold;
+begin
+  SetInnerBufferToSMARTReadThreshold;
+  SetOSBufferByInnerBuffer;
+  IoControl(TIoControlCode.SCSIPassThrough, IoOSBuffer);
+end;
+
+function TSATCommandSet.InterpretSMARTThresholdBuffer(
+  const OriginalResult: TSMARTValueList): TSMARTValueList;
+var
+  ATABufferInterpreter: TATABufferInterpreter;
+  ThresholdList: TSMARTValueList;
+  SmallBuffer: TSmallBuffer;
+begin
+  result := OriginalResult;
+  ATABufferInterpreter := TATABufferInterpreter.Create;
+  Move(IoInnerBuffer.Buffer, SmallBuffer, SizeOf(SmallBuffer));
+  ThresholdList := ATABufferInterpreter.BufferToSMARTThresholdValueList(
+    SmallBuffer);
+  try
+    OriginalResult.MergeThreshold(ThresholdList);
+  finally
+    FreeAndNil(ThresholdList);
+  end;
+  FreeAndNil(ATABufferInterpreter);
+end;
+
 function TSATCommandSet.SMARTReadData: TSMARTValueList;
 begin
   SetBufferAndSMARTReadData;
   result := InterpretSMARTReadDataBuffer;
+  SetBufferAndSMARTReadThreshold;
+  result := InterpretSMARTThresholdBuffer(result);
 end;
 
 function TSATCommandSet.IsDataSetManagementSupported: Boolean;

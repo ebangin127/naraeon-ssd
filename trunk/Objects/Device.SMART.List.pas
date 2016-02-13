@@ -3,9 +3,11 @@ unit Device.SMART.List;
 interface
 
 uses
-  Generics.Collections;
+  SysUtils, Generics.Collections;
 
 type
+  EWrongThresholdList = class(EArgumentException);
+  EEntryNotFound = class(EArgumentException);
   TSMARTValueEntry = record
     ID: Byte;
     Current: Byte;
@@ -13,11 +15,11 @@ type
     Threshold: Byte;
     RAW: UInt64;
   end;
-
   TSMARTValueList = class(TList<TSMARTValueEntry>)
   public
     function GetIndexByID(ID: Byte): Integer;
     function GetRAWByID(ID: Byte): UInt64;
+    procedure MergeThreshold(const ThresholdList: TSMARTValueList);
   end;
 
 implementation
@@ -31,7 +33,7 @@ begin
   for CurrentEntryNumber := 0 to (Self.Count - 1) do
     if Self[CurrentEntryNumber].ID = ID then
       exit(CurrentEntryNumber);
-  result := 0;
+  raise EEntryNotFound.Create('Entry not found with ID: ' + IntToStr(ID));
 end;
 
 function TSMARTValueList.GetRAWByID(ID: Byte): UInt64;
@@ -41,7 +43,24 @@ begin
   for CurrentEntryNumber := 0 to (Self.Count - 1) do
     if Self[CurrentEntryNumber].ID = ID then
       exit(Self[CurrentEntryNumber].RAW);
-  result := 0;
+  raise EEntryNotFound.Create('Entry not found with ID: ' + IntToStr(ID));
+end;
+
+procedure TSMARTValueList.MergeThreshold(const ThresholdList: TSMARTValueList);
+var
+  CurrentItem: TSMARTValueEntry;
+  IndexInSelf: Integer;
+  EntryToChange: TSMARTValueEntry;
+begin
+  if ThresholdList.Count <> Count then
+    raise EWrongThresholdList.Create('Two list got from different device');
+  for CurrentItem in ThresholdList do
+  begin
+    IndexInSelf := self.GetIndexByID(CurrentItem.ID);
+    EntryToChange := self[IndexInSelf];
+    EntryToChange.Threshold := CurrentItem.Threshold;
+    self[IndexInSelf] := EntryToChange;
+  end;
 end;
 
 end.

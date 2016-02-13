@@ -7,7 +7,7 @@ uses
 
 type
   TSmallBuffer = Array[0..511] of Byte;
-  TLargeBuffer = Array[0..4096] of Byte;
+  TLargeBuffer = Array[0..4095] of Byte;
   TStorageInterface =
     (Probing, ATA, SAT, SCSI, NVMe, UnknownInterface);
   TSATASpeed =
@@ -26,14 +26,14 @@ type
 
   TBufferInterpreter = class abstract
   public
-    function BufferToIdentifyDeviceResult
-      (Buffer: TSmallBuffer): TIdentifyDeviceResult; virtual; abstract;
-    function BufferToSMARTValueList
-      (Buffer: TSmallBuffer): TSMARTValueList; virtual; abstract;
-    function LargeBufferToIdentifyDeviceResult
-      (Buffer: TLargeBuffer): TIdentifyDeviceResult; virtual; abstract;
-    function LargeBufferToSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList; virtual; abstract;
+    function BufferToIdentifyDeviceResult(
+      const Buffer: TSmallBuffer): TIdentifyDeviceResult; virtual; abstract;
+    function BufferToSMARTValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList; virtual; abstract;
+    function LargeBufferToIdentifyDeviceResult(
+      const Buffer: TLargeBuffer): TIdentifyDeviceResult; virtual; abstract;
+    function LargeBufferToSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList; virtual; abstract;
   end;
 
 implementation

@@ -9,14 +9,16 @@ uses
 type
   TATABufferInterpreter = class sealed(TBufferInterpreter)
   public
-    function BufferToIdentifyDeviceResult
-      (Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
-    function BufferToSMARTValueList
-      (Buffer: TSmallBuffer): TSMARTValueList; override;
-    function LargeBufferToIdentifyDeviceResult
-      (Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
-    function LargeBufferToSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList; override;
+    function BufferToIdentifyDeviceResult(
+      const Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
+    function BufferToSMARTValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList; override;
+    function BufferToSMARTThresholdValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList;
+    function LargeBufferToIdentifyDeviceResult(
+      const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
+    function LargeBufferToSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList; override;
   private
     SMARTValueList: TSMARTValueList;
     BufferInterpreting: TSmallBuffer;
@@ -31,7 +33,8 @@ type
     function GetRAWOfRow(CurrentRowStart: Integer): UInt64;
     function GetWorstOfRow(CurrentRowStart: Integer): Byte;
     function GetThresholdOfRow(CurrentRowStart: Integer): Byte;
-    procedure IfValidSMARTAddToList(CurrentRow: Integer);
+    function IfValidSMARTAddToList(CurrentRow: Integer): Boolean;
+    procedure IfValidSMARTThresholdAddToList(CurrentRow: Integer);
   end;
 
 implementation
@@ -63,7 +66,7 @@ end;
 function TATABufferInterpreter.GetThresholdOfRow
   (CurrentRowStart: Integer): Byte;
 const
-  ThresholdValuePosition = 11;
+  ThresholdValuePosition = 1;
 begin
   result := BufferInterpreting[CurrentRowStart + ThresholdValuePosition];
 end;
@@ -90,8 +93,8 @@ begin
   end;
 end;
 
-procedure TATABufferInterpreter.IfValidSMARTAddToList
-  (CurrentRow: Integer);
+procedure TATABufferInterpreter.IfValidSMARTThresholdAddToList(
+  CurrentRow: Integer);
 var
   SMARTValueEntry: TSMARTValueEntry;
 begin
@@ -99,15 +102,28 @@ begin
   if SMARTValueEntry.ID = 0 then
     exit;
 
-  SMARTValueEntry.Current := GetCurrentOfRow(CurrentRow);
-  SMARTValueEntry.Worst := GetWorstOfRow(CurrentRow);
-  SMARTValueEntry.RAW := GetRAWOfRow(CurrentRow);
   SMARTValueEntry.Threshold := GetThresholdOfRow(CurrentRow);
   SMARTValueList.Add(SMARTValueEntry);
 end;
 
+function TATABufferInterpreter.IfValidSMARTAddToList(
+  CurrentRow: Integer): Boolean;
+var
+  SMARTValueEntry: TSMARTValueEntry;
+begin
+  SMARTValueEntry.ID := GetIDOfRow(CurrentRow);
+  if SMARTValueEntry.ID = 0 then
+    exit(false);
+
+  SMARTValueEntry.Current := GetCurrentOfRow(CurrentRow);
+  SMARTValueEntry.Worst := GetWorstOfRow(CurrentRow);
+  SMARTValueEntry.RAW := GetRAWOfRow(CurrentRow);
+  SMARTValueList.Add(SMARTValueEntry);
+  result := true;
+end;
+
 function TATABufferInterpreter.LargeBufferToIdentifyDeviceResult(
-  Buffer: TLargeBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -116,8 +132,7 @@ begin
 end;
 
 function TATABufferInterpreter.LargeBufferToSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
-
+  const Buffer: TLargeBuffer): TSMARTValueList;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -125,8 +140,8 @@ begin
   result := BufferToSMARTValueList(SmallBuffer);
 end;
 
-function TATABufferInterpreter.BufferToSMARTValueList
-  (Buffer: TSmallBuffer): TSMARTValueList;
+function TATABufferInterpreter.BufferToSMARTThresholdValueList(
+  const Buffer: TSmallBuffer): TSMARTValueList;
 const
   SMARTStartPadding = 2;
   SMARTValueLength = 12;
@@ -137,7 +152,31 @@ begin
   BufferInterpreting := Buffer;
   for CurrentRow := 0 to
     (Length(BufferInterpreting) - SMARTStartPadding) div SMARTValueLength do
-    IfValidSMARTAddToList((CurrentRow * SMARTValueLength) + SMARTStartPadding);
+    IfValidSMARTThresholdAddToList(
+      (CurrentRow * SMARTValueLength) + SMARTStartPadding);
+  result := SMARTValueList;
+end;
+
+function TATABufferInterpreter.BufferToSMARTValueList(
+  const Buffer: TSmallBuffer): TSMARTValueList;
+const
+  SMARTStartPadding = 2;
+  SMARTValueLength = 12;
+  function CalculateRow(const CurrentRow: Integer): Integer;
+  begin
+    result := (CurrentRow * SMARTValueLength) + SMARTStartPadding;
+  end;
+var
+  CurrentRow: Integer;
+  MaxRow: Integer;
+begin
+  SMARTValueList := TSMARTValueList.Create;
+  BufferInterpreting := Buffer;
+  MaxRow :=
+    (Length(BufferInterpreting) - SMARTStartPadding) div SMARTValueLength;
+  for CurrentRow := 0 to MaxRow do
+    if not IfValidSMARTAddToList(CalculateRow(CurrentRow)) then
+      break;
   result := SMARTValueList;
 end;
 
@@ -228,8 +267,8 @@ begin
   result := TSATASpeed(SATASpeedInNum);
 end;
 
-function TATABufferInterpreter.BufferToIdentifyDeviceResult
-  (Buffer: TSmallBuffer): TIdentifyDeviceResult;
+function TATABufferInterpreter.BufferToIdentifyDeviceResult(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
   BufferInterpreting := Buffer;
   result.Model := GetModelFromBuffer;

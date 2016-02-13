@@ -72,6 +72,10 @@ type
     procedure SetBufferAndIdentifyDevice;
     function InterpretSMARTReadDataBuffer: TSMARTValueList;
     procedure SetBufferAndSMARTReadData;
+    procedure SetBufferAndSMARTReadThreshold;
+    procedure SetInnerBufferToSMARTReadThreshold;
+    function InterpretSMARTThresholdBuffer(
+      const OriginalResult: TSMARTValueList): TSMARTValueList;
   end;
 
 implementation
@@ -180,10 +184,54 @@ begin
   FreeAndNil(ATABufferInterpreter);
 end;
 
+procedure TATACommandSet.SetInnerBufferToSMARTReadThreshold;
+const
+  SMARTFeatures = $D1;
+  SMARTCycleLo = $4F;
+  SMARTCycleHi = $C2;
+  SMARTReadDataCommand = $B0;
+var
+  IoTaskFile: ATA_TASK_FILES;
+begin
+  IoTaskFile := GetCommonTaskFile;
+  IoTaskFile.CurrentTaskFile.Features := SMARTFeatures;
+  IoTaskFile.CurrentTaskFile.LBAMidCycleLo := SMARTCycleLo;
+  IoTaskFile.CurrentTaskFile.LBAHiCycleHi := SMARTCycleHi;
+  IoTaskFile.CurrentTaskFile.Command := SMARTReadDataCommand;
+  SetInnerBufferAsFlagsAndTaskFile(ATA_FLAGS_DATA_IN, IoTaskFile);
+end;
+
+procedure TATACommandSet.SetBufferAndSMARTReadThreshold;
+begin
+  SetInnerBufferToSMARTReadThreshold;
+  SetOSBufferByInnerBuffer;
+  IoControl(TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+end;
+
+function TATACommandSet.InterpretSMARTThresholdBuffer(
+  const OriginalResult: TSMARTValueList): TSMARTValueList;
+var
+  ATABufferInterpreter: TATABufferInterpreter;
+  ThresholdList: TSMARTValueList;
+begin
+  result := OriginalResult;
+  ATABufferInterpreter := TATABufferInterpreter.Create;
+  ThresholdList := ATABufferInterpreter.BufferToSMARTThresholdValueList(
+    IoInnerBuffer.Buffer);
+  try
+    OriginalResult.MergeThreshold(ThresholdList);
+  finally
+    FreeAndNil(ThresholdList);
+  end;
+  FreeAndNil(ATABufferInterpreter);
+end;
+
 function TATACommandSet.SMARTReadData: TSMARTValueList;
 begin
   SetBufferAndSMARTReadData;
   result := InterpretSMARTReadDataBuffer;
+  SetBufferAndSMARTReadThreshold;
+  result := InterpretSMARTThresholdBuffer(result);
 end;
 
 function TATACommandSet.IsDataSetManagementSupported: Boolean;

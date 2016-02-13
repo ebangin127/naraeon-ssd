@@ -27,18 +27,18 @@ type
 
   TIntelBufferInterpreter = class(TBufferInterpreter)
   public
-    function BufferToIdentifyDeviceResult
-      (Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
-    function BufferToSMARTValueList
-      (Buffer: TSmallBuffer): TSMARTValueList; override;
-    function LargeBufferToIdentifyDeviceResult
-      (Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
-    function LargeBufferToSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList; override;
-    function BufferToCapacityAndLBA(Buffer: TSmallBuffer):
+    function BufferToIdentifyDeviceResult(
+      const Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
+    function BufferToSMARTValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList; override;
+    function LargeBufferToIdentifyDeviceResult(
+      const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
+    function LargeBufferToSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList; override;
+    function BufferToCapacityAndLBA(const Buffer: TSmallBuffer):
       TIdentifyDeviceResult;
-    function VendorSpecificSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList;
+    function VendorSpecificSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList;
     constructor Create;
     destructor Destroy; override;
   private
@@ -49,8 +49,10 @@ type
     function GetCurrentOfRow(CurrentRowStart: Integer): Byte;
     function GetIDOfRow(CurrentRowStart: Integer): Byte;
     function GetRAWOfRow(CurrentRowStart: Integer): UInt64;
-    function AdditionalSMARTValueList(Buffer: TLargeBuffer): TSMARTValueList;
-    function TemperatureSMARTValueList(Buffer: TLargeBuffer): TSMARTValueList;
+    function AdditionalSMARTValueList(const Buffer: TLargeBuffer):
+      TSMARTValueList;
+    function TemperatureSMARTValueList(const Buffer: TLargeBuffer):
+      TSMARTValueList;
     procedure AddTemperatureToList(const CurrentRow, StartPoint,
       LengthOfValue: Integer);
   end;
@@ -59,15 +61,15 @@ implementation
 
 { TNVMeBufferInterpreter }
 
-function TIntelBufferInterpreter.BufferToIdentifyDeviceResult
-  (Buffer: TSmallBuffer): TIdentifyDeviceResult;
+function TIntelBufferInterpreter.BufferToIdentifyDeviceResult(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
   raise ESmallBufferException.Create('Small Buffer cannot be interpreted in ' +
     'Intel NVMe Way');
 end;
 
-function TIntelBufferInterpreter.BufferToSMARTValueList
-  (Buffer: TSmallBuffer): TSMARTValueList;
+function TIntelBufferInterpreter.BufferToSMARTValueList(
+  const Buffer: TSmallBuffer): TSMARTValueList;
 begin
   raise ESmallBufferException.Create('Small Buffer cannot be interpreted in ' +
     'Intel NVMe Way');
@@ -85,19 +87,19 @@ begin
 end;
 
 function TIntelBufferInterpreter.LargeBufferToIdentifyDeviceResult(
-  Buffer: TLargeBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
 begin
   result := NVMeInterpreter.LargeBufferToIdentifyDeviceResult(Buffer);
 end;
 
 function TIntelBufferInterpreter.LargeBufferToSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 begin
   result := NVMeInterpreter.LargeBufferToSMARTValueList(Buffer);
 end;
 
 function TIntelBufferInterpreter.VendorSpecificSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 const
   FirstByteOfAdditionalAttribute = $AB;
 begin
@@ -108,7 +110,7 @@ begin
 end;
 
 function TIntelBufferInterpreter.AdditionalSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 const
   SMARTValueLength = 12;
 var
@@ -122,7 +124,7 @@ begin
 end;
 
 function TIntelBufferInterpreter.TemperatureSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 const
   TemperatureValueLength = 8;
   CurrentTemperature = 0;
@@ -220,8 +222,8 @@ begin
   end;
 end;
 
-function TIntelBufferInterpreter.BufferToCapacityAndLBA(Buffer:
-  TSmallBuffer): TIdentifyDeviceResult;
+function TIntelBufferInterpreter.BufferToCapacityAndLBA(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
   result := NVMeInterpreter.BufferToCapacityAndLBA(Buffer);
 end;

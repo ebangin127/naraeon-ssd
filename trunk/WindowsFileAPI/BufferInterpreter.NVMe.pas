@@ -25,15 +25,15 @@ type
 
   TNVMeBufferInterpreter = class(TBufferInterpreter)
   public
-    function BufferToIdentifyDeviceResult
-      (Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
-    function BufferToSMARTValueList
-      (Buffer: TSmallBuffer): TSMARTValueList; override;
-    function LargeBufferToIdentifyDeviceResult
-      (Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
-    function LargeBufferToSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList; override;
-    function BufferToCapacityAndLBA(Buffer: TSmallBuffer):
+    function BufferToIdentifyDeviceResult(
+      const Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
+    function BufferToSMARTValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList; override;
+    function LargeBufferToIdentifyDeviceResult(
+      const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
+    function LargeBufferToSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList; override;
+    function BufferToCapacityAndLBA(const Buffer: TSmallBuffer):
       TIdentifyDeviceResult;
   private
     BufferInterpreting: TSmallBuffer;
@@ -41,28 +41,34 @@ type
     function GetLBASizeFromBuffer: Cardinal;
     function GetModelFromBuffer: String;
     function GetSerialFromBuffer: String;
-    function GetLBASize(Buffer: TSmallBuffer): Integer;
-    function SeperateCriticalWarningFrom(Buffer: TSmallBuffer):
+    function GetLBASize(const Buffer: TSmallBuffer): Integer;
+    function SeperateCriticalWarningFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateTemperatureFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateAvailableSpareFrom(Buffer: TSmallBuffer):
+    function SeperateTemperatureFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperatePercentageUsedFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateDataUnitsReadFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateDataUnitsWrittenFrom(Buffer: TSmallBuffer):
+    function SeperateAvailableSpareFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateHostReadCommandsFrom(Buffer: TSmallBuffer):
+    function SeperatePercentageUsedFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateDataUnitsReadFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateDataUnitsWrittenFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateHostReadCommandsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
     function SeperateHostWriteCommandsFrom(
-      Buffer: TSmallBuffer): TSMARTValueEntry;
+      const Buffer: TSmallBuffer): TSMARTValueEntry;
     function SeperateControllerBusyTimeFrom(
-      Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperatePowerCyclesFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperatePowerOnHoursFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateUnsafeShutdownsFrom(Buffer: TSmallBuffer):
+      const Buffer: TSmallBuffer): TSMARTValueEntry;
+    function SeperatePowerCyclesFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateMediaErrorsFrom(Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateNumberOfErrorsFrom(Buffer: TSmallBuffer):
+    function SeperatePowerOnHoursFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateUnsafeShutdownsFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateMediaErrorsFrom(const Buffer: TSmallBuffer):
+      TSMARTValueEntry;
+    function SeperateNumberOfErrorsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
   end;
 
@@ -70,8 +76,8 @@ implementation
 
 { TNVMeBufferInterpreter }
 
-function TNVMeBufferInterpreter.BufferToSMARTValueList
-  (Buffer: TSmallBuffer): TSMARTValueList;
+function TNVMeBufferInterpreter.BufferToSMARTValueList(
+  const Buffer: TSmallBuffer): TSMARTValueList;
 begin
   result := TSMARTValueList.Create;
   result.Add(SeperateCriticalWarningFrom(Buffer));
@@ -90,16 +96,16 @@ begin
   result.Add(SeperateNumberOfErrorsFrom(Buffer));
 end;
 
-function TNVMeBufferInterpreter.SeperateCriticalWarningFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateCriticalWarningFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
   result.ID := Ord(TSMARTValueID.CriticalWarning);
   result.RAW := Buffer[0];
 end;
 
-function TNVMeBufferInterpreter.SeperateTemperatureFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateTemperatureFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -116,8 +122,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateAvailableSpareFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateAvailableSpareFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
   result.ID := Ord(TSMARTValueID.AvailableSpare);
@@ -125,16 +131,16 @@ begin
   result.Threshold := Buffer[4];
 end;
 
-function TNVMeBufferInterpreter.SeperatePercentageUsedFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperatePercentageUsedFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
   result.ID := Ord(TSMARTValueID.PercentageUsed);
   result.RAW := Buffer[5];
 end;
 
-function TNVMeBufferInterpreter.SeperateDataUnitsReadFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateDataUnitsReadFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -151,8 +157,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateDataUnitsWrittenFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateDataUnitsWrittenFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -169,8 +175,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateHostReadCommandsFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateHostReadCommandsFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -187,8 +193,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateHostWriteCommandsFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateHostWriteCommandsFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -205,8 +211,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateControllerBusyTimeFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateControllerBusyTimeFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -223,8 +229,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperatePowerCyclesFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperatePowerCyclesFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -241,8 +247,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperatePowerOnHoursFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperatePowerOnHoursFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -259,8 +265,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateUnsafeShutdownsFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateUnsafeShutdownsFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -277,8 +283,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateMediaErrorsFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateMediaErrorsFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -295,8 +301,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateNumberOfErrorsFrom
-  (Buffer: TSmallBuffer): TSMARTValueEntry;
+function TNVMeBufferInterpreter.SeperateNumberOfErrorsFrom(
+  const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
 const
@@ -353,7 +359,7 @@ begin
 end;
 
 function TNVMeBufferInterpreter.LargeBufferToIdentifyDeviceResult(
-  Buffer: TLargeBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -362,7 +368,7 @@ begin
 end;
 
 function TNVMeBufferInterpreter.LargeBufferToSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -377,7 +383,7 @@ begin
   result := ATA_LBA_SIZE;
 end;
 
-function TNVMeBufferInterpreter.GetLBASize(Buffer: TSmallBuffer): Integer;
+function TNVMeBufferInterpreter.GetLBASize(const Buffer: TSmallBuffer): Integer;
 var
   CurrentByte: Integer;
 const
@@ -392,8 +398,8 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.BufferToCapacityAndLBA(Buffer:
-  TSmallBuffer): TIdentifyDeviceResult;
+function TNVMeBufferInterpreter.BufferToCapacityAndLBA(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
   function ByteToDenaryKB: TDatasizeUnitChangeSetting;
   begin
     result.FNumeralSystem := Denary;
@@ -418,8 +424,8 @@ begin
     ChangeDatasizeUnit(ResultInByte * result.LBASize, ByteToDenaryKB));
 end;
 
-function TNVMeBufferInterpreter.BufferToIdentifyDeviceResult
-  (Buffer: TSmallBuffer): TIdentifyDeviceResult;
+function TNVMeBufferInterpreter.BufferToIdentifyDeviceResult(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
   BufferInterpreting := Buffer;
   result.Model := GetModelFromBuffer;

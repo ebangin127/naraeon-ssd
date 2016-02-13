@@ -9,14 +9,14 @@ uses
 type
   TSCSIBufferInterpreter = class sealed(TBufferInterpreter)
   public
-    function BufferToIdentifyDeviceResult
-      (Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
-    function BufferToSMARTValueList
-      (Buffer: TSmallBuffer): TSMARTValueList; override;
-    function LargeBufferToIdentifyDeviceResult
-      (Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
-    function LargeBufferToSMARTValueList
-      (Buffer: TLargeBuffer): TSMARTValueList; override;
+    function BufferToIdentifyDeviceResult(
+      const Buffer: TSmallBuffer): TIdentifyDeviceResult; override;
+    function BufferToSMARTValueList(
+      const Buffer: TSmallBuffer): TSMARTValueList; override;
+    function LargeBufferToIdentifyDeviceResult(
+      const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
+    function LargeBufferToSMARTValueList(
+      const Buffer: TLargeBuffer): TSMARTValueList; override;
   private
     BufferInterpreting: TSmallBuffer;
     function GetFirmwareFromBuffer: String;
@@ -30,7 +30,7 @@ implementation
 { TSCSIBufferInterpreter }
 
 function TSCSIBufferInterpreter.LargeBufferToIdentifyDeviceResult(
-  Buffer: TLargeBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -39,7 +39,7 @@ begin
 end;
 
 function TSCSIBufferInterpreter.LargeBufferToSMARTValueList(
-  Buffer: TLargeBuffer): TSMARTValueList;
+  const Buffer: TLargeBuffer): TSMARTValueList;
 var
   SmallBuffer: TSmallBuffer;
 begin
@@ -47,8 +47,8 @@ begin
   result := BufferToSMARTValueList(SmallBuffer);
 end;
 
-function TSCSIBufferInterpreter.BufferToSMARTValueList
-  (Buffer: TSmallBuffer): TSMARTValueList;
+function TSCSIBufferInterpreter.BufferToSMARTValueList(
+  const Buffer: TSmallBuffer): TSMARTValueList;
 begin
   raise ENotSupportedException.Create('Not supported for SCSI');
 end;
@@ -108,8 +108,8 @@ begin
   result := ATA_LBA_SIZE;
 end;
 
-function TSCSIBufferInterpreter.BufferToIdentifyDeviceResult
-  (Buffer: TSmallBuffer): TIdentifyDeviceResult;
+function TSCSIBufferInterpreter.BufferToIdentifyDeviceResult(
+  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
   FillChar(result, SizeOf(result), #0);
   BufferInterpreting := Buffer;

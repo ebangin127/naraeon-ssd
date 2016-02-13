@@ -96,7 +96,7 @@ begin
 
   result.ReplacedSectors :=
     InterpretingSMARTValueList.GetRAWByID(
-      IDOfReplacedSector shr HalfOfSMARTBits);
+      IDOfReplacedSector) shr HalfOfSMARTBits;
   result.SMARTAlert.ReplacedSector :=
     result.ReplacedSectors >= ReplacedSectorThreshold;
 end;
