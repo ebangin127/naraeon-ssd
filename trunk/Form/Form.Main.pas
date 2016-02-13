@@ -755,7 +755,6 @@ begin
   PhysicalDriveList := TPhysicalDriveList.Create;
   FirmwareGetter := TFirmwareGetter.Create;
   CreateButtonGroup;
-  TRufus.Create;
 end;
 
 procedure TfMain.CreateButtonGroup;

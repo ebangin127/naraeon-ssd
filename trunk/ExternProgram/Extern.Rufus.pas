@@ -10,24 +10,25 @@ type
   TRufus = class
   public
     function CheckRufus: Boolean;
-    procedure RunRufus(DestDrive, FromISO: String);
-    procedure SetRufus
-      (RufusPath, DriveName, ISOPath: String);
+    procedure RunRufus(const DestDrive, FromISO: String);
+    procedure SetRufus(const RufusPath, DriveName, ISOPath: String);
     class function Create: TRufus;
   private
     function FindMainWindow: THandle;
-    function FindFTCombo(MWHandle: THandle): THandle;
-    function GetFTComboText(EDTHandle: THandle): String;
-    function FindDriveCombo(MWHandle: THandle): THandle;
-    function EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
-    function FindStartButton(MWHandle: THandle): THandle;
-    function ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
-    function FindSubWindow(MWHandle: THandle): THandle;
-    function FindOKButton(SWHandle: THandle): THandle;
-    function ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
-    function FindCloseButton(MWHandle: THandle): THandle;
-    function ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
-    procedure SetRufusToHandle(MWHandle: THandle; DriveName: String);
+    function FindFTCombo(const MWHandle: THandle): THandle;
+    function GetFTComboText(const EDTHandle: THandle): String;
+    function FindDriveCombo(const MWHandle: THandle): THandle;
+    function EditDriveCombo(const EDTHandle: THandle;
+      const Text: String): Boolean;
+    function FindStartButton(const MWHandle: THandle): THandle;
+    function ClickStartButton(const MWHandle, BTHandle: THandle): Boolean;
+    function FindSubWindow(const MWHandle: THandle): THandle;
+    function FindOKButton(const SWHandle: THandle): THandle;
+    function ClickOKButton(const SWHandle, BTHandle: THandle): Boolean;
+    function FindCloseButton(const MWHandle: THandle): THandle;
+    function ClickCloseButton(const MWHandle, BTHandle: THandle): Boolean;
+    procedure SetRufusToHandle(const MWHandle: THandle;
+      const DriveName: String);
     function IsValidHandle(const Handle: THandle): Boolean;
   end;
 
@@ -59,13 +60,15 @@ begin
   FreeAndNil(CodesignVerifier);
 end;
 
-procedure TRufus.RunRufus(DestDrive, FromISO: String);
+procedure TRufus.RunRufus(const DestDrive, FromISO: String);
+var
+  CutDestDrive: String;
 begin
-  DestDrive := Copy(DestDrive, 1, 2);
+  CutDestDrive := Copy(DestDrive, 1, 2);
 
   SetRufus(
     EnvironmentVariable.AppPath + '\Rufus\rufus.exe',
-    DestDrive, FromISO);
+    CutDestDrive, FromISO);
 
   DeleteFile(FromISO);
 end;
@@ -85,7 +88,7 @@ begin
   until IsValidHandle(result);
 end;
 
-function TRufus.FindFTCombo(MWHandle: THandle): THandle;
+function TRufus.FindFTCombo(const MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -103,7 +106,7 @@ begin
         (ReceivedCaptionStr = ComboISOText);
 end;
 
-function TRufus.GetFTComboText(EDTHandle: THandle): String;
+function TRufus.GetFTComboText(const EDTHandle: THandle): String;
 var
   ReceivedCaptionWC: Array of WideChar;
 begin
@@ -114,7 +117,7 @@ begin
   SetLength(ReceivedCaptionWC, 0);
 end;
 
-function TRufus.FindDriveCombo(MWHandle: THandle): THandle;
+function TRufus.FindDriveCombo(const MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -131,13 +134,15 @@ begin
   until Pos(':)', ReceivedCaptionStr) > 0;
 end;
 
-function TRufus.EditDriveCombo(EDTHandle: THandle; Text: String): Boolean;
+function TRufus.EditDriveCombo(const EDTHandle: THandle;
+  const Text: String): Boolean;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
   CurrItem, AllCount: Integer;
+  UpperCaseText: String;
 begin
-  Text := UpperCase(Text);
+  UpperCaseText := UpperCase(Text);
 
   SendMessage(EDTHandle, WM_LBUTTONDOWN, 0, 0);
   Sleep(0);
@@ -158,7 +163,7 @@ begin
       MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
     ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
 
-    if Pos(Text, ReceivedCaptionStr) > 0 then
+    if Pos(UpperCaseText, ReceivedCaptionStr) > 0 then
       break;
 
     SendMessage(EDTHandle, WM_KEYDOWN, VK_DOWN, 0);
@@ -167,7 +172,7 @@ begin
   result := GetLastError = 0;
 end;
 
-function TRufus.FindStartButton(MWHandle: THandle): THandle;
+function TRufus.FindStartButton(const MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -184,7 +189,7 @@ begin
   until ReceivedCaptionStr = 'Start';
 end;
 
-function TRufus.ClickStartButton(MWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickStartButton(const MWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(MWHandle, WM_COMMAND,
@@ -199,7 +204,7 @@ begin
     result := Rufus;
 end;
 
-function TRufus.FindSubWindow(MWHandle: THandle): THandle;
+function TRufus.FindSubWindow(const MWHandle: THandle): THandle;
 begin
   repeat
     Sleep(100);
@@ -208,20 +213,20 @@ begin
         (result <> 0);
 end;
 
-function TRufus.FindOKButton(SWHandle: THandle): THandle;
+function TRufus.FindOKButton(const SWHandle: THandle): THandle;
 begin
   result :=
     FindWindowEx(SWHandle, 0, 'Button', nil);
 end;
 
-function TRufus.ClickOKButton(SWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickOKButton(const SWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(SWHandle, WM_COMMAND,
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
-function TRufus.FindCloseButton(MWHandle: THandle): THandle;
+function TRufus.FindCloseButton(const MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
@@ -238,14 +243,15 @@ begin
   until ReceivedCaptionStr = 'Close';
 end;
 
-function TRufus.ClickCloseButton(MWHandle, BTHandle: THandle): Boolean;
+function TRufus.ClickCloseButton(const MWHandle, BTHandle: THandle): Boolean;
 begin
   exit(
     PostMessage(MWHandle, WM_COMMAND,
       MakeLong(GetDlgCtrlID(BTHandle), BN_CLICKED), LPARAM(BTHandle)));
 end;
 
-procedure TRufus.SetRufusToHandle(MWHandle: THandle; DriveName: String);
+procedure TRufus.SetRufusToHandle(const MWHandle: THandle;
+  const DriveName: String);
 var
   FileTypeComboHandle: THandle;
   DriveComboHandle: THandle;
@@ -272,8 +278,7 @@ begin
   ClickCloseButton(MWHandle, CloseButtonHandle);
 end;
 
-procedure TRufus.SetRufus
-  (RufusPath, DriveName, ISOPath: String);
+procedure TRufus.SetRufus(const RufusPath, DriveName, ISOPath: String);
 var
   MWHandle: THandle;
 begin
