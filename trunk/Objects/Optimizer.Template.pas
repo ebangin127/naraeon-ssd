@@ -25,6 +25,7 @@ type
     procedure Undo; virtual; abstract;
   protected
     function IsBelowWindows8: Boolean;
+    function IsAtLeastWindows10: Boolean;
   end;
   TOptimizerList = TList<IOptimizationUnit>;
 
@@ -32,9 +33,14 @@ implementation
 
 { TOptimizationUnit }
 
+function TOptimizationUnit.IsAtLeastWindows10: Boolean;
+begin
+  result := OS.Version.Helper.IsAtLeastWindows10(VersionHelper.Version);
+end;
+
 function TOptimizationUnit.IsBelowWindows8: Boolean;
 begin
-  result := OS.Version.Helper.IsBelowVista(VersionHelper.Version);
+  result := OS.Version.Helper.IsBelowWindows8(VersionHelper.Version);
 end;
 
 end.

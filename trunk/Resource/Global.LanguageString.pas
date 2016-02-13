@@ -120,6 +120,7 @@ const
     CapOptDfrg: TLanguageString = ('부팅/유휴시간 조각 모음 끄기', 'Disable system defragger');
     CapOptIndex: TLanguageString = ('색인 끄기(여분 용량 & 성능 증가 / 파일 찾기 느려짐)', 'Disable Indexing Service');
     CapOptRes: TLanguageString = ('시스템 보호 끄기(여분 용량 & 성능 증가 / 시스템 복구 불가)', 'Disable System Restore Service');
+    CapOptP2P: TLanguageString = ('P2P 업데이트 끄기', 'Disable P2P Windows Update');
 
     AlrtOptCmpl: TLanguageString = ('최적화가 완료되었습니다.', 'Optimization has completed.');
     AlrtOptRetCmpl: TLanguageString = ('최적화 복구가 완료되었습니다.', 'Rollback operation has completed.');

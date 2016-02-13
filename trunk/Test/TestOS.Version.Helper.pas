@@ -43,6 +43,7 @@ type
   published
     procedure TestIsBelowVista;
     procedure TestIsBelowWindows8;
+    procedure TestIsAtLeastWindows10;
   end;
 
 implementation
@@ -98,6 +99,26 @@ begin
     TestContents + ' Windows 8.1');
   CheckEquals(WindowsList.FWindows10, TestFunction(Windows10),
     TestContents + ' Windows 10');
+end;
+
+procedure TestOSVersionHelper.TestIsAtLeastWindows10;
+const
+  AtLeastWindows10List: TWindowsList = (
+    FWindows95: false;
+    FWindows98: false;
+    FWindows2000: false;
+    FWindowsXP: false;
+    FWindowsXPSP1: false;
+    FWindowsXPSP2: false;
+    FWindowsXPSP3: false;
+    FWindows2003: false;
+    FWindowsVista: false;
+    FWindows7: false;
+    FWindows8: false;
+    FWindows81: false;
+    FWindows10: true);
+begin
+  TestAs('IsAtLeastWindows10', AtLeastWindows10List, IsAtLeastWindows10);
 end;
 
 procedure TestOSVersionHelper.TestIsBelowVista;

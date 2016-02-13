@@ -8,6 +8,7 @@ uses
 
 function IsBelowVista(const Version: TVersion): Boolean;
 function IsBelowWindows8(const Version: TVersion): Boolean;
+function IsAtLeastWindows10(const Version: TVersion): Boolean;
 function Is64Bit: Boolean;
 function GetWindowsVersionString: String;
 function GetWindowsArchitectureString: String;
@@ -51,6 +52,11 @@ begin
   result :=
     (Version.FMajorVer < 6) or
     ((Version.FMajorVer = 6) and (Version.FMinorVer <= 1));
+end;
+
+function IsAtLeastWindows10(const Version: TVersion): Boolean;
+begin
+  result := Version.FMajorVer >= 10;
 end;
 
 function GetWindowsVersionString: String;

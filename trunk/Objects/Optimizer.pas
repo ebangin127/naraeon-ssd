@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Forms, Generics.Collections,
   Optimizer.Template, Optimizer.Hibernation, Optimizer.LastAccess,
   Optimizer.Prefetch, Optimizer.Defrag, Optimizer.Indexer,
-  Optimizer.SystemRestore;
+  Optimizer.SystemRestore, Optimizer.P2P;
 
 type
   TOptimizeList = TList<Boolean>;
@@ -107,6 +107,7 @@ begin
   IfCompatibleAddToList(TLastAccessOptimizer);
   IfCompatibleAddToList(TPrefetchOptimizer);
   IfCompatibleAddToList(TDefragOptimizer);
+  IfCompatibleAddToList(TP2POptimizer);
   IfCompatibleAddToList(TIndexerOptimizer);
   IfCompatibleAddToList(TSystemRestoreOptimizer);
 end;
