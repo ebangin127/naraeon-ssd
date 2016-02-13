@@ -41,9 +41,9 @@ uses
   Registry.Helper in '..\Objects\Registry.Helper.pas',
   Registry.Helper.Internal in '..\Objects\Registry.Helper.Internal.pas',
   OS.ProcessOpener in '..\Objects\OS.ProcessOpener.pas',
-  OS.WindowsVersion in '..\Modules\OS.WindowsVersion.pas',
+  OS.Version.Helper in '..\Modules\OS.Version.Helper.pas',
   AsciiCheck in '..\Modules\AsciiCheck.pas',
-  OS.VersionHelper in '..\Modules\OS.VersionHelper.pas',
+  Getter.OS.Version in '..\Objects\Getter.OS.Version.pas',
   Support.NVMe.Intel in '..\Support\Support.NVMe.Intel.pas',
   Support.NVMe.Samsung in '..\Support\Support.NVMe.Samsung.pas',
   AverageLogger.Count in '..\Objects\AverageLogger.Count.pas',
@@ -82,7 +82,9 @@ uses
   OSFile.Handle in '..\WindowsFileAPI\OSFile.Handle.pas',
   TestOSFile.Handle in 'TestOSFile.Handle.pas',
   TestOSFile.IoControl in 'TestOSFile.IoControl.pas',
-  OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas';
+  OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas',
+  TestOS.Version.Helper in 'TestOS.Version.Helper.pas',
+  Version in '..\Modules\Version.pas';
 
 {$R *.RES}
 

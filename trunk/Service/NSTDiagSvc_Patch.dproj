@@ -193,15 +193,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Support\Support.Factory.pas"/>
         <DCCReference Include="..\Objects\OS.WriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\Registry.Helper.Internal.pas"/>
-        <DCCReference Include="..\Objects\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="..\Modules\AsciiCheck.pas"/>
         <DCCReference Include="..\Modules\MeasureUnit.Time.pas"/>
-        <DCCReference Include="..\Modules\OS.WindowsVersion.pas"/>
+        <DCCReference Include="..\Modules\OS.Version.Helper.pas"/>
         <DCCReference Include="..\Objects\Registry.Helper.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Device.PhysicalDrive.Bus.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Device.PhysicalDrive.OS.pas"/>
         <DCCReference Include="..\Objects\Device.PhysicalDrive.pas"/>
-        <DCCReference Include="..\Modules\OS.VersionHelper.pas"/>
+        <DCCReference Include="..\Objects\Getter.OS.Version.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OSFile.Handle.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OSFile.Interfaced.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OSFile.IoControl.pas"/>
@@ -241,6 +240,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas"/>
         <DCCReference Include="..\WindowsFileAPI\BufferInterpreter.SCSI.pas"/>
         <DCCReference Include="..\WindowsFileAPI\WMI.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OS.SecurityDescriptor.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.ForInternal.pas"/>
+        <DCCReference Include="..\Modules\Version.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -6,7 +6,7 @@ uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
   WinCodec,
   Form.Alert, Component.ButtonGroup, OS.EnvironmentVariable, Global.LanguageString,
-  OS.VersionHelper;
+  Getter.OS.Version;
 
 procedure InitializeMainForm;
 procedure RefreshOptimizeList;
@@ -205,7 +205,7 @@ end;
 
 procedure TMainformInitializer.LoadBackground;
 begin
-  if VersionHelper.MajorVersion = 5 then
+  if VersionHelper.Version.FMajorVer = 5 then
     LoadAndProportionalStretchBackgroundXP
   else
     LoadAndProportionalStretchBackground;
@@ -227,7 +227,7 @@ end;
 
 procedure TMainformInitializer.LoadLogoImage;
 begin
-  if VersionHelper.MajorVersion = 5 then
+  if VersionHelper.Version.FMajorVer = 5 then
     LoadAndProportionalStretchLogoXP
   else
     LoadAndProportionalStretchLogo;

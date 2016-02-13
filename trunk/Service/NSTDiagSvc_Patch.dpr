@@ -35,15 +35,14 @@ uses
   Support.Factory in '..\Support\Support.Factory.pas',
   OS.WriteBufferSettingVerifier in '..\Objects\OS.WriteBufferSettingVerifier.pas',
   Registry.Helper.Internal in '..\Objects\Registry.Helper.Internal.pas',
-  OS.SecurityDescriptor in '..\Objects\OS.SecurityDescriptor.pas',
   AsciiCheck in '..\Modules\AsciiCheck.pas',
   MeasureUnit.Time in '..\Modules\MeasureUnit.Time.pas',
-  OS.WindowsVersion in '..\Modules\OS.WindowsVersion.pas',
+  OS.Version.Helper in '..\Modules\OS.Version.Helper.pas',
   Registry.Helper in '..\Objects\Registry.Helper.pas',
   Device.PhysicalDrive.Bus in '..\WindowsFileAPI\Device.PhysicalDrive.Bus.pas',
   Device.PhysicalDrive.OS in '..\WindowsFileAPI\Device.PhysicalDrive.OS.pas',
   Device.PhysicalDrive in '..\Objects\Device.PhysicalDrive.pas',
-  OS.VersionHelper in '..\Modules\OS.VersionHelper.pas',
+  Getter.OS.Version in '..\Objects\Getter.OS.Version.pas',
   OSFile.Handle in '..\WindowsFileAPI\OSFile.Handle.pas',
   OSFile.Interfaced in '..\WindowsFileAPI\OSFile.Interfaced.pas',
   OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas',
@@ -82,7 +81,10 @@ uses
   Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas',
   CommandSet.NVMe.WithoutDriver in '..\WindowsFileAPI\CommandSet.NVMe.WithoutDriver.pas',
   BufferInterpreter.SCSI in '..\WindowsFileAPI\BufferInterpreter.SCSI.pas',
-  WMI in '..\WindowsFileAPI\WMI.pas';
+  WMI in '..\WindowsFileAPI\WMI.pas',
+  OS.SecurityDescriptor in '..\WindowsFileAPI\OS.SecurityDescriptor.pas',
+  OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas',
+  Version in '..\Modules\Version.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

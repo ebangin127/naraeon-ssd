@@ -11,7 +11,7 @@ type
 
   TFirmwareQuery = record
     Model, Firmware: String;
-    class operator Equal(A, B: TFirmwareQuery): Boolean;
+    class operator Equal(const A, B: TFirmwareQuery): Boolean;
   end;
 
   TFirmwareQueryResult = record
@@ -24,37 +24,36 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function CheckFirmware(Query: TFirmwareQuery): TFirmwareQueryResult;
-
+    function CheckFirmware(const Query: TFirmwareQuery): TFirmwareQueryResult;
   private
     type
       TCacheLine = record
         Query: TFirmwareQuery;
         Result: TFirmwareQueryResult;
       end;
-
       TFirmwareCache = class
       public
         constructor Create;
         destructor Destroy; override;
-
-        function CheckFirmware(Query: TFirmwareQuery): TFirmwareQueryResult;
-        procedure ApplyQueryResult(Query: TFirmwareQuery;
-          Result: TFirmwareQueryResult);
+        function CheckFirmware(const Query: TFirmwareQuery):
+          TFirmwareQueryResult;
+        procedure ApplyQueryResult(const Query: TFirmwareQuery;
+          const Result: TFirmwareQueryResult);
       private
         Cache: TList<TCacheLine>;
       end;
-
   private
     FirmwareCache: TFirmwareCache;
     HTTPWeb: THTTPWeb;
-    function CheckFirmwareByWebAndApplyToCache(Query: TFirmwareQuery):
+    function CheckFirmwareByWebAndApplyToCache(const Query: TFirmwareQuery):
       TFirmwareQueryResult;
     function SendQueryToServerAndGetResult(
-      Query: TFirmwareQuery): TFirmwareQueryResult;
-    function BuildURIByQuery(Query: TFirmwareQuery): String;
+      const Query: TFirmwareQuery): TFirmwareQueryResult;
+    function BuildURIByQuery(const Query: TFirmwareQuery): String;
     function StringListToQueryResult(
-      StringList: TStringList): TFirmwareQueryResult;
+      const StringList: TStringList): TFirmwareQueryResult;
+    function TryToQueryFirmware(const Query: TFirmwareQuery):
+      TStringList;
   end;
 
 implementation
@@ -74,7 +73,7 @@ begin
   inherited;
 end;
 
-function TFirmwareGetter.BuildURIByQuery(Query: TFirmwareQuery):
+function TFirmwareGetter.BuildURIByQuery(const Query: TFirmwareQuery):
   String;
 begin
   exit(
@@ -83,7 +82,7 @@ begin
     'Firmware=' + Query.Firmware);
 end;
 
-function TFirmwareGetter.StringListToQueryResult(StringList: TStringList):
+function TFirmwareGetter.StringListToQueryResult(const StringList: TStringList):
   TFirmwareQueryResult;
 var
   CurrentVersionInInteger: Integer;
@@ -106,21 +105,31 @@ begin
   end;
 end;
 
-function TFirmwareGetter.SendQueryToServerAndGetResult(Query: TFirmwareQuery):
-  TFirmwareQueryResult;
-var
-  ReturnedResultFromGet: TStringList;
+function TFirmwareGetter.TryToQueryFirmware(const Query: TFirmwareQuery):
+  TStringList;
 begin
   try
-    ReturnedResultFromGet := HTTPWeb.GetToStringList(BuildURIByQuery(Query));
-    result := StringListToQueryResult(ReturnedResultFromGet);
+    result := HTTPWeb.GetToStringList(BuildURIByQuery(Query));
+  except
+    result := TStringList.Create;
+  end;
+end;
+
+function TFirmwareGetter.SendQueryToServerAndGetResult(
+  const Query: TFirmwareQuery): TFirmwareQueryResult;
+var
+  ResultInStringList: TStringList;
+begin
+  ResultInStringList := TryToQueryFirmware(Query);
+  try
+    result := StringListToQueryResult(ResultInStringList);
   finally
-    FreeAndNil(ReturnedResultFromGet);
+    FreeAndNil(ResultInStringList);
   end;
 end;
 
 function TFirmwareGetter.CheckFirmwareByWebAndApplyToCache
-  (Query: TFirmwareQuery): TFirmwareQueryResult;
+  (const Query: TFirmwareQuery): TFirmwareQueryResult;
 begin
   ZeroMemory(@result, SizeOf(result));
   result := SendQueryToServerAndGetResult(Query);
@@ -128,7 +137,7 @@ begin
     FirmwareCache.ApplyQueryResult(Query, result);
 end;
 
-function TFirmwareGetter.CheckFirmware(Query: TFirmwareQuery):
+function TFirmwareGetter.CheckFirmware(const Query: TFirmwareQuery):
   TFirmwareQueryResult;
 begin
   result := FirmwareCache.CheckFirmware(Query);
@@ -140,8 +149,8 @@ end;
 
 { TFirmwareCache }
 
-procedure TFirmwareGetter.TFirmwareCache.ApplyQueryResult(Query: TFirmwareQuery;
-  Result: TFirmwareQueryResult);
+procedure TFirmwareGetter.TFirmwareCache.ApplyQueryResult(
+  const Query: TFirmwareQuery; const Result: TFirmwareQueryResult);
 var
   CacheLine: TCacheLine;
 begin
@@ -150,8 +159,8 @@ begin
   Cache.Add(CacheLine);
 end;
 
-function TFirmwareGetter.TFirmwareCache.CheckFirmware(Query: TFirmwareQuery):
-  TFirmwareQueryResult;
+function TFirmwareGetter.TFirmwareCache.CheckFirmware(
+  const Query: TFirmwareQuery): TFirmwareQueryResult;
 var
   CurrentCacheLine: TCacheLine;
 begin
@@ -174,7 +183,7 @@ end;
 
 { TFirmwareQuery }
 
-class operator TFirmwareQuery.Equal(A, B: TFirmwareQuery): Boolean;
+class operator TFirmwareQuery.Equal(const A, B: TFirmwareQuery): Boolean;
 begin
   result :=
     (A.Model = B.Model) and

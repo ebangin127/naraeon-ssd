@@ -1,14 +1,14 @@
-unit OS.WindowsVersion;
+unit OS.Version.Helper;
 
 interface
 
 uses
   Windows,
-  OS.VersionHelper;
+  Version;
 
+function IsBelowVista(const Version: TVersion): Boolean;
+function IsBelowWindows8(const Version: TVersion): Boolean;
 function Is64Bit: Boolean;
-function IsBelowVista: Boolean;
-function IsBelowWindows8: Boolean;
 function GetWindowsVersionString: String;
 function GetWindowsArchitectureString: String;
 
@@ -41,16 +41,16 @@ begin
   end;
 end;
 
-function IsBelowVista: Boolean;
+function IsBelowVista(const Version: TVersion): Boolean;
 begin
-  result := VersionHelper.MajorVersion = 10;
+  result := Version.FMajorVer < 6;
 end;
 
-function IsBelowWindows8: Boolean;
+function IsBelowWindows8(const Version: TVersion): Boolean;
 begin
   result :=
-    (VersionHelper.MajorVersion < 6) or
-    ((VersionHelper.MajorVersion = 6) and (VersionHelper.MinorVersion = 1));
+    (Version.FMajorVer < 6) or
+    ((Version.FMajorVer = 6) and (Version.FMinorVer <= 1));
 end;
 
 function GetWindowsVersionString: String;

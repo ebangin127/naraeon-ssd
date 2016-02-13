@@ -8,7 +8,7 @@ uses
   Initializer.Mainpart, Initializer.PartitionAlign,
   Initializer.ReplacedSector, Initializer.SMART, BufferInterpreter,
   Initializer.TotalWrite, Initializer.CriticalWarning, Support,
-  OS.WindowsVersion;
+  OS.Version.Helper, Getter.OS.Version;
 
 type
   TMainformAlert = record
@@ -163,7 +163,7 @@ begin
   fMain.lTrim.Visible :=
     fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
   fMain.iTrim.Visible := fMain.lTrim.Visible;
-  fMain.bSchedule.Visible := IsBelowWindows8;
+  fMain.bSchedule.Visible := IsBelowWindows8(VersionHelper.Version);
   if fMain.bSchedule.Visible = false then
   begin
     fMain.bTrimStart.Width :=

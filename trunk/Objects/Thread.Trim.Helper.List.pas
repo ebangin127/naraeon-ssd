@@ -6,7 +6,7 @@ uses
   SysUtils, Classes,
   TrimList, Thread.Trim.Helper.Partition, Thread.Trim.Helper.Partition.Direct,
   Thread.Trim.Helper.Partition.OS, ThreadToView.Trim, Component.ProgressSection,
-  OS.WindowsVersion;
+  OS.Version.Helper, Getter.OS.Version;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);
@@ -178,7 +178,7 @@ var
   PartitionTrimmer: TPartitionTrimmer;
   TrimSynchronization: TTrimSynchronization;
 begin
-  if IsBelowWindows8 then
+  if IsBelowWindows8(VersionHelper.Version) then
     PartitionTrimmer := TDirectPartitionTrimmer.Create(PartitionPathToTrim)
   else
     PartitionTrimmer := TOSPartitionTrimmer.Create(PartitionPathToTrim);

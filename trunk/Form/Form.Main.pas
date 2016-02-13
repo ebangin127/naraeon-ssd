@@ -18,7 +18,7 @@ uses
   Getter.CodesignVerifier, Component.SSDLabel.List, Component.SSDLabel,
   Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
   Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
-  Getter.VolumeLabel, OS.VersionHelper, PrerequisiteChecker, BufferInterpreter,
+  Getter.VolumeLabel, Getter.OS.Version, PrerequisiteChecker, BufferInterpreter,
   Global.HelpPage;
 
 const
@@ -161,7 +161,7 @@ type
     procedure Erase(const Filename: string);
     procedure RefreshLabelList;
     procedure IfConnectedStartUpdateThread;
-    procedure ApplyPartitionCountToTrim(var CurrPartition: Integer);
+    procedure ApplyPartitionCountToTrim;
     procedure PrepareFormToTrim;
     procedure StartTrimThread(const PartitionsToTrim: TTrimList);
     procedure StartUpdateThread;
@@ -221,7 +221,6 @@ begin
     AlertCreate(Self, AlrtNoCheck[CurrLang]);
     exit;
   end;
-
   FirmwareDownloader := TFirmwareDownloader.Create;
   FirmwareDownloader.DownloadFirmware;
 end;
@@ -260,7 +259,7 @@ var
   CurrPartition: Integer;
   PartitionsToTrim: TTrimList;
 begin
-  ApplyPartitionCountToTrim(CurrPartition);
+  ApplyPartitionCountToTrim;
   PrepareFormToTrim;
   CurrentDrivePath := '';
   PartitionsToTrim := TTrimList.Create;
@@ -301,10 +300,10 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  CheckPrerequisite;
   SetIsConnected;
   IfConnectedStartUpdateThread;
   CreateBasicObjects;
-  CheckPrerequisite;
   InitializeMainForm;
   ApplyLocaleToMainformAndArrangeButton;
   RefreshDrives;
@@ -817,14 +816,14 @@ begin
     iClickEventProcedure);
 end;
 
-procedure TfMain.ApplyPartitionCountToTrim(var CurrPartition: Integer);
+procedure TfMain.ApplyPartitionCountToTrim;
 var
   PartitionCount: Integer;
-  Local_CurrPartition: Integer;
+  CurrentPartitionIndex: Integer;
 begin
   PartitionCount := 0;
-  for Local_CurrPartition := 0 to cTrimList.Items.Count - 1 do
-    if cTrimList.Checked[Local_CurrPartition] then
+  for CurrentPartitionIndex := 0 to cTrimList.Items.Count - 1 do
+    if cTrimList.Checked[CurrentPartitionIndex] then
       PartitionCount := PartitionCount + 1;
   lProgress.Caption := CapProg1[CurrLang] + '0 / ' + IntToStr(PartitionCount);
 end;
@@ -874,7 +873,7 @@ var
   SchedResult: String;
 begin
   if cTrimRunning.Checked then
-    if VersionHelper.MajorVersion = 5 then
+    if VersionHelper.Version.FMajorVer = 5 then
     begin
       SchedResult :=
         string(ProcessOpener.OpenProcWithOutput(

@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   Device.PhysicalDrive.List, Device.PhysicalDrive, Global.LanguageString,
-  Global.Constant, Getter.PhysicalDrive.ListChange, OS.WindowsVersion,
+  Global.Constant, Getter.PhysicalDrive.ListChange, OS.Version.Helper,
   Getter.DeviceDriver;
 
 type
