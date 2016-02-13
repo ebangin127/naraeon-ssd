@@ -44,11 +44,8 @@ procedure TSSDLabelList.Delete(Index: Integer);
 begin
   Self[Index].Free;
   inherited Delete(Index);
-  if fMain.SSDLabel <> nil then
-  begin
-    SetLabelPosition;
-    SetGroupboxSize;
-  end;
+  SetLabelPosition;
+  SetGroupboxSize;
 end;
 
 procedure TSSDLabelList.Add(SSDLabel: TSSDLabel);
@@ -105,7 +102,7 @@ procedure TSSDLabelList.SetLabelPosition;
 var
   CurrentLabel: Integer;
 begin
-  for CurrentLabel := 0 to fMain.SSDLabel.Count - 1 do
+  for CurrentLabel := 0 to Count - 1 do
     SetSingleLabelPosition(CurrentLabel);
 end;
 

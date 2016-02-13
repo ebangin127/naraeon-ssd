@@ -168,7 +168,7 @@ begin
   Query.Model := fMain.PhysicalDrive.IdentifyDeviceResult.Model;
   Query.Firmware := fMain.PhysicalDrive.IdentifyDeviceResult.Firmware;
   
-  result := fMain.FirmwareGetter.CheckFirmware(Query);
+  result := fMain.GetFirmwareGetter.CheckFirmware(Query);
 end;
 
 procedure TMainformMainpartApplier.IfOldFirmwareSetLabelBoldAndRed(

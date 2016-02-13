@@ -29,7 +29,6 @@ type
       BackgroundPath = 'Image\bg.png';
   private
     Mainform: THackMainForm;
-    procedure CreateButtonGroup;
     procedure RefreshOptimizeList;
     procedure LoadBackground;
     procedure SetFormSize;
@@ -74,7 +73,6 @@ end;
 
 procedure TMainformInitializer.InitializeMainform;
 begin
-  CreateButtonGroup;
   AddButtonsToButtonGroup;
   LoadBackground;
   LoadLogoImage;
@@ -86,24 +84,17 @@ begin
   FixMainformSize;
 end;
 
-procedure TMainformInitializer.CreateButtonGroup;
-begin
-  Mainform.ButtonGroup :=
-    TButtonGroup.Create(fMain, MaximumSize, MinimumSize,
-      Mainform.ClientWidth, Mainform.ClientWidth);
-end;
-
 procedure TMainformInitializer.AddButtonsToButtonGroup;
 begin
-  Mainform.ButtonGroup.AddEntry(
+  Mainform.AddEntryToButtonGroup(
     False, Mainform.iFirmUp, Mainform.lFirmUp, Mainform.gFirmware, nil);
-  Mainform.ButtonGroup.AddEntry(
+  Mainform.AddEntryToButtonGroup(
     False, Mainform.iErase, Mainform.lErase, Mainform.gErase, nil);
-  Mainform.ButtonGroup.AddEntry(
+  Mainform.AddEntryToButtonGroup(
     False, Mainform.iAnalytics, Mainform.lAnalytics, Mainform.gAnalytics, nil);
-  Mainform.ButtonGroup.AddEntry(
+  Mainform.AddEntryToButtonGroup(
     False, Mainform.iTrim, Mainform.lTrim, Mainform.gTrim, nil);
-  Mainform.ButtonGroup.AddEntry(
+  Mainform.AddEntryToButtonGroup(
     False, Mainform.iOptimize, Mainform.lOptimize, Mainform.gOpt, nil);
 end;
 
@@ -125,14 +116,14 @@ procedure TMainformInitializer.RefreshOptimizeList;
 var
   CurrItem: Integer;
 begin
-  Mainform.lList.Items.Assign(Mainform.Optimizer.GetDescriptions);
-  for CurrItem := 0 to (Mainform.Optimizer.GetDescriptions.Count - 1) do
+  Mainform.lList.Items.Assign(Mainform.GetOptimizer.GetDescriptions);
+  for CurrItem := 0 to (Mainform.GetOptimizer.GetDescriptions.Count - 1) do
   begin
     Mainform.lList.Checked[CurrItem] :=
-      (not Mainform.Optimizer.GetApplied[CurrItem]) and
-      (not Mainform.Optimizer.GetIsOptional[CurrItem]);
+      (not Mainform.GetOptimizer.GetApplied[CurrItem]) and
+      (not Mainform.GetOptimizer.GetIsOptional[CurrItem]);
 
-    if Mainform.Optimizer.GetApplied[CurrItem] then
+    if Mainform.GetOptimizer.GetApplied[CurrItem] then
       Mainform.lList.Items[CurrItem] :=
         Mainform.lList.Items[CurrItem] +
         CapAlreadyCompleted[CurrLang];

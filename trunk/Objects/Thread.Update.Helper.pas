@@ -124,11 +124,11 @@ var
 begin
   if MessageBox(
     fMain.Handle,
-    PChar(fMain.UpdateThread.UpdateNotice),
+    PChar(fMain.GetUpdateNotice),
     PChar(AlrtNewVer[CurrLang]),
     MB_OKCANCEL  + MB_IconInformation) <> CancelButton then
   begin
-    fMain.UpdateThread.Terminate;
+    fMain.TerminateUpdateThread;
     exit;
   end;
 
@@ -186,16 +186,15 @@ end;
 
 procedure TUpdater.PostDownloadMethod;
 begin
-  fMain.ButtonGroup.Close;
+  fMain.CloseButtonGroup;
   if FileExists(DestinationPath) = false then
   begin
     AlertCreate(fMain, AlrtVerCanc[CurrLang]);
-    fMain.UpdateThread.Terminate;
+    fMain.TerminateUpdateThread;
     exit;
   end;
-
   VerifyCodesignAndExecute;
-  fMain.UpdateThread.Terminate;
+  fMain.TerminateUpdateThread;
 end;
 
 end.

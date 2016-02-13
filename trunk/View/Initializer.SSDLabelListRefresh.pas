@@ -4,19 +4,21 @@ interface
 
 uses
   Classes, Forms, SysUtils, Generics.Collections, Windows, ShellAPI,
-  Global.LanguageString, OS.EnvironmentVariable, Form.Alert, Device.PhysicalDrive,
-  Getter.PhysicalDrive.ListChange, Component.SSDLabel;
+  Global.LanguageString, OS.EnvironmentVariable, Form.Alert,
+  Device.PhysicalDrive, Getter.PhysicalDrive.ListChange, Component.SSDLabel,
+  Component.SSDLabel.List;
 
 type
   TSSDLabelListRefresher = class
   private
+    SSDLabel: TSSDLabelList;
     ChangesList: TChangesList;
     procedure AddByAddedList;
-    procedure AddDevice(Entry: IPhysicalDrive);
+    procedure AddDevice(const Entry: IPhysicalDrive);
     procedure AlertAndExecuteNewDiagnosisInstance;
     procedure DeleteAndAddDevicesByResultList;
     procedure DeleteByDeletedList;
-    procedure DeleteDevice(Path: String);
+    procedure DeleteDevice(const Path: String);
     procedure FreeChangesList;
     function ChangeExists: Boolean;
     function IsNoSupportedDriveExists: Boolean;
@@ -25,7 +27,7 @@ type
     procedure SetFirstDeviceAsSelected;
     procedure SetFirstDeviceAsSelectedIfNoDeviceSelected;
   public
-    procedure RefreshDrives;  
+    procedure RefreshDrives(const SSDLabelToRefresh: TSSDLabelList);
   end;
 
 implementation
@@ -87,16 +89,16 @@ begin
     AddDevice(CurrentEntry);
 end;
 
-procedure TSSDLabelListRefresher.DeleteDevice(Path: String);
+procedure TSSDLabelListRefresher.DeleteDevice(const Path: String);
 begin
-  if not fMain.SSDLabel.IsExistsByPath(Path) then
+  if not SSDLabel.IsExistsByPath(Path) then
     exit;
-  fMain.SSDLabel.Delete(fMain.SSDLabel.IndexOfByPath(Path));
+  SSDLabel.Delete(SSDLabel.IndexOfByPath(Path));
 end;
 
-procedure TSSDLabelListRefresher.AddDevice(Entry: IPhysicalDrive);
+procedure TSSDLabelListRefresher.AddDevice(const Entry: IPhysicalDrive);
 begin
-  fMain.SSDLabel.Add(TSSDLabel.Create(Entry));
+  SSDLabel.Add(TSSDLabel.Create(Entry));
 end;
 
 function TSSDLabelListRefresher.ChangeExists: Boolean;
@@ -108,7 +110,7 @@ end;
 
 procedure TSSDLabelListRefresher.SetFirstDeviceAsSelected;
 begin
-  fMain.SSDLabel[0].OnClick(fMain.SSDLabel[0]);
+  SSDLabel[0].OnClick(SSDLabel[0]);
 end;
 
 procedure TSSDLabelListRefresher.SetFirstDeviceAsSelectedIfNoDeviceSelected;
@@ -123,8 +125,10 @@ begin
   SetFirstDeviceAsSelectedIfNoDeviceSelected;
 end;
 
-procedure TSSDLabelListRefresher.RefreshDrives;
+procedure TSSDLabelListRefresher.RefreshDrives(
+  const SSDLabelToRefresh: TSSDLabelList);
 begin
+  SSDLabel := SSDLabelToRefresh;
   SetChangesList;
   if IsNoSupportedDriveExists then
     AlertAndExecuteNewDiagnosisInstance

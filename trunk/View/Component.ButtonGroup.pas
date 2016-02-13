@@ -24,12 +24,10 @@ type
     FForm: TForm;
     FMaxHeight, FMinHeight: Integer;
     FMaxWidth, FMinWidth: Integer;
-
     procedure FindJobProcedure
       (IsRight: Boolean; Sender: TObject; Action: TClickResult;
        Entry: TButtonGroupEntry);
     function FindEntryAndDo(Sender: TObject): TClickResult;
-
   public
     constructor Create(iForm: TForm;
       iMaxHeight, iMinHeight, iMaxWidth, iMinWidth: Integer);
@@ -38,11 +36,9 @@ type
       iLabelButton: TLabel; iGroupBox: TGroupBox;
       iClickEventProcedure: TClickEventProcedure);
     function FindEntry(Sender: TObject): TButtonGroupEntry;
-
     procedure Open;
     procedure Close;
     procedure CloseAll;
-
     property Form: TForm read FForm;
     property MaxHeight: Integer read FMaxHeight;
     property MinHeight: Integer read FMinHeight;

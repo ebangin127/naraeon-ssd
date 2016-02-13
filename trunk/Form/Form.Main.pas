@@ -142,6 +142,12 @@ type
     ShowSerial: Boolean;
     ListEnter: Integer;
     IsConnected: Boolean;
+    FirmwareGetter: TFirmwareGetter;
+    Optimizer: TNSTOptimizer;
+    UpdateThread: TUpdateThread;
+    TrimThread: TTrimThread;
+    ButtonGroup: TButtonGroup;
+    SSDLabel: TSSDLabelList;
     procedure RefreshByPhysicalDrive;
     procedure RefreshDrives;
     function TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer): Boolean;
@@ -160,17 +166,24 @@ type
     procedure StartTrimThread(const PartitionsToTrim: TTrimList);
     procedure StartUpdateThread;
     procedure SetIsConnected;
+    procedure CreateButtonGroup;
   public
-    SSDLabel: TSSDLabelList;
     PhysicalDriveList: TPhysicalDriveList;
     PhysicalDrive: IPhysicalDrive;
-    FirmwareGetter: TFirmwareGetter;
-    WICImage: TWICImage;
-    ButtonGroup: TButtonGroup;
     OnlineFirmwareUpdateAvailable: Boolean;
-    UpdateThread: TUpdateThread;
-    TrimThread: TTrimThread;
-    Optimizer: TNSTOptimizer;
+    WICImage: TWICImage;
+    procedure DisableSSDLabel;
+    procedure EnableSSDLabel;
+    function GetButtonGroup: TButtonGroup;
+    procedure OpenButtonGroup;
+    procedure CloseButtonGroup;
+    function GetUpdateNotice: String;
+    procedure AddEntryToButtonGroup(iSelected: Boolean; iImageButton: TImage;
+      iLabelButton: TLabel; iGroupBox: TGroupBox;
+      iClickEventProcedure: TClickEventProcedure);
+    procedure TerminateUpdateThread;
+    function GetFirmwareGetter: TFirmwareGetter;
+    function GetOptimizer: TNSTOptimizer;
   end;
 
 var
@@ -258,6 +271,11 @@ begin
   StartTrimThread(PartitionsToTrim);
 end;
 
+procedure TfMain.CloseButtonGroup;
+begin
+  ButtonGroup.Close;
+end;
+
 procedure TfMain.CloseDriveList;
 begin
   if GSSDSel.Visible = true then
@@ -323,6 +341,26 @@ end;
 procedure TfMain.FormShow(Sender: TObject);
 begin
   PostMessage(Self.Handle, WM_AFTER_SHOW, 0, 0);
+end;
+
+function TfMain.GetButtonGroup: TButtonGroup;
+begin
+  result := ButtonGroup;
+end;
+
+function TfMain.GetFirmwareGetter: TFirmwareGetter;
+begin
+  result := FirmwareGetter;
+end;
+
+function TfMain.GetOptimizer: TNSTOptimizer;
+begin
+  result := Optimizer;
+end;
+
+function TfMain.GetUpdateNotice: String;
+begin
+  result := UpdateThread.UpdateNotice;
 end;
 
 procedure TfMain.gInfoClick(Sender: TObject);
@@ -540,6 +578,11 @@ begin
   end;
 end;
 
+procedure TfMain.OpenButtonGroup;
+begin
+  ButtonGroup.Open;
+end;
+
 procedure TfMain.SSDLabelClick(Sender: TObject);
 begin
   CloseDriveList;
@@ -624,8 +667,9 @@ end;
 
 procedure TfMain.CreateNewPhysicalDrive;
 begin
-  if TryToCreatePhysicalDriveWithEntry(StrToInt(fMain.CurrentDrivePath)) = false then
-    FindAndSelectValidDrive;
+  if not TryToCreatePhysicalDriveWithEntry(
+    StrToInt(fMain.CurrentDrivePath)) then
+      FindAndSelectValidDrive;
 end;
 
 procedure TfMain.tRefreshListTimer(Sender: TObject);
@@ -710,7 +754,15 @@ begin
   SSDLabel := TSSDLabelList.Create;
   PhysicalDriveList := TPhysicalDriveList.Create;
   FirmwareGetter := TFirmwareGetter.Create;
+  CreateButtonGroup;
   TRufus.Create;
+end;
+
+procedure TfMain.CreateButtonGroup;
+begin
+  ButtonGroup :=
+    TButtonGroup.Create(fMain, MaximumSize, MinimumSize,
+      ClientWidth, ClientWidth);
 end;
 
 procedure TfMain.Erase(const Filename: string);
@@ -748,7 +800,7 @@ var
   SSDLabelListRefresher: TSSDLabelListRefresher;
 begin
   SSDLabelListRefresher := TSSDLabelListRefresher.Create;
-  SSDLabelListRefresher.RefreshDrives;
+  SSDLabelListRefresher.RefreshDrives(SSDLabel);
   FreeAndNil(SSDLabelListRefresher);
 end;
 
@@ -756,6 +808,14 @@ procedure TfMain.IfConnectedStartUpdateThread;
 begin
   if IsConnected then
     StartUpdateThread;
+end;
+
+procedure TfMain.AddEntryToButtonGroup(iSelected: Boolean; iImageButton: TImage;
+  iLabelButton: TLabel; iGroupBox: TGroupBox;
+  iClickEventProcedure: TClickEventProcedure);
+begin
+  ButtonGroup.AddEntry(iSelected, iImageButton, iLabelButton, iGroupBox,
+    iClickEventProcedure);
 end;
 
 procedure TfMain.ApplyPartitionCountToTrim(var CurrPartition: Integer);
@@ -796,12 +856,18 @@ begin
   UpdateThread.Start;
 end;
 
+procedure TfMain.TerminateUpdateThread;
+begin
+  UpdateThread.Terminate;
+end;
+
 procedure TfMain.SetIsConnected;
 var
   IsConnectedDWORD: Cardinal;
 begin
   InternetGetConnectedState(@IsConnectedDWORD, 0);
-  IsConnected := (IsConnectedDWORD and INTERNET_CONNECTION_LAN) = INTERNET_CONNECTION_LAN;
+  IsConnected :=
+    (IsConnectedDWORD and INTERNET_CONNECTION_LAN) = INTERNET_CONNECTION_LAN;
 end;
 
 procedure TfMain.cTrimRunningClick(Sender: TObject);
@@ -847,6 +913,22 @@ begin
         PhysicalDrive.IdentifyDeviceResult.Serial +
         '" ' +
         '/F'));                                     //강제 삭제
+end;
+
+procedure TfMain.DisableSSDLabel;
+var
+  CurrentSSDLabel: TSSDLabel;
+begin
+  for CurrentSSDLabel in SSDLabel do
+    CurrentSSDLabel.Enabled := false;
+end;
+
+procedure TfMain.EnableSSDLabel;
+var
+  CurrentSSDLabel: TSSDLabel;
+begin
+  for CurrentSSDLabel in SSDLabel do
+    CurrentSSDLabel.Enabled := true;
 end;
 
 procedure TfMain.bScheduleClick(Sender: TObject);
