@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, ClipBrd, Windows,
   Thread.Trim, TrimList,
-  Device.PhysicalDrive.List, Global.LanguageString,
+  Device.PhysicalDrive.List,
   Device.PhysicalDrive, Getter.PhysicalDrive.PartitionList, Getter.PhysicalDrive.ListChange;
 
 type

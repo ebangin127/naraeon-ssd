@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils,
-  OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List,
+  CommandSet, BufferInterpreter, Device.SMART.List,
   CommandSet.NVMe, CommandSet.NVMe.Intel.PortPart,
   Getter.SCSIAddress, Device.SlotSpeed, OS.SetupAPI;
 

@@ -5,7 +5,7 @@ interface
 uses
   Forms, SysUtils, StdCtrls, ExtCtrls, Windows, Classes, Graphics, Controls,
   WinCodec,
-  Form.Alert, Component.ButtonGroup, OS.EnvironmentVariable, Global.LanguageString,
+  OS.EnvironmentVariable, Global.LanguageString,
   Getter.OS.Version;
 
 procedure InitializeMainForm;

@@ -4,8 +4,7 @@ interface
 
 uses
   SysUtils,
-  BufferInterpreter, BufferInterpreter.NVMe, Device.SMART.List,
-  MeasureUnit.DataSize;
+  BufferInterpreter, BufferInterpreter.NVMe, Device.SMART.List;
 
 type
   ESmallBufferException = class(ENotImplemented);

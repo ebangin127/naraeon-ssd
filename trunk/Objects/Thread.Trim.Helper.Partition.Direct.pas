@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Windows, Math,
   OSFile, Thread.Trim.Helper.Partition
-  {$IfNDef UNITTEST}, Partition, ThreadToView.Trim,{$EndIf}
+  {$IfNDef UNITTEST}, ThreadToView.Trim,{$EndIf}
   {$IfDef UNITTEST}, Mock.Getter.TrimBasics.Factory,
   {$Else}Getter.TrimBasics, Getter.TrimBasics.Factory,{$EndIf}
   {$IfDef UNITTEST}Mock.DeviceTrimmer,

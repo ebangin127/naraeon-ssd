@@ -3,7 +3,7 @@ unit Web.HTTPS;
 interface
 
 uses
-  SysUtils, Classes, IdHttp, IdURI, IdSSLOpenSSL,
+  SysUtils, Classes, IdSSLOpenSSL,
   Web.HTTP;
 
 type

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ClipBrd, Global.LanguageString;
+  Dialogs, StdCtrls, ExtCtrls, ClipBrd;
 
 procedure AlertCreate(Sender: TForm; Msg: String);
 

@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
-  OSFile.ForInternal, Getter.PhysicalDriveList, Device.PhysicalDrive,
-  Device.PhysicalDrive.List, CommandSet.Factory, WMI;
+  OSFile.ForInternal,
+  CommandSet.Factory, WMI;
 
 type
   TDeviceDriver = record

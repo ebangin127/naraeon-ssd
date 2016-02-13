@@ -36,7 +36,7 @@ type
 
 implementation
 
-uses Form.Main;
+
 
 constructor TNSTOptimizer.Create;
 begin

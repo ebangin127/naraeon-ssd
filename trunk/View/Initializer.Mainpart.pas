@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Graphics,
-  Global.LanguageString, Device.PhysicalDrive, Initializer.SSDLabelListRefresh,
+  Global.LanguageString, Device.PhysicalDrive,
   Getter.LatestFirmware, MeasureUnit.DataSize, BufferInterpreter,
   Getter.PhysicalDrive.NCQAvailability, Device.SlotSpeed;
 

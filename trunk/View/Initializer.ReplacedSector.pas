@@ -5,7 +5,7 @@ interface
 uses
   SysUtils,
   OS.EnvironmentVariable, Global.LanguageString, Device.PhysicalDrive,
-  Getter.PhysicalDrive.ListChange, AverageLogger.Count, AverageLogger,
+  AverageLogger.Count, AverageLogger,
   Support;
 
 type

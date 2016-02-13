@@ -12,7 +12,7 @@ unit TestBufferInterpreter.NVMe.Intel;
 interface
 
 uses
-  TestFramework, Device.SMART.List, SysUtils, MeasureUnit.DataSize,
+  TestFramework, Device.SMART.List, SysUtils,
   BufferInterpreter, BufferInterpreter.NVMe.Intel;
 
 type

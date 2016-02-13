@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows,
-  Partition, OSFile.IoControl, Getter.TrimBasics, Getter.VolumeBitmap;
+  Partition, Getter.TrimBasics, Getter.VolumeBitmap;
 
 type
   TFATTrimBasicsGetter = class(TTrimBasicsGetter)

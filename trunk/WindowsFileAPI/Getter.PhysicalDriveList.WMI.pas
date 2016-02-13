@@ -5,7 +5,7 @@ interface
 uses
   Classes, Windows, ActiveX, ComObj, Variants, SysUtils, Dialogs,
   Generics.Collections, Threading,
-  OSFile, Getter.PhysicalDriveList, Device.PhysicalDrive,
+  Getter.PhysicalDriveList, Device.PhysicalDrive,
   Device.PhysicalDrive.List, CommandSet.Factory, WMI;
 
 type
@@ -153,8 +153,8 @@ begin
   CurrentDrive := Unassigned;
 end;
 
-procedure TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
-  (DiskDriveSearchResult: IEnumVARIANT);
+procedure TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive(
+  DiskDriveSearchResult: IEnumVARIANT);
 begin
   DeviceIDList := TStringList.Create;
   try

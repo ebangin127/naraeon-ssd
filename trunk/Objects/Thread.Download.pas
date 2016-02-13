@@ -27,8 +27,7 @@ type
 
 implementation
 
-uses
-  Form.Main;
+
 
 
 constructor TDownloadThread.Create;

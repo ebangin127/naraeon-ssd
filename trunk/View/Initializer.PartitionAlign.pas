@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows, Classes, Graphics,
-  Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange,
+  Global.LanguageString, Device.PhysicalDrive,
   Getter.PhysicalDrive.PartitionList;
 
 type

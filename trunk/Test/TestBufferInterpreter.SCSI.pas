@@ -12,7 +12,7 @@ unit TestBufferInterpreter.SCSI;
 interface
 
 uses
-  TestFramework, BufferInterpreter.SCSI, Device.SMART.List, SysUtils,
+  TestFramework, BufferInterpreter.SCSI, SysUtils,
   BufferInterpreter;
 
 type

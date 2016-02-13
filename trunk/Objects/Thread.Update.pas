@@ -24,8 +24,7 @@ type
 
 implementation
 
-uses
-  Form.Main;
+
 
 
 constructor TUpdateThread.Create;

@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Threading, Classes, Dialogs,
-  OSFile, Device.PhysicalDrive, Getter.PhysicalDriveList,
+  Device.PhysicalDrive, Getter.PhysicalDriveList,
   Device.PhysicalDrive.List, CommandSet.Factory;
 
 type

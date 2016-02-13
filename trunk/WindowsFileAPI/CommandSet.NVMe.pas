@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils,
   OSFile.IoControl, CommandSet, BufferInterpreter, BufferInterpreter.NVMe,
-  Device.SMART.List, Device.SlotSpeed, Getter.SlotSpeed;
+  Device.SlotSpeed, Getter.SlotSpeed;
 
 type
   TNVMeCommandSet = class abstract(TCommandSet)

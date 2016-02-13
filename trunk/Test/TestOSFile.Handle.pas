@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, OSFile, Dialogs, SysUtils, TestFramework,
-  OS.SecurityDescriptor, OSFile.Handle;
+  OSFile.Handle;
 
 type
   // Test methods for class TOSFileWithHandle

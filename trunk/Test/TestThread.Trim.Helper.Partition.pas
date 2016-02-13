@@ -12,8 +12,7 @@ unit TestThread.Trim.Helper.Partition;
 interface
 
 uses
-  TestFramework, OS.ProcessOpener, Thread.Trim.Helper.Partition.OS, SysUtils,
-  Thread.Trim.Helper.Partition;
+  TestFramework, OS.ProcessOpener, Thread.Trim.Helper.Partition.OS, SysUtils;
 
 type
   // Test methods for class TOSPartitionTrimmer

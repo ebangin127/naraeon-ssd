@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  Global.LanguageString, Device.PhysicalDrive, Getter.PhysicalDrive.ListChange, Support,
+  Global.LanguageString, Device.PhysicalDrive, Support,
   AverageLogger.Write, AverageLogger, OS.EnvironmentVariable, MeasureUnit.DataSize;
 
 type

@@ -3,7 +3,7 @@ unit Getter.PhysicalDriveList;
 interface
 
 uses
-  OSFile, Device.PhysicalDrive.List;
+  Device.PhysicalDrive.List;
 
 type
   TPhysicalDriveListGetter = class abstract
