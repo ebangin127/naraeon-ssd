@@ -1,37 +1,34 @@
-unit OS.VersionHelper;
+unit Getter.OS.Version;
 
 interface
 
 uses
-  Windows;
+  Windows,
+  Version;
 
 type
-  TVersionHelper = class
+  TWindowsVersionGetter = class
   private
     FMajorVersion: WORD;
     FMinorVersion: WORD;
     FServicePackMajor: WORD;
-
     function IsWindowsVersionEquals(Major, Minor, ServicePack: WORD): Boolean;
-
     function GuessServicePackMajorVersion: Boolean;
     function GuessMinorVersion: Boolean;
     procedure GetVersionByBruteforce;
     procedure Initializer;
+    function GetWindowsVersionAsTVersion: TVersion;
   public
-    class function Create: TVersionHelper;
-
-    property MajorVersion: WORD read FMajorVersion;
-    property MinorVersion: WORD read FMinorVersion;
-    property ServicePackMajor: WORD read FServicePackMajor;
+    class function Create: TWindowsVersionGetter;
+    property Version: TVersion read GetWindowsVersionAsTVersion;
   end;
 
 var
-  VersionHelper: TVersionHelper;
+  VersionHelper: TWindowsVersionGetter;
 
 implementation
 
-class function TVersionHelper.Create: TVersionHelper;
+class function TWindowsVersionGetter.Create: TWindowsVersionGetter;
 begin
   if VersionHelper = nil then
   begin
@@ -42,7 +39,7 @@ begin
     result := VersionHelper;
 end;
 
-procedure TVersionHelper.GetVersionByBruteforce;
+procedure TWindowsVersionGetter.GetVersionByBruteforce;
 const
   MajorVersionMin = 5;
   MajorVersionMax = 20;
@@ -57,7 +54,14 @@ begin
   end;
 end;
 
-function TVersionHelper.GuessMinorVersion: Boolean;
+function TWindowsVersionGetter.GetWindowsVersionAsTVersion: TVersion;
+begin
+  result.FMajorVer := FMajorVersion;
+  result.FMinorVer := FMinorVersion;
+  result.FBuildVer := FServicePackMajor;
+end;
+
+function TWindowsVersionGetter.GuessMinorVersion: Boolean;
 const
   MinorVersionMax = 20;
 var
@@ -75,7 +79,7 @@ begin
   end;
 end;
 
-function TVersionHelper.GuessServicePackMajorVersion: Boolean;
+function TWindowsVersionGetter.GuessServicePackMajorVersion: Boolean;
 const
   ServicePackMajorMax = 20;
 var
@@ -94,12 +98,12 @@ begin
   end;
 end;
 
-procedure TVersionHelper.Initializer;
+procedure TWindowsVersionGetter.Initializer;
 begin
   GetVersionByBruteforce;
 end;
 
-function TVersionHelper.IsWindowsVersionEquals(
+function TWindowsVersionGetter.IsWindowsVersionEquals(
   Major, Minor, ServicePack: WORD): Boolean;
 var
   osvi: OSVERSIONINFOEXW;
@@ -124,7 +128,7 @@ begin
 end;
 
 initialization
-  VersionHelper := TVersionHelper.Create;
+  VersionHelper := TWindowsVersionGetter.Create;
 finalization
   VersionHelper.Free;
 end.

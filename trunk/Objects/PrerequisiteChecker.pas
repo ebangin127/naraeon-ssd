@@ -4,7 +4,7 @@ interface
 
 uses
   Forms, SysUtils, Windows,
-  Form.Alert, Global.LanguageString, OS.EnvironmentVariable, OS.VersionHelper;
+  Form.Alert, Global.LanguageString, OS.EnvironmentVariable, Getter.OS.Version;
 
 procedure CheckPrerequisite;
 
@@ -14,7 +14,7 @@ uses Form.Main;
 
 procedure CheckVersion;
 begin
-  if VersionHelper.MajorVersion < 5 then
+  if VersionHelper.Version.FMajorVer < 5 then
   begin
     AlertCreate(fMain, AlrtOSError[CurrLang]);
     Application.Terminate;

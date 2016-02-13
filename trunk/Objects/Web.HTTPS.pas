@@ -14,8 +14,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function GetToStringList(PathToGet: String): TStringList; override;
-    function GetToStringStream(PathToGet: String): TStringStream; override;
+    function GetToStringList(const PathToGet: String): TStringList; override;
+    function GetToStringStream(const PathToGet: String): TStringStream; override;
   end;
 
 implementation
@@ -42,13 +42,13 @@ begin
   Connector.IOHandler := SSLIoHandler;
 end;
 
-function THTTPSWeb.GetToStringList(PathToGet: String): TStringList;
+function THTTPSWeb.GetToStringList(const PathToGet: String): TStringList;
 begin
   SetSSLIoHandler;
   result := inherited GetToStringList(PathToGet);
 end;
 
-function THTTPSWeb.GetToStringStream(PathToGet: String): TStringStream;
+function THTTPSWeb.GetToStringStream(const PathToGet: String): TStringStream;
 begin
   SetSSLIoHandler;
   result := inherited GetToStringStream(PathToGet);

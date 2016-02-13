@@ -275,11 +275,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Support\Support.Sandforce.ADATA.pas"/>
         <DCCReference Include="Support\Support.ADATA.pas"/>
         <DCCReference Include="Support\Support.Factory.pas"/>
-        <DCCReference Include="Modules\OS.WindowsVersion.pas"/>
+        <DCCReference Include="Modules\OS.Version.Helper.pas"/>
         <DCCReference Include="WindowsFileAPI\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="Modules\MeasureUnit.DataSize.pas"/>
         <DCCReference Include="Modules\MeasureUnit.Time.pas"/>
-        <DCCReference Include="Modules\OS.VersionHelper.pas"/>
+        <DCCReference Include="Objects\Getter.OS.Version.pas"/>
         <DCCReference Include="Objects\Device.PhysicalDrive.pas"/>
         <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.OS.pas"/>
         <DCCReference Include="Objects\Web.HTTP.pas"/>
@@ -800,7 +800,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='ReleaseCodesign' And '$(Platform)'=='Win64'">
@@ -808,7 +808,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
+        <PostBuildEvent>signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode &quot;$(OUTPUTPATH)&quot;</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

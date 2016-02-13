@@ -11,7 +11,7 @@ type
   private
     InnerConnector: TIdHttp;
     InnerEncodedURI: String;
-    procedure SetEncodedURIByPath(PathToGet: String);
+    procedure SetEncodedURIByPath(const PathToGet: String);
     function GetFromEncodedURIToStringList: TStringList;
     procedure SetRequestHeader;
     function HeadByEncodedURI: Boolean;
@@ -22,10 +22,11 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function GetToStringList(PathToGet: String): TStringList; override;
-    function GetToStringStream(PathToGet: String): TStringStream; override;
-    function Head(PathToGet: String): Boolean; virtual;
-    procedure SetOnWorkHandler(OnWorkHandler: TWorkEvent);
+    function GetToStringList(const PathToGet: String): TStringList; override;
+    function GetToStringStream(const PathToGet: String):
+      TStringStream; override;
+    function Head(const PathToGet: String): Boolean; virtual;
+    procedure SetOnWorkHandler(const OnWorkHandler: TWorkEvent);
   end;
 
 implementation
@@ -47,12 +48,12 @@ begin
   inherited;
 end;
 
-procedure THTTPWeb.SetEncodedURIByPath(PathToGet: String);
+procedure THTTPWeb.SetEncodedURIByPath(const PathToGet: String);
 begin
   InnerEncodedURI := TIdURI.URLEncode(PathToGet);
 end;
 
-procedure THTTPWeb.SetOnWorkHandler(OnWorkHandler: TWorkEvent);
+procedure THTTPWeb.SetOnWorkHandler(const OnWorkHandler: TWorkEvent);
 begin
   Connector.OnWork := OnWorkHandler;
 end;
@@ -87,7 +88,7 @@ begin
   end;
 end;
 
-function THTTPWeb.Head(PathToGet: String): Boolean;
+function THTTPWeb.Head(const PathToGet: String): Boolean;
 begin
   if IsWebAccessible = false then
     exit(false);
@@ -103,7 +104,7 @@ begin
   InnerConnector.Request.CharSet := CharacterSet;
 end;
 
-function THTTPWeb.GetToStringList(PathToGet: String): TStringList;
+function THTTPWeb.GetToStringList(const PathToGet: String): TStringList;
 begin
   if IsWebAccessible = false then
     exit(TStringList.Create);
@@ -113,7 +114,7 @@ begin
   result := GetFromEncodedURIToStringList;
 end;
 
-function THTTPWeb.GetToStringStream(PathToGet: String): TStringStream;
+function THTTPWeb.GetToStringStream(const PathToGet: String): TStringStream;
 begin
   if IsWebAccessible = false then
     exit(TStringStream.Create);

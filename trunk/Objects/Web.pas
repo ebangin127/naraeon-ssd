@@ -8,12 +8,14 @@ uses
 type
   TWeb = class abstract
   private
-    function IsWebAccessibleInConnectedState
-      (GetFunctionResult: Boolean; InternetConnectedState: DWORD): Boolean;
-    function IsWebAccessConfigured(InternetConnectedState: DWORD): Boolean;
+    function IsWebAccessibleInConnectedState(
+      const GetFunctionResult: Boolean; const InternetConnectedState: DWORD):
+      Boolean;
+    function IsWebAccessConfigured(const InternetConnectedState: DWORD): Boolean;
   public
-    function GetToStringList(PathToGet: String): TStringList; virtual; abstract;
-    function GetToStringStream(PathToGet: String): TStringStream;
+    function GetToStringList(const PathToGet: String):
+      TStringList; virtual; abstract;
+    function GetToStringStream(const PathToGet: String): TStringStream;
       virtual; abstract;
     function IsWebAccessible: Boolean;
   protected
@@ -26,16 +28,17 @@ implementation
 
 { TWeb }
 
-function TWeb.IsWebAccessConfigured
-  (InternetConnectedState: DWORD): Boolean;
+function TWeb.IsWebAccessConfigured(
+  const InternetConnectedState: DWORD): Boolean;
 begin
   result :=
     ((InternetConnectedState and INTERNET_CONNECTION_OFFLINE) = 0) and
     (InternetConnectedState <> 0);
 end;
 
-function TWeb.IsWebAccessibleInConnectedState
-  (GetFunctionResult: Boolean; InternetConnectedState: DWORD): Boolean;
+function TWeb.IsWebAccessibleInConnectedState(
+  const GetFunctionResult: Boolean; const InternetConnectedState: DWORD):
+  Boolean;
 begin
   result :=
     GetFunctionResult and IsWebAccessConfigured(InternetConnectedState);

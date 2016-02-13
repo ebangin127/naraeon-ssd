@@ -3,7 +3,8 @@ unit OS.SetupAPI;
 interface
 
 uses
-  SysUtils, Windows, OS.WindowsVersion;
+  SysUtils, Windows,
+  Getter.OS.Version, OS.Version.Helper;
 
 const
   MAX_PATH = 260;
@@ -125,7 +126,7 @@ end;
 
 function TSetupAPI.GetSetupAPIFunctions: TSetupAPIFunctions;
 begin
-  if IsBelowVista then
+  if IsBelowVista(VersionHelper.Version) then
     raise EBelowVistaException.Create(
       'SetupAPI Error: OS Version is Below Vista');
   result := SetupAPIFunctions;

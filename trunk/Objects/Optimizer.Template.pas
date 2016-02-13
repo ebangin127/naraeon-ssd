@@ -4,7 +4,7 @@ interface
 
 uses
   Generics.Collections,
-  OS.VersionHelper;
+  Getter.OS.Version, OS.Version.Helper;
 
 type
   IOptimizationUnit = interface
@@ -34,9 +34,7 @@ implementation
 
 function TOptimizationUnit.IsBelowWindows8: Boolean;
 begin
-  result :=
-    (VersionHelper.MajorVersion < 6) or
-    ((VersionHelper.MajorVersion = 6) and (VersionHelper.MinorVersion = 1));
+  result := OS.Version.Helper.IsBelowVista(VersionHelper.Version);
 end;
 
 end.

@@ -30,6 +30,7 @@ type
     procedure VerifyCodesignAndExecute;
     procedure WrongCodesignAlertAndDelete;
     procedure MoveSetupAndExecute;
+    function GetLatestVersion: TStringList;
   public
     function CheckUpdate: TCheckUpdateResult;
     procedure StartUpdate;
@@ -51,11 +52,20 @@ begin
   result.IsUpdateNeeded := (CurrentVersionInTVersion < result.LatestVersion);
 end;
 
+function TUpdater.GetLatestVersion: TStringList;
+begin
+  try
+    result := HTTPWeb.GetToStringList(AddrUpdChk[CurrLang]);
+  except
+    result := TStringList.Create;
+  end;
+end;
+
 function TUpdater.IsNewerVersionExistsGetLatestVersion: TCheckUpdateResult;
 var
   LatestSSDToolGetResult: TStringList;
 begin
-  LatestSSDToolGetResult := HTTPWeb.GetToStringList(AddrUpdChk[CurrLang]);
+  LatestSSDToolGetResult := GetLatestVersion;
   try
     if LatestSSDToolGetResult.Count = 0 then
       result.IsUpdateNeeded := false
