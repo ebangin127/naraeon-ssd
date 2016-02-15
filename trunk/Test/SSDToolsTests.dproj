@@ -104,7 +104,7 @@
         </DelphiCompile>
         <DCCReference Include="..\Support\Support.Sandforce.pas"/>
         <DCCReference Include="..\Support\Support.pas"/>
-        <DCCReference Include="..\Objects\Device.SMART.List.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Device.SMART.List.pas"/>
         <DCCReference Include="..\Support\Support.Crucial.pas"/>
         <DCCReference Include="..\Support\Support.Liteon.pas"/>
         <DCCReference Include="..\Support\Support.MachXtreme.pas"/>
@@ -129,7 +129,7 @@
         <DCCReference Include="..\Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="..\Modules\OS.Version.Helper.pas"/>
         <DCCReference Include="..\Modules\AsciiCheck.pas"/>
-        <DCCReference Include="..\Objects\Getter.OS.Version.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.OS.Version.pas"/>
         <DCCReference Include="..\Support\Support.NVMe.Intel.pas"/>
         <DCCReference Include="..\Support\Support.NVMe.Samsung.pas"/>
         <DCCReference Include="..\Objects\AverageLogger.Count.pas"/>

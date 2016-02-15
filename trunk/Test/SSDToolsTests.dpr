@@ -15,7 +15,7 @@ program SSDToolsTests;
 uses
   Support.Sandforce in '..\Support\Support.Sandforce.pas',
   Support in '..\Support\Support.pas',
-  Device.SMART.List in '..\Objects\Device.SMART.List.pas',
+  Device.SMART.List in '..\WindowsFileAPI\Device.SMART.List.pas',
   DUnitTestRunner,
   ShellApi,
   Windows,
@@ -43,7 +43,7 @@ uses
   OS.ProcessOpener in '..\Objects\OS.ProcessOpener.pas',
   OS.Version.Helper in '..\Modules\OS.Version.Helper.pas',
   AsciiCheck in '..\Modules\AsciiCheck.pas',
-  Getter.OS.Version in '..\Objects\Getter.OS.Version.pas',
+  Getter.OS.Version in '..\WindowsFileAPI\Getter.OS.Version.pas',
   Support.NVMe.Intel in '..\Support\Support.NVMe.Intel.pas',
   Support.NVMe.Samsung in '..\Support\Support.NVMe.Samsung.pas',
   AverageLogger.Count in '..\Objects\AverageLogger.Count.pas',

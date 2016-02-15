@@ -217,9 +217,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\SemiAutoTrimmer.pas"/>
         <DCCReference Include="Objects\PrerequisiteChecker.pas"/>
         <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.Bus.pas"/>
-        <DCCReference Include="Objects\Device.SMART.List.pas"/>
+        <DCCReference Include="WindowsFileAPI\Device.SMART.List.pas"/>
         <DCCReference Include="Objects\Partition.pas"/>
-        <DCCReference Include="Objects\Registry.Helper.Internal.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.DiskGeometry.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.DriveAvailability.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDrive.PartitionList.pas"/>
@@ -272,7 +271,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Modules\OS.DeleteDirectory.pas"/>
         <DCCReference Include="Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="Modules\OS.PlugAndPlay.pas"/>
-        <DCCReference Include="Objects\Registry.Helper.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.VolumeLabel.pas"/>
         <DCCReference Include="Support\Support.Sandforce.ADATA.pas"/>
         <DCCReference Include="Support\Support.ADATA.pas"/>
@@ -281,8 +279,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\OS.SecurityDescriptor.pas"/>
         <DCCReference Include="Modules\MeasureUnit.DataSize.pas"/>
         <DCCReference Include="Modules\MeasureUnit.Time.pas"/>
-        <DCCReference Include="Objects\Getter.OS.Version.pas"/>
-        <DCCReference Include="Objects\Device.PhysicalDrive.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.OS.Version.pas"/>
+        <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.pas"/>
         <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.OS.pas"/>
         <DCCReference Include="Objects\Web.HTTP.pas"/>
         <DCCReference Include="Objects\Web.HTTPS.pas"/>
@@ -324,12 +322,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.Intel.PortPart.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.pas"/>
         <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.Samsung.pas"/>
-        <DCCReference Include="Objects\Getter.SCSIAddress.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.SCSIAddress.pas"/>
         <DCCReference Include="Support\Support.NVMe.Samsung.pas"/>
         <DCCReference Include="Support\Support.NVMe.Intel.pas"/>
         <DCCReference Include="Modules\OS.SetupAPI.pas"/>
-        <DCCReference Include="Objects\Getter.SlotSpeed.pas"/>
-        <DCCReference Include="Objects\Getter.SlotSpeedByDeviceID.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.SlotSpeed.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.SlotSpeedByDeviceID.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
@@ -365,6 +363,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\WMI.pas"/>
         <DCCReference Include="WindowsFileAPI\OSFile.ForInternal.pas"/>
         <DCCReference Include="Objects\Optimizer.P2P.pas"/>
+        <DCCReference Include="WindowsFileAPI\Registry.Helper.Internal.pas"/>
+        <DCCReference Include="WindowsFileAPI\Registry.Helper.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -441,12 +441,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
-                    <Platform Name="Win32">
-                        <RemoteName>SSDTools.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -63,7 +63,10 @@ begin
 end;
 
 procedure TNaraeonSSDToolsDiag.WaitForTerminate;
+const
+  DelayedStartup = 30000;
 begin
+  Sleep(DelayedStartup);
   tDiagnosis.Enabled := true;
   tDiagnosis.OnTimer(self);
   {$IFNDEF DEBUG}

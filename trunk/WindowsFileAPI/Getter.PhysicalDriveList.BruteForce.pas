@@ -3,7 +3,7 @@ unit Getter.PhysicalDriveList.BruteForce;
 interface
 
 uses
-  SysUtils, Threading, Classes, Dialogs,
+  SysUtils, Threading, Classes, Dialogs, Generics.Collections,
   Device.PhysicalDrive, Getter.PhysicalDriveList,
   Device.PhysicalDrive.List, CommandSet.Factory;
 
@@ -12,12 +12,13 @@ type
   public
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
-    PhysicalDriveList: TPhysicalDriveList;
+    PhysicalDriveList: TThreadedPhysicalDriveList;
     procedure AddDriveToList(CurrentDrive: Integer);
     procedure IfThisDriveAccessibleAddToList(CurrentDrive: Integer);
     function TryToGetIsDriveAccessible(CurrentDrive: Integer): Boolean;
     procedure TryToGetPhysicalDriveList;
     function IsDriveAccessible(CurrentDrive: Integer): Boolean;
+    function LockAndTransfer: TPhysicalDriveList;
   end;
 
 implementation
@@ -83,16 +84,28 @@ begin
   end);
 end;
 
+function TBruteForcePhysicalDriveListGetter.LockAndTransfer:
+  TPhysicalDriveList;
+var
+  LockedList: TList<IPhysicalDrive>;
+begin
+  LockedList := PhysicalDriveList.LockList;
+  result := TPhysicalDriveList.Create;
+  result.AddRange(LockedList.ToArray);
+  PhysicalDriveList.UnlockList;
+end;
+
 function TBruteForcePhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
-  PhysicalDriveList := TPhysicalDriveList.Create;
+  PhysicalDriveList := TThreadedPhysicalDriveList.Create;
   try
     TryToGetPhysicalDriveList;
   except
     PhysicalDriveList.Clear;
   end;
-  result := PhysicalDriveList;
+  result := LockAndTransfer;
+  FreeAndNil(PhysicalDriveList);
 end;
 
 end.
