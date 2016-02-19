@@ -80,7 +80,7 @@ type
 
 implementation
 
-{ TATACommandSet }
+{ TLegacyATACommandSet }
 
 function TLegacyATACommandSet.GetCommonBuffer: ATA_WITH_BUFFER;
 begin

@@ -6,7 +6,6 @@ uses
   SysUtils, Generics.Collections;
 
 type
-  EWrongThresholdList = class(EArgumentException);
   EEntryNotFound = class(EArgumentException);
   TSMARTValueEntry = record
     ID: Byte;
@@ -52,8 +51,6 @@ var
   IndexInSelf: Integer;
   EntryToChange: TSMARTValueEntry;
 begin
-  if ThresholdList.Count <> Count then
-    raise EWrongThresholdList.Create('Two list got from different device');
   for CurrentItem in ThresholdList do
   begin
     IndexInSelf := self.GetIndexByID(CurrentItem.ID);
