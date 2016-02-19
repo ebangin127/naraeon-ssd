@@ -45,7 +45,7 @@ type
       end;
       ATA_WITH_BUFFER = record
         Parameter: ATA_PASS_THROUGH_EX;
-        Buffer: TLargeBuffer;
+        Buffer: TSmallBuffer;
       end;
     const
       ATA_FLAGS_DRDY_REQUIRED = 1;
@@ -216,13 +216,11 @@ function TLegacyATACommandSet.InterpretSMARTThresholdBuffer(
 var
   ATABufferInterpreter: TATABufferInterpreter;
   ThresholdList: TSMARTValueList;
-  SmallBuffer: TSmallBuffer;
 begin
   result := OriginalResult;
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  Move(IoInnerBuffer.Buffer, SmallBuffer, SizeOf(SmallBuffer));
   ThresholdList := ATABufferInterpreter.BufferToSMARTThresholdValueList(
-    SmallBuffer);
+    IoInnerBuffer.Buffer);
   try
     OriginalResult.MergeThreshold(ThresholdList);
   finally
