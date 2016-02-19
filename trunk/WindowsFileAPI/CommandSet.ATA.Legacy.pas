@@ -139,7 +139,7 @@ var
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
   result :=
-    ATABufferInterpreter.LargeBufferToIdentifyDeviceResult(
+    ATABufferInterpreter.BufferToIdentifyDeviceResult(
       IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
@@ -182,7 +182,7 @@ var
   ATABufferInterpreter: TATABufferInterpreter;
 begin
   ATABufferInterpreter := TATABufferInterpreter.Create;
-  result := ATABufferInterpreter.LargeBufferToSMARTValueList(
+  result := ATABufferInterpreter.BufferToSMARTValueList(
     IoInnerBuffer.Buffer);
   FreeAndNil(ATABufferInterpreter);
 end;
