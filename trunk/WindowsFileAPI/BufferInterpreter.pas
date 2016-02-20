@@ -12,6 +12,10 @@ type
     (Probing, ATA, SAT, SCSI, NVMe, UnknownInterface);
   TSATASpeed =
     (NotSATA, UnknownSATASpeed, SATA150, SATA300, SATA600);
+  TRotationRate = record
+    Supported: Boolean;
+    Value: Integer;
+  end;
   TIdentifyDeviceResult = record
     Model: String;
     Firmware: String;
@@ -20,6 +24,7 @@ type
     SATASpeed: TSATASpeed;
     SlotSpeed: TSlotSpeed;
     LBASize: Cardinal;
+    RotationRate: TRotationRate;
     StorageInterface: TStorageInterface;
     IsDataSetManagementSupported: Boolean;
   end;

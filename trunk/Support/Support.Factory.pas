@@ -23,30 +23,17 @@ type
   public
     function GetSuitableNSTSupport(Model, Firmware: String):
       TNSTSupport;
-    class function Create: TNSTSupportFactory;
   private
+    FModel: String;
+    FFirmware: String;
     function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
     function TestNSTSupportCompatibility(
       TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
-    var
-      FModel: String;
-      FFirmware: String;
   end;
-
-var
-  NSTSupportFactory: TNSTSupportFactory;
 
 implementation
 
 { TNSTSupportFactory }
-
-class function TNSTSupportFactory.Create: TNSTSupportFactory;
-begin
-  if NSTSupportFactory = nil then
-    result := inherited Create as self
-  else
-    result := NSTSupportFactory;
-end;
 
 function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
   TNSTSupport;
@@ -91,8 +78,4 @@ begin
     FreeAndNil(result);
 end;
 
-initialization
-  NSTSupportFactory := TNSTSupportFactory.Create;
-finalization
-  NSTSupportFactory.Free;
 end.

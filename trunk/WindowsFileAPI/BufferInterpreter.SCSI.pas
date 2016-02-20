@@ -117,6 +117,7 @@ begin
   result.Firmware := GetFirmwareFromBuffer;
   result.Serial := GetSerialFromBuffer;
   result.LBASize := GetLBASizeFromBuffer;
+  result.RotationRate.Supported := false;
 end;
 
 end.

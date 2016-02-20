@@ -426,6 +426,8 @@ end;
 
 function TNVMeBufferInterpreter.BufferToIdentifyDeviceResult(
   const Buffer: TSmallBuffer): TIdentifyDeviceResult;
+const
+  SSDRate = 1;
 begin
   BufferInterpreting := Buffer;
   result.Model := GetModelFromBuffer;
@@ -434,6 +436,8 @@ begin
   result.UserSizeInKB := 0;
   result.SATASpeed := TSATASpeed.NotSATA;
   result.LBASize := GetLBASizeFromBuffer;
+  result.RotationRate.Supported := true;
+  result.RotationRate.Value := SSDRate;
 end;
 
 end.

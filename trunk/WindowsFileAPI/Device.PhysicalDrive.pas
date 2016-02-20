@@ -49,6 +49,8 @@ type
     procedure TryToCreateAndSetNSTSupport;
     function GetIdentifyDeviceResult: TIdentifyDeviceResult;
     function GetNCQAvailability: TNCQAvailability;
+    procedure TryToCreateNSTSupportByFactory(
+      const NSTSupportFactory: TNSTSupportFactory);
   public
     property IdentifyDeviceResult: TIdentifyDeviceResult
       read GetIdentifyDeviceResult;
@@ -139,6 +141,19 @@ begin
 end;
 
 procedure TPhysicalDrive.TryToCreateAndSetNSTSupport;
+var
+  NSTSupportFactory: TNSTSupportFactory;
+begin
+  NSTSupportFactory := TNSTSupportFactory.Create;
+  try
+    TryToCreateNSTSupportByFactory(NSTSupportFactory);
+  finally
+    FreeAndNil(NSTSupportFactory);
+  end;
+end;
+
+procedure TPhysicalDrive.TryToCreateNSTSupportByFactory(
+  const NSTSupportFactory: TNSTSupportFactory);
 begin
   try
     NSTSupport :=
