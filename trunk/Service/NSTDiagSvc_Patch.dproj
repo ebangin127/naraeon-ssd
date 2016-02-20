@@ -232,7 +232,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Modules\OS.SetupAPI.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Device.PhysicalDrive.List.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas"/>
-        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.OS.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PartitionExtent.pas"/>
@@ -244,6 +244,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Modules\Version.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.Internal.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

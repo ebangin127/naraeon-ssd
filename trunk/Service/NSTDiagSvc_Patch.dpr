@@ -73,7 +73,7 @@ uses
   OS.SetupAPI in '..\Modules\OS.SetupAPI.pas',
   Device.PhysicalDrive.List in '..\WindowsFileAPI\Device.PhysicalDrive.List.pas',
   Getter.PhysicalDriveList.Auto in '..\WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas',
-  Getter.PhysicalDriveList.BruteForce in '..\WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas',
+  Getter.PhysicalDriveList.OS in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.pas',
   Getter.PhysicalDriveList in '..\WindowsFileAPI\Getter.PhysicalDriveList.pas',
   Getter.PhysicalDriveList.WMI in '..\WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas',
   Getter.PartitionExtent in '..\WindowsFileAPI\Getter.PartitionExtent.pas',
@@ -84,7 +84,8 @@ uses
   OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas',
   Version in '..\Modules\Version.pas',
   Registry.Helper.Internal in '..\WindowsFileAPI\Registry.Helper.Internal.pas',
-  Registry.Helper in '..\WindowsFileAPI\Registry.Helper.pas';
+  Registry.Helper in '..\WindowsFileAPI\Registry.Helper.pas',
+  Getter.PhysicalDriveList.OS.Path in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

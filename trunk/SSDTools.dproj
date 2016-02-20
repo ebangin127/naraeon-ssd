@@ -329,7 +329,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Getter.SlotSpeed.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.SlotSpeedByDeviceID.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.Auto.pas"/>
-        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.BruteForce.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.OS.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.WMI.pas"/>
         <DCCReference Include="WindowsFileAPI\Device.PhysicalDrive.List.pas"/>
@@ -365,6 +365,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\Optimizer.P2P.pas"/>
         <DCCReference Include="WindowsFileAPI\Registry.Helper.Internal.pas"/>
         <DCCReference Include="WindowsFileAPI\Registry.Helper.pas"/>
+        <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -441,6 +442,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win32">
+                        <RemoteName>SSDTools.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

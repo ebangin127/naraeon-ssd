@@ -1,14 +1,15 @@
-unit Getter.PhysicalDriveList.BruteForce;
+unit Getter.PhysicalDriveList.OS;
 
 interface
 
 uses
-  SysUtils, Threading, Classes, Dialogs, Generics.Collections,
+  Classes, SysUtils, Threading, Dialogs, Generics.Collections,
   Device.PhysicalDrive, Getter.PhysicalDriveList,
-  Device.PhysicalDrive.List, CommandSet.Factory;
+  Device.PhysicalDrive.List, CommandSet.Factory,
+  Getter.PhysicalDriveList.OS.Path;
 
 type
-  TBruteForcePhysicalDriveListGetter = class sealed(TPhysicalDriveListGetter)
+  TOSPhysicalDriveListGetter = class sealed(TPhysicalDriveListGetter)
   public
     function GetPhysicalDriveList: TPhysicalDriveList; override;
   private
@@ -19,13 +20,14 @@ type
     procedure TryToGetPhysicalDriveList;
     function IsDriveAccessible(CurrentDrive: Integer): Boolean;
     function LockAndTransfer: TPhysicalDriveList;
+    function GetDrivePathList: TDrivePathNumberList;
   end;
 
 implementation
 
-{ TBruteForcePhysicalDriveGetter }
+{ TOSPhysicalDriveListGetter }
 
-procedure TBruteForcePhysicalDriveListGetter.AddDriveToList
+procedure TOSPhysicalDriveListGetter.AddDriveToList
   (CurrentDrive: Integer);
 begin
   try
@@ -41,7 +43,7 @@ begin
   end;
 end;
 
-function TBruteForcePhysicalDriveListGetter.TryToGetIsDriveAccessible
+function TOSPhysicalDriveListGetter.TryToGetIsDriveAccessible
   (CurrentDrive: Integer): Boolean;
 var
   PhysicalDrive: IPhysicalDrive;
@@ -52,7 +54,7 @@ begin
   result := PhysicalDrive.IsDriveAvailable;
 end;
 
-function TBruteForcePhysicalDriveListGetter.IsDriveAccessible
+function TOSPhysicalDriveListGetter.IsDriveAccessible
   (CurrentDrive: Integer): Boolean;
 begin
   try
@@ -62,29 +64,46 @@ begin
   end;
 end;
 
-procedure TBruteForcePhysicalDriveListGetter.IfThisDriveAccessibleAddToList
+procedure TOSPhysicalDriveListGetter.IfThisDriveAccessibleAddToList
   (CurrentDrive: Integer);
 begin
   if IsDriveAccessible(CurrentDrive) then
     AddDriveToList(CurrentDrive);
 end;
 
-procedure TBruteForcePhysicalDriveListGetter.TryToGetPhysicalDriveList;
-const
-  PHYSICALDRIVE_MAX = 99;
+function TOSPhysicalDriveListGetter.GetDrivePathList: TDrivePathNumberList;
+var
+  PathGetter: TOSPhysicalDrivePathGetter;
 begin
-  TParallel.For(0, PHYSICALDRIVE_MAX, procedure (CurrentDrive: Integer)
-  begin
-    try
-      IfThisDriveAccessibleAddToList(CurrentDrive);
-    except
-      on E: Exception do
-        raise E;
-    end;
-  end);
+  PathGetter := TOSPhysicalDrivePathGetter.Create;
+  try
+    result := PathGetter.GetPhysicalDriveNames;
+  finally
+    PathGetter.Free;
+  end;
 end;
 
-function TBruteForcePhysicalDriveListGetter.LockAndTransfer:
+procedure TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList;
+var
+  DrivePathList: TDrivePathNumberList;
+begin
+  DrivePathList := GetDrivePathList;
+  try
+    TParallel.For(0, DrivePathList.Count - 1, procedure (CurrentDrive: Integer)
+    begin
+      try
+        IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
+      except
+        on E: Exception do
+          raise E;
+      end;
+    end);
+  finally
+    FreeAndNil(DrivePathList);
+  end;
+end;
+
+function TOSPhysicalDriveListGetter.LockAndTransfer:
   TPhysicalDriveList;
 var
   LockedList: TList<IPhysicalDrive>;
@@ -95,7 +114,7 @@ begin
   PhysicalDriveList.UnlockList;
 end;
 
-function TBruteForcePhysicalDriveListGetter.GetPhysicalDriveList:
+function TOSPhysicalDriveListGetter.GetPhysicalDriveList:
   TPhysicalDriveList;
 begin
   PhysicalDriveList := TThreadedPhysicalDriveList.Create;

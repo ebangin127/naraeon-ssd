@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  Getter.PhysicalDriveList, Getter.PhysicalDriveList.BruteForce,
+  Getter.PhysicalDriveList, Getter.PhysicalDriveList.OS,
   Getter.PhysicalDriveList.WMI, Device.PhysicalDrive.List;
 
 type
@@ -43,7 +43,7 @@ begin
   result := nil;
   result := TestCompatibilityAndGet(TWMIPhysicalDriveListGetter,
     result);
-  result := TestCompatibilityAndGet(TBruteForcePhysicalDriveListGetter,
+  result := TestCompatibilityAndGet(TOSPhysicalDriveListGetter,
     result);
   if result = nil then
     result := TPhysicalDriveList.Create;
@@ -53,8 +53,10 @@ function TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService:
   TPhysicalDriveList;
 begin
   result := nil;
-  result := TestCompatibilityAndGet(TBruteForcePhysicalDriveListGetter,
+  result := TestCompatibilityAndGet(TOSPhysicalDriveListGetter,
     result);
+  if result = nil then
+    result := TPhysicalDriveList.Create;
 end;
 
 function TAutoPhysicalDriveListGetter.TestCompatibilityAndGet(
