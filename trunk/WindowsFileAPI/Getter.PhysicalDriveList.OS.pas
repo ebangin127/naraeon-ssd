@@ -21,6 +21,8 @@ type
     function IsDriveAccessible(CurrentDrive: Integer): Boolean;
     function LockAndTransfer: TPhysicalDriveList;
     function GetDrivePathList: TDrivePathNumberList;
+    procedure ParallelGetDriveList(const DrivePathList: TDrivePathNumberList);
+    procedure SerialGetDriveList(const DrivePathList: TDrivePathNumberList);
   end;
 
 implementation
@@ -83,21 +85,47 @@ begin
   end;
 end;
 
+procedure TOSPhysicalDriveListGetter.SerialGetDriveList(
+  const DrivePathList: TDrivePathNumberList);
+var
+  CurrentDrive: Integer;
+begin
+  for CurrentDrive := 0 to DrivePathList.Count - 1 do
+  begin
+    try
+      IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
+    except
+      on E: Exception do
+        raise E;
+    end;
+  end;
+end;
+
+procedure TOSPhysicalDriveListGetter.ParallelGetDriveList(
+  const DrivePathList: TDrivePathNumberList);
+begin
+  TParallel.For(0, DrivePathList.Count - 1, procedure (CurrentDrive: Integer)
+  begin
+    try
+      IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
+    except
+      on E: Exception do
+        raise E;
+    end;
+  end);
+end;
+
 procedure TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList;
 var
   DrivePathList: TDrivePathNumberList;
 begin
   DrivePathList := GetDrivePathList;
   try
-    TParallel.For(0, DrivePathList.Count - 1, procedure (CurrentDrive: Integer)
-    begin
-      try
-        IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
-      except
-        on E: Exception do
-          raise E;
-      end;
-    end);
+    {$IFDEF SERVICE}
+    SerialGetDriveList(DrivePathList);
+    {$ELSE}
+    ParallelGetDriveList(DrivePathList);
+    {$ENDIF}
   finally
     FreeAndNil(DrivePathList);
   end;

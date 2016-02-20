@@ -1,6 +1,6 @@
 
  Start         Length     Name                   Class
- 0001:00401000 00235F30H .text                   CODE
+ 0001:00401000 00235C74H .text                   CODE
  0002:00637000 00001634H .itext                  ICODE
  0003:00639000 00005408H .data                   DATA
  0004:0063F000 000057F4H .bss                    BSS
@@ -146,17 +146,17 @@ Detailed map of segments
  0001:00202004 00000130 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList ACBP=A9
  0001:00202134 00025010 C=CODE     S=.text    G=(none)   M=System.Threading ACBP=A9
  0001:00227144 00002658 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.OS.Path ACBP=A9
- 0001:0022979C 000007BC C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.OS ACBP=A9
- 0001:00229F58 00000DBC C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.WMI ACBP=A9
- 0001:0022AD14 00000270 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.Auto ACBP=A9
- 0001:0022AF84 000005E4 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDrive.ListChange ACBP=A9
- 0001:0022B568 00000F00 C=CODE     S=.text    G=(none)   M=AverageLogger ACBP=A9
- 0001:0022C468 000000C8 C=CODE     S=.text    G=(none)   M=AverageLogger.Count ACBP=A9
- 0001:0022C530 000000D0 C=CODE     S=.text    G=(none)   M=AverageLogger.Write ACBP=A9
- 0001:0022C600 00000AE4 C=CODE     S=.text    G=(none)   M=OS.WriteBufferSettingVerifier ACBP=A9
- 0001:0022D0E4 0000102C C=CODE     S=.text    G=(none)   M=uDiagnosisService ACBP=A9
- 0001:0022E110 00000404 C=CODE     S=.text    G=(none)   M=uMain    ACBP=A9
- 0001:0022E514 00007A1C C=CODE     S=.text    G=(none)   M=NSTDiagSvc_Patch ACBP=A9
+ 0001:0022979C 00000500 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.OS ACBP=A9
+ 0001:00229C9C 00000DBC C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.WMI ACBP=A9
+ 0001:0022AA58 00000270 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDriveList.Auto ACBP=A9
+ 0001:0022ACC8 000005E4 C=CODE     S=.text    G=(none)   M=Getter.PhysicalDrive.ListChange ACBP=A9
+ 0001:0022B2AC 00000F00 C=CODE     S=.text    G=(none)   M=AverageLogger ACBP=A9
+ 0001:0022C1AC 000000C8 C=CODE     S=.text    G=(none)   M=AverageLogger.Count ACBP=A9
+ 0001:0022C274 000000D0 C=CODE     S=.text    G=(none)   M=AverageLogger.Write ACBP=A9
+ 0001:0022C344 00000AE4 C=CODE     S=.text    G=(none)   M=OS.WriteBufferSettingVerifier ACBP=A9
+ 0001:0022CE28 0000102C C=CODE     S=.text    G=(none)   M=uDiagnosisService ACBP=A9
+ 0001:0022DE54 00000404 C=CODE     S=.text    G=(none)   M=uMain    ACBP=A9
+ 0001:0022E258 00007A1C C=CODE     S=.text    G=(none)   M=NSTDiagSvc_Patch ACBP=A9
  0002:00000000 000000B4 C=ICODE    S=.itext   G=(none)   M=System   ACBP=A9
  0002:000000B4 00000008 C=ICODE    S=.itext   G=(none)   M=SysInit  ACBP=A9
  0002:000000BC 00000018 C=ICODE    S=.itext   G=(none)   M=Winapi.Windows ACBP=A9
@@ -331,32 +331,32 @@ Detailed map of segments
  0001:00201868       AsciiCheck.Finalization
  0004:000057B4       AsciiCheck.StringHelper
  0001:002017E4       AsciiCheck.TStringHelper.IsAscii
- 0001:0022B610       AverageLogger..TAverageLogger
+ 0001:0022B354       AverageLogger..TAverageLogger
  0003:00004BEC       AverageLogger.AveragePeriodInSet
  0003:00004C4C       AverageLogger.IntegerToAveragePeriod
- 0001:0022C2E8       AverageLogger.TAverageLogger.AddNewRecordWithTimestamp
- 0001:0022C3C0       AverageLogger.TAverageLogger.BuildFileName
- 0001:0022C188       AverageLogger.TAverageLogger.ChangeLastRecordedPeriodToNow
- 0001:0022C224       AverageLogger.TAverageLogger.Create
- 0001:0022BA30       AverageLogger.TAverageLogger.Create
- 0001:0022BAC4       AverageLogger.TAverageLogger.Destroy
- 0001:0022C144       AverageLogger.TAverageLogger.DisposeExpiredRecords
- 0001:0022BD28       AverageLogger.TAverageLogger.GetFormattedTodayDelta
- 0001:0022BD78       AverageLogger.TAverageLogger.GetMaxPeriodFormattedAverage
- 0001:0022BB64       AverageLogger.TAverageLogger.InitializeAverageTodayDelta
- 0001:0022C0A0       AverageLogger.TAverageLogger.IsLastRecordExpired
- 0001:0022BEF0       AverageLogger.TAverageLogger.IsNewRecordNeeded
- 0001:0022BAFC       AverageLogger.TAverageLogger.IsNewValueInvalid
- 0001:0022C034       AverageLogger.TAverageLogger.ReadAndRefresh
- 0001:0022BD94       AverageLogger.TAverageLogger.ReadAndSetAverageTodayDelta
- 0001:0022B9B0       AverageLogger.TAverageLogger.ReadFileOrCreateNew
- 0001:0022BF18       AverageLogger.TAverageLogger.RefreshFile
- 0001:0022C3A4       AverageLogger.TAverageLogger.SaveToFile
- 0001:0022BBB4       AverageLogger.TAverageLogger.SetAverage
- 0001:0022C468       AverageLogger.Count..TAverageCountLogger
- 0001:0022C520       AverageLogger.Count.TAverageCountLogger.GetUnit
- 0001:0022C530       AverageLogger.Write..TAverageWriteLogger
- 0001:0022C5E8       AverageLogger.Write.TAverageWriteLogger.GetUnit
+ 0001:0022C02C       AverageLogger.TAverageLogger.AddNewRecordWithTimestamp
+ 0001:0022C104       AverageLogger.TAverageLogger.BuildFileName
+ 0001:0022BECC       AverageLogger.TAverageLogger.ChangeLastRecordedPeriodToNow
+ 0001:0022BF68       AverageLogger.TAverageLogger.Create
+ 0001:0022B774       AverageLogger.TAverageLogger.Create
+ 0001:0022B808       AverageLogger.TAverageLogger.Destroy
+ 0001:0022BE88       AverageLogger.TAverageLogger.DisposeExpiredRecords
+ 0001:0022BA6C       AverageLogger.TAverageLogger.GetFormattedTodayDelta
+ 0001:0022BABC       AverageLogger.TAverageLogger.GetMaxPeriodFormattedAverage
+ 0001:0022B8A8       AverageLogger.TAverageLogger.InitializeAverageTodayDelta
+ 0001:0022BDE4       AverageLogger.TAverageLogger.IsLastRecordExpired
+ 0001:0022BC34       AverageLogger.TAverageLogger.IsNewRecordNeeded
+ 0001:0022B840       AverageLogger.TAverageLogger.IsNewValueInvalid
+ 0001:0022BD78       AverageLogger.TAverageLogger.ReadAndRefresh
+ 0001:0022BAD8       AverageLogger.TAverageLogger.ReadAndSetAverageTodayDelta
+ 0001:0022B6F4       AverageLogger.TAverageLogger.ReadFileOrCreateNew
+ 0001:0022BC5C       AverageLogger.TAverageLogger.RefreshFile
+ 0001:0022C0E8       AverageLogger.TAverageLogger.SaveToFile
+ 0001:0022B8F8       AverageLogger.TAverageLogger.SetAverage
+ 0001:0022C1AC       AverageLogger.Count..TAverageCountLogger
+ 0001:0022C264       AverageLogger.Count.TAverageCountLogger.GetUnit
+ 0001:0022C274       AverageLogger.Write..TAverageWriteLogger
+ 0001:0022C32C       AverageLogger.Write.TAverageWriteLogger.GetUnit
  0001:001F0128       BufferInterpreter..TBufferInterpreter
  0001:001F034C       BufferInterpreter.TBufferInterpreter.BufferToIdentifyDeviceResult
  0001:001F0354       BufferInterpreter.TBufferInterpreter.BufferToSMARTValueList
@@ -936,16 +936,16 @@ Detailed map of segments
  0001:001E4E68       Getter.PhysicalDrive.DriveAvailability.TDriveAvailabilityGetter.GetAvailability
  0001:001E4ED0       Getter.PhysicalDrive.DriveAvailability.TDriveAvailabilityGetter.GetMinimumPrivilege
  0001:001E4E54       Getter.PhysicalDrive.DriveAvailability.TDriveAvailabilityGetter.GetNullBuffer
- 0001:0022AFCC       Getter.PhysicalDrive.ListChange..TListChangeGetter
- 0001:0022B538       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetListChangeByCurrentPhysicalDriveList
- 0001:0022B294       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetPhysicalDriveList
- 0001:0022B2EC       Getter.PhysicalDrive.ListChange.TListChangeGetter.InnerRefreshListWithResultFrom
- 0001:0022B270       Getter.PhysicalDrive.ListChange.TListChangeGetter.IsSupportedOrNotNeededToCheck
- 0001:0022B280       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithoutResultFrom
- 0001:0022B2B4       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithResultFrom
- 0001:0022B364       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnAddedListAndRefreshList
- 0001:0022B460       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnDeletedListAndRefreshList
- 0001:0022B2D0       Getter.PhysicalDrive.ListChange.TListChangeGetter.ServiceRefreshListWithResultFrom
+ 0001:0022AD10       Getter.PhysicalDrive.ListChange..TListChangeGetter
+ 0001:0022B27C       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetListChangeByCurrentPhysicalDriveList
+ 0001:0022AFD8       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetPhysicalDriveList
+ 0001:0022B030       Getter.PhysicalDrive.ListChange.TListChangeGetter.InnerRefreshListWithResultFrom
+ 0001:0022AFB4       Getter.PhysicalDrive.ListChange.TListChangeGetter.IsSupportedOrNotNeededToCheck
+ 0001:0022AFC4       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithoutResultFrom
+ 0001:0022AFF8       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithResultFrom
+ 0001:0022B0A8       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnAddedListAndRefreshList
+ 0001:0022B1A4       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnDeletedListAndRefreshList
+ 0001:0022B014       Getter.PhysicalDrive.ListChange.TListChangeGetter.ServiceRefreshListWithResultFrom
  0001:001E5144       Getter.PhysicalDrive.NCQAvailability..TNCQAvailabilityGetter
  0001:001E52DC       Getter.PhysicalDrive.NCQAvailability.TNCQAvailabilityGetter.Create
  0001:001E54C0       Getter.PhysicalDrive.NCQAvailability.TNCQAvailabilityGetter.DetermineNCQStatus
@@ -1059,25 +1059,24 @@ Detailed map of segments
  0001:00202004       Getter.PhysicalDriveList..TPhysicalDriveListGetter
  0001:0020212C       Getter.PhysicalDriveList.TPhysicalDriveListGetter.GetPhysicalDriveList
  0004:000057EC       Getter.PhysicalDriveList.Auto..2
- 0001:0022AD14       Getter.PhysicalDriveList.Auto..TAutoPhysicalDriveListGetter
+ 0001:0022AA58       Getter.PhysicalDriveList.Auto..TAutoPhysicalDriveListGetter
  0004:000057E8       Getter.PhysicalDriveList.Auto.AutoPhysicalDriveListGetter
- 0001:0022AF70       Getter.PhysicalDriveList.Auto.Finalization
+ 0001:0022ACB4       Getter.PhysicalDriveList.Auto.Finalization
  0002:000015B4       Getter.PhysicalDriveList.Auto.Getter.PhysicalDriveList.Auto
- 0001:0022AE94       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.Create
- 0001:0022AEBC       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveList
- 0001:0022AEF4       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService
- 0001:0022AF1C       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.TestCompatibilityAndGet
+ 0001:0022ABD8       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.Create
+ 0001:0022AC00       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:0022AC38       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService
+ 0001:0022AC60       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.TestCompatibilityAndGet
  0001:0022979C       Getter.PhysicalDriveList.OS..TOSPhysicalDriveListGetter
- 0001:00229B98       Getter.PhysicalDriveList.OS..TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList$5$ActRec
  0001:002298CC       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.AddDriveToList
  0001:00229A6C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetDrivePathList
- 0001:00229ED8       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:00229C1C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetPhysicalDriveList
  0001:00229A4C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.IfThisDriveAccessibleAddToList
  0001:00229A14       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.IsDriveAccessible
- 0001:00229E3C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.LockAndTransfer
+ 0001:00229B80       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.LockAndTransfer
+ 0001:00229AC0       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.SerialGetDriveList
  0001:00229994       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetIsDriveAccessible
- 0001:00229D38       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList
- 0001:00229CDC       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList$5$ActRec.$0$Body
+ 0001:00229B30       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList
  0001:00227144       Getter.PhysicalDriveList.OS.Path..TDrivePathNumberList
  0001:00227218       Getter.PhysicalDriveList.OS.Path..TOSPhysicalDrivePathGetter
  0001:002273D0       Getter.PhysicalDriveList.OS.Path..{System.Generics.Collections}TArrayManager<System.Integer>
@@ -1145,27 +1144,27 @@ Detailed map of segments
  0001:002296D4       Getter.PhysicalDriveList.OS.Path.{System.Generics.Collections}TList<System.Integer>.TEnumerator.MoveNext
  0001:00229618       Getter.PhysicalDriveList.OS.Path.{System.Generics.Collections}TList<System.Integer>.ToArray
  0001:0022960C       Getter.PhysicalDriveList.OS.Path.{System.Generics.Collections}TList<System.Integer>.TrimExcess
- 0001:00229F58       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter
- 0001:0022A890       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec
- 0001:0022A300       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToDeviceIDList
- 0001:0022A37C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToList
- 0001:0022A544       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet
- 0001:0022A0CC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetDiskDriveSearchResult
- 0001:0022A218       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetNextDriveAndReturnResult
- 0001:0022AC94       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetPhysicalDriveList
- 0001:0022A52C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfDriveConnectedByKnownInterfaceAddToList
- 0001:0022A748       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList
- 0001:0022A71C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable
- 0001:0022A404       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedBy
- 0001:0022A4B0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedByKnownInterface
- 0001:0022A640       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveLoaded
- 0001:0022A6B0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidID
- 0001:0022A5D0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidType
- 0001:0022A278       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsHarddrive
- 0001:0022ABF8       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.LockAndTransfer
- 0001:0022AA30       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
- 0001:0022A9D0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec.$0$Body
- 0001:0022AB78       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList
+ 0001:00229C9C       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter
+ 0001:0022A5D4       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec
+ 0001:0022A044       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToDeviceIDList
+ 0001:0022A0C0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToList
+ 0001:0022A288       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet
+ 0001:00229E10       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetDiskDriveSearchResult
+ 0001:00229F5C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetNextDriveAndReturnResult
+ 0001:0022A9D8       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:0022A270       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfDriveConnectedByKnownInterfaceAddToList
+ 0001:0022A48C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList
+ 0001:0022A460       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable
+ 0001:0022A148       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedBy
+ 0001:0022A1F4       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedByKnownInterface
+ 0001:0022A384       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveLoaded
+ 0001:0022A3F4       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidID
+ 0001:0022A314       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidType
+ 0001:00229FBC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsHarddrive
+ 0001:0022A93C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.LockAndTransfer
+ 0001:0022A774       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
+ 0001:0022A714       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec.$0$Body
+ 0001:0022A8BC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList
  0001:001F7744       Getter.SCSIAddress..TSCSIAddressGetter
  0001:001F7904       Getter.SCSIAddress.TIoControlFile.BuildOSBufferByOutput<Getter.SCSIAddress.SCSI_ADDRESS>
  0001:001F7890       Getter.SCSIAddress.TSCSIAddressGetter.Create
@@ -1185,7 +1184,7 @@ Detailed map of segments
  0001:001F2D28       MeasureUnit.DataSize.GetDivideUnitSize
  0003:00004BA0       MeasureUnit.DataSize.KiloUnit
  0001:001F2DD8       MeasureUnit.DataSize.MBToLiteONUnit
- 0001:0022E514       NSTDiagSvc_Patch.Finalization
+ 0001:0022E258       NSTDiagSvc_Patch.Finalization
  0002:000015D0       NSTDiagSvc_Patch.NSTDiagSvc_Patch
  0004:000057C0       OS.EnvironmentVariable..2
  0001:0020187C       OS.EnvironmentVariable..TEnvironmentVariable
@@ -1251,19 +1250,19 @@ Detailed map of segments
  0001:001F56EC       OS.SetupAPI.TSetupAPI.GetSetupAPIFunctions
  0001:001F4D44       OS.Version.Helper.Is64Bit
  0001:001F4E14       OS.Version.Helper.IsBelowVista
- 0001:0022C600       OS.WriteBufferSettingVerifier..TWriteBufferSettingVerifier
+ 0001:0022C344       OS.WriteBufferSettingVerifier..TWriteBufferSettingVerifier
  0003:00004C50       OS.WriteBufferSettingVerifier.DeviceBasePath
  0003:00004C5C       OS.WriteBufferSettingVerifier.InterfaceSet
- 0001:0022D004       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrect
- 0001:0022CB64       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByDevice
- 0001:0022CE84       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByInterface
- 0001:0022CCD0       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByModel
- 0001:0022C9C0       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckDevice
- 0001:0022C8F8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckSupportStatus
- 0001:0022CA54       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CorrectDevice
- 0001:0022CAC4       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.GetDeviceFriendlyName
- 0001:0022C7BC       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.SplitIntoModelAndFirmware
- 0001:0022C738       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.UnderbarToSpace
+ 0001:0022CD48       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrect
+ 0001:0022C8A8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByDevice
+ 0001:0022CBC8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByInterface
+ 0001:0022CA14       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByModel
+ 0001:0022C704       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckDevice
+ 0001:0022C63C       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckSupportStatus
+ 0001:0022C798       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CorrectDevice
+ 0001:0022C808       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.GetDeviceFriendlyName
+ 0001:0022C500       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.SplitIntoModelAndFirmware
+ 0001:0022C47C       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.UnderbarToSpace
  0001:001E3A7C       OSFile..TOSFile
  0001:001E4028       OSFile.TOSFile.Create
  0001:001E3E40       OSFile.TOSFile.DeletePrefix
@@ -9603,36 +9602,36 @@ Detailed map of segments
  0001:001BD340       System.Win.TaskbarCore.TTaskbarHandler.DoWindowPreviewRequest
  0001:001BD360       System.Win.TaskbarCore.TTaskbarHandler.Initialize
  0001:001BD368       System.Win.TaskbarCore.TTaskbarHandler.UnregisterTab
- 0001:0022D0E4       uDiagnosisService..TDiagnosisService
- 0001:0022DB68       uDiagnosisService.TDiagnosisService.AlertIfNeedToReadEraseError
- 0001:0022D998       uDiagnosisService.TDiagnosisService.AlertIfNeedToReplacedSectors
- 0001:0022D324       uDiagnosisService.TDiagnosisService.Create
- 0001:0022E0D0       uDiagnosisService.TDiagnosisService.Destroy
- 0001:0022E0B0       uDiagnosisService.TDiagnosisService.Diagnosis
- 0001:0022D45C       uDiagnosisService.TDiagnosisService.FreeLastChanges
- 0001:0022D8A4       uDiagnosisService.TDiagnosisService.GetAlertFile
- 0001:0022D4B0       uDiagnosisService.TDiagnosisService.GetLogLine
- 0001:0022D8D4       uDiagnosisService.TDiagnosisService.GetPartitionLetters
- 0001:0022D454       uDiagnosisService.TDiagnosisService.InitializePhysicalDriveList
- 0001:0022D55C       uDiagnosisService.TDiagnosisService.IsNeedDiagnosis
- 0001:0022D4A4       uDiagnosisService.TDiagnosisService.IsThereAnySupportedDrive
- 0001:0022DFE0       uDiagnosisService.TDiagnosisService.LogAndCheckSMART
- 0001:0022DE8C       uDiagnosisService.TDiagnosisService.RefreshReadWriteErrorLog
- 0001:0022DD38       uDiagnosisService.TDiagnosisService.RefreshReplacedSectorLog
- 0001:0022D7AC       uDiagnosisService.TDiagnosisService.RefreshTotalWriteLog
- 0001:0022D644       uDiagnosisService.TDiagnosisService.SaveWriteBufferCheckResult
- 0001:0022D3EC       uDiagnosisService.TDiagnosisService.SetPhysicalDriveList
- 0001:0022D610       uDiagnosisService.TDiagnosisService.WriteBufferCheck
- 0001:0022E110       uMain..TNaraeonSSDToolsDiag
+ 0001:0022CE28       uDiagnosisService..TDiagnosisService
+ 0001:0022D8AC       uDiagnosisService.TDiagnosisService.AlertIfNeedToReadEraseError
+ 0001:0022D6DC       uDiagnosisService.TDiagnosisService.AlertIfNeedToReplacedSectors
+ 0001:0022D068       uDiagnosisService.TDiagnosisService.Create
+ 0001:0022DE14       uDiagnosisService.TDiagnosisService.Destroy
+ 0001:0022DDF4       uDiagnosisService.TDiagnosisService.Diagnosis
+ 0001:0022D1A0       uDiagnosisService.TDiagnosisService.FreeLastChanges
+ 0001:0022D5E8       uDiagnosisService.TDiagnosisService.GetAlertFile
+ 0001:0022D1F4       uDiagnosisService.TDiagnosisService.GetLogLine
+ 0001:0022D618       uDiagnosisService.TDiagnosisService.GetPartitionLetters
+ 0001:0022D198       uDiagnosisService.TDiagnosisService.InitializePhysicalDriveList
+ 0001:0022D2A0       uDiagnosisService.TDiagnosisService.IsNeedDiagnosis
+ 0001:0022D1E8       uDiagnosisService.TDiagnosisService.IsThereAnySupportedDrive
+ 0001:0022DD24       uDiagnosisService.TDiagnosisService.LogAndCheckSMART
+ 0001:0022DBD0       uDiagnosisService.TDiagnosisService.RefreshReadWriteErrorLog
+ 0001:0022DA7C       uDiagnosisService.TDiagnosisService.RefreshReplacedSectorLog
+ 0001:0022D4F0       uDiagnosisService.TDiagnosisService.RefreshTotalWriteLog
+ 0001:0022D388       uDiagnosisService.TDiagnosisService.SaveWriteBufferCheckResult
+ 0001:0022D130       uDiagnosisService.TDiagnosisService.SetPhysicalDriveList
+ 0001:0022D354       uDiagnosisService.TDiagnosisService.WriteBufferCheck
+ 0001:0022DE54       uMain..TNaraeonSSDToolsDiag
  0004:000057F0       uMain.NaraeonSSDToolsDiag
- 0001:0022E41C       uMain.ServiceController
- 0001:0022E430       uMain.TNaraeonSSDToolsDiag.GetServiceController
- 0001:0022E438       uMain.TNaraeonSSDToolsDiag.InitializeAndWaitForEnd
- 0001:0022E450       uMain.TNaraeonSSDToolsDiag.ServiceCreate
- 0001:0022E468       uMain.TNaraeonSSDToolsDiag.ServiceDestroy
- 0001:0022E490       uMain.TNaraeonSSDToolsDiag.ServiceExecute
- 0001:0022E4EC       uMain.TNaraeonSSDToolsDiag.tDiagnosisTimer
- 0001:0022E498       uMain.TNaraeonSSDToolsDiag.WaitForTerminate
+ 0001:0022E160       uMain.ServiceController
+ 0001:0022E174       uMain.TNaraeonSSDToolsDiag.GetServiceController
+ 0001:0022E17C       uMain.TNaraeonSSDToolsDiag.InitializeAndWaitForEnd
+ 0001:0022E194       uMain.TNaraeonSSDToolsDiag.ServiceCreate
+ 0001:0022E1AC       uMain.TNaraeonSSDToolsDiag.ServiceDestroy
+ 0001:0022E1D4       uMain.TNaraeonSSDToolsDiag.ServiceExecute
+ 0001:0022E230       uMain.TNaraeonSSDToolsDiag.tDiagnosisTimer
+ 0001:0022E1DC       uMain.TNaraeonSSDToolsDiag.WaitForTerminate
  0004:000055A8       Vcl.ActnList..7
  0001:0010F0F8       Vcl.ActnList..TActionLink
  0001:0010F39C       Vcl.ActnList..TCustomAction
@@ -30041,113 +30040,112 @@ Detailed map of segments
  0001:00229A14       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.IsDriveAccessible
  0001:00229A4C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.IfThisDriveAccessibleAddToList
  0001:00229A6C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetDrivePathList
- 0001:00229B98       Getter.PhysicalDriveList.OS..TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList$5$ActRec
- 0001:00229CDC       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList$5$ActRec.$0$Body
- 0001:00229D38       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList
- 0001:00229E3C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.LockAndTransfer
- 0001:00229ED8       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetPhysicalDriveList
- 0001:00229F58       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter
- 0001:0022A0CC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetDiskDriveSearchResult
- 0001:0022A218       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetNextDriveAndReturnResult
- 0001:0022A278       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsHarddrive
- 0001:0022A300       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToDeviceIDList
- 0001:0022A37C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToList
- 0001:0022A404       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedBy
- 0001:0022A4B0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedByKnownInterface
- 0001:0022A52C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfDriveConnectedByKnownInterfaceAddToList
- 0001:0022A544       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet
- 0001:0022A5D0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidType
- 0001:0022A640       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveLoaded
- 0001:0022A6B0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidID
- 0001:0022A71C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable
- 0001:0022A748       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList
- 0001:0022A890       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec
- 0001:0022A9D0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec.$0$Body
- 0001:0022AA30       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
- 0001:0022AB78       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList
- 0001:0022ABF8       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.LockAndTransfer
- 0001:0022AC94       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetPhysicalDriveList
- 0001:0022AD14       Getter.PhysicalDriveList.Auto..TAutoPhysicalDriveListGetter
- 0001:0022AE94       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.Create
- 0001:0022AEBC       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveList
- 0001:0022AEF4       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService
- 0001:0022AF1C       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.TestCompatibilityAndGet
- 0001:0022AF70       Getter.PhysicalDriveList.Auto.Finalization
- 0001:0022AFCC       Getter.PhysicalDrive.ListChange..TListChangeGetter
- 0001:0022B270       Getter.PhysicalDrive.ListChange.TListChangeGetter.IsSupportedOrNotNeededToCheck
- 0001:0022B280       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithoutResultFrom
- 0001:0022B294       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetPhysicalDriveList
- 0001:0022B2B4       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithResultFrom
- 0001:0022B2D0       Getter.PhysicalDrive.ListChange.TListChangeGetter.ServiceRefreshListWithResultFrom
- 0001:0022B2EC       Getter.PhysicalDrive.ListChange.TListChangeGetter.InnerRefreshListWithResultFrom
- 0001:0022B364       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnAddedListAndRefreshList
- 0001:0022B460       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnDeletedListAndRefreshList
- 0001:0022B538       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetListChangeByCurrentPhysicalDriveList
- 0001:0022B610       AverageLogger..TAverageLogger
- 0001:0022B9B0       AverageLogger.TAverageLogger.ReadFileOrCreateNew
- 0001:0022BA30       AverageLogger.TAverageLogger.Create
- 0001:0022BAC4       AverageLogger.TAverageLogger.Destroy
- 0001:0022BAFC       AverageLogger.TAverageLogger.IsNewValueInvalid
- 0001:0022BB64       AverageLogger.TAverageLogger.InitializeAverageTodayDelta
- 0001:0022BBB4       AverageLogger.TAverageLogger.SetAverage
- 0001:0022BD28       AverageLogger.TAverageLogger.GetFormattedTodayDelta
- 0001:0022BD78       AverageLogger.TAverageLogger.GetMaxPeriodFormattedAverage
- 0001:0022BD94       AverageLogger.TAverageLogger.ReadAndSetAverageTodayDelta
- 0001:0022BEF0       AverageLogger.TAverageLogger.IsNewRecordNeeded
- 0001:0022BF18       AverageLogger.TAverageLogger.RefreshFile
- 0001:0022C034       AverageLogger.TAverageLogger.ReadAndRefresh
- 0001:0022C0A0       AverageLogger.TAverageLogger.IsLastRecordExpired
- 0001:0022C144       AverageLogger.TAverageLogger.DisposeExpiredRecords
- 0001:0022C188       AverageLogger.TAverageLogger.ChangeLastRecordedPeriodToNow
- 0001:0022C224       AverageLogger.TAverageLogger.Create
- 0001:0022C2E8       AverageLogger.TAverageLogger.AddNewRecordWithTimestamp
- 0001:0022C3A4       AverageLogger.TAverageLogger.SaveToFile
- 0001:0022C3C0       AverageLogger.TAverageLogger.BuildFileName
- 0001:0022C468       AverageLogger.Count..TAverageCountLogger
- 0001:0022C520       AverageLogger.Count.TAverageCountLogger.GetUnit
- 0001:0022C530       AverageLogger.Write..TAverageWriteLogger
- 0001:0022C5E8       AverageLogger.Write.TAverageWriteLogger.GetUnit
- 0001:0022C600       OS.WriteBufferSettingVerifier..TWriteBufferSettingVerifier
- 0001:0022C738       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.UnderbarToSpace
- 0001:0022C7BC       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.SplitIntoModelAndFirmware
- 0001:0022C8F8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckSupportStatus
- 0001:0022C9C0       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckDevice
- 0001:0022CA54       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CorrectDevice
- 0001:0022CAC4       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.GetDeviceFriendlyName
- 0001:0022CB64       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByDevice
- 0001:0022CCD0       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByModel
- 0001:0022CE84       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByInterface
- 0001:0022D004       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrect
- 0001:0022D0E4       uDiagnosisService..TDiagnosisService
- 0001:0022D324       uDiagnosisService.TDiagnosisService.Create
- 0001:0022D3EC       uDiagnosisService.TDiagnosisService.SetPhysicalDriveList
- 0001:0022D454       uDiagnosisService.TDiagnosisService.InitializePhysicalDriveList
- 0001:0022D45C       uDiagnosisService.TDiagnosisService.FreeLastChanges
- 0001:0022D4A4       uDiagnosisService.TDiagnosisService.IsThereAnySupportedDrive
- 0001:0022D4B0       uDiagnosisService.TDiagnosisService.GetLogLine
- 0001:0022D55C       uDiagnosisService.TDiagnosisService.IsNeedDiagnosis
- 0001:0022D610       uDiagnosisService.TDiagnosisService.WriteBufferCheck
- 0001:0022D644       uDiagnosisService.TDiagnosisService.SaveWriteBufferCheckResult
- 0001:0022D7AC       uDiagnosisService.TDiagnosisService.RefreshTotalWriteLog
- 0001:0022D8A4       uDiagnosisService.TDiagnosisService.GetAlertFile
- 0001:0022D8D4       uDiagnosisService.TDiagnosisService.GetPartitionLetters
- 0001:0022D998       uDiagnosisService.TDiagnosisService.AlertIfNeedToReplacedSectors
- 0001:0022DB68       uDiagnosisService.TDiagnosisService.AlertIfNeedToReadEraseError
- 0001:0022DD38       uDiagnosisService.TDiagnosisService.RefreshReplacedSectorLog
- 0001:0022DE8C       uDiagnosisService.TDiagnosisService.RefreshReadWriteErrorLog
- 0001:0022DFE0       uDiagnosisService.TDiagnosisService.LogAndCheckSMART
- 0001:0022E0B0       uDiagnosisService.TDiagnosisService.Diagnosis
- 0001:0022E0D0       uDiagnosisService.TDiagnosisService.Destroy
- 0001:0022E110       uMain..TNaraeonSSDToolsDiag
- 0001:0022E41C       uMain.ServiceController
- 0001:0022E430       uMain.TNaraeonSSDToolsDiag.GetServiceController
- 0001:0022E438       uMain.TNaraeonSSDToolsDiag.InitializeAndWaitForEnd
- 0001:0022E450       uMain.TNaraeonSSDToolsDiag.ServiceCreate
- 0001:0022E468       uMain.TNaraeonSSDToolsDiag.ServiceDestroy
- 0001:0022E490       uMain.TNaraeonSSDToolsDiag.ServiceExecute
- 0001:0022E498       uMain.TNaraeonSSDToolsDiag.WaitForTerminate
- 0001:0022E4EC       uMain.TNaraeonSSDToolsDiag.tDiagnosisTimer
- 0001:0022E514       NSTDiagSvc_Patch.Finalization
+ 0001:00229AC0       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.SerialGetDriveList
+ 0001:00229B30       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.TryToGetPhysicalDriveList
+ 0001:00229B80       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.LockAndTransfer
+ 0001:00229C1C       Getter.PhysicalDriveList.OS.TOSPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:00229C9C       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter
+ 0001:00229E10       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetDiskDriveSearchResult
+ 0001:00229F5C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetNextDriveAndReturnResult
+ 0001:00229FBC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsHarddrive
+ 0001:0022A044       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToDeviceIDList
+ 0001:0022A0C0       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.AddDriveToList
+ 0001:0022A148       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedBy
+ 0001:0022A1F4       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveConnectedByKnownInterface
+ 0001:0022A270       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfDriveConnectedByKnownInterfaceAddToList
+ 0001:0022A288       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.CheckMediaTypeAndAddIfRequirementMet
+ 0001:0022A314       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidType
+ 0001:0022A384       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveLoaded
+ 0001:0022A3F4       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsDriveSetValidID
+ 0001:0022A460       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IsCurrentDriveAvailable
+ 0001:0022A48C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.IfFixedOrUSBDriveAddToList
+ 0001:0022A5D4       Getter.PhysicalDriveList.WMI..TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec
+ 0001:0022A714       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive$14$ActRec.$0$Body
+ 0001:0022A774       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TraverseResultAndAddFixedOrUSBDrive
+ 0001:0022A8BC       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.TryToGetPhysicalDriveList
+ 0001:0022A93C       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.LockAndTransfer
+ 0001:0022A9D8       Getter.PhysicalDriveList.WMI.TWMIPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:0022AA58       Getter.PhysicalDriveList.Auto..TAutoPhysicalDriveListGetter
+ 0001:0022ABD8       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.Create
+ 0001:0022AC00       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveList
+ 0001:0022AC38       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.GetPhysicalDriveListInService
+ 0001:0022AC60       Getter.PhysicalDriveList.Auto.TAutoPhysicalDriveListGetter.TestCompatibilityAndGet
+ 0001:0022ACB4       Getter.PhysicalDriveList.Auto.Finalization
+ 0001:0022AD10       Getter.PhysicalDrive.ListChange..TListChangeGetter
+ 0001:0022AFB4       Getter.PhysicalDrive.ListChange.TListChangeGetter.IsSupportedOrNotNeededToCheck
+ 0001:0022AFC4       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithoutResultFrom
+ 0001:0022AFD8       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetPhysicalDriveList
+ 0001:0022AFF8       Getter.PhysicalDrive.ListChange.TListChangeGetter.RefreshListWithResultFrom
+ 0001:0022B014       Getter.PhysicalDrive.ListChange.TListChangeGetter.ServiceRefreshListWithResultFrom
+ 0001:0022B030       Getter.PhysicalDrive.ListChange.TListChangeGetter.InnerRefreshListWithResultFrom
+ 0001:0022B0A8       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnAddedListAndRefreshList
+ 0001:0022B1A4       Getter.PhysicalDrive.ListChange.TListChangeGetter.ReturnDeletedListAndRefreshList
+ 0001:0022B27C       Getter.PhysicalDrive.ListChange.TListChangeGetter.GetListChangeByCurrentPhysicalDriveList
+ 0001:0022B354       AverageLogger..TAverageLogger
+ 0001:0022B6F4       AverageLogger.TAverageLogger.ReadFileOrCreateNew
+ 0001:0022B774       AverageLogger.TAverageLogger.Create
+ 0001:0022B808       AverageLogger.TAverageLogger.Destroy
+ 0001:0022B840       AverageLogger.TAverageLogger.IsNewValueInvalid
+ 0001:0022B8A8       AverageLogger.TAverageLogger.InitializeAverageTodayDelta
+ 0001:0022B8F8       AverageLogger.TAverageLogger.SetAverage
+ 0001:0022BA6C       AverageLogger.TAverageLogger.GetFormattedTodayDelta
+ 0001:0022BABC       AverageLogger.TAverageLogger.GetMaxPeriodFormattedAverage
+ 0001:0022BAD8       AverageLogger.TAverageLogger.ReadAndSetAverageTodayDelta
+ 0001:0022BC34       AverageLogger.TAverageLogger.IsNewRecordNeeded
+ 0001:0022BC5C       AverageLogger.TAverageLogger.RefreshFile
+ 0001:0022BD78       AverageLogger.TAverageLogger.ReadAndRefresh
+ 0001:0022BDE4       AverageLogger.TAverageLogger.IsLastRecordExpired
+ 0001:0022BE88       AverageLogger.TAverageLogger.DisposeExpiredRecords
+ 0001:0022BECC       AverageLogger.TAverageLogger.ChangeLastRecordedPeriodToNow
+ 0001:0022BF68       AverageLogger.TAverageLogger.Create
+ 0001:0022C02C       AverageLogger.TAverageLogger.AddNewRecordWithTimestamp
+ 0001:0022C0E8       AverageLogger.TAverageLogger.SaveToFile
+ 0001:0022C104       AverageLogger.TAverageLogger.BuildFileName
+ 0001:0022C1AC       AverageLogger.Count..TAverageCountLogger
+ 0001:0022C264       AverageLogger.Count.TAverageCountLogger.GetUnit
+ 0001:0022C274       AverageLogger.Write..TAverageWriteLogger
+ 0001:0022C32C       AverageLogger.Write.TAverageWriteLogger.GetUnit
+ 0001:0022C344       OS.WriteBufferSettingVerifier..TWriteBufferSettingVerifier
+ 0001:0022C47C       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.UnderbarToSpace
+ 0001:0022C500       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.SplitIntoModelAndFirmware
+ 0001:0022C63C       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckSupportStatus
+ 0001:0022C704       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckDevice
+ 0001:0022C798       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CorrectDevice
+ 0001:0022C808       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.GetDeviceFriendlyName
+ 0001:0022C8A8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByDevice
+ 0001:0022CA14       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByModel
+ 0001:0022CBC8       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrectByInterface
+ 0001:0022CD48       OS.WriteBufferSettingVerifier.TWriteBufferSettingVerifier.CheckAndCorrect
+ 0001:0022CE28       uDiagnosisService..TDiagnosisService
+ 0001:0022D068       uDiagnosisService.TDiagnosisService.Create
+ 0001:0022D130       uDiagnosisService.TDiagnosisService.SetPhysicalDriveList
+ 0001:0022D198       uDiagnosisService.TDiagnosisService.InitializePhysicalDriveList
+ 0001:0022D1A0       uDiagnosisService.TDiagnosisService.FreeLastChanges
+ 0001:0022D1E8       uDiagnosisService.TDiagnosisService.IsThereAnySupportedDrive
+ 0001:0022D1F4       uDiagnosisService.TDiagnosisService.GetLogLine
+ 0001:0022D2A0       uDiagnosisService.TDiagnosisService.IsNeedDiagnosis
+ 0001:0022D354       uDiagnosisService.TDiagnosisService.WriteBufferCheck
+ 0001:0022D388       uDiagnosisService.TDiagnosisService.SaveWriteBufferCheckResult
+ 0001:0022D4F0       uDiagnosisService.TDiagnosisService.RefreshTotalWriteLog
+ 0001:0022D5E8       uDiagnosisService.TDiagnosisService.GetAlertFile
+ 0001:0022D618       uDiagnosisService.TDiagnosisService.GetPartitionLetters
+ 0001:0022D6DC       uDiagnosisService.TDiagnosisService.AlertIfNeedToReplacedSectors
+ 0001:0022D8AC       uDiagnosisService.TDiagnosisService.AlertIfNeedToReadEraseError
+ 0001:0022DA7C       uDiagnosisService.TDiagnosisService.RefreshReplacedSectorLog
+ 0001:0022DBD0       uDiagnosisService.TDiagnosisService.RefreshReadWriteErrorLog
+ 0001:0022DD24       uDiagnosisService.TDiagnosisService.LogAndCheckSMART
+ 0001:0022DDF4       uDiagnosisService.TDiagnosisService.Diagnosis
+ 0001:0022DE14       uDiagnosisService.TDiagnosisService.Destroy
+ 0001:0022DE54       uMain..TNaraeonSSDToolsDiag
+ 0001:0022E160       uMain.ServiceController
+ 0001:0022E174       uMain.TNaraeonSSDToolsDiag.GetServiceController
+ 0001:0022E17C       uMain.TNaraeonSSDToolsDiag.InitializeAndWaitForEnd
+ 0001:0022E194       uMain.TNaraeonSSDToolsDiag.ServiceCreate
+ 0001:0022E1AC       uMain.TNaraeonSSDToolsDiag.ServiceDestroy
+ 0001:0022E1D4       uMain.TNaraeonSSDToolsDiag.ServiceExecute
+ 0001:0022E1DC       uMain.TNaraeonSSDToolsDiag.WaitForTerminate
+ 0001:0022E230       uMain.TNaraeonSSDToolsDiag.tDiagnosisTimer
+ 0001:0022E258       NSTDiagSvc_Patch.Finalization
  0002:00000000       System.System
  0002:000000B4       SysInit.SysInit
  0002:000000BC       Winapi.Windows.Winapi.Windows
@@ -32274,61 +32272,62 @@ Line numbers for Getter.PhysicalDriveList.OS.Path(System.Generics.Collections.pa
 
 Line numbers for Getter.PhysicalDriveList.OS(Getter.PhysicalDriveList.OS.pas) segment .text
 
-    32 0001:002298CC    33 0001:002298E6    34 0001:002298F4    38 0001:00229956
-    41 0001:00229958    42 0001:00229965    44 0001:0022996F    50 0001:00229994
-    51 0001:002299AC    54 0001:002299DB    55 0001:002299E5    59 0001:00229A14
-    60 0001:00229A1A    61 0001:00229A28    63 0001:00229A3E    65 0001:00229A45
-    69 0001:00229A4C    70 0001:00229A52    71 0001:00229A5F    72 0001:00229A68
-    77 0001:00229A6C    78 0001:00229A72    79 0001:00229A81    80 0001:00229A8F
-    82 0001:00229AA7    84 0001:00229AB7    93 0001:00229CDC    94 0001:00229CE6
-    95 0001:00229CF4    97 0001:00229D23    98 0001:00229D25   100 0001:00229D31
-    89 0001:00229D38    90 0001:00229D8C    91 0001:00229D9B   100 0001:00229DA9
-   102 0001:00229DE9   104 0001:00229E0B   110 0001:00229E3C   111 0001:00229E5A
-   112 0001:00229E65   113 0001:00229E73   114 0001:00229EA0   115 0001:00229EAB
-   119 0001:00229ED8   120 0001:00229EE4   121 0001:00229EF6   122 0001:00229F04
-   124 0001:00229F1B   126 0001:00229F2B   127 0001:00229F35   128 0001:00229F4F
+    34 0001:002298CC    35 0001:002298E6    36 0001:002298F4    40 0001:00229956
+    43 0001:00229958    44 0001:00229965    46 0001:0022996F    52 0001:00229994
+    53 0001:002299AC    56 0001:002299DB    57 0001:002299E5    61 0001:00229A14
+    62 0001:00229A1A    63 0001:00229A28    65 0001:00229A3E    67 0001:00229A45
+    71 0001:00229A4C    72 0001:00229A52    73 0001:00229A5F    74 0001:00229A68
+    79 0001:00229A6C    80 0001:00229A72    81 0001:00229A81    82 0001:00229A8F
+    84 0001:00229AA7    86 0001:00229AB7    92 0001:00229AC0    93 0001:00229ACC
+    95 0001:00229ADA    96 0001:00229AE8    98 0001:00229B16    99 0001:00229B18
+   101 0001:00229B24    93 0001:00229B25   102 0001:00229B28   121 0001:00229B30
+   122 0001:00229B37   123 0001:00229B41   125 0001:00229B4F   130 0001:00229B66
+   132 0001:00229B7B   138 0001:00229B80   139 0001:00229B9E   140 0001:00229BA9
+   141 0001:00229BB7   142 0001:00229BE4   143 0001:00229BEF   147 0001:00229C1C
+   148 0001:00229C28   149 0001:00229C3A   150 0001:00229C48   152 0001:00229C5F
+   154 0001:00229C6F   155 0001:00229C79   156 0001:00229C93
 
 Line numbers for Getter.PhysicalDriveList.OS(System.Generics.Collections.pas) segment .text
 
-   805 0001:00229F5F
+   805 0001:00229CA3
 
 Line numbers for Getter.PhysicalDriveList.WMI(Getter.PhysicalDriveList.WMI.pas) segment .text
 
-    50 0001:0022A0CC    51 0001:0022A0FB    53 0001:0022A12B    55 0001:0022A15A
-    64 0001:0022A218    65 0001:0022A23A    71 0001:0022A254    74 0001:0022A278
-    76 0001:0022A29D    77 0001:0022A2BF    80 0001:0022A300    81 0001:0022A31B
-    82 0001:0022A346    87 0001:0022A37C    88 0001:0022A384    89 0001:0022A392
-    90 0001:0022A3A0    92 0001:0022A3E4    95 0001:0022A3E6    96 0001:0022A3F3
-    98 0001:0022A3FD   102 0001:0022A404   103 0001:0022A430   104 0001:0022A462
-   107 0001:0022A4B0   108 0001:0022A4B3   112 0001:0022A4E9   115 0001:0022A52C
-   116 0001:0022A52F   117 0001:0022A53A   118 0001:0022A541   121 0001:0022A544
-   122 0001:0022A55F   123 0001:0022A58D   124 0001:0022A594   127 0001:0022A5D0
-   128 0001:0022A5EA   129 0001:0022A60B   132 0001:0022A640   133 0001:0022A65A
-   134 0001:0022A679   137 0001:0022A6B0   138 0001:0022A6CA   139 0001:0022A6EB
-   142 0001:0022A71C   143 0001:0022A71F   147 0001:0022A746   150 0001:0022A748
-   151 0001:0022A762   152 0001:0022A76D   153 0001:0022A774   154 0001:0022A787
-   164 0001:0022A9D0   165 0001:0022A9F1   166 0001:0022AA0C   158 0001:0022AA30
-   159 0001:0022AA8C   160 0001:0022AAA1   162 0001:0022AAB1   161 0001:0022AABC
-   163 0001:0022AACE   168 0001:0022AB19   170 0001:0022AB3E   176 0001:0022AB78
-   177 0001:0022AB94   178 0001:0022ABAE   179 0001:0022ABBB   180 0001:0022ABC5
-   186 0001:0022ABF8   187 0001:0022AC16   188 0001:0022AC21   189 0001:0022AC2F
-   190 0001:0022AC5C   191 0001:0022AC67   195 0001:0022AC94   196 0001:0022ACA0
-   197 0001:0022ACB2   198 0001:0022ACC0   200 0001:0022ACD7   202 0001:0022ACE7
-   203 0001:0022ACF1   204 0001:0022AD0B
+    50 0001:00229E10    51 0001:00229E3F    53 0001:00229E6F    55 0001:00229E9E
+    64 0001:00229F5C    65 0001:00229F7E    71 0001:00229F98    74 0001:00229FBC
+    76 0001:00229FE1    77 0001:0022A003    80 0001:0022A044    81 0001:0022A05F
+    82 0001:0022A08A    87 0001:0022A0C0    88 0001:0022A0C8    89 0001:0022A0D6
+    90 0001:0022A0E4    92 0001:0022A128    95 0001:0022A12A    96 0001:0022A137
+    98 0001:0022A141   102 0001:0022A148   103 0001:0022A174   104 0001:0022A1A6
+   107 0001:0022A1F4   108 0001:0022A1F7   112 0001:0022A22D   115 0001:0022A270
+   116 0001:0022A273   117 0001:0022A27E   118 0001:0022A285   121 0001:0022A288
+   122 0001:0022A2A3   123 0001:0022A2D1   124 0001:0022A2D8   127 0001:0022A314
+   128 0001:0022A32E   129 0001:0022A34F   132 0001:0022A384   133 0001:0022A39E
+   134 0001:0022A3BD   137 0001:0022A3F4   138 0001:0022A40E   139 0001:0022A42F
+   142 0001:0022A460   143 0001:0022A463   147 0001:0022A48A   150 0001:0022A48C
+   151 0001:0022A4A6   152 0001:0022A4B1   153 0001:0022A4B8   154 0001:0022A4CB
+   164 0001:0022A714   165 0001:0022A735   166 0001:0022A750   158 0001:0022A774
+   159 0001:0022A7D0   160 0001:0022A7E5   162 0001:0022A7F5   161 0001:0022A800
+   163 0001:0022A812   168 0001:0022A85D   170 0001:0022A882   176 0001:0022A8BC
+   177 0001:0022A8D8   178 0001:0022A8F2   179 0001:0022A8FF   180 0001:0022A909
+   186 0001:0022A93C   187 0001:0022A95A   188 0001:0022A965   189 0001:0022A973
+   190 0001:0022A9A0   191 0001:0022A9AB   195 0001:0022A9D8   196 0001:0022A9E4
+   197 0001:0022A9F6   198 0001:0022AA04   200 0001:0022AA1B   202 0001:0022AA2B
+   203 0001:0022AA35   204 0001:0022AA4F
 
 Line numbers for Getter.PhysicalDriveList.WMI(System.Generics.Collections.pas) segment .text
 
-   805 0001:0022AD1B
+   805 0001:0022AA5F
 
 Line numbers for Getter.PhysicalDriveList.Auto(Getter.PhysicalDriveList.Auto.pas) segment .text
 
-    33 0001:0022AE94    34 0001:0022AE97    35 0001:0022AEA0    37 0001:0022AEB2
-    38 0001:0022AEB7    42 0001:0022AEBC    43 0001:0022AEBF    44 0001:0022AEC1
-    46 0001:0022AED0    48 0001:0022AEDF    49 0001:0022AEE3    50 0001:0022AEEF
-    55 0001:0022AEF4    56 0001:0022AEF6    58 0001:0022AF05    59 0001:0022AF09
-    60 0001:0022AF17    67 0001:0022AF1C    68 0001:0022AF22    70 0001:0022AF26
-    71 0001:0022AF33    72 0001:0022AF3E    73 0001:0022AF4D    74 0001:0022AF5A
-    75 0001:0022AF69    80 0001:0022AF70    81 0001:0022AF82
+    33 0001:0022ABD8    34 0001:0022ABDB    35 0001:0022ABE4    37 0001:0022ABF6
+    38 0001:0022ABFB    42 0001:0022AC00    43 0001:0022AC03    44 0001:0022AC05
+    46 0001:0022AC14    48 0001:0022AC23    49 0001:0022AC27    50 0001:0022AC33
+    55 0001:0022AC38    56 0001:0022AC3A    58 0001:0022AC49    59 0001:0022AC4D
+    60 0001:0022AC5B    67 0001:0022AC60    68 0001:0022AC66    70 0001:0022AC6A
+    71 0001:0022AC77    72 0001:0022AC82    73 0001:0022AC91    74 0001:0022AC9E
+    75 0001:0022ACAD    80 0001:0022ACB4    81 0001:0022ACC6
 
 Line numbers for Getter.PhysicalDriveList.Auto(Getter.PhysicalDriveList.Auto.pas) segment .itext
 
@@ -32336,133 +32335,133 @@ Line numbers for Getter.PhysicalDriveList.Auto(Getter.PhysicalDriveList.Auto.pas
 
 Line numbers for Getter.PhysicalDrive.ListChange(Getter.PhysicalDrive.ListChange.pas) segment .text
 
-    58 0001:0022B270    61 0001:0022B27F    65 0001:0022B280    66 0001:0022B283
-    67 0001:0022B287    68 0001:0022B28E    73 0001:0022B294    74 0001:0022B298
-    76 0001:0022B2A5    77 0001:0022B2B1    81 0001:0022B2B4    82 0001:0022B2BD
-    83 0001:0022B2C9    87 0001:0022B2D0    88 0001:0022B2D9    89 0001:0022B2E5
-    95 0001:0022B2EC    96 0001:0022B2FB    97 0001:0022B2FF    98 0001:0022B307
-    99 0001:0022B313   100 0001:0022B31D   101 0001:0022B32E   102 0001:0022B336
-   103 0001:0022B344   104 0001:0022B35B   112 0001:0022B364   113 0001:0022B384
-   115 0001:0022B393   117 0001:0022B3B9   118 0001:0022B3C7   120 0001:0022B3DF
-   121 0001:0022B3E3   122 0001:0022B3ED   124 0001:0022B3F3   125 0001:0022B3FD
-   115 0001:0022B408   126 0001:0022B421   127 0001:0022B439   134 0001:0022B460
-   135 0001:0022B487   136 0001:0022B48C   138 0001:0022B495   139 0001:0022B4A4
-   141 0001:0022B4B5   143 0001:0022B4D2   144 0001:0022B4D6   146 0001:0022B4FC
-   139 0001:0022B4FD   147 0001:0022B500   151 0001:0022B538   152 0001:0022B53E
-   153 0001:0022B54C   155 0001:0022B558   157 0001:0022B564
+    58 0001:0022AFB4    61 0001:0022AFC3    65 0001:0022AFC4    66 0001:0022AFC7
+    67 0001:0022AFCB    68 0001:0022AFD2    73 0001:0022AFD8    74 0001:0022AFDC
+    76 0001:0022AFE9    77 0001:0022AFF5    81 0001:0022AFF8    82 0001:0022B001
+    83 0001:0022B00D    87 0001:0022B014    88 0001:0022B01D    89 0001:0022B029
+    95 0001:0022B030    96 0001:0022B03F    97 0001:0022B043    98 0001:0022B04B
+    99 0001:0022B057   100 0001:0022B061   101 0001:0022B072   102 0001:0022B07A
+   103 0001:0022B088   104 0001:0022B09F   112 0001:0022B0A8   113 0001:0022B0C8
+   115 0001:0022B0D7   117 0001:0022B0FD   118 0001:0022B10B   120 0001:0022B123
+   121 0001:0022B127   122 0001:0022B131   124 0001:0022B137   125 0001:0022B141
+   115 0001:0022B14C   126 0001:0022B165   127 0001:0022B17D   134 0001:0022B1A4
+   135 0001:0022B1CB   136 0001:0022B1D0   138 0001:0022B1D9   139 0001:0022B1E8
+   141 0001:0022B1F9   143 0001:0022B216   144 0001:0022B21A   146 0001:0022B240
+   139 0001:0022B241   147 0001:0022B244   151 0001:0022B27C   152 0001:0022B282
+   153 0001:0022B290   155 0001:0022B29C   157 0001:0022B2A8
 
 Line numbers for Getter.PhysicalDrive.ListChange(System.Generics.Collections.pas) segment .text
 
-   805 0001:0022B56E
+   805 0001:0022B2B2
 
 Line numbers for AverageLogger(AverageLogger.pas) segment .text
 
-    54 0001:0022B9B0    55 0001:0022B9D0    56 0001:0022B9DE    57 0001:0022B9EC
-    59 0001:0022B9FF    60 0001:0022BA0D    63 0001:0022BA30    64 0001:0022BA60
-    65 0001:0022BA74    66 0001:0022BA7F    67 0001:0022BA89    70 0001:0022BAC4
-    71 0001:0022BAD0    72 0001:0022BAEA    77 0001:0022BAFC    78 0001:0022BB1C
-    81 0001:0022BB3D    84 0001:0022BB64    85 0001:0022BB67    86 0001:0022BB6F
-    87 0001:0022BB7D    88 0001:0022BB82    89 0001:0022BB86    90 0001:0022BB93
-    91 0001:0022BB9B   104 0001:0022BBB4   105 0001:0022BBDF   107 0001:0022BC04
-   110 0001:0022BC2B   111 0001:0022BC3C   113 0001:0022BC4C   115 0001:0022BC52
-   119 0001:0022BC94   121 0001:0022BCC3   122 0001:0022BCC5   110 0001:0022BCC9
-   123 0001:0022BCD2   126 0001:0022BD28   127 0001:0022BD31   128 0001:0022BD57
-   131 0001:0022BD78   132 0001:0022BD7E   133 0001:0022BD8E   136 0001:0022BD94
-   137 0001:0022BDC5   140 0001:0022BDD8   141 0001:0022BDF3   142 0001:0022BE14
-   146 0001:0022BE56   149 0001:0022BEAC   150 0001:0022BEB6   153 0001:0022BEF0
-   154 0001:0022BEF3   157 0001:0022BF13   160 0001:0022BF18   161 0001:0022BF42
-   164 0001:0022BF71   165 0001:0022BF9E   166 0001:0022BFAC   167 0001:0022BFC3
-   168 0001:0022BFCA   171 0001:0022C034   172 0001:0022C054   173 0001:0022C05B
-   176 0001:0022C069   177 0001:0022C073   178 0001:0022C07D   181 0001:0022C0A0
-   182 0001:0022C0BD   183 0001:0022C0CD   188 0001:0022C11A   191 0001:0022C144
-   194 0001:0022C14B   195 0001:0022C162   192 0001:0022C179   197 0001:0022C184
-   200 0001:0022C188   201 0001:0022C1A5   202 0001:0022C1D7   203 0001:0022C1DE
-   206 0001:0022C224   207 0001:0022C25C   208 0001:0022C280   209 0001:0022C286
-   210 0001:0022C28E   211 0001:0022C299   212 0001:0022C2A0   215 0001:0022C2E8
-   216 0001:0022C310   217 0001:0022C320   218 0001:0022C352   219 0001:0022C359
-   222 0001:0022C3A4   224 0001:0022C3A7   226 0001:0022C3BB   229 0001:0022C3C0
-   230 0001:0022C3EA   231 0001:0022C407   232 0001:0022C46F
+    54 0001:0022B6F4    55 0001:0022B714    56 0001:0022B722    57 0001:0022B730
+    59 0001:0022B743    60 0001:0022B751    63 0001:0022B774    64 0001:0022B7A4
+    65 0001:0022B7B8    66 0001:0022B7C3    67 0001:0022B7CD    70 0001:0022B808
+    71 0001:0022B814    72 0001:0022B82E    77 0001:0022B840    78 0001:0022B860
+    81 0001:0022B881    84 0001:0022B8A8    85 0001:0022B8AB    86 0001:0022B8B3
+    87 0001:0022B8C1    88 0001:0022B8C6    89 0001:0022B8CA    90 0001:0022B8D7
+    91 0001:0022B8DF   104 0001:0022B8F8   105 0001:0022B923   107 0001:0022B948
+   110 0001:0022B96F   111 0001:0022B980   113 0001:0022B990   115 0001:0022B996
+   119 0001:0022B9D8   121 0001:0022BA07   122 0001:0022BA09   110 0001:0022BA0D
+   123 0001:0022BA16   126 0001:0022BA6C   127 0001:0022BA75   128 0001:0022BA9B
+   131 0001:0022BABC   132 0001:0022BAC2   133 0001:0022BAD2   136 0001:0022BAD8
+   137 0001:0022BB09   140 0001:0022BB1C   141 0001:0022BB37   142 0001:0022BB58
+   146 0001:0022BB9A   149 0001:0022BBF0   150 0001:0022BBFA   153 0001:0022BC34
+   154 0001:0022BC37   157 0001:0022BC57   160 0001:0022BC5C   161 0001:0022BC86
+   164 0001:0022BCB5   165 0001:0022BCE2   166 0001:0022BCF0   167 0001:0022BD07
+   168 0001:0022BD0E   171 0001:0022BD78   172 0001:0022BD98   173 0001:0022BD9F
+   176 0001:0022BDAD   177 0001:0022BDB7   178 0001:0022BDC1   181 0001:0022BDE4
+   182 0001:0022BE01   183 0001:0022BE11   188 0001:0022BE5E   191 0001:0022BE88
+   194 0001:0022BE8F   195 0001:0022BEA6   192 0001:0022BEBD   197 0001:0022BEC8
+   200 0001:0022BECC   201 0001:0022BEE9   202 0001:0022BF1B   203 0001:0022BF22
+   206 0001:0022BF68   207 0001:0022BFA0   208 0001:0022BFC4   209 0001:0022BFCA
+   210 0001:0022BFD2   211 0001:0022BFDD   212 0001:0022BFE4   215 0001:0022C02C
+   216 0001:0022C054   217 0001:0022C064   218 0001:0022C096   219 0001:0022C09D
+   222 0001:0022C0E8   224 0001:0022C0EB   226 0001:0022C0FF   229 0001:0022C104
+   230 0001:0022C12E   231 0001:0022C14B   232 0001:0022C1B3
 
 Line numbers for AverageLogger.Count(AverageLogger.Count.pas) segment .text
 
-    16 0001:0022C520    17 0001:0022C523    18 0001:0022C529    19 0001:0022C536
+    16 0001:0022C264    17 0001:0022C267    18 0001:0022C26D    19 0001:0022C27A
 
 Line numbers for AverageLogger.Write(AverageLogger.Write.pas) segment .text
 
-    16 0001:0022C5E8    17 0001:0022C5EB    18 0001:0022C5FA    19 0001:0022C607
+    16 0001:0022C32C    17 0001:0022C32F    18 0001:0022C33E    19 0001:0022C34B
 
 Line numbers for OS.WriteBufferSettingVerifier(OS.WriteBufferSettingVerifier.pas) segment .text
 
-    42 0001:0022C738    43 0001:0022C75A    44 0001:0022C764    45 0001:0022C77A
-    46 0001:0022C784    44 0001:0022C793    47 0001:0022C796    56 0001:0022C7BC
-    57 0001:0022C804    58 0001:0022C829    60 0001:0022C82D    61 0001:0022C845
-    63 0001:0022C856    64 0001:0022C87F    67 0001:0022C8A9    68 0001:0022C8AB
-    75 0001:0022C8F8    76 0001:0022C922    77 0001:0022C943    79 0001:0022C947
-    80 0001:0022C95C    84 0001:0022C98A    85 0001:0022C997    91 0001:0022C9C0
-    92 0001:0022C9ED    93 0001:0022C9FB    96 0001:0022CA1E    98 0001:0022CA25
-   104 0001:0022CA54   105 0001:0022CA81   107 0001:0022CA97   111 0001:0022CAC4
-   112 0001:0022CAF3   113 0001:0022CB00   114 0001:0022CB11   121 0001:0022CB64
-   122 0001:0022CBA6   123 0001:0022CBAD   125 0001:0022CBC5   127 0001:0022CBD5
-   128 0001:0022CBE2   129 0001:0022CBEC   131 0001:0022CBF0   132 0001:0022CBFA
-   133 0001:0022CC05   135 0001:0022CC11   143 0001:0022CCD0   144 0001:0022CD15
-   145 0001:0022CD24   147 0001:0022CD36   149 0001:0022CD4E   150 0001:0022CD60
-   152 0001:0022CD9A   154 0001:0022CDAB   155 0001:0022CDB1   150 0001:0022CDBC
-   156 0001:0022CDD5   157 0001:0022CDED   170 0001:0022CE84   171 0001:0022CEBD
-   172 0001:0022CECC   173 0001:0022CEDF   175 0001:0022CEEA   176 0001:0022CEFC
-   178 0001:0022CF36   181 0001:0022CF46   182 0001:0022CF52   183 0001:0022CF5D
-   176 0001:0022CF6C   184 0001:0022CF85   185 0001:0022CF9D   193 0001:0022D004
-   194 0001:0022D022   195 0001:0022D031   196 0001:0022D040   197 0001:0022D04F
-   199 0001:0022D061   201 0001:0022D06E   202 0001:0022D079   203 0001:0022D086
-   197 0001:0022D087   204 0001:0022D08C   205 0001:0022D0A3   206 0001:0022D0BA
-   208 0001:0022D0E8
+    42 0001:0022C47C    43 0001:0022C49E    44 0001:0022C4A8    45 0001:0022C4BE
+    46 0001:0022C4C8    44 0001:0022C4D7    47 0001:0022C4DA    56 0001:0022C500
+    57 0001:0022C548    58 0001:0022C56D    60 0001:0022C571    61 0001:0022C589
+    63 0001:0022C59A    64 0001:0022C5C3    67 0001:0022C5ED    68 0001:0022C5EF
+    75 0001:0022C63C    76 0001:0022C666    77 0001:0022C687    79 0001:0022C68B
+    80 0001:0022C6A0    84 0001:0022C6CE    85 0001:0022C6DB    91 0001:0022C704
+    92 0001:0022C731    93 0001:0022C73F    96 0001:0022C762    98 0001:0022C769
+   104 0001:0022C798   105 0001:0022C7C5   107 0001:0022C7DB   111 0001:0022C808
+   112 0001:0022C837   113 0001:0022C844   114 0001:0022C855   121 0001:0022C8A8
+   122 0001:0022C8EA   123 0001:0022C8F1   125 0001:0022C909   127 0001:0022C919
+   128 0001:0022C926   129 0001:0022C930   131 0001:0022C934   132 0001:0022C93E
+   133 0001:0022C949   135 0001:0022C955   143 0001:0022CA14   144 0001:0022CA59
+   145 0001:0022CA68   147 0001:0022CA7A   149 0001:0022CA92   150 0001:0022CAA4
+   152 0001:0022CADE   154 0001:0022CAEF   155 0001:0022CAF5   150 0001:0022CB00
+   156 0001:0022CB19   157 0001:0022CB31   170 0001:0022CBC8   171 0001:0022CC01
+   172 0001:0022CC10   173 0001:0022CC23   175 0001:0022CC2E   176 0001:0022CC40
+   178 0001:0022CC7A   181 0001:0022CC8A   182 0001:0022CC96   183 0001:0022CCA1
+   176 0001:0022CCB0   184 0001:0022CCC9   185 0001:0022CCE1   193 0001:0022CD48
+   194 0001:0022CD66   195 0001:0022CD75   196 0001:0022CD84   197 0001:0022CD93
+   199 0001:0022CDA5   201 0001:0022CDB2   202 0001:0022CDBD   203 0001:0022CDCA
+   197 0001:0022CDCB   204 0001:0022CDD0   205 0001:0022CDE7   206 0001:0022CDFE
+   208 0001:0022CE2C
 
 Line numbers for uDiagnosisService(uDiagnosisService.pas) segment .text
 
-    48 0001:0022D324    49 0001:0022D349    50 0001:0022D357    51 0001:0022D35C
-    52 0001:0022D37B    53 0001:0022D37F    58 0001:0022D3EC    59 0001:0022D3F2
-    60 0001:0022D3F9    61 0001:0022D3FF    62 0001:0022D40E    63 0001:0022D41D
-    64 0001:0022D424    66 0001:0022D441    67 0001:0022D44E    71 0001:0022D454
-    72 0001:0022D459    75 0001:0022D45C    76 0001:0022D462    77 0001:0022D468
-    78 0001:0022D47F    79 0001:0022D485    80 0001:0022D49F    84 0001:0022D4A4
-    85 0001:0022D4AE    89 0001:0022D4B0    90 0001:0022D4D7    91 0001:0022D4FD
-    94 0001:0022D55C    95 0001:0022D579    96 0001:0022D5B7    97 0001:0022D5BD
-    98 0001:0022D5C1   103 0001:0022D610   104 0001:0022D614   105 0001:0022D623
-   107 0001:0022D634   108 0001:0022D641   115 0001:0022D644   116 0001:0022D66C
-   118 0001:0022D67C   119 0001:0022D687   120 0001:0022D699   124 0001:0022D70A
-   119 0001:0022D70B   125 0001:0022D70E   126 0001:0022D71F   128 0001:0022D72C
-   129 0001:0022D739   134 0001:0022D7AC   135 0001:0022D7D4   138 0001:0022D7E5
-   142 0001:0022D827   145 0001:0022D852   146 0001:0022D85F   149 0001:0022D8A4
-   150 0001:0022D8A8   151 0001:0022D8B6   152 0001:0022D8C4   153 0001:0022D8CE
-   159 0001:0022D8D4   160 0001:0022D901   161 0001:0022D90C   162 0001:0022D913
-   163 0001:0022D921   162 0001:0022D945   164 0001:0022D948   165 0001:0022D955
-   172 0001:0022D998   173 0001:0022D9CB   176 0001:0022D9E8   177 0001:0022D9F2
-   178 0001:0022D9FF   184 0001:0022DAA8   185 0001:0022DAB6   186 0001:0022DAC3
-   193 0001:0022DB68   194 0001:0022DB9B   197 0001:0022DBB8   198 0001:0022DBC2
-   199 0001:0022DBCF   205 0001:0022DC78   206 0001:0022DC86   207 0001:0022DC93
-   212 0001:0022DD38   213 0001:0022DD64   217 0001:0022DDB6   219 0001:0022DDDA
-   221 0001:0022DDFF   222 0001:0022DE0C   227 0001:0022DE8C   228 0001:0022DEB8
-   232 0001:0022DF0A   234 0001:0022DF2E   236 0001:0022DF53   237 0001:0022DF60
-   242 0001:0022DFE0   243 0001:0022DFFC   245 0001:0022E022   247 0001:0022E02E
-   248 0001:0022E035   250 0001:0022E03C   251 0001:0022E046   252 0001:0022E050
-   243 0001:0022E05A   253 0001:0022E073   254 0001:0022E08B   257 0001:0022E0B0
-   258 0001:0022E0B3   260 0001:0022E0BE   261 0001:0022E0C5   262 0001:0022E0CC
-   265 0001:0022E0D0   266 0001:0022E0DC   267 0001:0022E0E3   268 0001:0022E0E9
-   269 0001:0022E100
+    48 0001:0022D068    49 0001:0022D08D    50 0001:0022D09B    51 0001:0022D0A0
+    52 0001:0022D0BF    53 0001:0022D0C3    58 0001:0022D130    59 0001:0022D136
+    60 0001:0022D13D    61 0001:0022D143    62 0001:0022D152    63 0001:0022D161
+    64 0001:0022D168    66 0001:0022D185    67 0001:0022D192    71 0001:0022D198
+    72 0001:0022D19D    75 0001:0022D1A0    76 0001:0022D1A6    77 0001:0022D1AC
+    78 0001:0022D1C3    79 0001:0022D1C9    80 0001:0022D1E3    84 0001:0022D1E8
+    85 0001:0022D1F2    89 0001:0022D1F4    90 0001:0022D21B    91 0001:0022D241
+    94 0001:0022D2A0    95 0001:0022D2BD    96 0001:0022D2FB    97 0001:0022D301
+    98 0001:0022D305   103 0001:0022D354   104 0001:0022D358   105 0001:0022D367
+   107 0001:0022D378   108 0001:0022D385   115 0001:0022D388   116 0001:0022D3B0
+   118 0001:0022D3C0   119 0001:0022D3CB   120 0001:0022D3DD   124 0001:0022D44E
+   119 0001:0022D44F   125 0001:0022D452   126 0001:0022D463   128 0001:0022D470
+   129 0001:0022D47D   134 0001:0022D4F0   135 0001:0022D518   138 0001:0022D529
+   142 0001:0022D56B   145 0001:0022D596   146 0001:0022D5A3   149 0001:0022D5E8
+   150 0001:0022D5EC   151 0001:0022D5FA   152 0001:0022D608   153 0001:0022D612
+   159 0001:0022D618   160 0001:0022D645   161 0001:0022D650   162 0001:0022D657
+   163 0001:0022D665   162 0001:0022D689   164 0001:0022D68C   165 0001:0022D699
+   172 0001:0022D6DC   173 0001:0022D70F   176 0001:0022D72C   177 0001:0022D736
+   178 0001:0022D743   184 0001:0022D7EC   185 0001:0022D7FA   186 0001:0022D807
+   193 0001:0022D8AC   194 0001:0022D8DF   197 0001:0022D8FC   198 0001:0022D906
+   199 0001:0022D913   205 0001:0022D9BC   206 0001:0022D9CA   207 0001:0022D9D7
+   212 0001:0022DA7C   213 0001:0022DAA8   217 0001:0022DAFA   219 0001:0022DB1E
+   221 0001:0022DB43   222 0001:0022DB50   227 0001:0022DBD0   228 0001:0022DBFC
+   232 0001:0022DC4E   234 0001:0022DC72   236 0001:0022DC97   237 0001:0022DCA4
+   242 0001:0022DD24   243 0001:0022DD40   245 0001:0022DD66   247 0001:0022DD72
+   248 0001:0022DD79   250 0001:0022DD80   251 0001:0022DD8A   252 0001:0022DD94
+   243 0001:0022DD9E   253 0001:0022DDB7   254 0001:0022DDCF   257 0001:0022DDF4
+   258 0001:0022DDF7   260 0001:0022DE02   261 0001:0022DE09   262 0001:0022DE10
+   265 0001:0022DE14   266 0001:0022DE20   267 0001:0022DE27   268 0001:0022DE2D
+   269 0001:0022DE44
 
 Line numbers for uDiagnosisService(System.Generics.Collections.pas) segment .text
 
-   805 0001:0022E116
+   805 0001:0022DE5A
 
 Line numbers for uMain(uMain.pas) segment .text
 
-    33 0001:0022E41C    34 0001:0022E41F    35 0001:0022E42C    39 0001:0022E430
-    40 0001:0022E435    43 0001:0022E438    44 0001:0022E43B    45 0001:0022E446
-    46 0001:0022E44D    49 0001:0022E450    50 0001:0022E453    52 0001:0022E465
-    55 0001:0022E468    56 0001:0022E469    57 0001:0022E472    58 0001:0022E48B
-    62 0001:0022E490    63 0001:0022E495    68 0001:0022E498    69 0001:0022E49C
-    70 0001:0022E4A6    71 0001:0022E4B3    74 0001:0022E4C3    73 0001:0022E4D0
-    79 0001:0022E4DB    80 0001:0022E4E8    83 0001:0022E4EC    84 0001:0022E4EF
-    85 0001:0022E4FA    86 0001:0022E509    87 0001:0022E510    89 0001:0022E519
+    33 0001:0022E160    34 0001:0022E163    35 0001:0022E170    39 0001:0022E174
+    40 0001:0022E179    43 0001:0022E17C    44 0001:0022E17F    45 0001:0022E18A
+    46 0001:0022E191    49 0001:0022E194    50 0001:0022E197    52 0001:0022E1A9
+    55 0001:0022E1AC    56 0001:0022E1AD    57 0001:0022E1B6    58 0001:0022E1CF
+    62 0001:0022E1D4    63 0001:0022E1D9    68 0001:0022E1DC    69 0001:0022E1E0
+    70 0001:0022E1EA    71 0001:0022E1F7    74 0001:0022E207    73 0001:0022E214
+    79 0001:0022E21F    80 0001:0022E22C    83 0001:0022E230    84 0001:0022E233
+    85 0001:0022E23E    86 0001:0022E24D    87 0001:0022E254    89 0001:0022E25D
 
 Line numbers for MeasureUnit.Time(MeasureUnit.Time.pas) segment .text
 
