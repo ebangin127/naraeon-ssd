@@ -21,8 +21,10 @@ type
     function IsDriveAccessible(CurrentDrive: Integer): Boolean;
     function LockAndTransfer: TPhysicalDriveList;
     function GetDrivePathList: TDrivePathNumberList;
+    {$HINTS OFF} // False warning because each setting uses only one of them
     procedure ParallelGetDriveList(const DrivePathList: TDrivePathNumberList);
     procedure SerialGetDriveList(const DrivePathList: TDrivePathNumberList);
+    {$HINTS ON}
   end;
 
 implementation

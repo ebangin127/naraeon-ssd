@@ -83,14 +83,18 @@ end;
 
 function TIntelNVMeCommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TIntelNVMeCommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
-function TIntelNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
+function TIntelNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
+  Cardinal;
 begin
+  result := 1;
 end;
 
 function TSamsungNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -105,14 +109,18 @@ end;
 
 function TSamsungNVMeCommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TSamsungNVMeCommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
-function TSamsungNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
+function TSamsungNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
+  Cardinal;
 begin
+  result := 1;
 end;
 
 function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -127,14 +135,17 @@ end;
 
 function TATACommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TATACommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
 function TATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
+  result := 1;
 end;
 
 function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -149,15 +160,18 @@ end;
 
 function TLegacyATACommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TLegacyATACommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
 function TLegacyATACommandSet.DataSetManagement(
   StartLBA, LBACount: Int64): Cardinal;
 begin
+  result := 1;
 end;
 
 function TSATCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -172,14 +186,17 @@ end;
 
 function TSATCommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TSATCommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
 function TSATCommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
+  result := 1;
 end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -194,15 +211,18 @@ end;
 
 function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;
 begin
+  result := nil;
 end;
 
 function TNVMeWithoutDriverCommandSet.IsDataSetManagementSupported: Boolean;
 begin
+  result := false;
 end;
 
 function TNVMeWithoutDriverCommandSet.DataSetManagement(
   StartLBA, LBACount: Int64): Cardinal;
 begin
+  result := 1;
 end;
 
 initialization
