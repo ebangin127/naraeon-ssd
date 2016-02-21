@@ -8,6 +8,7 @@ uses
 
 type
   TSMARTValueID = (
+    None,
     CriticalWarning,
     TemperatureInKelvin,
     AvailableSpare,

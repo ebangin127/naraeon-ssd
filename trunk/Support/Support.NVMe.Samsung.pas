@@ -105,10 +105,10 @@ end;
 function TSamsungNVMeSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 const
-  IDOfEraseError = 12;
-  IDOfReplacedSector = 5;
-  IDOfUsedHour = 10;
-  IDOfCriticalError = 0;
+  IDOfEraseError = 13;
+  IDOfReplacedSector = 6;
+  IDOfUsedHour = 11;
+  IDOfCriticalError = 1;
   ReplacedSectorThreshold = 50;
   EraseErrorThreshold = 10;
 begin
