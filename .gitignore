@@ -20,4 +20,4 @@ __history
 /Exe/*.rsm
 /SignedFirmware
 /Images/Vector
-/Web/Firmware/Includes/NSTAccount.php
+NSTAccount.php
