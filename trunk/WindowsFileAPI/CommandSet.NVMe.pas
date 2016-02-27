@@ -13,6 +13,7 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
       override;
     function IsDataSetManagementSupported: Boolean; override;
+    function IsExternal: Boolean; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -179,6 +180,11 @@ end;
 function TNVMeCommandSet.IsDataSetManagementSupported: Boolean;
 begin
   exit(true);
+end;
+
+function TNVMeCommandSet.IsExternal: Boolean;
+begin
+  result := false;
 end;
 
 procedure TNVMeCommandSet.SetUnmapLBA(StartLBA: Int64);

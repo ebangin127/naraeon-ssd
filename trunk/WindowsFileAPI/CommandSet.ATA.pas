@@ -14,6 +14,7 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function IsExternal: Boolean; override;
   private
     type
       ATA_SINGLE_TASK_FILE = record
@@ -237,6 +238,11 @@ end;
 function TATACommandSet.IsDataSetManagementSupported: Boolean;
 begin
   exit(true);
+end;
+
+function TATACommandSet.IsExternal: Boolean;
+begin
+  result := false;
 end;
 
 procedure TATACommandSet.SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);

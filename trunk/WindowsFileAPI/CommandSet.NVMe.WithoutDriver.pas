@@ -12,6 +12,7 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function IsExternal: Boolean; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -164,6 +165,11 @@ begin
   result :=
     SCSIBufferInterpreter.BufferToIdentifyDeviceResult(IoInnerBuffer.Buffer);
   FreeAndNil(SCSIBufferInterpreter);
+end;
+
+function TNVMeWithoutDriverCommandSet.IsExternal: Boolean;
+begin
+  result := false;
 end;
 
 function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;

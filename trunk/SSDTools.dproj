@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SSDTools.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">ReleaseCodesign</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -367,6 +367,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\Registry.Helper.Internal.pas"/>
         <DCCReference Include="WindowsFileAPI\Registry.Helper.pas"/>
         <DCCReference Include="WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas"/>
+        <DCCReference Include="Objects\Getter.External.pas"/>
+        <DCCReference Include="Objects\OS.Partition.Lock.pas"/>
+        <DCCReference Include="Objects\Getter.Filesystem.Name.pas"/>
+        <DCCReference Include="Support\Support.Sandisk.USB.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

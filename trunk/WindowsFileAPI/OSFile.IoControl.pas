@@ -28,6 +28,9 @@ type
      OSLevelTrim,
      ScsiMiniport,
      GetScsiAddress,
+     LockVolume,
+     UnlockVolume,
+     LoadMedia,
      Unknown);
 
   EInvalidIoControlCode = class(Exception);
@@ -44,6 +47,7 @@ type
       var OutputBuffer: OutputType): TIoControlIOBuffer;
     function BuildOSBufferByOutput<OutputType>(var OutputBuffer: OutputType):
       TIoControlIOBuffer;
+    function NullOSBuffer: TIoControlIOBuffer;
   private
     function DeviceIoControlSystemCall(
       OSControlCode: Integer;
@@ -120,6 +124,14 @@ begin
     (Integer(ControlCode) < Integer(Low(TIoControlCode)));
 end;
 
+function TIoControlFile.NullOSBuffer: TIoControlIOBuffer;
+begin
+  result.InputBuffer.Size := 0;
+  result.InputBuffer.Buffer := nil;
+  result.OutputBuffer.Size := 0;
+  result.OutputBuffer.Buffer := nil;
+end;
+
 function TIoControlFile.TDeviceIoControlCodeToOSControlCode(
   ControlCode: TIoControlCode): Integer;
 const
@@ -160,6 +172,9 @@ const
      IOCTL_STORAGE_MANAGE_DATA_SET_ATTRIBUTES,
      IOCTL_SCSI_MINIPORT,
      IOCTL_SCSI_GET_ADDRESS,
+     FSCTL_LOCK_VOLUME,
+     FSCTL_UNLOCK_VOLUME,
+     IOCTL_STORAGE_LOAD_MEDIA,
      0);
 begin
   if (ControlCode = TIoControlCode.Unknown) or (IsOutOfRange(ControlCode)) then

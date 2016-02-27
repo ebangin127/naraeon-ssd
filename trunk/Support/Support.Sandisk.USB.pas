@@ -1,19 +1,19 @@
-unit Support.Sandisk;
+unit Support.Sandisk.USB;
 
 interface
 
 uses
-  SysUtils,
+  SysUtils, Math,
   Support, Device.SMART.List;
 
 type
-  TSandiskNSTSupport = class sealed(TNSTSupport)
+  TSandiskUSBNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
     function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSandisk: Boolean;
-    function IsX110: Boolean;
+    function IsU100: Boolean;
   public
     function GetSupportStatus: TSupportStatus; override;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -24,33 +24,33 @@ implementation
 
 { TSandiskNSTSupport }
 
-function TSandiskNSTSupport.IsX110: Boolean;
+function TSandiskUSBNSTSupport.IsU100: Boolean;
 begin
-  result := (Pos('SANDISK', Model) > 0) and (Pos('SD6SB1', Model) > 0);
+  result := (Pos('SANDISK', Model) > 0) and (Pos('U100', Model) > 0);
 end;
 
-function TSandiskNSTSupport.IsProductOfSandisk: Boolean;
+function TSandiskUSBNSTSupport.IsProductOfSandisk: Boolean;
 begin
-  result := IsX110;
+  result := IsU100;
 end;
 
-function TSandiskNSTSupport.GetFullSupport: TSupportStatus;
+function TSandiskUSBNSTSupport.GetFullSupport: TSupportStatus;
 begin
   result.Supported := true;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
-function TSandiskNSTSupport.GetSupportStatus: TSupportStatus;
+function TSandiskUSBNSTSupport.GetSupportStatus: TSupportStatus;
 begin
   result.Supported := false;
   if IsProductOfSandisk then
     result := GetFullSupport;
 end;
 
-function TSandiskNSTSupport.GetTotalWrite: TTotalWrite;
+function TSandiskUSBNSTSupport.GetTotalWrite: TTotalWrite;
 const
-  GiBToMiB = 1024;
+  LBAtoMiB: Double = 1/2 * 1/1024;
   IDOfHostWrite = 241;
 var
   RAWValue: UInt64;
@@ -60,10 +60,10 @@ begin
   RAWValue :=
     InterpretingSMARTValueList.GetRAWByID(IDOfHostWrite);
 
-  result.InValue.ValueInMiB := RAWValue * GiBToMiB;
+  result.InValue.ValueInMiB := Floor(RAWValue * LBAtoMiB);
 end;
 
-function TSandiskNSTSupport.GetSMARTInterpreted(
+function TSandiskUSBNSTSupport.GetSMARTInterpreted(
   SMARTValueList: TSMARTValueList): TSMARTInterpreted;
 const
   IDOfEraseError = 172;
@@ -75,7 +75,7 @@ begin
   InterpretingSMARTValueList := SMARTValueList;
   result.TotalWrite := GetTotalWrite;
 
-  result.UsedHour := 
+  result.UsedHour :=
     InterpretingSMARTValueList.GetRAWByID(IDOfUsedHour);
   result.ReadEraseError.TrueReadErrorFalseEraseError := false;
   result.ReadEraseError.Value :=

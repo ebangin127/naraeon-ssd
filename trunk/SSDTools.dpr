@@ -155,7 +155,11 @@ uses
   Optimizer.P2P in 'Objects\Optimizer.P2P.pas',
   Registry.Helper.Internal in 'WindowsFileAPI\Registry.Helper.Internal.pas',
   Registry.Helper in 'WindowsFileAPI\Registry.Helper.pas',
-  Getter.PhysicalDriveList.OS.Path in 'WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas';
+  Getter.PhysicalDriveList.OS.Path in 'WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas',
+  Getter.External in 'Objects\Getter.External.pas',
+  OS.Partition.Lock in 'Objects\OS.Partition.Lock.pas',
+  Getter.Filesystem.Name in 'Objects\Getter.Filesystem.Name.pas',
+  Support.Sandisk.USB in 'Support\Support.Sandisk.USB.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

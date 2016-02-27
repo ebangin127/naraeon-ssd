@@ -11,7 +11,6 @@ type
   public
     function IsPartitionMyResponsibility: Boolean; override;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize; override;
-
   private
     type
       TNTFSVolumeDataBuffer = record
@@ -30,7 +29,6 @@ type
         MftZoneStart: _LARGE_INTEGER;
         MftZoneEnd: _LARGE_INTEGER;
       end;
-
   private
     InnerBuffer: TNTFSVolumeDataBuffer;
     function GetLBAPerCluster: Cardinal;

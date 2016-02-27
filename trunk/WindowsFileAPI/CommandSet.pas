@@ -14,12 +14,13 @@ uses
 type
   TCommandSet = class abstract(TIoControlFile)
   public
-    constructor Create(const FileToGetAccess: String); override;
+    constructor Create(const FileToGetAccess: String);
     function IdentifyDevice: TIdentifyDeviceResult; virtual; abstract;
     function SMARTReadData: TSMARTValueList; virtual; abstract;
     function IsDataSetManagementSupported: Boolean; virtual; abstract;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
       virtual; abstract;
+    function IsExternal: Boolean; virtual; abstract;
   protected
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
   end;

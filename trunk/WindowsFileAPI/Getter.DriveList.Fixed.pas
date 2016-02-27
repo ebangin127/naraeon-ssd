@@ -16,7 +16,7 @@ implementation
 
 function TFixedDriveListGetter.GetDriveTypeToGet: Cardinal; 
 begin
-  result := DRIVE_FIXED;
+  result := DRIVE_FIXED or DRIVE_REMOVABLE;
 end;
 
 end.

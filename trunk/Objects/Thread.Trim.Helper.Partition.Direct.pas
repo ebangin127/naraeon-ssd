@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Classes, Windows, Math,
-  OSFile, Thread.Trim.Helper.Partition
+  OSFile, Thread.Trim.Helper.Partition, Getter.OS.Version, OS.Version.Helper,
+  OS.Partition.Lock, Getter.Filesystem.Name
   {$IfNDef UNITTEST}, ThreadToView.Trim,{$EndIf}
   {$IfDef UNITTEST}, Mock.Getter.TrimBasics.Factory,
   {$Else}Getter.TrimBasics, Getter.TrimBasics.Factory,{$EndIf}
@@ -47,7 +48,7 @@ type
     {$EndIf}
     VolumeSizeInCluster: LARGE_INTEGER;
     LastTick: Cardinal;
-    
+    PartitionLock: TPartitionLock;
     procedure TryToTrimPartition(
       const TrimSynchronizationToApply: TTrimSynchronization);
     procedure ProcessTrim;
@@ -81,6 +82,11 @@ type
     procedure SetVolumeBitmapBuffer(const StartingLCN: LARGE_INTEGER);
     procedure IfLastCardinalInBufferSetBitLength;
     procedure FreeClassesForTrim;
+    procedure LockPartition;
+    procedure UnlockPartition;
+    procedure InitializeLock;
+    procedure FinalizeLock;
+    procedure WaitAndRetryLock;
   public
     procedure TrimPartition(
       const TrimSynchronizationToApply: TTrimSynchronization); override;
@@ -227,7 +233,11 @@ end;
 
 procedure TDirectPartitionTrimmer.ProcessAndClearPendingTrim;
 begin
+  if not IsBelowWindows8(VersionHelper.Version) then
+    LockPartition;
   DeviceTrimmer.Flush;
+  if not IsBelowWindows8(VersionHelper.Version) then
+    UnlockPartition;
   IfNeedToRestApplyToUI;
 end;
 
@@ -353,6 +363,33 @@ begin
   {$EndIf}
 end;
 
+procedure TDirectPartitionTrimmer.InitializeLock;
+begin
+  PartitionLock := TPartitionLock.Create(GetPathOfFileAccessing);
+end;
+
+procedure TDirectPartitionTrimmer.LockPartition;
+begin
+  FreeAndNil(VolumeBitmapGetter);
+  InitializeLock;
+  try
+    PartitionLock.Lock;
+  except
+    on Exception: EOSError do
+      if Exception.ErrorCode = ERROR_ACCESS_DENIED then
+        WaitAndRetryLock
+      else raise;
+    else raise;
+  end;
+end;
+
+procedure TDirectPartitionTrimmer.UnlockPartition;
+begin
+  PartitionLock.Unlock;
+  FinalizeLock;
+  VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
+end;
+
 procedure TDirectPartitionTrimmer.InitializeTrim;
 begin
   CurrentPoint.OffsetInCluster.QuadPart := 0;
@@ -368,6 +405,11 @@ begin
   TrimSynchronization := TrimSynchronizationToApply;
   InitializeTrim;
   ProcessTrim;
+end;
+
+procedure TDirectPartitionTrimmer.FinalizeLock;
+begin
+  FreeAndNil(PartitionLock);
 end;
 
 procedure TDirectPartitionTrimmer.FreeClassesForTrim;
@@ -387,6 +429,13 @@ begin
   finally
     FreeClassesForTrim;
   end;
+end;
+
+procedure TDirectPartitionTrimmer.WaitAndRetryLock;
+begin
+  FinalizeLock;
+  Sleep(500);
+  LockPartition;
 end;
 
 end.

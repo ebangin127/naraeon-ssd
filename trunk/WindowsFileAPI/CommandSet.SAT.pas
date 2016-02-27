@@ -14,6 +14,7 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function IsExternal: Boolean; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -30,6 +31,24 @@ type
         Reserved: UCHAR;
         Control: UCHAR;
         ReservedToFill16B: Array[0..3] of Byte;
+      end;
+      SCSI_COMMAND_DESCRIPTOR_BLOCK_16 = record
+        SCSICommand: UCHAR;
+        MultiplecountProtocolExtend: UCHAR;
+        OfflineCkcondDirectionByteblockLength: UCHAR;
+        FeaturesHi: UCHAR;
+        FeaturesLow: UCHAR;
+        SectorCountHi: UCHAR;
+        SectorCountLo: UCHAR;
+        LBALoHi: UCHAR;
+        LBALoLo: UCHAR;
+        LBAMidHi: UCHAR;
+        LBAMidLo: UCHAR;
+        LBAHiHi: UCHAR;
+        LBAHiLo: UCHAR;
+        DeviceHead: UCHAR;
+        ATACommand: UCHAR;
+        Control: UCHAR;
       end;
       SCSI_PASS_THROUGH = record
         Length: USHORT;
@@ -89,6 +108,14 @@ type
       const OriginalResult: TSMARTValueList): TSMARTValueList;
     procedure SetBufferAndSMARTReadThreshold;
     procedure SetInnerBufferToSMARTReadThreshold;
+    procedure SetDataSetManagementBuffer(StartLBA, LBACount: Int64);
+    procedure SetInnerBufferToDataSetManagement(StartLBA, LBACount: Int64);
+    procedure SetLBACountToDataSetManagementBuffer(LBACount: Int64);
+    procedure SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);
+    function GetCommonCommandDescriptorBlock16:
+      SCSI_COMMAND_DESCRIPTOR_BLOCK_16;
+    procedure SetInnerBufferAsFlagsAndCdb16(Flags: ULONG;
+      CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK_16);
   end;
 
 implementation
@@ -143,6 +170,37 @@ begin
     SAT_DIR_DEVICE_TO_CLIENT;
 end;
 
+function TSATCommandSet.GetCommonCommandDescriptorBlock16:
+  SCSI_COMMAND_DESCRIPTOR_BLOCK_16;
+const
+  ATAPassThrough16Command = $85;
+
+  SCSI_IOCTL_DATA_48BIT = 1;
+  SAT_PROTOCOL_DATA_IN = 4 shl 1;
+  SAT_PROTOCOL_DATA_OUT = 5 shl 1;
+  SAT_PROTOCOL_USE_DMA = 6 shl 1;
+
+  SAT_BYTEBLOCK_BYTE = 0;
+  SAT_BYTEBLOCK_BLOCK = 1 shl 2;
+
+  SAT_LENGTH_NO_DATA = 0;
+  SAT_LENGTH_AT_FEATURES = 1;
+  SAT_LENGTH_AT_SECTORCOUNT = 2;
+  SAT_LENGTH_AT_TPSIU = 3;
+
+  SAT_DIR_CLIENT_TO_DEVICE = 0;
+  SAT_DIR_DEVICE_TO_CLIENT = 1 shl 3;
+begin
+  FillChar(result, SizeOf(result), #0);
+  result.SCSICommand := ATAPassThrough16Command;
+  result.MultiplecountProtocolExtend :=
+    SCSI_IOCTL_DATA_48BIT or
+    SAT_PROTOCOL_USE_DMA;
+  result.OfflineCkcondDirectionByteblockLength :=
+    SAT_LENGTH_AT_SECTORCOUNT or SAT_BYTEBLOCK_BLOCK or
+    SAT_DIR_CLIENT_TO_DEVICE;
+end;
+
 procedure TSATCommandSet.SetInnerBufferAsFlagsAndCdb
   (Flags: ULONG; CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK);
 begin
@@ -150,6 +208,18 @@ begin
   IoInnerBuffer := GetCommonBuffer;
 	IoInnerBuffer.Parameter.DataIn := Flags;
   IoInnerBuffer.Parameter.CommandDescriptorBlock := CommandDescriptorBlock;
+end;
+
+procedure TSATCommandSet.SetInnerBufferAsFlagsAndCdb16
+  (Flags: ULONG; CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK_16);
+begin
+  Assert(SizeOf(CommandDescriptorBlock) =
+    SizeOf(SCSI_COMMAND_DESCRIPTOR_BLOCK));
+  IoInnerBuffer := GetCommonBuffer;
+	IoInnerBuffer.Parameter.DataIn := Flags;
+  Move(CommandDescriptorBlock,
+    IoInnerBuffer.Parameter.CommandDescriptorBlock,
+    SizeOf(SCSI_COMMAND_DESCRIPTOR_BLOCK));
 end;
 
 procedure TSATCommandSet.SetInnerBufferToIdentifyDevice;
@@ -287,13 +357,71 @@ end;
 
 function TSATCommandSet.IsDataSetManagementSupported: Boolean;
 begin
-  exit(false);
+  exit(true);
 end;
 
-function TSATCommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
+function TSATCommandSet.IsExternal: Boolean;
 begin
-  raise ENotSupportedException.Create
-    ('Not Supported Operation: DataSetManagement in SAT');
+  result := true;
+end;
+
+procedure TSATCommandSet.SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);
+const
+  StartLBALo = 0;
+begin
+  IoInnerBuffer.Buffer[StartLBALo] := StartLBA and 255;
+  StartLBA := StartLBA shr 8;
+  IoInnerBuffer.Buffer[StartLBALo + 1] := StartLBA and 255;
+  StartLBA := StartLBA shr 8;
+  IoInnerBuffer.Buffer[StartLBALo + 2] := StartLBA and 255;
+  StartLBA := StartLBA shr 8;
+  IoInnerBuffer.Buffer[StartLBALo + 3] := StartLBA and 255;
+  StartLBA := StartLBA shr 8;
+  IoInnerBuffer.Buffer[StartLBALo + 4] := StartLBA and 255;
+  StartLBA := StartLBA shr 8;
+  IoInnerBuffer.Buffer[StartLBALo + 5] := StartLBA;
+end;
+
+procedure TSATCommandSet.SetLBACountToDataSetManagementBuffer(LBACount: Int64);
+const
+  LBACountHi = 7;
+  LBACountLo = 6;
+begin
+  IoInnerBuffer.Buffer[LBACountLo] := LBACount and 255;
+  IoInnerBuffer.Buffer[LBACountHi] := LBACount shr 8;
+end;
+
+procedure TSATCommandSet.SetDataSetManagementBuffer(
+  StartLBA, LBACount: Int64);
+begin
+  SetStartLBAToDataSetManagementBuffer(StartLBA);
+  SetLBACountToDataSetManagementBuffer(LBACount);
+end;
+
+procedure TSATCommandSet.SetInnerBufferToDataSetManagement
+  (StartLBA, LBACount: Int64);
+const
+  DataSetManagementFeatures = $1;
+  DataSetManagementSectorCount = $1;
+  DataSetManagementCommand = $6;
+var
+  CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK_16;
+begin
+  CommandDescriptorBlock := GetCommonCommandDescriptorBlock16;
+  CommandDescriptorBlock.FeaturesLow := DataSetManagementFeatures;
+  CommandDescriptorBlock.SectorCountLo := DataSetManagementSectorCount;
+  CommandDescriptorBlock.ATACommand := DataSetManagementCommand;
+  SetInnerBufferAsFlagsAndCdb16(SCSI_IOCTL_DATA_OUT, CommandDescriptorBlock);
+  SetDataSetManagementBuffer(StartLBA, LBACount);
+end;
+
+function TSATCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
+  Cardinal;
+begin
+  SetInnerBufferToDataSetManagement(StartLBA, LBACount);
+  result := ExceptionFreeIoControl(TIoControlCode.SCSIPassThrough,
+    BuildOSBufferBy<SCSI_WITH_BUFFER, SCSI_WITH_BUFFER>(IoInnerBuffer,
+      IoInnerBuffer));
 end;
 
 end.

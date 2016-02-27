@@ -94,8 +94,8 @@ end;
 
 procedure TDriveListGetter.IfNotFixedDelete(var CurrentDrive: Cardinal);
 begin
-  if GetDriveType(PChar(SpecifiedDriveList[CurrentDrive])) <> 
-     GetDriveTypeToGet then
+  if (GetDriveType(PChar(SpecifiedDriveList[CurrentDrive])) and
+      GetDriveTypeToGet = 0) then
       SpecifiedDriveList.Delete(CurrentDrive)
   else
     CurrentDrive := CurrentDrive + 1;

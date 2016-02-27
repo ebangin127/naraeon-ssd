@@ -6,7 +6,7 @@ uses
   SysUtils, Classes,
   TrimList, Thread.Trim.Helper.Partition, Thread.Trim.Helper.Partition.Direct,
   Thread.Trim.Helper.Partition.OS, ThreadToView.Trim, Component.ProgressSection,
-  OS.Version.Helper, Getter.OS.Version;
+  OS.Version.Helper, Getter.OS.Version, Getter.External;
 
 type
   TTrimStage = (Initial, InProgress, Finished, Error);
@@ -32,6 +32,8 @@ type
     procedure IfNeedUIFreeModelController;
     procedure IfPartitionListExistsFreeAndNil;
     procedure TrimAppliedPartitionsWithProgressSection;
+    function IsExternal(const PartitionPathToTrim: String): Boolean;
+    function NeedDirectTrim(const PartitionPathToTrim: String): Boolean;
   public
     property IsUIInteractionNeeded:
       Boolean read IsUIInteractionNeededReadWrite;
@@ -173,12 +175,31 @@ begin
   result.Progress.PartitionCount := PartitionsToTrim.Count;
 end;
 
+function TListTrimmer.IsExternal(const PartitionPathToTrim: String): Boolean;
+var
+  ExternalGetter: TExternalGetter;
+begin
+  ExternalGetter := TExternalGetter.Create;
+  try
+    result := ExternalGetter.IsExternal(PartitionPathToTrim);
+  finally
+    FreeAndNil(ExternalGetter);
+  end;
+end;
+
+function TListTrimmer.NeedDirectTrim(const PartitionPathToTrim: String):
+  Boolean;
+begin
+  result :=
+    IsBelowWindows8(VersionHelper.Version) or IsExternal(PartitionPathToTrim);
+end;
+
 procedure TListTrimmer.TrimPartition(PartitionPathToTrim: String);
 var
   PartitionTrimmer: TPartitionTrimmer;
   TrimSynchronization: TTrimSynchronization;
 begin
-  if IsBelowWindows8(VersionHelper.Version) then
+  if NeedDirectTrim(PartitionPathToTrim) then
     PartitionTrimmer := TDirectPartitionTrimmer.Create(PartitionPathToTrim)
   else
     PartitionTrimmer := TOSPartitionTrimmer.Create(PartitionPathToTrim);

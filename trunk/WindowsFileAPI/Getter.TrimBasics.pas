@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Windows,
   OSFile, OSFile.IoControl, OSFile.Handle,
-  Partition, Getter.PartitionExtent;
+  Partition, Getter.PartitionExtent, Getter.Filesystem.Name;
 
 type
   TTrimBasicsToInitialize = record
@@ -17,7 +17,8 @@ type
 
   TTrimBasicsGetter = class abstract(TIoControlFile)
   private
-    FileSystemNameInCharArray: Array[0..MAX_PATH - 1] of Char;
+    Handle: THandle;
+    FFileSystemName: String;
     function GetStartLBA: UInt64;
   protected
     function GetFileSystemName: String;
@@ -29,22 +30,37 @@ type
     function IsPartitionMyResponsibility: Boolean; virtual; abstract;
     function GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
       virtual;
+    procedure SetHandle(const Handle: THandle);
+    procedure SetFileSystemName(const FileSystemName: String);
   end;
   
 implementation
 
 { TTrimBasicsGetter }
 
+constructor TTrimBasicsGetter.Create(const FileToGetAccess: String);
+begin
+  inherited;
+  try
+    CreateHandle(FileToGetAccess, DesiredReadOnly);
+  except
+    on E: EOSError do;
+    else raise;
+  end;
+end;
+
 function TTrimBasicsGetter.GetFileSystemName: String;
 var
-  Useless: DWORD;
-  PathToGetFileSystemName: String;
+  FileSystemNameGetter: TFileSystemNameGetter;
 begin
-  Useless := 0;
-  PathToGetFileSystemName := GetPathOfFileAccessing + '\';
-  GetVolumeInformation(PChar(PathToGetFileSystemName), nil, 0, nil, Useless,
-    Useless, FileSystemNameInCharArray, SizeOf(FileSystemNameInCharArray));
-  result := PChar(@FileSystemNameInCharArray[0]);
+  if FFileSystemName <> '' then
+    exit(FFileSystemName);
+  FileSystemNameGetter := TFileSystemNameGetter.Create(GetPathOfFileAccessing);
+  try
+    result := FileSystemNameGetter.GetFileSystemName;
+  finally
+    FreeAndNil(FileSystemNameGetter);
+  end;
 end;
 
 function TTrimBasicsGetter.GetMinimumPrivilege: TCreateFileDesiredAccess;
@@ -54,14 +70,18 @@ end;
 
 function TTrimBasicsGetter.GetStartLBA: UInt64;
 var
-  Partition: TPartition;
+  PartitionExtentGetter: TPartitionExtentGetter;
   PartitionExtentList: TPartitionExtentList;
 begin
-  Partition := TPartition.Create(GetPathOfFileAccessing);
-  PartitionExtentList := Partition.GetPartitionExtentList;
-  result := PartitionExtentList[0].StartingOffset div BytePerLBA;
-  FreeAndNil(PartitionExtentList);
-  FreeAndNil(Partition);
+  PartitionExtentGetter :=
+    TPartitionExtentGetter.Create(GetPathOfFileAccessing);
+  try
+    PartitionExtentList := PartitionExtentGetter.GetPartitionExtentList;
+    result := PartitionExtentList[0].StartingOffset div BytePerLBA;
+    FreeAndNil(PartitionExtentList);
+  finally
+    FreeAndNil(PartitionExtentGetter);
+  end;
 end;
 
 function TTrimBasicsGetter.GetTrimBasicsToInitialize: TTrimBasicsToInitialize;
@@ -69,9 +89,14 @@ begin
   result.StartLBA := GetStartLBA;
 end;
 
-constructor TTrimBasicsGetter.Create(const FileToGetAccess: String);
+procedure TTrimBasicsGetter.SetFileSystemName(const FileSystemName: String);
 begin
-  CreateHandle(FileToGetAccess, DesiredReadOnly);
+  FFileSystemName := FileSystemName;
+end;
+
+procedure TTrimBasicsGetter.SetHandle(const Handle: THandle);
+begin
+  self.Handle := Handle;
 end;
 
 end.

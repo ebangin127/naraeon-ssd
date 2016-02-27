@@ -19,7 +19,7 @@ uses
   Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
   Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
   Getter.VolumeLabel, Getter.OS.Version, PrerequisiteChecker, BufferInterpreter,
-  Global.HelpPage;
+  Global.HelpPage, CommandSet.SAT;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
