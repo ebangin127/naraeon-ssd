@@ -85,7 +85,8 @@ uses
   Version in '..\Modules\Version.pas',
   Registry.Helper.Internal in '..\WindowsFileAPI\Registry.Helper.Internal.pas',
   Registry.Helper in '..\WindowsFileAPI\Registry.Helper.pas',
-  Getter.PhysicalDriveList.OS.Path in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas';
+  Getter.PhysicalDriveList.OS.Path in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas',
+  Support.Sandisk.USB in '..\Support\Support.Sandisk.USB.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

@@ -78,9 +78,16 @@ begin
 end;
 
 procedure TestTNSTSupportFactory.TestNonSupport;
+var
+  NSTSupportFactory: TNSTSupportFactory;
 begin
-  FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport('', '');
-  CheckTrue(FNSTSupport = nil, 'Model & Firmware: Blank');
+  NSTSupportFactory := TNSTSupportFactory.Create;
+  try
+    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport('', '');
+    CheckTrue(FNSTSupport = nil, 'Model & Firmware: Blank');
+  finally
+    NSTSupportFactory.Free;
+  end;
 end;
 
 procedure TestTNSTSupportFactory.TestHynixSandforceSupport;
@@ -285,9 +292,16 @@ end;
 
 procedure TestTNSTSupportFactory.TestSupportStatusWithModelFirmware(Model,
   Firmware: String);
+var
+  NSTSupportFactory: TNSTSupportFactory;
 begin
-  FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
-  CheckTrue(FNSTSupport <> nil, 'Model: ' + Model + ' Firmware: ' + Firmware);
+  NSTSupportFactory := TNSTSupportFactory.Create;
+  try
+    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
+    CheckTrue(FNSTSupport <> nil, 'Model: ' + Model + ' Firmware: ' + Firmware);
+  finally
+    NSTSupportFactory.Free;
+  end;
 end;
 
 initialization

@@ -256,20 +256,20 @@ end;
 procedure TestTIntelBufferInterpreter.CompareWithOriginalSMART(
   const ReturnValue: TSMARTValueList);
 const
-  ID0: TSMARTValueEntry = (ID: 0; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
-  ID1: TSMARTValueEntry = (ID: 1; Current: 0; Worst: 0; Threshold: 0; RAW: 305);
-  ID2: TSMARTValueEntry = (ID: 2; Current: 0; Worst: 0; Threshold: 10; RAW: 100);
-  ID3: TSMARTValueEntry = (ID: 3; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
-  ID4: TSMARTValueEntry = (ID: 4; Current: 0; Worst: 0; Threshold: 0; RAW: 1176);
-  ID5: TSMARTValueEntry = (ID: 5; Current: 0; Worst: 0; Threshold: 0; RAW: 138379);
-  ID6: TSMARTValueEntry = (ID: 6; Current: 0; Worst: 0; Threshold: 0; RAW: 35041);
-  ID7: TSMARTValueEntry = (ID: 7; Current: 0; Worst: 0; Threshold: 0; RAW: 1084021);
-  ID8: TSMARTValueEntry = (ID: 8; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
-  ID9: TSMARTValueEntry = (ID: 9; Current: 0; Worst: 0; Threshold: 0; RAW: 129);
-  ID10: TSMARTValueEntry = (ID: 10; Current: 0; Worst: 0; Threshold: 0; RAW: 248);
-  ID11: TSMARTValueEntry = (ID: 11; Current: 0; Worst: 0; Threshold: 0; RAW: 42);
-  ID12: TSMARTValueEntry = (ID: 12; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
-  ID13: TSMARTValueEntry = (ID: 13; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID0: TSMARTValueEntry = (ID: 1; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID1: TSMARTValueEntry = (ID: 2; Current: 0; Worst: 0; Threshold: 0; RAW: 305);
+  ID2: TSMARTValueEntry = (ID: 3; Current: 0; Worst: 0; Threshold: 10; RAW: 100);
+  ID3: TSMARTValueEntry = (ID: 4; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID4: TSMARTValueEntry = (ID: 5; Current: 0; Worst: 0; Threshold: 0; RAW: 1176);
+  ID5: TSMARTValueEntry = (ID: 6; Current: 0; Worst: 0; Threshold: 0; RAW: 138379);
+  ID6: TSMARTValueEntry = (ID: 7; Current: 0; Worst: 0; Threshold: 0; RAW: 35041);
+  ID7: TSMARTValueEntry = (ID: 8; Current: 0; Worst: 0; Threshold: 0; RAW: 1084021);
+  ID8: TSMARTValueEntry = (ID: 9; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID9: TSMARTValueEntry = (ID: 10; Current: 0; Worst: 0; Threshold: 0; RAW: 129);
+  ID10: TSMARTValueEntry = (ID: 11; Current: 0; Worst: 0; Threshold: 0; RAW: 248);
+  ID11: TSMARTValueEntry = (ID: 12; Current: 0; Worst: 0; Threshold: 0; RAW: 42);
+  ID12: TSMARTValueEntry = (ID: 13; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
+  ID13: TSMARTValueEntry = (ID: 14; Current: 0; Worst: 0; Threshold: 0; RAW: 0);
 begin
   CheckEquals(14, ReturnValue.Count, 'ReturnValue.Count');
   CheckIDEquals(ID0, ReturnValue[0], 'ReturnValue[0]');

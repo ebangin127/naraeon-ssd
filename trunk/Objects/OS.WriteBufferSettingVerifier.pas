@@ -70,18 +70,24 @@ end;
 function TWriteBufferSettingVerifier.CheckSupportStatus(
   ModelAndFirmware: String): Boolean;
 var
+  SupportFactory: TNSTSupportFactory;
   NSTSupport: TNSTSupport;
   Model, Firmware: String;
 begin
   if not SplitIntoModelAndFirmware(ModelAndFirmware, Model, Firmware) then
     exit(false);
 
-  NSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
-  result :=
-    (NSTSupport <> nil) and
-    (NSTSupport.GetSupportStatus.Supported) and
-    (not (NSTSupport is TSandforceNSTSupport));
-  FreeAndNil(NSTSupport);
+  SupportFactory := TNSTSupportFactory.Create;
+  try
+    NSTSupport := SupportFactory.GetSuitableNSTSupport(Model, Firmware);
+    result :=
+      (NSTSupport <> nil) and
+      (NSTSupport.GetSupportStatus.Supported) and
+      (not (NSTSupport is TSandforceNSTSupport));
+    FreeAndNil(NSTSupport);
+  finally
+    FreeAndNil(SupportFactory);
+  end;
 end;
 
 function TWriteBufferSettingVerifier.CheckDevice(

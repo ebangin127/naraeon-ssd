@@ -122,7 +122,6 @@
         <DCCReference Include="..\Support\Support.Sandforce.ADATA.pas"/>
         <DCCReference Include="..\Support\Support.ADATA.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OSFile.pas"/>
-        <DCCReference Include="..\Support\Support.Factory.pas"/>
         <DCCReference Include="..\Objects\OS.WriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\Registry.Helper.pas"/>
         <DCCReference Include="..\Objects\Registry.Helper.Internal.pas"/>
@@ -172,6 +171,11 @@
         <DCCReference Include="TestOS.Version.Helper.pas"/>
         <DCCReference Include="..\Modules\Version.pas"/>
         <DCCReference Include="TestSupport.Toshiba.pas"/>
+        <DCCReference Include="..\Support\Support.Sandisk.USB.pas"/>
+        <DCCReference Include="..\Support\Support.Factory.pas"/>
+        <DCCReference Include="..\Objects\OS.Partition.Lock.pas"/>
+        <DCCReference Include="..\Objects\Getter.Filesystem.Name.pas"/>
+        <DCCReference Include="..\WindowsFileAPI\OSFile.ForInternal.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

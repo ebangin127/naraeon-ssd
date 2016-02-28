@@ -7,42 +7,46 @@ uses
   Mock.OSFile.IoControl, CommandSet, BufferInterpreter, Device.SMART.List;
 
 type
-  TIntelNVMeCommandSet = class sealed(TCommandSet)
+  TMockCommandSet = class abstract(TCommandSet)
+  public
+    function IsExternal: Boolean; override;
+  end;
+  TIntelNVMeCommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-  TSamsungNVMeCommandSet = class sealed(TCommandSet)
+  TSamsungNVMeCommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-  TATACommandSet = class sealed(TCommandSet)
+  TATACommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-  TLegacyATACommandSet = class sealed(TCommandSet)
+  TLegacyATACommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-  TSATCommandSet = class sealed(TCommandSet)
+  TSATCommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
-  TNVMeWithoutDriverCommandSet = class sealed(TCommandSet)
+  TNVMeWithoutDriverCommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
@@ -223,6 +227,13 @@ function TNVMeWithoutDriverCommandSet.DataSetManagement(
   StartLBA, LBACount: Int64): Cardinal;
 begin
   result := 1;
+end;
+
+{ TMockCommandSet }
+
+function TMockCommandSet.IsExternal: Boolean;
+begin
+  result := false;
 end;
 
 initialization

@@ -246,6 +246,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.Internal.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas"/>
+        <DCCReference Include="..\Support\Support.Sandisk.USB.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

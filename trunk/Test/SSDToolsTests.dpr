@@ -36,7 +36,6 @@ uses
   Support.Sandforce.ADATA in '..\Support\Support.Sandforce.ADATA.pas',
   Support.ADATA in '..\Support\Support.ADATA.pas',
   OSFile in '..\WindowsFileAPI\OSFile.pas',
-  Support.Factory in '..\Support\Support.Factory.pas',
   OS.WriteBufferSettingVerifier in '..\Objects\OS.WriteBufferSettingVerifier.pas',
   Registry.Helper in '..\Objects\Registry.Helper.pas',
   Registry.Helper.Internal in '..\Objects\Registry.Helper.Internal.pas',
@@ -85,7 +84,12 @@ uses
   OSFile.IoControl in '..\WindowsFileAPI\OSFile.IoControl.pas',
   TestOS.Version.Helper in 'TestOS.Version.Helper.pas',
   Version in '..\Modules\Version.pas',
-  TestSupport.Toshiba in 'TestSupport.Toshiba.pas';
+  TestSupport.Toshiba in 'TestSupport.Toshiba.pas',
+  Support.Sandisk.USB in '..\Support\Support.Sandisk.USB.pas',
+  Support.Factory in '..\Support\Support.Factory.pas',
+  OS.Partition.Lock in '..\Objects\OS.Partition.Lock.pas',
+  Getter.Filesystem.Name in '..\Objects\Getter.Filesystem.Name.pas',
+  OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas';
 
 {$R *.RES}
 

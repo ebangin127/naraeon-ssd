@@ -370,6 +370,7 @@ end;
 
 procedure TDirectPartitionTrimmer.LockPartition;
 begin
+  {$IfNDef UNITTEST}
   FreeAndNil(VolumeBitmapGetter);
   InitializeLock;
   try
@@ -381,13 +382,16 @@ begin
       else raise;
     else raise;
   end;
+  {$EndIf}
 end;
 
 procedure TDirectPartitionTrimmer.UnlockPartition;
 begin
+  {$IfNDef UNITTEST}
   PartitionLock.Unlock;
   FinalizeLock;
   VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
+  {$EndIf}
 end;
 
 procedure TDirectPartitionTrimmer.InitializeTrim;
