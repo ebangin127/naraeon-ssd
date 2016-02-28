@@ -84,9 +84,15 @@ type
     procedure FreeClassesForTrim;
     procedure LockPartition;
     procedure UnlockPartition;
+    {$IfDef UNITTEST}
+    {$Hints Off}
+    {$EndIf}
     procedure InitializeLock;
     procedure FinalizeLock;
     procedure WaitAndRetryLock;
+    {$IfDef UNITTEST}
+    {$Hints On}
+    {$EndIf}
   public
     procedure TrimPartition(
       const TrimSynchronizationToApply: TTrimSynchronization); override;

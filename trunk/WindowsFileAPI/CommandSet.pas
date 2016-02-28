@@ -14,7 +14,7 @@ uses
 type
   TCommandSet = class abstract(TIoControlFile)
   public
-    constructor Create(const FileToGetAccess: String);
+    constructor Create(const FileToGetAccess: String); override;
     function IdentifyDevice: TIdentifyDeviceResult; virtual; abstract;
     function SMARTReadData: TSMARTValueList; virtual; abstract;
     function IsDataSetManagementSupported: Boolean; virtual; abstract;
