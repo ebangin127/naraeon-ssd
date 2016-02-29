@@ -419,6 +419,7 @@ begin
   TrimSynchronization := TrimSynchronizationToApply;
   InitializeTrim;
   ProcessTrim;
+  UnlockPartition;
 end;
 
 procedure TDirectPartitionTrimmer.FinalizeLock;
