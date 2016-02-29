@@ -105,6 +105,8 @@ implementation
 procedure TDirectPartitionTrimmer.SetVolumeBitmapBuffer
   (const StartingLCN: LARGE_INTEGER);
 begin
+  if not IsBelowWindows8(VersionHelper.Version) then
+    UnlockPartition;
   VolumeBitmapBufferWithErrorCode :=
     VolumeBitmapGetter.GetVolumeBitmap(StartingLCN);
 end;
@@ -242,8 +244,6 @@ begin
   if not IsBelowWindows8(VersionHelper.Version) then
     LockPartition;
   DeviceTrimmer.Flush;
-  if not IsBelowWindows8(VersionHelper.Version) then
-    UnlockPartition;
   IfNeedToRestApplyToUI;
 end;
 
@@ -377,6 +377,8 @@ end;
 procedure TDirectPartitionTrimmer.LockPartition;
 begin
   {$IfNDef UNITTEST}
+  if PartitionLock <> nil then
+    exit;
   FreeAndNil(VolumeBitmapGetter);
   InitializeLock;
   try
@@ -394,6 +396,8 @@ end;
 procedure TDirectPartitionTrimmer.UnlockPartition;
 begin
   {$IfNDef UNITTEST}
+  if PartitionLock = nil then
+    exit;
   PartitionLock.Unlock;
   FinalizeLock;
   VolumeBitmapGetter := TVolumeBitmapGetter.Create(GetPathOfFileAccessing);
