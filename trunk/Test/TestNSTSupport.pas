@@ -57,6 +57,8 @@ type
     procedure TestSamsung850EVOSupport;
     procedure TestSamsung850ProSupport;
     procedure TestSandiskX110Support;
+    procedure TestSandiskZ80Support;
+    procedure TestSandiskZ80pSSDSupport;
     procedure TestSeagate600Support;
     procedure TestToshibaQFSupport;
     procedure TestToshibaQHSupport;
@@ -252,6 +254,16 @@ end;
 procedure TestTNSTSupportFactory.TestSandiskX110Support;
 begin
   TestSupportStatusWithModelFirmware('SanDisk SD6SB1M256G1022I', 'X230600');
+end;
+
+procedure TestTNSTSupportFactory.TestSandiskZ80pSSDSupport;
+begin
+  TestSupportStatusWithModelFirmware('SanDisk pSSD', '3');
+end;
+
+procedure TestTNSTSupportFactory.TestSandiskZ80Support;
+begin
+  TestSupportStatusWithModelFirmware('SanDisk SSD U100 32GB', 'KM.10.00');
 end;
 
 procedure TestTNSTSupportFactory.TestSeagate600Support;

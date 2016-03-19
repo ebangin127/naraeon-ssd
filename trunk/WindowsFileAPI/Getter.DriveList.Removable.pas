@@ -9,14 +9,14 @@ uses
 type
   TRemovableDriveListGetter = class sealed(TDriveListGetter)
   protected
-    function GetDriveTypeToGet: Cardinal; override;
+    function GetDriveTypeToGet: TDriveSet; override;
   end;
 
 implementation
 
-function TRemovableDriveListGetter.GetDriveTypeToGet: Cardinal; 
+function TRemovableDriveListGetter.GetDriveTypeToGet: TDriveSet;
 begin
-  result := DRIVE_REMOVABLE;
+  result := [DRIVE_REMOVABLE];
 end;
 
 end.

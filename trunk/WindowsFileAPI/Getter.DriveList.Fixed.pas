@@ -9,14 +9,14 @@ uses
 type
   TFixedDriveListGetter = class sealed(TDriveListGetter)
   protected
-    function GetDriveTypeToGet: Cardinal; override;
+    function GetDriveTypeToGet: TDriveSet; override;
   end;
 
 implementation
 
-function TFixedDriveListGetter.GetDriveTypeToGet: Cardinal; 
+function TFixedDriveListGetter.GetDriveTypeToGet: TDriveSet;
 begin
-  result := DRIVE_FIXED or DRIVE_REMOVABLE;
+  result := [DRIVE_FIXED, DRIVE_REMOVABLE];
 end;
 
 end.

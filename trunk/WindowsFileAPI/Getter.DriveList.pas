@@ -8,12 +8,12 @@ uses
 
 type
   TDriveList = TStringList;
-
+  TDriveSet = Set of DRIVE_UNKNOWN..DRIVE_RAMDISK;
   TDriveListGetter = class abstract(TOSFileForInternal)
   public
     function GetDriveList: TDriveList;
   protected
-    function GetDriveTypeToGet: Cardinal; virtual; abstract;
+    function GetDriveTypeToGet: TDriveSet; virtual; abstract;
   private
     SpecifiedDriveList: TDriveList;
     LogicalDriveString: Array of WideChar;
@@ -93,9 +93,11 @@ begin
 end;
 
 procedure TDriveListGetter.IfNotFixedDelete(var CurrentDrive: Cardinal);
+var
+  DriveType: Cardinal;
 begin
-  if (GetDriveType(PChar(SpecifiedDriveList[CurrentDrive])) and
-      GetDriveTypeToGet = 0) then
+  DriveType := GetDriveType(PChar(SpecifiedDriveList[CurrentDrive]));
+  if not (DriveType in GetDriveTypeToGet) then
       SpecifiedDriveList.Delete(CurrentDrive)
   else
     CurrentDrive := CurrentDrive + 1;

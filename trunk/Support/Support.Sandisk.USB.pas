@@ -26,7 +26,8 @@ implementation
 
 function TSandiskUSBNSTSupport.IsU100: Boolean;
 begin
-  result := (Pos('SANDISK', Model) > 0) and (Pos('U100', Model) > 0);
+  result := (Pos('SANDISK', Model) > 0) and
+    ((Pos('U100', Model) > 0) or (Pos('PSSD', Model) > 0));
 end;
 
 function TSandiskUSBNSTSupport.IsProductOfSandisk: Boolean;
