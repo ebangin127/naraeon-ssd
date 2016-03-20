@@ -18,6 +18,7 @@ type
     function IsRetailSamsungNVMeProduct: Boolean;
     function IsOEMSamsungNVMeProduct: Boolean;
     function IsModelContainsSamsung: Boolean;
+    function IsPM951: Boolean;
     function IsSM951: Boolean;
   public
     function GetSupportStatus: TSupportStatus; override;
@@ -54,16 +55,23 @@ begin
     IsModelContainsSSD and IsSamsungNVMe;
 end;
 
-function TSamsungNVMeSupport.IsSM951: Boolean;
+function TSamsungNVMeSupport.IsPM951: Boolean;
 begin
   result :=
     (Pos('SAMSUNG MZVLV', UpperCase(Model)) = 1);
 end;
 
+function TSamsungNVMeSupport.IsSM951: Boolean;
+begin
+  result :=
+    (Pos('SAMSUNG MZVPV', UpperCase(Model)) = 1);
+end;
+
 function TSamsungNVMeSupport.IsOEMSamsungNVMeProduct: Boolean;
 begin
   result :=
-    IsModelContainsSamsung and IsSM951;
+    IsModelContainsSamsung and
+    (IsPM951 or IsSM951);
 end;
 
 function TSamsungNVMeSupport.IsProductOfSamsung: Boolean;
