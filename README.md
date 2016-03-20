@@ -10,7 +10,7 @@ It does Manual trim, Secure erase, Firmware update. And it also provides automat
 
 Intel 750 Series
 
-Samsung 830, 840 (Normal, Pro, EVO), SM951, 950 Pro
+Samsung 830, 840 (Normal, Pro, EVO), PM951, SM951, 950 Pro
 
 Liteon S100, E200, S200
 
