@@ -188,9 +188,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PostBuildEventCancelOnError>true</PostBuildEventCancelOnError>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4_Win32)'!=''">
-        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.2.2.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.2.3.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4_Win64)'!=''">
@@ -370,6 +369,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Objects\OS.Partition.Lock.pas"/>
         <DCCReference Include="Objects\Getter.Filesystem.Name.pas"/>
         <DCCReference Include="Support\Support.Sandisk.USB.pas"/>
+        <DCCReference Include="WindowsFileAPI\CommandSet.NVMe.OS.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -446,12 +446,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="..\Exe\SSDTools.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>SSDTools.exe</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="..\Exe\SSDTools.rsm" Configuration="Debug" Class="DebugSymbols">
-                    <Platform Name="Win32">
-                        <RemoteName>SSDTools.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -159,7 +159,8 @@ uses
   Getter.External in 'Objects\Getter.External.pas',
   OS.Partition.Lock in 'Objects\OS.Partition.Lock.pas',
   Getter.Filesystem.Name in 'Objects\Getter.Filesystem.Name.pas',
-  Support.Sandisk.USB in 'Support\Support.Sandisk.USB.pas';
+  Support.Sandisk.USB in 'Support\Support.Sandisk.USB.pas',
+  CommandSet.NVMe.OS in 'WindowsFileAPI\CommandSet.NVMe.OS.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

@@ -86,7 +86,8 @@ uses
   Registry.Helper.Internal in '..\WindowsFileAPI\Registry.Helper.Internal.pas',
   Registry.Helper in '..\WindowsFileAPI\Registry.Helper.pas',
   Getter.PhysicalDriveList.OS.Path in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas',
-  Support.Sandisk.USB in '..\Support\Support.Sandisk.USB.pas';
+  Support.Sandisk.USB in '..\Support\Support.Sandisk.USB.pas',
+  CommandSet.NVMe.OS in '..\WindowsFileAPI\CommandSet.NVMe.OS.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

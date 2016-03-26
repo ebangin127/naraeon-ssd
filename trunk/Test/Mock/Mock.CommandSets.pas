@@ -25,6 +25,13 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
   end;
+  TOSNVMeCommandSet = class sealed(TMockCommandSet)
+  public
+    function IdentifyDevice: TIdentifyDeviceResult; override;
+    function SMARTReadData: TSMARTValueList; override;
+    function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
+    function IsDataSetManagementSupported: Boolean; override;
+  end;
   TATACommandSet = class sealed(TMockCommandSet)
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
@@ -122,6 +129,32 @@ begin
 end;
 
 function TSamsungNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
+  Cardinal;
+begin
+  result := 1;
+end;
+
+function TOSNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
+begin
+  result.Model := '';
+  if CurrentCommandSet = TCommandOrder.CommandOrderOfNVMeIntel then
+    result.Model := 'Right!'
+  else
+    exit;
+  Inc(CurrentCommandSet);
+end;
+
+function TOSNVMeCommandSet.SMARTReadData: TSMARTValueList;
+begin
+  result := nil;
+end;
+
+function TOSNVMeCommandSet.IsDataSetManagementSupported: Boolean;
+begin
+  result := false;
+end;
+
+function TOSNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
   Cardinal;
 begin
   result := 1;

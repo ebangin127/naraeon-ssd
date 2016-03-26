@@ -9,7 +9,8 @@ uses
   Mock.CommandSets;
   {$Else}
   CommandSet.ATA, CommandSet.ATA.Legacy, CommandSet.SAT,
-  CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung, CommandSet.NVMe.WithoutDriver;
+  CommandSet.NVMe.Intel, CommandSet.NVMe.Samsung, CommandSet.NVMe.OS,
+  CommandSet.NVMe.WithoutDriver;
   {$EndIf}
 
 type
@@ -77,6 +78,8 @@ begin
     FileToGetAccess, TIntelNVMeCommandSet, result);
   result := TestCommandSetCompatibility(
     FileToGetAccess, TSamsungNVMeCommandSet, result);
+  result := TestCommandSetCompatibility(
+    FileToGetAccess, TOSNVMeCommandSet, result);
   result := TestCommandSetCompatibility(
     FileToGetAccess, TATACommandSet, result);
   result := TestCommandSetCompatibility(

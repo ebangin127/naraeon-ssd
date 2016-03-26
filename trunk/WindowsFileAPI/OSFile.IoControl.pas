@@ -19,6 +19,7 @@ type
     (ATAPassThrough,
      ATAPassThroughDirect,
      SCSIPassThrough,
+     StorageProtocolCommand,
      StorageQueryProperty,
      StorageCheckVerify,
      GetVolumeBitmap,
@@ -146,6 +147,10 @@ const
     (IOCTL_SCSI_BASE shl 16) or
     ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14) or ($0401 shl 2) or
     (METHOD_BUFFERED);
+  IOCTL_STORAGE_PROTOCOL_COMMAND =
+    (IOCTL_SCSI_BASE shl 16) or
+    ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14) or ($04F0 shl 2) or
+    (METHOD_BUFFERED);
   IOCTL_SCSI_MINIPORT =
     (IOCTL_SCSI_BASE shl 16) or
     ((FILE_READ_ACCESS or FILE_WRITE_ACCESS) shl 14) or ($0402 shl 2) or
@@ -163,6 +168,7 @@ const
     (IOCTL_ATA_PASS_THROUGH,
      IOCTL_ATA_PASS_THROUGH_DIRECT,
      IOCTL_SCSI_PASS_THROUGH,
+     IOCTL_STORAGE_PROTOCOL_COMMAND,
      IOCTL_STORAGE_QUERY_PROPERTY,
      IOCTL_STORAGE_CHECK_VERIFY,
      FSCTL_GET_VOLUME_BITMAP,
