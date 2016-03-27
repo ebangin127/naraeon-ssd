@@ -12,11 +12,16 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   private
     const
       NVME_IOCTL_VENDOR_SPECIFIC_DW_SIZE = 6;
       NVME_IOCTL_CMD_DW_SIZE = 16;
       NVME_IOCTL_COMPLETE_DW_SIZE = 4;
+      SMARTHealthInformation = 2;
+      IntelSpecific = $CA;
+      Temperature = $C5;
     type
       SRB_IO_CONTROL = record
         HeaderLength: ULONG;
@@ -149,10 +154,6 @@ begin
 end;
 
 function TIntelNVMePortCommandSet.SMARTReadData: TSMARTValueList;
-const
-  SMARTHealthInformation = 2;
-  IntelSpecific = $CA;
-  Temperature = $C5;
 begin
   result := nil;
   SetBufferAndSMART(SMARTHealthInformation);
@@ -219,6 +220,30 @@ begin
   result := false;
   for CurrentPoint in IoInnerBuffer.Buffer do
     result := result or (IoInnerBuffer.Buffer[CurrentPoint] > 0);
+end;
+
+function TIntelNVMePortCommandSet.RAWIdentifyDevice: String;
+begin
+  SetBufferAndIdentifyDevice;
+  result :=
+    IdentifyDevicePrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+end;
+
+function TIntelNVMePortCommandSet.RAWSMARTReadData: String;
+begin
+  SetBufferAndSMART(SMARTHealthInformation);
+  result :=
+    SMARTPrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+  SetBufferAndSMART(IntelSpecific);
+  result := result +
+    'IntelSpecific' +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+  SetBufferAndSMART(Temperature);
+  result := result +
+    'Temperature' +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
 end;
 
 function TIntelNVMePortCommandSet.InterpretIntelSpecificSMARTBuffer:

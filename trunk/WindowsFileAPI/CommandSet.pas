@@ -17,11 +17,16 @@ type
     constructor Create(const FileToGetAccess: String); override;
     function IdentifyDevice: TIdentifyDeviceResult; virtual; abstract;
     function SMARTReadData: TSMARTValueList; virtual; abstract;
+    function RAWIdentifyDevice: String; virtual; abstract;
+    function RAWSMARTReadData: String; virtual; abstract;
     function IsDataSetManagementSupported: Boolean; virtual; abstract;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
       virtual; abstract;
     function IsExternal: Boolean; virtual; abstract;
   protected
+    const
+      IdentifyDevicePrefix = 'IdentifyDevice';
+      SMARTPrefix = 'SMART';
     function GetMinimumPrivilege: TCreateFileDesiredAccess; override;
   end;
 

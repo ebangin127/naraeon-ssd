@@ -12,6 +12,8 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -202,6 +204,22 @@ begin
   result :=
     SCSIBufferInterpreter.BufferToSMARTValueList(IoInnerBuffer.Buffer);
   FreeAndNil(SCSIBufferInterpreter);
+end;
+
+function TSamsungNVMeCommandSet.RAWIdentifyDevice: String;
+begin
+  SetBufferAndIdentifyDevice;
+  result :=
+    IdentifyDevicePrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+end;
+
+function TSamsungNVMeCommandSet.RAWSMARTReadData: String;
+begin
+  SetBufferAndSMART;
+  result :=
+    SMARTPrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
 end;
 
 function TSamsungNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;

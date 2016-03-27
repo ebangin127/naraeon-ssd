@@ -17,6 +17,8 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
 
 implementation
@@ -47,6 +49,32 @@ begin
     on EBelowVistaException do
       FillChar(result.SlotSpeed, SizeOf(result.SlotSpeed), #0);
     else raise;
+  end;
+end;
+
+function TIntelNVMeCommandSet.RAWIdentifyDevice: String;
+var
+  PortCommandSet: TIntelNVMePortCommandSet;
+begin
+  SetSCSIPathIfNeeded;
+  PortCommandSet := TIntelNVMePortCommandSet.Create(SCSIPath);
+  try
+    result := PortCommandSet.RAWIdentifyDevice;
+  finally
+    FreeAndNil(PortCommandSet);
+  end;
+end;
+
+function TIntelNVMeCommandSet.RAWSMARTReadData: String;
+var
+  PortCommandSet: TIntelNVMePortCommandSet;
+begin
+  SetSCSIPathIfNeeded;
+  PortCommandSet := TIntelNVMePortCommandSet.Create(SCSIPath);
+  try
+    result := PortCommandSet.RAWSMARTReadData;
+  finally
+    FreeAndNil(PortCommandSet);
   end;
 end;
 

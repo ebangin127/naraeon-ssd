@@ -12,6 +12,8 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
     function IsExternal: Boolean; override;
@@ -363,6 +365,26 @@ end;
 function TSATCommandSet.IsExternal: Boolean;
 begin
   result := true;
+end;
+
+function TSATCommandSet.RAWIdentifyDevice: String;
+begin
+  SetBufferAndIdentifyDevice;
+  result :=
+    IdentifyDevicePrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+end;
+
+function TSATCommandSet.RAWSMARTReadData: String;
+begin
+  SetBufferAndSMARTReadData;
+  result :=
+    SMARTPrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+  SetBufferAndSMARTReadThreshold;
+  result := result +
+    'Threshold' +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
 end;
 
 procedure TSATCommandSet.SetStartLBAToDataSetManagementBuffer(StartLBA: Int64);

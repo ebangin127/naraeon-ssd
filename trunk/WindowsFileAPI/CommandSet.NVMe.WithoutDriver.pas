@@ -12,6 +12,8 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
     function IsExternal: Boolean; override;
   private
     type
@@ -170,6 +172,16 @@ end;
 function TNVMeWithoutDriverCommandSet.IsExternal: Boolean;
 begin
   result := false;
+end;
+
+function TNVMeWithoutDriverCommandSet.RAWIdentifyDevice: String;
+begin
+  raise ENotSupportedException.Create('Please install the driver');
+end;
+
+function TNVMeWithoutDriverCommandSet.RAWSMARTReadData: String;
+begin
+  raise ENotSupportedException.Create('Please install the driver');
 end;
 
 function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;

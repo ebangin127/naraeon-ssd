@@ -3,6 +3,7 @@ unit BufferInterpreter;
 interface
 
 uses
+  SysUtils,
   Device.SMART.List, Device.SlotSpeed;
 
 type
@@ -29,7 +30,7 @@ type
     IsDataSetManagementSupported: Boolean;
   end;
 
-  TBufferInterpreter = class abstract
+  TBufferInterpreter = class
   public
     function BufferToIdentifyDeviceResult(
       const Buffer: TSmallBuffer): TIdentifyDeviceResult; virtual; abstract;
@@ -39,8 +40,22 @@ type
       const Buffer: TLargeBuffer): TIdentifyDeviceResult; virtual; abstract;
     function LargeBufferToSMARTValueList(
       const Buffer: TLargeBuffer): TSMARTValueList; virtual; abstract;
+    class function BufferToString(const Buffer: Array of Byte): String;
   end;
 
 implementation
+
+{ TBufferInterpreter }
+
+class function TBufferInterpreter.BufferToString(const Buffer: Array of Byte):
+  String;
+var
+  CurrentCharacter: Byte;
+begin
+  result := ': Array[0..' + IntToStr(Length(Buffer) - 1) + '] of Byte = (';
+  for CurrentCharacter in Buffer do
+    result := result + '$' + IntToHex(Ord(CurrentCharacter), 2) + ',';
+  result[Length(result)] := ')';
+end;
 
 end.

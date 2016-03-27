@@ -12,6 +12,8 @@ type
   public
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   private
     type
       TStoragePropertyId = (
@@ -138,6 +140,22 @@ begin
   result :=
     SCSIBufferInterpreter.LargeBufferToSMARTValueList(IoInnerBuffer.Buffer);
   FreeAndNil(SCSIBufferInterpreter);
+end;
+
+function TOSNVMeCommandSet.RAWIdentifyDevice: String;
+begin
+  SetBufferAndIdentifyDevice;
+  result :=
+    IdentifyDevicePrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
+end;
+
+function TOSNVMeCommandSet.RAWSMARTReadData: String;
+begin
+  SetBufferAndSMART;
+  result :=
+    SMARTPrefix +
+    TBufferInterpreter.BufferToString(IoInnerBuffer.Buffer) + ';';
 end;
 
 function TOSNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;

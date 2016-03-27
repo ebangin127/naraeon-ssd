@@ -5,6 +5,11 @@ interface
 uses
   Classes, Windows, ActiveX, ComObj;
 
+const
+  WMIService = 'winmgmts:\\';
+  Localhost = 'localhost\';
+  WMIRepositoryPrefix = 'root\cimv2';
+
 type
   TWMIConnection = class
   private
@@ -18,11 +23,12 @@ type
     function GetLocalhostWMIRepositoryURI: String;
     function GetReferredObjectByMoniker(DefaultMoniker: IMoniker;
       BindableContext: IBindCtx): IDispatch;
-    procedure SetMoniker;
+    procedure SetMoniker(const Path: string);
   public
     function IsMyConnection: Boolean;
     function GetWMIConnection: OleVariant;
     constructor Create;
+    constructor CreateWithNewPath(const Path: String);
   end;
 
 var
@@ -33,21 +39,33 @@ implementation
 { TWMIConnection }
 
 
-procedure TWMIConnection.SetMoniker;
+procedure TWMIConnection.SetMoniker(const Path: string);
 begin
   ContextToBindMoniker := GetMonikerBindableContext;
-  DefaultMoniker := GetDefaultMonikerFromObjectPath(
-    GetLocalhostWMIRepositoryURI, ContextToBindMoniker);
+  DefaultMoniker := GetDefaultMonikerFromObjectPath(Path, ContextToBindMoniker);
 end;
+
 constructor TWMIConnection.Create;
 begin
+  CreateWithNewPath(GetLocalhostWMIRepositoryURI);
+end;
+
+function TWMIConnection.GetMonikerBindableContext: IBindCtx;
+const
+  ReservedAndMustBeZero = 0;
+begin
+  OleCheck(CreateBindCtx(ReservedAndMustBeZero, result));
+end;
+
+constructor TWMIConnection.CreateWithNewPath(const Path: String);
+begin
   try
-    SetMoniker;
+    SetMoniker(Path);
   except
-    on EOleSysError do
+    on E: EOleSysError do
     begin
       CoInitialize(nil);
-      SetMoniker;
+      SetMoniker(Path);
     end;
     else raise;
   end;
@@ -56,13 +74,6 @@ begin
       DefaultMoniker,
       ContextToBindMoniker);
   Owner := TThread.CurrentThread;
-end;
-
-function TWMIConnection.GetMonikerBindableContext: IBindCtx;
-const
-  ReservedAndMustBeZero = 0;
-begin
-  OleCheck(CreateBindCtx(ReservedAndMustBeZero, result));
 end;
 
 function TWMIConnection.GetDefaultMonikerFromObjectPath
@@ -78,10 +89,6 @@ begin
 end;
 
 function TWMIConnection.GetLocalhostWMIRepositoryURI: String;
-const
-  WMIService = 'winmgmts:\\';
-  Localhost = 'localhost\';
-  WMIRepositoryPrefix = 'root\cimv2';
 begin
   result := WMIService + Localhost + WMIRepositoryPrefix;
 end;
