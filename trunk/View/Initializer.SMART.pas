@@ -26,7 +26,7 @@ procedure TMainformSMARTApplier.ApplyOnTime;
 begin
   fMain.lOntime.Caption :=
     CapPowerTime[CurrLang] +
-    UIntToStr(fMain.PhysicalDrive.SMARTInterpreted.UsedHour) +
+    UIntToStr(fMain.SelectedDrive.SMARTInterpreted.UsedHour) +
     CapHour[CurrLang];
 end;
 
@@ -44,7 +44,7 @@ end;
 
 procedure TMainformSMARTApplier.ApplyReadEraseError;
 begin
-  ReadEraseError := fMain.PhysicalDrive.SMARTInterpreted.ReadEraseError;
+  ReadEraseError := fMain.SelectedDrive.SMARTInterpreted.ReadEraseError;
   SetLabelByTrueReadErrorFalseEraseError(
     ReadEraseError.TrueReadErrorFalseEraseError);
 end;

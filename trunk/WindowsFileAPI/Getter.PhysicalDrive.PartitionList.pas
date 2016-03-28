@@ -12,7 +12,10 @@ type
     Letter: String;
     StartingOffset: TLargeInteger;
   end;
-  TPartitionList = TList<TPartitionEntry>;
+  TPartitionList = class(TList<TPartitionEntry>)
+  public
+    function FindEntryByIndex(const Letter: String): Integer;
+  end;
   TPartitionListGetter = class sealed(TOSFileForInternal)
   public
     function GetPartitionList: TPartitionList;
@@ -170,6 +173,22 @@ begin
     result := TryAndIfFailReturnNil;
   finally
     FreeAndNil(FixedDriveList);
+  end;
+end;
+
+{ TPartitionList }
+
+function TPartitionList.FindEntryByIndex(const Letter: String): Integer;
+var
+  CurrentEntry: Integer;
+begin
+  result := -1;
+  for CurrentEntry := 0 to Count - 1 do
+  begin
+    if self[CurrentEntry].Letter = Letter then
+    begin
+      exit(CurrentEntry);
+    end;
   end;
 end;
 

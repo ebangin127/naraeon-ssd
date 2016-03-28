@@ -58,13 +58,13 @@ begin
   ListChangeGetter := TListChangeGetter.Create;
   ListChangeGetter.IsOnlyGetSupportedDrives := true;
   ChangesList :=
-    ListChangeGetter.RefreshListWithResultFrom(fMain.PhysicalDriveList);
+    ListChangeGetter.RefreshListWithResultFrom(fMain.IdentifiedDriveList);
   FreeAndNil(ListChangeGetter);
 end;
 
 function TSSDLabelListRefresher.IsNoSupportedDriveExists: Boolean;
 begin
-  result := fMain.PhysicalDriveList.Count = 0;
+  result := fMain.IdentifiedDriveList.Count = 0;
 end;
 
 procedure TSSDLabelListRefresher.DeleteAndAddDevicesByResultList;

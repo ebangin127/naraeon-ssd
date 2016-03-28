@@ -49,7 +49,7 @@ end;
 
 procedure TMainformReplacedSectorApplier.SetReplacedSectors;
 begin
-  ReplacedSectors := fMain.PhysicalDrive.SMARTInterpreted.ReplacedSectors;
+  ReplacedSectors := fMain.SelectedDrive.SMARTInterpreted.ReplacedSectors;
   fMain.lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
     CapCount[CurrLang];
 end;
@@ -59,7 +59,7 @@ begin
   ReplacedSectorLog := TAverageCountLogger.Create(
     TAverageCountLogger.BuildFileName(
       EnvironmentVariable.AppPath,
-      fMain.PhysicalDrive.IdentifyDeviceResult.Serial + 'RSLog'));
+      fMain.SelectedDrive.IdentifyDeviceResult.Serial + 'RSLog'));
   ReplacedSectorLog.ReadAndRefresh(UIntToStr(ReplacedSectors));
 end;
 
@@ -72,7 +72,7 @@ end;
 function TMainformReplacedSectorApplier.IsTotalWriteNotSupported: Boolean;
 begin
   result :=
-    fMain.PhysicalDrive.SupportStatus.TotalWriteType =
+    fMain.SelectedDrive.SupportStatus.TotalWriteType =
     TTotalWriteType.WriteNotSupported;
 end;
 

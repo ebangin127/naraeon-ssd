@@ -4,7 +4,7 @@ interface
 
 uses
   Windows,
-  OSFile.Handle, OSFile.IoControl;
+  OSFile.Handle, OSFile.IoControl, OS.Handle;
 
 type
   TNCQAvailability =

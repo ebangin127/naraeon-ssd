@@ -3,118 +3,56 @@ unit OSFile.Handle;
 interface
 
 uses
-  Windows, SysUtils, Dialogs, OSFile,
-  OS.SecurityDescriptor;
+  Windows, SysUtils, Dialogs,
+  OSFile, OS.SecurityDescriptor, OS.Handle;
 
 type
-  TCreateFileDesiredAccess =
-    (DesiredNone, DesiredReadOnly, DesiredReadWrite);
-
   TOSFileWithHandle = class abstract(TOSFile)
   public
     destructor Destroy; override;
+    function Unlock: IOSFileUnlock;
   protected
     procedure CreateHandle(const FileToGetAccess: String;
       const DesiredAccess: TCreateFileDesiredAccess);
     function GetFileHandle: THandle;
     function GetAccessPrivilege: TCreateFileDesiredAccess;
     function GetMinimumPrivilege: TCreateFileDesiredAccess; virtual; abstract;
-    function IsHandleValid(const HandleToCheck: THandle): Boolean;
   private
-    FileHandle: THandle;
-    AccessPrivilege: TCreateFileDesiredAccess;
-    function CreateFileSystemCall(const FileToGetAccess: LPCWSTR;
-      const DesiredAccessInDWORD: DWORD): THandle;
-  {$IfDef UNITTEST}
-  public
-  {$EndIf}
-    function GetDesiredAccessFromTCreateFileDesiredAccess
-      (const Source: TCreateFileDesiredAccess): DWORD;
+    FileHandle: TFileHandle;
   end;
 
   EInsufficientPrivilege = class(Exception);
 
 implementation
 
-function TOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess
-  (const Source: TCreateFileDesiredAccess): DWORD;
-const
-  AccessNothing = 0;
+function TOSFileWithHandle.GetAccessPrivilege: TCreateFileDesiredAccess;
 begin
-  case Source of
-    DesiredNone:
-      exit(AccessNothing);
-    DesiredReadOnly:
-      exit(GENERIC_READ);
-    DesiredReadWrite:
-      exit(GENERIC_READ or GENERIC_WRITE);
-    else
-      raise
-        EArgumentOutOfRangeException.Create
-          ('ArgumentOutOfRange: Wrong Desired Access Parameter');
-  end;
+  result := FileHandle.GetAccessPrivilege;
 end;
 
 function TOSFileWithHandle.GetFileHandle: THandle;
 begin
-  exit(FileHandle);
+  exit(FileHandle.GetFileHandle);
 end;
 
-function TOSFileWithHandle.GetAccessPrivilege: TCreateFileDesiredAccess;
+function TOSFileWithHandle.Unlock: IOSFileUnlock;
 begin
-  exit(AccessPrivilege);
-end;
-
-function TOSFileWithHandle.IsHandleValid(const HandleToCheck: THandle): Boolean;
-begin
-  result :=
-    (HandleToCheck <> INVALID_HANDLE_VALUE) and
-    (HandleToCheck <> 0);
-end;
-
-function TOSFileWithHandle.CreateFileSystemCall(
-  const FileToGetAccess: LPCWSTR; const DesiredAccessInDWORD: DWORD): THandle;
-var
-  SecurityDescriptorManipulator: TSecurityDescriptorManipulator;
-const
-  OtherHandlesCanReadWrite = FILE_SHARE_WRITE or FILE_SHARE_READ;
-  NoSecurityDescriptor = nil;
-  NoFileAttributeFlag = 0;
-  NoTemplateFile = 0;
-begin
-  SecurityDescriptorManipulator := TSecurityDescriptorManipulator.Create;
-  result :=
-    Windows.CreateFile
-      (FileToGetAccess,
-       DesiredAccessInDWORD,
-       OtherHandlesCanReadWrite,
-       SecurityDescriptorManipulator.GetSecurityDescriptor,
-       OPEN_EXISTING,
-       NoFileAttributeFlag,
-       NoTemplateFile);
-  FreeAndNil(SecurityDescriptorManipulator);
+  result := FileHandle.Unlock;
 end;
 
 procedure TOSFileWithHandle.CreateHandle(const FileToGetAccess: String;
   const DesiredAccess: TCreateFileDesiredAccess);
-var
-  DesiredAccessInDWORD: DWORD;
 begin
-  if IsHandleValid(FileHandle) then
+  if FileHandle <> nil then
     raise EInvalidOp.Create('Invalid Operation: Don''t create handle twice');
   inherited Create(FileToGetAccess);
-  DesiredAccessInDWORD :=
-    GetDesiredAccessFromTCreateFileDesiredAccess(DesiredAccess);
-  FileHandle :=
-    CreateFileSystemCall(PWideChar(FileToGetAccess), DesiredAccessInDWORD);
-  IfOSErrorRaiseException;
-  AccessPrivilege := DesiredAccess;
+  FileHandle := TFileHandle.Create(FileToGetAccess, DesiredAccess);
 end;
 
 destructor TOSFileWithHandle.Destroy;
 begin
-  if IsHandleValid(FileHandle) then
-    CloseHandle(FileHandle);
+  if FileHandle <> nil then
+    FreeAndNil(FileHandle);
   inherited Destroy;
 end;
 

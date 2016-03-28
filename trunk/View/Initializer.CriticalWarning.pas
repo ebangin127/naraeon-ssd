@@ -33,7 +33,7 @@ end;
 
 procedure TMainformCriticalWarningApplier.ShowCriticalWarning;
 begin
-  if not fMain.PhysicalDrive.SMARTInterpreted.SMARTAlert.CriticalError then
+  if not fMain.SelectedDrive.SMARTInterpreted.SMARTAlert.CriticalError then
     fMain.lSectors.Caption :=
       CriticalWarning[CurrLang] + SafeWithoutDot[CurrLang]
   else

@@ -60,29 +60,29 @@ procedure TMainformMainpartApplier.ApplyModelAndSize;
 var
   DiskSizeInMB: Double;
 begin
-  DiskSizeInMB := DenaryByteToMB(fMain.PhysicalDrive.DiskSizeInByte);
+  DiskSizeInMB := DenaryByteToMB(fMain.SelectedDrive.DiskSizeInByte);
   fMain.lName.Caption :=
-    fMain.PhysicalDrive.IdentifyDeviceResult.Model + ' ' +
+    fMain.SelectedDrive.IdentifyDeviceResult.Model + ' ' +
     FormatSizeInMBAsDenaryInteger(DiskSizeInMB);
 end;
 
 procedure TMainformMainpartApplier.SetFirmwareLabel;
 begin
   fMain.lFirmware.Caption :=
-    CapFirmware[CurrLang] + fMain.PhysicalDrive.IdentifyDeviceResult.Firmware;
+    CapFirmware[CurrLang] + fMain.SelectedDrive.IdentifyDeviceResult.Firmware;
 end;
 
 function TMainformMainpartApplier.IsUnknownConnection: Boolean;
 begin
   result :=
-    (fMain.PhysicalDrive.IdentifyDeviceResult.SATASpeed <=
+    (fMain.SelectedDrive.IdentifyDeviceResult.SATASpeed <=
     TSATASpeed.UnknownSATASpeed) and
     (not IsNVMe);
 end;
 
 function TMainformMainpartApplier.IsNVMe: Boolean;
 begin
-  result := fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface =
+  result := fMain.SelectedDrive.IdentifyDeviceResult.StorageInterface =
     TStorageInterface.NVMe;
 end;
 
@@ -93,28 +93,28 @@ begin
   SpeedStarts :=
     Integer(TSATASpeed.UnknownSATASpeed) + 1;
   result :=
-    CapConnSpeed[Integer(fMain.PhysicalDrive.IdentifyDeviceResult.SATASpeed) -
+    CapConnSpeed[Integer(fMain.SelectedDrive.IdentifyDeviceResult.SATASpeed) -
       SpeedStarts];
 end;
 
 function TMainformMainpartApplier.GetNVMeConnectionSpeedString: String;
 begin
-  if fMain.PhysicalDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion =
+  if fMain.SelectedDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion =
     TPCIeSpecification.PCIeUnknownSpec then
       exit(CapUnknown[CurrLang]);
 
   result :=
     SlotSpecificationString[
-      fMain.PhysicalDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion] + ' x' +
+      fMain.SelectedDrive.IdentifyDeviceResult.SlotSpeed.SpecVersion] + ' x' +
     IntToStr(Ord(
-      fMain.PhysicalDrive.IdentifyDeviceResult.SlotSpeed.LinkWidth));
+      fMain.SelectedDrive.IdentifyDeviceResult.SlotSpeed.LinkWidth));
 end;
 
 function TMainformMainpartApplier.GetNCQAvailabilityString: String;
 var
   NCQAvailability: TNCQAvailability;
 begin  
-  NCQAvailability := fMain.PhysicalDrive.NCQAvailability;
+  NCQAvailability := fMain.SelectedDrive.NCQAvailability;
   case NCQAvailability of
     TNCQAvailability.Unknown:
       result := CapUnknown[CurrLang];
@@ -153,11 +153,11 @@ begin
   fMain.lSerial.Caption := CapSerial[CurrLang];
   if not IsSerialOpened then
     for CurrentSerial := 0 to
-      Length(fMain.PhysicalDrive.IdentifyDeviceResult.Serial) - 1 do
+      Length(fMain.SelectedDrive.IdentifyDeviceResult.Serial) - 1 do
         fMain.lSerial.Caption := fMain.lSerial.Caption + 'X'
   else
     fMain.lSerial.Caption := fMain.lSerial.Caption +
-      fMain.PhysicalDrive.IdentifyDeviceResult.Serial;
+      fMain.SelectedDrive.IdentifyDeviceResult.Serial;
 end;
 
 function TMainformMainpartApplier.GetFirmwareQueryResult:
@@ -165,8 +165,8 @@ function TMainformMainpartApplier.GetFirmwareQueryResult:
 var
   Query: TFirmwareQuery;
 begin
-  Query.Model := fMain.PhysicalDrive.IdentifyDeviceResult.Model;
-  Query.Firmware := fMain.PhysicalDrive.IdentifyDeviceResult.Firmware;
+  Query.Model := fMain.SelectedDrive.IdentifyDeviceResult.Model;
+  Query.Firmware := fMain.SelectedDrive.IdentifyDeviceResult.Firmware;
   
   result := fMain.GetFirmwareGetter.CheckFirmware(Query);
 end;

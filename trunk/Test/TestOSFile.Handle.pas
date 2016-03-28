@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, OSFile, Dialogs, SysUtils, TestFramework,
-  OSFile.Handle;
+  OSFile.Handle, OS.Handle;
 
 type
   // Test methods for class TOSFileWithHandle
@@ -41,11 +41,11 @@ end;
 
 procedure TestTOSFileWithHandle.TestIsHandleValid;
 begin
-  CheckEquals(false, FOSFileWithHandle.IsHandleValid(INVALID_HANDLE_VALUE),
+  CheckEquals(false, IsHandleValid(INVALID_HANDLE_VALUE),
     'Handle test failure - INVALID_HANDLE_VALUE');
-  CheckEquals(false, FOSFileWithHandle.IsHandleValid(0),
+  CheckEquals(false, IsHandleValid(0),
     'Handle test failure - 0');
-  CheckEquals(true, FOSFileWithHandle.IsHandleValid(1),
+  CheckEquals(true, IsHandleValid(1),
     'Handle test failure - 1');
 end;
 
@@ -53,19 +53,19 @@ procedure TestTOSFileWithHandle.
   TestGetDesiredAccessFromTCreateFileDesiredAccess;
 begin
   CheckEquals(0,
-    FOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess(
+    GetDesiredAccessFromTCreateFileDesiredAccess(
       TCreateFileDesiredAccess.DesiredNone),
       'TCreateFileDesiredAccess.DesiredNone');
   CheckEquals(GENERIC_READ,
-    FOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess(
+    GetDesiredAccessFromTCreateFileDesiredAccess(
       TCreateFileDesiredAccess.DesiredReadOnly),
       'TCreateFileDesiredAccess.DesiredReadOnly');
   CheckEquals(GENERIC_READ or GENERIC_WRITE,
-    FOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess(
+    GetDesiredAccessFromTCreateFileDesiredAccess(
       TCreateFileDesiredAccess.DesiredReadWrite),
       'TCreateFileDesiredAccess.DesiredReadWrite');
   StartExpectingException(EArgumentOutOfRangeException);
-  FOSFileWithHandle.GetDesiredAccessFromTCreateFileDesiredAccess(
+  GetDesiredAccessFromTCreateFileDesiredAccess(
     TCreateFileDesiredAccess(5));
   StopExpectingException('Wrong TCreateFileDesiredAccess (5)');
 end;
@@ -81,7 +81,7 @@ end;
 function TConcreteOSFileWithHandle.IsHandleValid(
   const HandleToCheck: THandle): Boolean;
 begin
-  result := inherited IsHandleValid(HandleToCheck);
+  result := IsHandleValid(HandleToCheck);
 end;
 
 initialization

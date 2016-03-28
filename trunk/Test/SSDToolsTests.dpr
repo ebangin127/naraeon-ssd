@@ -89,7 +89,8 @@ uses
   Support.Factory in '..\Support\Support.Factory.pas',
   OS.Partition.Lock in '..\Objects\OS.Partition.Lock.pas',
   Getter.Filesystem.Name in '..\Objects\Getter.Filesystem.Name.pas',
-  OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas';
+  OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas',
+  OS.Handle in '..\WindowsFileAPI\OS.Handle.pas';
 
 {$R *.RES}
 

@@ -17,6 +17,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TSamsungNVMeCommandSet = class sealed(TMockCommandSet)
   public
@@ -24,6 +26,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TOSNVMeCommandSet = class sealed(TMockCommandSet)
   public
@@ -31,6 +35,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TATACommandSet = class sealed(TMockCommandSet)
   public
@@ -38,6 +44,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TLegacyATACommandSet = class sealed(TMockCommandSet)
   public
@@ -45,6 +53,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TSATCommandSet = class sealed(TMockCommandSet)
   public
@@ -52,6 +62,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TNVMeWithoutDriverCommandSet = class sealed(TMockCommandSet)
   public
@@ -59,6 +71,8 @@ type
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
+    function RAWIdentifyDevice: String; override;
+    function RAWSMARTReadData: String; override;
   end;
   TCommandOrder = (
     CommandOrderOfNVMeIntel,
@@ -102,6 +116,16 @@ begin
   result := false;
 end;
 
+function TIntelNVMeCommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TIntelNVMeCommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
+end;
+
 function TIntelNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
   Cardinal;
 begin
@@ -134,6 +158,16 @@ begin
   result := 1;
 end;
 
+function TSamsungNVMeCommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TSamsungNVMeCommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
+end;
+
 function TOSNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -160,6 +194,16 @@ begin
   result := 1;
 end;
 
+function TOSNVMeCommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TOSNVMeCommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
+end;
+
 function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -183,6 +227,16 @@ end;
 function TATACommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
   result := 1;
+end;
+
+function TATACommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TATACommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
 end;
 
 function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -211,6 +265,16 @@ begin
   result := 1;
 end;
 
+function TLegacyATACommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TLegacyATACommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
+end;
+
 function TSATCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -234,6 +298,16 @@ end;
 function TSATCommandSet.DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
 begin
   result := 1;
+end;
+
+function TSATCommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TSATCommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
 end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -260,6 +334,16 @@ function TNVMeWithoutDriverCommandSet.DataSetManagement(
   StartLBA, LBACount: Int64): Cardinal;
 begin
   result := 1;
+end;
+
+function TNVMeWithoutDriverCommandSet.RAWIdentifyDevice: String;
+begin
+  result := '';
+end;
+
+function TNVMeWithoutDriverCommandSet.RAWSMARTReadData: String;
+begin
+  result := '';
 end;
 
 { TMockCommandSet }

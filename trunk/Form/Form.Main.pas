@@ -19,7 +19,7 @@ uses
   Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
   Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
   Getter.VolumeLabel, Getter.OS.Version, PrerequisiteChecker, BufferInterpreter,
-  Global.HelpPage, CommandSet.SAT;
+  Global.HelpPage, CommandSet.SAT, Unlocker;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -167,9 +167,10 @@ type
     procedure StartUpdateThread;
     procedure SetIsConnected;
     procedure CreateButtonGroup;
+    procedure UnlockedErase(const Letter, Filename: string);
   public
-    PhysicalDriveList: TPhysicalDriveList;
-    PhysicalDrive: IPhysicalDrive;
+    IdentifiedDriveList: TPhysicalDriveList;
+    SelectedDrive: IPhysicalDrive;
     OnlineFirmwareUpdateAvailable: Boolean;
     WICImage: TWICImage;
     procedure DisableSSDLabel;
@@ -205,7 +206,7 @@ begin
     exit;
   end;
   tRefresh.Enabled := false;
-  if PhysicalDrive.IdentifyDeviceResult.StorageInterface = NVMe then
+  if SelectedDrive.IdentifyDeviceResult.StorageInterface = NVMe then
     Erase('nvme')
   else
     Erase('pmagic');
@@ -313,7 +314,7 @@ end;
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FirmwareGetter);
-  FreeAndNil(PhysicalDriveList);
+  FreeAndNil(IdentifiedDriveList);
   FreeAndNil(SSDLabel);
   FreeAndNil(Optimizer);
   FreeAndNil(ButtonGroup);
@@ -329,9 +330,9 @@ end;
 
 procedure TfMain.RefreshDrives;
 begin
-  if PhysicalDriveList.Count = 0 then
+  if IdentifiedDriveList.Count = 0 then
     RefreshLabelList;
-  if PhysicalDriveList.Count = 0 then
+  if IdentifiedDriveList.Count = 0 then
     exit;
   RefreshByPhysicalDrive;
   SetSelectedDriveLabelBold;
@@ -375,7 +376,7 @@ end;
 
 function TfMain.FirmwareUpdateNotAvailable: Boolean;
 begin
-  result := (not PhysicalDrive.SupportStatus.FirmwareUpdate) or
+  result := (not SelectedDrive.SupportStatus.FirmwareUpdate) or
     (not OnlineFirmwareUpdateAvailable);
 end;
 
@@ -425,8 +426,8 @@ begin
   lNewFirm.Font.Style := [];
   ButtonGroup.Click(iFirmUp);
 
-  Query.Model := PhysicalDrive.IdentifyDeviceResult.Model;
-  Query.Firmware := PhysicalDrive.IdentifyDeviceResult.Firmware;
+  Query.Model := SelectedDrive.IdentifyDeviceResult.Model;
+  Query.Firmware := SelectedDrive.IdentifyDeviceResult.Firmware;
   QueryResult := FirmwareGetter.CheckFirmware(Query);
   if QueryResult.LatestVersion = '' then
     exit;
@@ -497,7 +498,7 @@ begin
       PChar(HelpHeader + HelpLanguage[CurrLang] + FirmwareUpdatePage), '',
       nil, SW_NORMAL)
   else if ButtonGroup.FindEntry(iErase).Selected then
-    if PhysicalDrive.IdentifyDeviceResult.StorageInterface =
+    if SelectedDrive.IdentifyDeviceResult.StorageInterface =
       TStorageInterface.NVMe then
       ShellExecute(0, 'open',
         PChar(HelpHeader + HelpLanguage[CurrLang] + NVMeSecureErasePage), '',
@@ -526,7 +527,6 @@ begin
   ButtonGroup.Click(iOptimize);
 end;
 
-
 procedure TfMain.iTrimClick(Sender: TObject);
 var
   CheckedDrives: Integer;
@@ -540,7 +540,7 @@ begin
     exit;
 
   cTrimList.Clear;
-  PartitionList := PhysicalDrive.GetPartitionList;
+  PartitionList := SelectedDrive.GetPartitionList;
   for CurrentDrive := 0 to PartitionList.Count - 1 do
   begin
     VolumeLabelGetter := TVolumeLabelGetter.Create(
@@ -564,14 +564,14 @@ begin
     ShowSerial := false;
     lSerial.Caption := CapSerial[CurrLang];
     for CurrNum := 0 to
-      Length(PhysicalDrive.IdentifyDeviceResult.Serial) - 1 do
+      Length(SelectedDrive.IdentifyDeviceResult.Serial) - 1 do
         lSerial.Caption := lSerial.Caption + 'X';
   end
   else
   begin
     ShowSerial := true;
     lSerial.Caption := CapSerial[CurrLang] +
-      PhysicalDrive.IdentifyDeviceResult.Serial;
+      SelectedDrive.IdentifyDeviceResult.Serial;
   end;
 end;
 
@@ -637,12 +637,12 @@ function TfMain.TryToCreatePhysicalDriveWithEntry(DeviceNumber: Integer):
 begin
   try
     result := true;
-    fMain.PhysicalDrive :=
+    fMain.SelectedDrive :=
       TPhysicalDrive.Create(
           TPhysicalDrive.BuildFileAddressByNumber(DeviceNumber));
   except
     result := false;
-    fMain.PhysicalDrive := nil;
+    fMain.SelectedDrive := nil;
   end;
 end;
 
@@ -700,7 +700,7 @@ begin
   for CurrIndex := 0 to SSDLabel.Count - 1 do
   begin
     if SSDLabel[CurrIndex].PhysicalDrive.GetPathOfFileAccessing =
-       PhysicalDrive.GetPathOfFileAccessing then
+       SelectedDrive.GetPathOfFileAccessing then
     begin
       if SSDLabel[CurrIndex].Font.Style <> [fsBold] then
         SSDLabel[CurrIndex].Font.Style := [fsBold];
@@ -749,7 +749,7 @@ procedure TfMain.CreateBasicObjects;
 begin
   Optimizer := TNSTOptimizer.Create;
   SSDLabel := TSSDLabelList.Create;
-  PhysicalDriveList := TPhysicalDriveList.Create;
+  IdentifiedDriveList := TPhysicalDriveList.Create;
   FirmwareGetter := TFirmwareGetter.Create;
   CreateButtonGroup;
 end;
@@ -762,6 +762,17 @@ begin
 end;
 
 procedure TfMain.Erase(const Filename: string);
+var
+  Letter: String;
+  Unlock: IDriveHandleUnlocker;
+begin
+  Letter := Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3);
+  Unlock := TDriveHandleUnlocker.Create(Letter, IdentifiedDriveList,
+    SelectedDrive);
+  UnlockedErase(Letter, Filename);
+end;
+
+procedure TfMain.UnlockedErase(const Letter: String; const Filename: string);
 var
   FullPath: string;
   TempFolder: string;
@@ -780,7 +791,7 @@ begin
       CapRemvDisk[LANG_ENGLISH] + CapProg1[LANG_ENGLISH] +
       CapProg3[LANG_ENGLISH] + CapProg2[LANG_ENGLISH]);
     FullPath := TempFolder + Filename + '.iso';
-    Rufus.RunRufus(Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3), FullPath);
+    Rufus.RunRufus(Letter, FullPath);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
     DeleteDirectory(TempFolder);
   end
@@ -880,10 +891,10 @@ begin
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1' +                                  //아이들 시간
           '/tn "MANTRIM' +                          //이름
-          PhysicalDrive.IdentifyDeviceResult.Serial +
+          SelectedDrive.IdentifyDeviceResult.Serial +
           '" ' +
           '/tr "\" ' + Application.ExeName + '\" ' +//경로
-            PhysicalDrive.IdentifyDeviceResult.Serial + '" ' +
+            SelectedDrive.IdentifyDeviceResult.Serial + '" ' +
           '/ru system'));                           //작업할 계정
     end
     else
@@ -894,11 +905,11 @@ begin
           '/sc onidle ' +                           //유휴시간 작업
           '/i 1 ' +                                 //아이들 시간
           '/tn "MANTRIM' +                          //이름
-          PhysicalDrive.IdentifyDeviceResult.Serial +
+          SelectedDrive.IdentifyDeviceResult.Serial +
           '" ' +
           '/tr "''' + Application.ExeName +         //경로
             ''' ''' +
-          PhysicalDrive.IdentifyDeviceResult.Serial + '''" ' +
+          SelectedDrive.IdentifyDeviceResult.Serial + '''" ' +
           '/rl HIGHEST'))                           //권한 (Limited/Highest)
   else
     SchedResult :=
@@ -906,7 +917,7 @@ begin
         EnvironmentVariable.WinDir + '\System32',
         'schtasks /delete ' +                       //작업 삭제
         '/TN "MANTRIM' +                            //작업 이름
-        PhysicalDrive.IdentifyDeviceResult.Serial +
+        SelectedDrive.IdentifyDeviceResult.Serial +
         '" ' +
         '/F'));                                     //강제 삭제
 end;
@@ -937,13 +948,13 @@ begin
 
   lDrives.Caption := CapAppDisk[CurrLang];
 
-  DriveList := PhysicalDrive.GetPartitionList;
+  DriveList := SelectedDrive.GetPartitionList;
   for CurrDrv := 0 to DriveList.Count - 1 do
     lDrives.Caption := lDrives.Caption + DriveList[CurrDrv].Letter + ' ';
   FreeAndNil(DriveList);
 
   cTrimRunning.Checked :=
-    Pos('MANTRIM' + PhysicalDrive.IdentifyDeviceResult.Serial,
+    Pos('MANTRIM' + SelectedDrive.IdentifyDeviceResult.Serial,
       UnicodeString(ProcessOpener.OpenProcWithOutput(
         EnvironmentVariable.WinDir + '\System32',
         'schtasks /query'))) > 0;

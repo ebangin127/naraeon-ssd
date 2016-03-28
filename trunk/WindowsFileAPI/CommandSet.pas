@@ -8,7 +8,7 @@ uses
   {$IfDef UNITTEST}
   Mock.OSFile.IoControl;
   {$Else}
-  OSFile.Handle, OSFile.IoControl;
+  OSFile.Handle, OSFile.IoControl, OS.Handle;
   {$EndIf}
 
 type

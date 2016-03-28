@@ -6,8 +6,9 @@ uses
   Windows, SysUtils, IdURI, Dialogs, ShellApi,
   Form.Alert, Global.LanguageString, OS.EnvironmentVariable, Global.Constant,
   OS.ProcessOpener, Device.PhysicalDrive, Thread.Download,
-  OS.DeleteDirectory, Getter.WebPath, Getter.LatestFirmware, Getter.CodesignVerifier,
-  Thread.Download.Helper, Extern.Rufus;
+  OS.DeleteDirectory, Getter.WebPath, Getter.LatestFirmware,
+  Getter.CodesignVerifier, Thread.Download.Helper, Extern.Rufus, OS.Handle,
+  Unlocker;
 
 type
   TFirmwareDownloader = class
@@ -28,6 +29,8 @@ type
     procedure ExpandAndSetFirmwarePath;
     function VerifyCodesign: Boolean;
     procedure AlertAndDeleteInvalidFile;
+    procedure Burn;
+    procedure UnlockedBurn(const Letter: string);
   public
     procedure DownloadFirmware;
   end;
@@ -78,10 +81,30 @@ end;
 
 procedure TFirmwareDownloader.DownloadFirmware;
 begin
-  self.PhysicalDrive := fMain.PhysicalDrive;
+  self.PhysicalDrive := fMain.SelectedDrive;
   fMain.tRefresh.Enabled := false;
   fMain.gFirmware.Visible := false;
   DownloadLatestFirmware;
+end;
+
+procedure TFirmwareDownloader.Burn;
+var
+  Letter: String;
+  Unlock: IDriveHandleUnlocker;
+begin
+  Letter := Copy(fMain.cUSB.Items[fMain.cUSB.ItemIndex], 1, 3);
+  Unlock := TDriveHandleUnlocker.Create(Letter, fMain.IdentifiedDriveList,
+    fMain.SelectedDrive);
+  UnlockedBurn(Letter);
+end;
+
+procedure TFirmwareDownloader.UnlockedBurn(const Letter: string);
+begin
+  AlertCreate(fMain, AlrtStartFormat[CurrLang]);
+  Rufus.RunRufus(Letter, FirmwarePath);
+  AlertCreate(fMain, AlrtFirmEnd[CurrLang]);
+  DeleteDirectory(ExtractFilePath(FirmwarePath));
+  DeleteDirectory(TempFolder);
 end;
 
 procedure TFirmwareDownloader.DownloadLatestFirmware;
@@ -193,12 +216,7 @@ begin
   end
   else
   begin
-    AlertCreate(fMain, AlrtStartFormat[CurrLang]);
-    Rufus.RunRufus(Copy(fMain.cUSB.Items[fMain.cUSB.ItemIndex], 1, 3),
-      FirmwarePath);
-    AlertCreate(fMain, AlrtFirmEnd[CurrLang]);
-    DeleteDirectory(ExtractFilePath(FirmwarePath));
-    DeleteDirectory(TempFolder);
+    Burn;
   end;
 
   fMain.gFirmware.Visible := true;

@@ -132,13 +132,13 @@ end;
 procedure TMainformPhysicalDriveApplier.SetSMARTAlert;
 begin
   MainformAlert.SMARTAlert :=
-    fMain.PhysicalDrive.SMARTInterpreted.SMARTAlert;
+    fMain.SelectedDrive.SMARTInterpreted.SMARTAlert;
 end;
 
 function TMainformPhysicalDriveApplier.IsNVMeCriticalWarning: Boolean;
 begin
   result :=
-    (fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface =
+    (fMain.SelectedDrive.IdentifyDeviceResult.StorageInterface =
       TStorageInterface.NVMe) and
     (MainformAlert.SMARTAlert.CriticalError);
 end;
@@ -161,7 +161,7 @@ end;
 procedure TMainformPhysicalDriveApplier.ApplyDataSetManagementSetting;
 begin
   fMain.lTrim.Visible :=
-    fMain.PhysicalDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
+    fMain.SelectedDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
   fMain.iTrim.Visible := fMain.lTrim.Visible;
   fMain.bSchedule.Visible := IsBelowWindows8(VersionHelper.Version);
   if fMain.bSchedule.Visible = false then
@@ -187,7 +187,7 @@ end;
 
 function TMainformPhysicalDriveApplier.IsNotNVMe: Boolean;
 begin
-  result := fMain.PhysicalDrive.IdentifyDeviceResult.StorageInterface
+  result := fMain.SelectedDrive.IdentifyDeviceResult.StorageInterface
     <> TStorageInterface.NVMe;
 end;
 

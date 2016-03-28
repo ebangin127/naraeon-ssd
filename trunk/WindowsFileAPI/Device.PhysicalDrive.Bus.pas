@@ -5,7 +5,7 @@ interface
 uses
   Windows, SysUtils,
   OSFile, Device.SMART.List, BufferInterpreter, CommandSet,
-  CommandSet.Factory;
+  CommandSet.Factory, OS.Handle;
 
 type
   TBusPhysicalDrive = class(TOSFile)
@@ -22,6 +22,7 @@ type
       read GetIdentifyDeviceResultOrRequestAndReturn;
     property SMARTValueList: TSMARTValueList
       read GetSMARTValueListOrRequestAndReturn;
+    function Unlock: IOSFileUnlock;
     constructor Create(const FileToGetAccess: String); override;
     destructor Destroy; override;
 
@@ -65,6 +66,11 @@ begin
   if SMARTValueListReadWrite = nil then
     RequestSMARTReadData;
   result := SMARTValueListReadWrite;
+end;
+
+function TBusPhysicalDrive.Unlock: IOSFileUnlock;
+begin
+  result := CommandSet.Unlock;
 end;
 
 procedure TBusPhysicalDrive.RequestIdentifyDevice;

@@ -12,7 +12,8 @@ unit TestOSFile.IoControl;
 interface
 
 uses
-  TestFramework, Classes, SysUtils, OSFile.IoControl, OSFile.Handle, Windows;
+  TestFramework, Classes, SysUtils, OSFile.IoControl, OSFile.Handle, Windows,
+  OS.Handle;
 
 type
   // Test methods for class TIoControlFile

@@ -160,7 +160,9 @@ uses
   OS.Partition.Lock in 'Objects\OS.Partition.Lock.pas',
   Getter.Filesystem.Name in 'Objects\Getter.Filesystem.Name.pas',
   Support.Sandisk.USB in 'Support\Support.Sandisk.USB.pas',
-  CommandSet.NVMe.OS in 'WindowsFileAPI\CommandSet.NVMe.OS.pas';
+  CommandSet.NVMe.OS in 'WindowsFileAPI\CommandSet.NVMe.OS.pas',
+  OS.Handle in 'WindowsFileAPI\OS.Handle.pas',
+  Unlocker in 'Objects\Unlocker.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

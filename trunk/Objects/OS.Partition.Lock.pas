@@ -3,7 +3,7 @@ unit OS.Partition.Lock;
 interface
 
 uses
-  OSFile.IoControl, OSFile.Handle;
+  OSFile.IoControl, OSFile.Handle, OS.Handle;
 
 type
   TPartitionLock = class(TIoControlFile)

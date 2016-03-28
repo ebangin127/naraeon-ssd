@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Device.PhysicalDrive.Bus, Device.PhysicalDrive.OS, OSFile,
   OSFile.Interfaced, Support, Support.Factory,
   Getter.PhysicalDrive.PartitionList,
-  BufferInterpreter, Getter.PhysicalDrive.NCQAvailability;
+  BufferInterpreter, Getter.PhysicalDrive.NCQAvailability, OS.Handle;
 
 type
   IPhysicalDrive = interface
@@ -31,6 +31,7 @@ type
     property NCQAvailability: TNCQAvailability
       read GetNCQAvailability;
     function GetPartitionList: TPartitionList;
+    function Unlock: IOSFileUnlock;
   end;
 
   TPhysicalDrive = class(TInterfacedOSFile, IPhysicalDrive)
@@ -65,6 +66,7 @@ type
     property NCQAvailability: TNCQAvailability
       read GetNCQAvailability;
     function GetPartitionList: TPartitionList;
+    function Unlock: IOSFileUnlock;
     constructor Create(const FileToGetAccess: String); override;
     class function BuildFileAddressByNumber(const DriveNumber: Cardinal): String;
     destructor Destroy; override;
@@ -130,6 +132,11 @@ begin
   if SupportStatusReadWrite.Supported = false then
     RequestSupportStatus;
   result := SupportStatusReadWrite;
+end;
+
+function TPhysicalDrive.Unlock: IOSFileUnlock;
+begin
+  result := BusPhysicalDrive.Unlock;
 end;
 
 function TPhysicalDrive.GetSMARTInterpretedOrRequestAndReturn:

@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, SysUtils,
-  OSFile, Getter.PhysicalDrive.DiskGeometry, Getter.PhysicalDrive.PartitionList, Getter.PhysicalDrive.DriveAvailability,
-  Getter.PhysicalDrive.NCQAvailability;
+  OSFile, Getter.PhysicalDrive.DiskGeometry, Getter.PhysicalDrive.PartitionList,
+  Getter.PhysicalDrive.DriveAvailability, Getter.PhysicalDrive.NCQAvailability;
 
 type
   TOSPhysicalDrive = class(TOSFile)

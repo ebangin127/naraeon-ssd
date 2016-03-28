@@ -35,7 +35,7 @@ uses Form.Main;
 
 function TMainformTotalWriteApplier.IsTotalWriteNotSupported: Boolean;
 begin
-  result := fMain.PhysicalDrive.SupportStatus.TotalWriteType =
+  result := fMain.SelectedDrive.SupportStatus.TotalWriteType =
     TTotalWriteType.WriteNotSupported;
 end;
 
@@ -60,7 +60,7 @@ end;
 
 procedure TMainformTotalWriteApplier.SetWriteLabelByHostNANDInformation;
 begin
-  if fMain.PhysicalDrive.SMARTInterpreted.
+  if fMain.SelectedDrive.SMARTInterpreted.
       TotalWrite.InValue.TrueHostWriteFalseNANDWrite then
         fMain.lHost.Caption := CapHostWrite[CurrLang]
   else
@@ -77,7 +77,7 @@ begin
   fMain.lHost.Caption :=
     fMain.lHost.Caption +
     FormatSizeInMB(
-      fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB,
+      fMain.SelectedDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB,
       BinaryPointOne);
 end;
 
@@ -115,10 +115,10 @@ begin
     TAverageWriteLogger.Create(
       TAverageWriteLogger.BuildFileName(
         EnvironmentVariable.AppPath,
-        fMain.PhysicalDrive.IdentifyDeviceResult.Serial));
+        fMain.SelectedDrive.IdentifyDeviceResult.Serial));
   WriteLog.ReadAndRefresh(
     UIntToStr(MBToLiteONUnit(
-      fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)));
+      fMain.SelectedDrive.SMARTInterpreted.TotalWrite.InValue.ValueInMiB)));
   ApplyUsageByLog(WriteLog);
   FreeAndNil(WriteLog);
 end;
@@ -147,8 +147,8 @@ var
   HostWriteInMiB: UInt64;
 begin
   HostWriteInMiB :=
-    fMain.PhysicalDrive.SMARTInterpreted.TotalWrite.InCount.ValueInCount *
-    round(KiBtoMiB(fMain.PhysicalDrive.IdentifyDeviceResult.UserSizeInKB));
+    fMain.SelectedDrive.SMARTInterpreted.TotalWrite.InCount.ValueInCount *
+    round(KiBtoMiB(fMain.SelectedDrive.IdentifyDeviceResult.UserSizeInKB));
         
   fMain.lHost.Caption := CapNandWrite[CurrLang] + UIntToStr(HostWriteInMiB);
 end;
@@ -157,7 +157,7 @@ procedure TMainformTotalWriteApplier.ApplyTotalWriteInCount;
 begin
   fMain.lTodayUsage.Caption :=
     CapWearLevel[CurrLang] +
-    UIntToStr(fMain.PhysicalDrive.SMARTInterpreted.
+    UIntToStr(fMain.SelectedDrive.SMARTInterpreted.
       TotalWrite.InCount.ValueInCount);
 end;
 
@@ -170,7 +170,7 @@ end;
 
 procedure TMainformTotalWriteApplier.ApplyTotalWriteByWriteType;
 begin
-  case fMain.PhysicalDrive.SupportStatus.TotalWriteType of
+  case fMain.SelectedDrive.SupportStatus.TotalWriteType of
     TTotalWriteType.WriteSupportedAsValue:
       ApplyTotalWriteAsValue;
     TTotalWriteType.WriteSupportedAsCount:

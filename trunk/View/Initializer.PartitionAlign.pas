@@ -30,7 +30,7 @@ uses Form.Main;
 
 procedure TMainformPartitionAlignApplier.SetPartitionList;
 begin
-  PartitionList := fMain.PhysicalDrive.GetPartitionList;
+  PartitionList := fMain.SelectedDrive.GetPartitionList;
 end;
 
 procedure TMainformPartitionAlignApplier.FreePartitionList;
