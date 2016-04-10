@@ -158,7 +158,7 @@ type
     procedure WmAfterShow(var Msg: TMessage); message WM_AFTER_SHOW;
     procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
     procedure CreateBasicObjects;
-    procedure Erase(const Filename: string);
+    procedure BurnEraseImage(const Filename: string);
     procedure RefreshLabelList;
     procedure IfConnectedStartUpdateThread;
     procedure ApplyPartitionCountToTrim;
@@ -167,7 +167,10 @@ type
     procedure StartUpdateThread;
     procedure SetIsConnected;
     procedure CreateButtonGroup;
-    procedure UnlockedErase(const Letter, Filename: string);
+    procedure UnlockedBurnEraseImage(const Letter, Filename: string);
+    function ExtractEraseImage(const FullPath, TempFolder: string): String;
+    procedure ExtractAndBurnEraseImage(const CompressedFilePath, Filename,
+      TempFolder, Letter: string);
   public
     IdentifiedDriveList: TPhysicalDriveList;
     SelectedDrive: IPhysicalDrive;
@@ -207,9 +210,9 @@ begin
   end;
   tRefresh.Enabled := false;
   if SelectedDrive.IdentifyDeviceResult.StorageInterface = NVMe then
-    Erase('nvme')
+    BurnEraseImage('nvme')
   else
-    Erase('pmagic');
+    BurnEraseImage('pmagic');
   tRefresh.Enabled := true;
 end;
 
@@ -356,6 +359,27 @@ end;
 function TfMain.GetOptimizer: TNSTOptimizer;
 begin
   result := Optimizer;
+end;
+
+procedure TfMain.ExtractAndBurnEraseImage(const CompressedFilePath: string;
+  const Filename: string; const TempFolder: string; const Letter: string);
+var
+  ImageFilePath: string;
+begin
+  ExtractEraseImage(CompressedFilePath, TempFolder);
+  ImageFilePath := TempFolder + Filename + '.iso';
+  Rufus.RunRufus(Letter, ImageFilePath);
+end;
+
+function TfMain.ExtractEraseImage(const FullPath: string;
+  const TempFolder: string): String;
+begin
+  result := SevenZip.Extract(EnvironmentVariable.AppPath + '7z\7z.exe',
+    FullPath, TempFolder,
+    CapTrimName[LANG_ENGLISH] + CapStartManTrim[LANG_ENGLISH] +
+    BtSemiAutoTrim[LANG_ENGLISH] + CapLocalDisk[LANG_ENGLISH] +
+    CapRemvDisk[LANG_ENGLISH] + CapProg1[LANG_ENGLISH] +
+    CapProg3[LANG_ENGLISH] + CapProg2[LANG_ENGLISH]);
 end;
 
 function TfMain.GetUpdateNotice: String;
@@ -761,7 +785,7 @@ begin
       ClientWidth, ClientWidth);
 end;
 
-procedure TfMain.Erase(const Filename: string);
+procedure TfMain.BurnEraseImage(const Filename: string);
 var
   Letter: String;
   Unlock: IDriveHandleUnlocker;
@@ -769,29 +793,24 @@ begin
   Letter := Copy(cUSBErase.Items[cUSBErase.ItemIndex], 1, 3);
   Unlock := TDriveHandleUnlocker.Create(Letter, IdentifiedDriveList,
     SelectedDrive);
-  UnlockedErase(Letter, Filename);
+  UnlockedBurnEraseImage(Letter, Filename);
 end;
 
-procedure TfMain.UnlockedErase(const Letter: String; const Filename: string);
+procedure TfMain.UnlockedBurnEraseImage(const Letter: String;
+  const Filename: string);
 var
-  FullPath: string;
+  CompressedFilePath: String;
   TempFolder: string;
 begin
-  FullPath := EnvironmentVariable.AppPath + 'Erase\' + Filename + '.7z';
-  if (FileExists(FullPath)) and (Rufus.CheckRufus) then
+  CompressedFilePath :=
+    EnvironmentVariable.AppPath + 'Erase\' + Filename + '.7z';
+  if (FileExists(CompressedFilePath)) and (Rufus.CheckRufus) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);
     TempFolder := EnvironmentVariable.TempFolder(true);
-    CreateDir(TempFolder);
-    SevenZip.Extract(
-      EnvironmentVariable.AppPath + '7z\7z.exe',
-      FullPath, TempFolder,
-      CapTrimName[LANG_ENGLISH] + CapStartManTrim[LANG_ENGLISH] +
-      BtSemiAutoTrim[LANG_ENGLISH] + CapLocalDisk[LANG_ENGLISH] +
-      CapRemvDisk[LANG_ENGLISH] + CapProg1[LANG_ENGLISH] +
-      CapProg3[LANG_ENGLISH] + CapProg2[LANG_ENGLISH]);
-    FullPath := TempFolder + Filename + '.iso';
-    Rufus.RunRufus(Letter, FullPath);
+    if not CreateDir(TempFolder) then
+      exit;
+    ExtractAndBurnEraseImage(CompressedFilePath, Filename, TempFolder, Letter);
     AlertCreate(Self, AlrtEraEnd[CurrLang]);
     DeleteDirectory(TempFolder);
   end

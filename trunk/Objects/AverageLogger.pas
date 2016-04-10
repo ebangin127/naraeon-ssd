@@ -203,8 +203,10 @@ begin
 end;
 
 constructor TAverageLogger.Create(FileContents: TStringList);
+const
+  PredefinedLCID = 1042;
 begin
-  UserDefaultFormat := TFormatSettings.Create(GetUserDefaultLCID);
+  UserDefaultFormat := TFormatSettings.Create(PredefinedLCID);
   UserDefaultFormat.DateSeparator := '-';
   TimestampedValueList := FileContents;
   if TimestampedValueList.Count > 0 then
