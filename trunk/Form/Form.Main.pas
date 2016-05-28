@@ -374,12 +374,12 @@ end;
 function TfMain.ExtractEraseImage(const FullPath: string;
   const TempFolder: string): String;
 begin
-  result := SevenZip.Extract(EnvironmentVariable.AppPath + '7z\7z.exe',
+  result := String(SevenZip.Extract(EnvironmentVariable.AppPath + '7z\7z.exe',
     FullPath, TempFolder,
     CapTrimName[LANG_ENGLISH] + CapStartManTrim[LANG_ENGLISH] +
     BtSemiAutoTrim[LANG_ENGLISH] + CapLocalDisk[LANG_ENGLISH] +
     CapRemvDisk[LANG_ENGLISH] + CapProg1[LANG_ENGLISH] +
-    CapProg3[LANG_ENGLISH] + CapProg2[LANG_ENGLISH]);
+    CapProg3[LANG_ENGLISH] + CapProg2[LANG_ENGLISH]));
 end;
 
 function TfMain.GetUpdateNotice: String;

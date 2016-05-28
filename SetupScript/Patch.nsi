@@ -84,9 +84,11 @@ Section "MainSection" SEC01
 
   SetOutPath "$INSTDIR\SSDTools\Rufus"
   File "..\Exe\Rufus\rufus.exe"
+  File "..\Exe\Rufus\license.txt"
 
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
+  File "..\Exe\7z\license.txt"
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"
