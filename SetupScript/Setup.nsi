@@ -94,6 +94,7 @@ Section "MainSection" SEC01
 
   call SetErrFile
 
+  SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\Naraeon SSD Tools"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools.lnk" "$INSTDIR\SSDTools\SSDTools.exe"
   CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Naraeon SSD Tools (Diag).lnk" "$INSTDIR\SSDTools\SSDTools.exe" "/diag"
