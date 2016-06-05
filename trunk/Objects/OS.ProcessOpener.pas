@@ -65,9 +65,9 @@ var
   BytesRead: DWORD;
 begin
   result := '';
-  while ReadFile(ReadHandle, Buffer, SizeOf(Buffer), BytesRead, nil) do
+  while ReadFile(ReadHandle, Buffer, SizeOf(Buffer) - 1, BytesRead, nil) do
   begin
-    Buffer[BytesRead + 1] := #0;
+    Buffer[BytesRead] := #0;
     ProcessBuffer(String(Buffer), result);
   end;
 end;
