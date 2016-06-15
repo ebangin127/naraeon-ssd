@@ -31,6 +31,10 @@ type
     procedure AlertAndDeleteInvalidFile;
     procedure Burn;
     procedure UnlockedBurn(const Letter: string);
+    procedure VerifyAndRunRufus;
+    procedure CheckFirmwarePathAndRunRufus;
+    procedure CheckTypeAndRunOrBurn;
+    function IsExe(const Path: String): Boolean;
   public
     procedure DownloadFirmware;
   end;
@@ -177,39 +181,57 @@ begin
     AlertCreate(fMain, AlrtFirmCanc[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
-    Free;
-    exit;
-  end;
+    Free; //FI:W515
+  end
+  else
+    VerifyAndRunRufus;
+end;
 
+procedure TFirmwareDownloader.VerifyAndRunRufus;
+begin
   RenameTempFileAndSetFirmwarePath;
   if not VerifyCodesign then
   begin
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
-    Free;
-    exit;
+    Free; //FI:W515
+  end
+  else
+  begin
+    ExpandAndSetFirmwarePath;
+    CheckFirmwarePathAndRunRufus;
   end;
-  ExpandAndSetFirmwarePath;
+end;
 
+procedure TFirmwareDownloader.CheckFirmwarePathAndRunRufus;
+begin
   if not FileExists(FirmwarePath) then
   begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
-    Free;
-    exit;
-  end;
+    Free; //FI:W515
+  end
+  else
+    CheckTypeAndRunOrBurn;
+end;
 
-  if not Rufus.CheckRufus then
+function TFirmwareDownloader.IsExe(const Path: String): Boolean;
+begin
+  result := ExtractFileExt(Path) = '.exe';
+end;
+
+procedure TFirmwareDownloader.CheckTypeAndRunOrBurn;
+begin
+  if (not IsExe(FirmwarePath)) and (not Rufus.CheckRufus) then
   begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
     fMain.tRefresh.Enabled := true;
-    Free;
-    exit;
+    Free; //FI:W515
   end;
 
-  if (ExtractFileExt(FirmwarePath) = '.exe') then
+  if IsExe(FirmwarePath) then
   begin
     ShellExecute(0, 'open', PChar(FirmwarePath), nil, nil, SW_SHOW);
     fMain.iFirmUp.OnClick(nil);
@@ -221,7 +243,7 @@ begin
 
   fMain.gFirmware.Visible := true;
   fMain.tRefresh.Enabled := true;
-  Free;
+  Free; //FI:W515
 end;
 
 end.

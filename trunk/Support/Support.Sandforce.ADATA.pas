@@ -21,6 +21,7 @@ implementation
 
 function TADATASandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsADATASandforceProduct then
     result := GetSemiSupport;
 end;

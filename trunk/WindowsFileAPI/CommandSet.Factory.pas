@@ -29,8 +29,6 @@ type
       const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
     class function Create: TCommandSetFactory;
   private
-    procedure TryNVMeWithoutDriverCommandSet(
-      const FileToGetAccess: String);
     function TryCommandSetsAndGetRightSet(
       const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
     function TestCommandSetCompatibility(
@@ -38,6 +36,7 @@ type
       const TCommandSetToTry: TMetaCommandSet;
       const LastResult: TCommandSetWithIdentifyDevice):
       TCommandSetWithIdentifyDevice;
+    function IsNVMe(const FileToGetAccess: string): Boolean;
   end;
 
 var
@@ -72,12 +71,18 @@ end;
 
 function TCommandSetFactory.TryCommandSetsAndGetRightSet(
   const FileToGetAccess: String): TCommandSetWithIdentifyDevice;
+var
+  ResultOfIsNVMe: Boolean;
 begin
   result.CommandSet := nil;
-  result := TestCommandSetCompatibility(
-    FileToGetAccess, TIntelNVMeCommandSet, result);
-  result := TestCommandSetCompatibility(
-    FileToGetAccess, TSamsungNVMeCommandSet, result);
+  ResultOfIsNVMe := IsNVMe(FileToGetAccess);
+  if ResultOfIsNVMe then
+  begin
+    result := TestCommandSetCompatibility(
+      FileToGetAccess, TIntelNVMeCommandSet, result);
+    result := TestCommandSetCompatibility(
+      FileToGetAccess, TSamsungNVMeCommandSet, result);
+  end;
   result := TestCommandSetCompatibility(
     FileToGetAccess, TOSNVMeCommandSet, result);
   result := TestCommandSetCompatibility(
@@ -86,25 +91,9 @@ begin
     FileToGetAccess, TLegacyATACommandSet, result);
   result := TestCommandSetCompatibility(
     FileToGetAccess, TSATCommandSet, result);
-  if result.CommandSet = nil then
-    TryNVMeWithoutDriverCommandSet(FileToGetAccess);
-end;
-
-procedure TCommandSetFactory.TryNVMeWithoutDriverCommandSet(
-  const FileToGetAccess: String);
-var
-  NVMeWithoutDriver: TCommandSet;
-  Dummy: TCommandSetWithIdentifyDevice;
-begin
-  FillChar(Dummy, SizeOf(Dummy), #0);
-  NVMeWithoutDriver := TestCommandSetCompatibility(
-    FileToGetAccess, TNVMeWithoutDriverCommandSet, Dummy).CommandSet;
-  if NVMeWithoutDriver <> nil then
-  begin
-    FreeAndNil(NVMeWithoutDriver);
+  if (result.CommandSet = nil) and ResultOfIsNVMe then
     raise ENoNVMeDriverException.Create('No NVMe Driver with: ' +
       FileToGetAccess);
-  end;
 end;
 
 function TCommandSetFactory.TestCommandSetCompatibility(
@@ -126,6 +115,20 @@ begin
 
   if result.IdentifyDevice.Model = '' then
     FreeAndNil(result);
+end;
+
+function TCommandSetFactory.IsNVMe(const FileToGetAccess: string):
+  Boolean;
+var
+  Dummy: TCommandSetWithIdentifyDevice;
+  TestResult: TCommandSet;
+begin
+  FillChar(Dummy, SizeOf(Dummy), #0);
+  TestResult := TestCommandSetCompatibility(
+    FileToGetAccess, TNVMeWithoutDriverCommandSet, Dummy).CommandSet;
+  result := TestResult <> nil;
+  if result then
+    FreeAndNil(TestResult);
 end;
 
 initialization

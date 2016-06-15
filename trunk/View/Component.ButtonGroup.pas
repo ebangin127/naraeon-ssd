@@ -192,7 +192,6 @@ begin
     IsRight := (Sender = List[CurrEntry].ImageButton) or
                (Sender = List[CurrEntry].LabelButton);
 
-
     if IsRight then
     begin
       if List[CurrEntry].Selected then

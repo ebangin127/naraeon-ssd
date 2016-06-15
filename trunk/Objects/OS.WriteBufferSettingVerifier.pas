@@ -17,15 +17,16 @@ type
   private
     ModelList: TStringList;
     DeviceList: TStringList;
-    function CheckAndCorrectByInterface(InterfaceName: String): TStringList;
+    function CheckAndCorrectByInterface(const InterfaceName: String):
+      TStringList;
     function CheckAndCorrectByDevice(ModelPathInRegistry: TRegistryPath;
-      CurrentDevice: String): String;
+      const CurrentDevice: String): String;
     function CheckAndCorrectByModel(InterfacePathInRegistry: TRegistryPath;
-      ModelAndFirmware: String): TStringList;
+      const ModelAndFirmware: String): TStringList;
     function CheckDevice(DevicePathInRegistry: TRegistryPath): Boolean;
-    function CheckSupportStatus(ModelAndFirmware: String): Boolean;
+    function CheckSupportStatus(const ModelAndFirmware: String): Boolean;
     function CorrectDevice(DevicePathInRegistry: TRegistryPath): Boolean;
-    function UnderbarToSpace(ModelAndFirmware: String): String;
+    function UnderbarToSpace(const ModelAndFirmware: String): String;
     function GetDeviceFriendlyName(DevicePathInRegistry: TRegistryPath): String;
   public
     function CheckAndCorrect: TStringList;
@@ -36,7 +37,7 @@ implementation
 { TWriteBufferSettingVerifier }
 
 function TWriteBufferSettingVerifier.UnderbarToSpace(
-  ModelAndFirmware: String): String;
+  const ModelAndFirmware: String): String;
 var
   CurrentPoint: Integer;
 begin
@@ -68,7 +69,7 @@ begin
 end;
 
 function TWriteBufferSettingVerifier.CheckSupportStatus(
-  ModelAndFirmware: String): Boolean;
+  const ModelAndFirmware: String): Boolean;
 var
   SupportFactory: TNSTSupportFactory;
   NSTSupport: TNSTSupport;
@@ -120,7 +121,7 @@ begin
 end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrectByDevice(
-  ModelPathInRegistry: TRegistryPath; CurrentDevice: String): String;
+  ModelPathInRegistry: TRegistryPath; const CurrentDevice: String): String;
 var
   IsDeviceNeedCorrection: Boolean;
   DevicePath: String;
@@ -142,7 +143,7 @@ end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrectByModel(
   InterfacePathInRegistry: TRegistryPath;
-  ModelAndFirmware: String): TStringList;
+  const ModelAndFirmware: String): TStringList;
 var
   CurrentDevice: String;
   CurrentDeviceResult: String;
@@ -163,7 +164,7 @@ begin
 end;
 
 function TWriteBufferSettingVerifier.CheckAndCorrectByInterface(
-  InterfaceName: String): TStringList;
+  const InterfaceName: String): TStringList;
 const
   DeviceBasePath: TRegistryPath =
     (Root: LocalMachine;

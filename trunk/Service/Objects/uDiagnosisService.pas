@@ -18,7 +18,7 @@ type
     ErrorFilePath: String;
     procedure SetPhysicalDriveList;
     procedure FreeLastChanges;
-    function GetLogLine(Timestamp: TDateTime; Content: String): String;
+    function GetLogLine(Timestamp: TDateTime; const Content: String): String;
     function IsNeedDiagnosis: Boolean;
     procedure WriteBufferCheck;
     procedure LogAndCheckSMART;
@@ -85,7 +85,7 @@ begin
 end;
 
 function TDiagnosisService.GetLogLine(Timestamp: TDateTime;
-  Content: String): String;
+  const Content: String): String;
 begin
   result := FormatDateTime('[yy/mm/dd hh:nn:ss]', Timestamp) + Content;
 end;
@@ -93,7 +93,7 @@ end;
 function TDiagnosisService.IsNeedDiagnosis: Boolean;
 begin
   result := IsFirstDiagnosis or (FormatDateTime('mm', Now) = '00');
-  if IsFirstDiagnosis = false then
+  if not IsFirstDiagnosis then
     IsFirstDiagnosis := true;
 end;
 
@@ -170,7 +170,7 @@ var
   AlertFile: TStringList;
   AllMountedPartitions: String;
 begin
-  if (Entry.SMARTInterpreted.SMARTAlert.ReplacedSector = false) or
+  if (not Entry.SMARTInterpreted.SMARTAlert.ReplacedSector) or
      (not IsReplacedSectorDifferent) then
      exit;
   AlertFile := GetAlertFile;
@@ -191,7 +191,7 @@ var
   AlertFile: TStringList;
   AllMountedPartitions: String;
 begin
-  if (Entry.SMARTInterpreted.SMARTAlert.ReadEraseError = false) or
+  if (not Entry.SMARTInterpreted.SMARTAlert.ReadEraseError) or
      (not IsReadWriteErrorDifferent) then
      exit;
   AlertFile := GetAlertFile;
@@ -266,6 +266,7 @@ begin
   FreeLastChanges;
   if PhysicalDriveList <> nil then
     FreeAndNil(PhysicalDriveList);
+  inherited;
 end;
 
 end.

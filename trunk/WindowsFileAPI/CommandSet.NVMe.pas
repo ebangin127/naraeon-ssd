@@ -108,6 +108,7 @@ var
   SlotSpeedGetter: TSlotSpeedGetter;
 {$ENDIF}
 begin
+  FillChar(result, SizeOf(result), #0);
   {$IFNDEF SERVICE}
   SlotSpeedGetter := TSlotSpeedGetter.Create(GetPathOfFileAccessing);
   try

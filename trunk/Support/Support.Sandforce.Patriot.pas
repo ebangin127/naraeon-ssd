@@ -21,6 +21,7 @@ implementation
 
 function TPatriotSandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsPatriotSandforceProduct then
     result := GetSemiSupport;
 end;

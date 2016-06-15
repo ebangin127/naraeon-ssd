@@ -23,6 +23,7 @@ implementation
 
 function TOCZSandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsOCZSandforceProduct then
     result := GetSemiSupport;
 end;

@@ -85,8 +85,8 @@ begin
   FillChar(result, SizeOf(result), #0);
 	result.Parameter.Length :=
     SizeOf(result.Parameter);
-  result.Parameter.TargetId := 0;
-  result.Parameter.CdbLength := 6;
+  result.Parameter.TargetId := SATTargetId;
+  result.Parameter.CdbLength := 8;
 	result.Parameter.SenseInfoLength :=
     SizeOf(result.SenseBuffer);
 	result.Parameter.DataTransferLength :=
@@ -129,9 +129,9 @@ var
 begin
   CommandDescriptorBlock := GetCommonCommandDescriptorBlock;
   CommandDescriptorBlock.SCSICommand := InquiryCommand;
-  CommandDescriptorBlock.LogicalBlockAddress[2] :=
+  CommandDescriptorBlock.LogicalBlockAddress[1] :=
     SizeOf(IoInnerBuffer.Buffer) shr 8;
-  CommandDescriptorBlock.LogicalBlockAddress[3] :=
+  CommandDescriptorBlock.LogicalBlockAddress[2] :=
     SizeOf(IoInnerBuffer.Buffer) and $FF;
   SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_IN, CommandDescriptorBlock);
 end;

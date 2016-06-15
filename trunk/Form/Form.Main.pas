@@ -171,6 +171,9 @@ type
     function ExtractEraseImage(const FullPath, TempFolder: string): String;
     procedure ExtractAndBurnEraseImage(const CompressedFilePath, Filename,
       TempFolder, Letter: string);
+    function FirmwareUpdateNotReady: Boolean;
+    procedure ReadyFirmwareUSBList;
+    procedure CheckNewFirmware;
   public
     IdentifiedDriveList: TPhysicalDriveList;
     SelectedDrive: IPhysicalDrive;
@@ -361,6 +364,19 @@ begin
   result := Optimizer;
 end;
 
+procedure TfMain.ReadyFirmwareUSBList;
+var
+  RemovableDriveListGetter: TRemovableDriveListGetter;
+  RemovableDriveList: TDriveList;
+begin
+  RemovableDriveListGetter := TRemovableDriveListGetter.Create('');
+  RemovableDriveList := RemovableDriveListGetter.GetDriveList;
+  PathListToVolumeLabel(RemovableDriveList, CapRemvDisk[CurrLang]);
+  cUSB.Items.Assign(RemovableDriveList);
+  FreeAndNil(RemovableDriveListGetter);
+  FreeAndNil(RemovableDriveList);
+end;
+
 procedure TfMain.ExtractAndBurnEraseImage(const CompressedFilePath: string;
   const Filename: string; const TempFolder: string; const Letter: string);
 var
@@ -404,15 +420,9 @@ begin
     (not OnlineFirmwareUpdateAvailable);
 end;
 
-procedure TfMain.iFirmUpClick(Sender: TObject);
-var
-  Query: TFirmwareQuery;
-  QueryResult: TFirmwareQueryResult;
-  RemovableDriveListGetter: TRemovableDriveListGetter;
-  RemovableDriveList: TDriveList;
+function TfMain.FirmwareUpdateNotReady: Boolean;
 begin
-  CloseDriveList;
-
+  result := false;
   if FirmwareUpdateNotAvailable then
   begin
     AlertCreate(Self, AlrtNoFirmSupport[CurrLang]);
@@ -431,14 +441,17 @@ begin
     AlertCreate(Self, AlrtNoInternet[CurrLang]);
     exit;
   end;
+  result := true;
+end;
 
-  RemovableDriveListGetter := TRemovableDriveListGetter.Create('');
-  RemovableDriveList := RemovableDriveListGetter.GetDriveList;
-  PathListToVolumeLabel(RemovableDriveList, CapRemvDisk[CurrLang]);
-  cUSB.Items.Assign(RemovableDriveList);
-  FreeAndNil(RemovableDriveListGetter);
-  FreeAndNil(RemovableDriveList);
-  
+procedure TfMain.iFirmUpClick(Sender: TObject);
+begin
+  CloseDriveList;
+
+  if FirmwareUpdateNotReady then
+    exit;
+
+  ReadyFirmwareUSBList;
   cUSB.ItemIndex := 0;
   if cUSB.Items.Count = 0 then
   begin
@@ -446,9 +459,17 @@ begin
     exit;
   end;
 
+  ButtonGroup.Click(iFirmUp);
+  CheckNewFirmware;
+end;
+
+procedure TfMain.CheckNewFirmware;
+var
+  Query: TFirmwareQuery;
+  QueryResult: TFirmwareQueryResult;
+begin
   lNewFirm.Font.Color := clWindowText;
   lNewFirm.Font.Style := [];
-  ButtonGroup.Click(iFirmUp);
 
   Query.Model := SelectedDrive.IdentifyDeviceResult.Model;
   Query.Firmware := SelectedDrive.IdentifyDeviceResult.Firmware;

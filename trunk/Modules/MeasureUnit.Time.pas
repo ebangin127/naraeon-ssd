@@ -48,6 +48,7 @@ function FormatTimeInSecond(TimeInSecond: Double): String;
 var
   CurrStr: String;
 begin
+  result := '';
   CurrStr :=
     GetTimeUnitString(TimeInSecond, HourUnit, CapHour[CurrLang]);
   if CurrStr <> '' then

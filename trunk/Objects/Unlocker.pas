@@ -3,7 +3,7 @@ unit Unlocker;
 interface
 
 uses
-  Generics.Collections,
+  SysUtils, Generics.Collections,
   Device.PhysicalDrive, Device.PhysicalDrive.List, OS.Handle,
   Getter.PhysicalDrive.PartitionList;
 

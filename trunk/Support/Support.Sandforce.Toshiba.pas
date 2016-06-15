@@ -21,6 +21,7 @@ implementation
 
 function TToshibaSandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsToshibaSandforceProduct then
     result := GetSemiSupport;
 end;

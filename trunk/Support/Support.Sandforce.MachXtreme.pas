@@ -21,6 +21,7 @@ implementation
 
 function TMachXtremeSandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsMachXtremeSandforceProduct then
     result := GetSemiSupport;
 end;

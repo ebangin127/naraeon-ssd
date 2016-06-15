@@ -223,7 +223,7 @@ end;
 
 procedure TAverageLogger.SaveToFile;
 begin
-  {$IfNDef UNITTEST}
+  ;{$IfNDef UNITTEST}
   TimestampedValueList.SaveToFile(FileName);
   {$EndIf}
 end;

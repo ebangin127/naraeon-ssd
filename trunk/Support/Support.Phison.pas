@@ -53,6 +53,7 @@ end;
 
 function TPhisonNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsProductOfPhison then
     result := GetSemiSupport;
 end;

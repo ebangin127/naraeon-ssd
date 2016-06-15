@@ -376,7 +376,7 @@ end;
 
 procedure TDirectPartitionTrimmer.LockPartition;
 begin
-  {$IfNDef UNITTEST}
+  ;{$IfNDef UNITTEST}
   if PartitionLock <> nil then
     exit;
   FreeAndNil(VolumeBitmapGetter);
@@ -395,7 +395,7 @@ end;
 
 procedure TDirectPartitionTrimmer.UnlockPartition;
 begin
-  {$IfNDef UNITTEST}
+  ;{$IfNDef UNITTEST}
   if PartitionLock = nil then
     exit;
   PartitionLock.Unlock;

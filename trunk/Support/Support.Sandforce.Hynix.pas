@@ -21,6 +21,7 @@ implementation
 
 function THynixSandforceNSTSupport.GetSupportStatus: TSupportStatus;
 begin
+  FillChar(result, SizeOf(result), #0);
   if IsHynixSandforceProduct then
     result := GetSemiSupport;
 end;

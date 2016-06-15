@@ -93,6 +93,7 @@ var
   DivideUnitSize: Integer;
   UnitSizeInMB: Int64;
 begin
+  result := '';
   DivideUnitSize := GetDivideUnitSize(Setting.FNumeralSystem);
   UnitSizeInMB :=
     Floor(Power(DivideUnitSize, UnitToTest.FPowerOfKUnit - 1));

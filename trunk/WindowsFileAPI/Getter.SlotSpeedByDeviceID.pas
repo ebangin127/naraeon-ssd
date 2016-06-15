@@ -94,6 +94,7 @@ var
   RequiredSize: DWORD;
   PropertyType: DEVPROPTYPE;
 begin
+  FillChar(result, SizeOf(result), #0);
   if SetupAPI.GetSetupAPIFunctions.SetupDiGetDevicePropertyW(
     FClassDeviceInformations, @DeviceInfoData, @DEVPKEY_PciDevice_MaxLinkSpeed,
     PropertyType, @ResultBuffer, sizeof(ResultBuffer), @RequiredSize, 0) then
@@ -110,6 +111,7 @@ var
   RequiredSize: DWORD;
   PropertyType: DEVPROPTYPE;
 begin
+  FillChar(result, SizeOf(result), #0);
   if SetupAPI.GetSetupAPIFunctions.SetupDiGetDevicePropertyW(
     FClassDeviceInformations, @DeviceInfoData,
     @DEVPKEY_PciDevice_CurrentLinkSpeed, PropertyType, @ResultBuffer,
