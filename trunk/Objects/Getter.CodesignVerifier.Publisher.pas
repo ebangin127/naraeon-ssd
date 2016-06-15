@@ -24,8 +24,8 @@ type
     function TryToComparePublisherWithContext(ValidContext: PCCERT_CONTEXT):
       Boolean;
   public
-    function VerifySignByPublisher(PathToVerify, ExpectedPublisher: string):
-      Boolean;
+    function VerifySignByPublisher(
+      const PathToVerify, ExpectedPublisher: string): Boolean;
   end;
 
 implementation
@@ -141,7 +141,7 @@ begin
     (FileHandle <> 0);
 end;
 
-function TCodesignPublisherVerifier.VerifySignByPublisher(PathToVerify,
+function TCodesignPublisherVerifier.VerifySignByPublisher(const PathToVerify,
   ExpectedPublisher: string): Boolean;
 begin
   Result := false;

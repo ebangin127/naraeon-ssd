@@ -36,6 +36,7 @@ implementation
 
 constructor TCommandSet.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 

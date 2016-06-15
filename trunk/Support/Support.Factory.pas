@@ -21,7 +21,7 @@ type
   TMetaNSTSupport = class of TNSTSupport;
   TNSTSupportFactory = class
   public
-    function GetSuitableNSTSupport(Model, Firmware: String):
+    function GetSuitableNSTSupport(const Model, Firmware: String):
       TNSTSupport;
   private
     FModel: String;
@@ -35,8 +35,8 @@ implementation
 
 { TNSTSupportFactory }
 
-function TNSTSupportFactory.GetSuitableNSTSupport(Model, Firmware: String):
-  TNSTSupport;
+function TNSTSupportFactory.GetSuitableNSTSupport(
+  const Model, Firmware: String): TNSTSupport;
 begin
   FModel := Model;
   FFirmware := Firmware;

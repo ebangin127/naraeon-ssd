@@ -24,7 +24,7 @@ implementation
 function GetTimeUnitString
   (var TimeInSecond: Double;
    UnitToTest: TimeUnit;
-   UnitName: String): String;
+   const UnitName: String): String;
 var
   UnitSizeInSecond: Int64;
   TimeInThisUnit: Integer;

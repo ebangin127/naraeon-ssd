@@ -57,13 +57,14 @@ type
     WinTrustFileInfo: TWinTrustFileInfo;
     WinTrustData: TWinTrustData;
     procedure SetWinTrustData;
-    procedure SetWinTrustFileInfo(PathToVerify: String);
+    procedure SetWinTrustFileInfo(const PathToVerify: String);
     function VerifyAndReturnResult: Boolean;
-    function IsCodeSigned(PathToVerify: String): Boolean;
-    function VerifyPublisher(PathToVerify, ExpectedPublisher: string): Boolean;
+    function IsCodeSigned(const PathToVerify: String): Boolean;
+    function VerifyPublisher(const PathToVerify, ExpectedPublisher: string):
+      Boolean;
 
   public
-    function VerifySignByPublisher(PathToVerify,
+    function VerifySignByPublisher(const PathToVerify,
       ExpectedPublisher: string): Boolean;
   end;
 
@@ -71,7 +72,7 @@ implementation
 
 { TCodesignVerifier }
 
-procedure TCodesignVerifier.SetWinTrustFileInfo(PathToVerify: String);
+procedure TCodesignVerifier.SetWinTrustFileInfo(const PathToVerify: String);
 begin
   ZeroMemory(@WinTrustFileInfo, SizeOf(WinTrustFileInfo));
   WinTrustFileInfo.cbStruct := sizeof(WinTrustFileInfo);
@@ -98,7 +99,7 @@ begin
   result := ErrorCode = ERROR_SUCCESS;
 end;
 
-function TCodesignVerifier.VerifyPublisher(PathToVerify,
+function TCodesignVerifier.VerifyPublisher(const PathToVerify,
   ExpectedPublisher: string): Boolean;
 var
   CodesignPublisherVerifier: TCodesignPublisherVerifier;
@@ -109,7 +110,7 @@ begin
   FreeAndNil(CodesignPublisherVerifier);
 end;
 
-function TCodesignVerifier.VerifySignByPublisher(PathToVerify,
+function TCodesignVerifier.VerifySignByPublisher(const PathToVerify,
   ExpectedPublisher: string): Boolean;
 begin
   result := IsCodeSigned(PathToVerify);
@@ -121,7 +122,7 @@ begin
     result := VerifyPublisher(PathToVerify, ExpectedPublisher);
 end;
 
-function TCodesignVerifier.IsCodeSigned(PathToVerify: String): Boolean;
+function TCodesignVerifier.IsCodeSigned(const PathToVerify: String): Boolean;
 begin
   SetWinTrustFileInfo(PathToVerify);
   SetWinTrustData;

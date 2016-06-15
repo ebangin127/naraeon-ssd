@@ -164,7 +164,7 @@ begin
     fMain.SelectedDrive.IdentifyDeviceResult.IsDataSetManagementSupported;
   fMain.iTrim.Visible := fMain.lTrim.Visible;
   fMain.bSchedule.Visible := IsBelowWindows8(VersionHelper.Version);
-  if fMain.bSchedule.Visible = false then
+  if not fMain.bSchedule.Visible then
   begin
     fMain.bTrimStart.Width :=
       fMain.bSchedule.Left - fMain.bTrimStart.Left + fMain.bSchedule.Width;

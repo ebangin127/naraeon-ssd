@@ -37,7 +37,7 @@ begin
   SetUserAgent('Naraeon SSD Tools');
 end;
 
-function TUAWebBrowser.Invoke(DispID: Integer; const IID: TGUID;
+function TUAWebBrowser.Invoke(DispID: Integer; const IID: TGUID; //FI:C102
                               LocaleID: Integer; Flags: Word; var Params;
                               VarResult, ExcepInfo, ArgErr: Pointer): HRESULT;
 begin

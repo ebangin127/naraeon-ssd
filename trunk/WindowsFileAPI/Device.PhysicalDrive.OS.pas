@@ -82,8 +82,8 @@ procedure TOSPhysicalDrive.RequestDiskSizeInByte;
 var
   DiskGeometryGetter: TDiskGeometryGetter;
 begin
+  DiskGeometryGetter := TDiskGeometryGetter.Create(GetPathOfFileAccessing);
   try
-    DiskGeometryGetter := TDiskGeometryGetter.Create(GetPathOfFileAccessing);
     DiskSizeInByteReadWrite := DiskGeometryGetter.GetDiskSizeInByte;
   finally
     FreeAndNil(DiskGeometryGetter);

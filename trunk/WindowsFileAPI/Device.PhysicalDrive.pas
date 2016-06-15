@@ -9,7 +9,7 @@ uses
   BufferInterpreter, Getter.PhysicalDrive.NCQAvailability, OS.Handle;
 
 type
-  IPhysicalDrive = interface
+  IPhysicalDrive = interface['{6D76DB52-42D7-4E84-AFAB-61594C7456F9}']
     function GetSupportStatusOrRequestAndReturn: TSupportStatus;
     function GetDiskSizeInByte: TLargeInteger;
     function GetIsDriveAvailable: Boolean;
@@ -129,7 +129,7 @@ end;
 function TPhysicalDrive.GetSupportStatusOrRequestAndReturn:
   TSupportStatus;
 begin
-  if SupportStatusReadWrite.Supported = false then
+  if not SupportStatusReadWrite.Supported then
     RequestSupportStatus;
   result := SupportStatusReadWrite;
 end;

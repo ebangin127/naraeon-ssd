@@ -109,6 +109,7 @@ const
 var
   UpdateNoticeStream: TStringStream;
 begin
+  result := '';
   UpdateNoticeStream :=
     HTTPWeb.GetToStringStream(VersionLogHeader + VersionLogExtension);
   if UpdateNoticeStream.Size > 0 then
@@ -197,7 +198,7 @@ end;
 procedure TUpdater.PostDownloadMethod;
 begin
   fMain.CloseButtonGroup;
-  if FileExists(DestinationPath) = false then
+  if not FileExists(DestinationPath) then
   begin
     AlertCreate(fMain, AlrtVerCanc[CurrLang]);
     fMain.TerminateUpdateThread;

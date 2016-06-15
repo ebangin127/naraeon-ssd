@@ -43,6 +43,7 @@ end;
 
 function TPrefetchOptimizer.GetName: String;
 begin
+  result := '';
   if Win32MajorVersion = 6 then
     exit(CapOptSupFetch[CurrLang])
   else if Win32MajorVersion = 5 then

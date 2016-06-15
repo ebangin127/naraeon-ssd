@@ -26,6 +26,7 @@ constructor THTTPSWeb.Create;
 const
   Timeout = 1500;
 begin
+  inherited;
   SSLIoHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   SSLIoHandler.ConnectTimeout := Timeout;
   SSLIoHandler.ReadTimeout := Timeout;

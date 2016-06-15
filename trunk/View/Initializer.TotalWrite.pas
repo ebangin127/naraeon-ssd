@@ -41,7 +41,7 @@ end;
 
 procedure TMainformTotalWriteApplier.RestoreComponentsFromCountIfSet;
 begin
-  if fMain.l1Month.Visible = false then
+  if not fMain.l1Month.Visible then
   begin
     fMain.l1Month.Visible := false;
     fMain.lHost.Top := fMain.lHost.Top + 25;
@@ -136,7 +136,7 @@ var
 begin
   BinaryKiBtoMiB.FNumeralSystem := Binary;
   BinaryKiBtoMiB.FFromUnit := KiloUnit;
-  BinaryKiBtoMiB.FFromUnit := MegaUnit;
+  BinaryKiBtoMiB.FToUnit := MegaUnit;
   
   result :=
     ChangeDatasizeUnit(SizeInKiB, BinaryKiBtoMiB);

@@ -29,6 +29,7 @@ implementation
 
 constructor TSCSIAddressGetter.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, DesiredReadWrite);
 end;
 

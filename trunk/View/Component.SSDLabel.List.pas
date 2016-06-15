@@ -30,8 +30,8 @@ type
     procedure Add(SSDLabel: TSSDLabel);
     function IndexOf(Entry: TPhysicalDrive): Integer;
     function IsExists(Entry: TPhysicalDrive): Boolean;
-    function IndexOfByPath(Path: String): Integer;
-    function IsExistsByPath(Path: String): Boolean;
+    function IndexOfByPath(const Path: String): Integer;
+    function IsExistsByPath(const Path: String): Boolean;
   end;
 
   EIndexOfNotFound = class(Exception);
@@ -156,7 +156,7 @@ destructor TSSDLabelList.Destroy;
 var
   CurrentItem: Integer;
 begin
-  for CurrentItem := 0 to Count - 1 do
+  for CurrentItem := 0 to Count - 1 do //FI:W528
     Delete(0);
   inherited;
 end;
@@ -184,7 +184,7 @@ begin
   end;
 end;
 
-function TSSDLabelList.IndexOfByPath(Path: String): Integer;
+function TSSDLabelList.IndexOfByPath(const Path: String): Integer;
 var
   CurrentEntry: Integer;
 begin
@@ -195,7 +195,7 @@ begin
     ' that item');
 end;
 
-function TSSDLabelList.IsExistsByPath(Path: String): Boolean;
+function TSSDLabelList.IsExistsByPath(const Path: String): Boolean;
 begin
   try
     result := true;

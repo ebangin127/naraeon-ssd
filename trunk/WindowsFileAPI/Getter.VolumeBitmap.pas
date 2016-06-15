@@ -45,6 +45,7 @@ implementation
 
 constructor TVolumeBitmapGetter.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, DesiredReadOnly);
 end;
 

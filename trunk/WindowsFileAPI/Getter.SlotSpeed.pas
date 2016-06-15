@@ -14,7 +14,7 @@ type
     function GetStorageDeviceID(const WMIObject: OleVariant): String;
     function TryToGetSlotDataWidth: TSlotMaxCurrSpeed;
     function GetControllerDeviceID(const WMIObject: OleVariant;
-      StorageDeviceID: String): String;
+      const StorageDeviceID: String): String;
     function GetOSSlotInformationByDeviceID(
       const ControllerDeviceID: String): TOSSlotMaxCurrSpeed;
     function InterpretOSSlotSpeed(
@@ -68,7 +68,7 @@ end;
 procedure TSlotSpeedGetter.FreeWMIConnectionIfNeeded(
   const ThisThreadWMIConnection: TWMIConnection);
 begin
-  if WMIConnection.IsMyConnection = false then
+  if not WMIConnection.IsMyConnection then
     ThisThreadWMIConnection.Free;
 end;
 
@@ -115,7 +115,7 @@ begin
 end;
 
 function TSlotSpeedGetter.GetControllerDeviceID(const WMIObject: OleVariant;
-  StorageDeviceID: String): String;
+  const StorageDeviceID: String): String;
 const
   PreQuery = 'ASSOCIATORS OF {Win32_PnPEntity.DeviceID=''';
   PostQuery = '''} WHERE AssocClass=Win32_SCSIControllerDevice';

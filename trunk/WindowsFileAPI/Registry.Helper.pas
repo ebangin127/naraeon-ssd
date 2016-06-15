@@ -19,10 +19,10 @@ type
       PreparedList: TStringList): TStringList;
     function SetRegInt(const Path: TRegistryPath; NewValue: Integer):
       Boolean;
-    function SetRegStr(const Path: TRegistryPath; NewValue: String):
+    function SetRegStr(const Path: TRegistryPath; const NewValue: String):
       Boolean;
-    function LegacyPathToNew(Root: String; PathUnderHKEY: String;
-      ValueName: String): TRegistryPath;
+    function LegacyPathToNew(const Root: String; const PathUnderHKEY: String;
+      const ValueName: String): TRegistryPath;
     class function Create: TNSTRegistry;
   private
     procedure SetPath(PathToSet: TRegistryPath);
@@ -72,7 +72,7 @@ begin
     Registry.OpenKeyWithRootAndPath(Path.Root, Path.PathUnderHKEY);
 end;
 
-function TNSTRegistry.LegacyPathToNew(Root: String; PathUnderHKEY,
+function TNSTRegistry.LegacyPathToNew(const Root: String; const PathUnderHKEY,
   ValueName: String): TRegistryPath;
 begin
   if Root = 'CR' then result.Root := ClassesRoot
@@ -145,7 +145,7 @@ begin
 end;
 
 function TNSTRegistry.SetRegStr(const Path: TRegistryPath;
-  NewValue: String): Boolean;
+  const NewValue: String): Boolean;
 begin
   SetPath(Path);
   result := true;

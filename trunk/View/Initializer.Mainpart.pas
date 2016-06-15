@@ -22,7 +22,7 @@ type
     procedure IfOldFirmwareSetLabelBoldAndRed(IsOldFirmware: Boolean);
     function IsUnknownConnection: Boolean;
     procedure SetFirmwareLabel;
-    procedure SetNewFirmwareCaption(LatestVersion: String);
+    procedure SetNewFirmwareCaption(const LatestVersion: String);
     function IsNVMe: Boolean;
     function GetNVMeConnectionSpeedString: String;
   public
@@ -152,8 +152,8 @@ var
 begin
   fMain.lSerial.Caption := CapSerial[CurrLang];
   if not IsSerialOpened then
-    for CurrentSerial := 0 to
-      Length(fMain.SelectedDrive.IdentifyDeviceResult.Serial) - 1 do
+    for CurrentSerial := 1 to //FI:W528
+      fMain.SelectedDrive.IdentifyDeviceResult.Serial.Length do
         fMain.lSerial.Caption := fMain.lSerial.Caption + 'X'
   else
     fMain.lSerial.Caption := fMain.lSerial.Caption +
@@ -184,7 +184,7 @@ begin
 end;
 
 procedure TMainformMainpartApplier.SetNewFirmwareCaption(
-  LatestVersion: String);
+  const LatestVersion: String);
 begin
   fMain.lNewFirm.Caption :=
     CapNewFirm[CurrLang] + LatestVersion;

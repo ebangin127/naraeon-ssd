@@ -50,6 +50,7 @@ implementation
 
 constructor TDiskGeometryGetter.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 

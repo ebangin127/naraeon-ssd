@@ -24,12 +24,12 @@ type
     procedure IfDriveConnectedByKnownInterfaceAddToList;
     procedure IfFixedOrUSBDriveAddToList;
     function IsCurrentDriveAvailable: Boolean;
-    function IsDriveConnectedBy(InterfaceName: String): Boolean;
+    function IsDriveConnectedBy(const InterfaceName: String): Boolean;
     function IsDriveConnectedByKnownInterface: Boolean;
     function IsDriveLoaded: Boolean;
     function IsDriveSetValidID: Boolean;
     function IsDriveSetValidType: Boolean;
-    function IsHarddrive(MediaType: String): Boolean;
+    function IsHarddrive(const MediaType: String): Boolean;
     procedure TraverseResultAndAddFixedOrUSBDrive(
       DiskDriveSearchResult: IEnumVARIANT);
     procedure TryToGetPhysicalDriveList;
@@ -70,7 +70,8 @@ begin
       ThereIsAnotherDrive;
 end;
 
-function TWMIPhysicalDriveListGetter.IsHarddrive(MediaType: String): Boolean;
+function TWMIPhysicalDriveListGetter.IsHarddrive(const MediaType: String):
+  Boolean;
 begin
   //Refer https://msdn.microsoft.com/en-us/library/aa394132%28v=vs.85%29.aspx
   result := Pos('hard', LowerCase(MediaType)) >= 0;
@@ -98,7 +99,7 @@ begin
 end;
 
 function TWMIPhysicalDriveListGetter.IsDriveConnectedBy
-  (InterfaceName: String): Boolean;
+  (const InterfaceName: String): Boolean;
 begin
   result := CurrentDrive.InterfaceType = InterfaceName;
 end;

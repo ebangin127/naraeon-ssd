@@ -10,12 +10,12 @@ type
   TSevenZip = class
   private
     function BuildCommand
-      (SzipPath, SrcFile, DestFolder, Password: String): String;
-    function VerifySevenZip(SzipPath: String): Boolean;
+      (const SzipPath, SrcFile, DestFolder, Password: String): String;
+    function VerifySevenZip(const SzipPath: String): Boolean;
   public
     function Extract
-      (SzipPath, SrcFile, DestFolder: String;
-       Password: String = ''): AnsiString;
+      (const SzipPath, SrcFile, DestFolder: String;
+       const Password: String = ''): AnsiString;
     class function Create: TSevenZip;
   end;
 
@@ -26,7 +26,7 @@ implementation
 
 { TSevenZip }
 
-function TSevenZip.BuildCommand(SzipPath, SrcFile, DestFolder,
+function TSevenZip.BuildCommand(const SzipPath, SrcFile, DestFolder,
   Password: String): String;
 begin
   result :=
@@ -41,7 +41,7 @@ begin
     result + ' -p"' + Password + '"';
 end;
 
-function TSevenZip.VerifySevenZip(SzipPath: String): Boolean;
+function TSevenZip.VerifySevenZip(const SzipPath: String): Boolean;
 var
   CodesignVerifier: TCodesignVerifier;
 begin
@@ -59,8 +59,9 @@ begin
 end;
 
 function TSevenZip.Extract
-  (SzipPath, SrcFile, DestFolder, Password: String): AnsiString;
+  (const SzipPath, SrcFile, DestFolder, Password: String): AnsiString;
 begin
+  result := '';
   if VerifySevenZip(SzipPath) then
     result :=
       ProcessOpener.OpenProcWithOutput('C:\',

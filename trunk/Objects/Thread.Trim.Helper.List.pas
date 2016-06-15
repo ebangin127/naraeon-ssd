@@ -25,7 +25,7 @@ type
     procedure CheckIssueAndTrimAppliedPartitions;
     procedure TrimAppliedPartitions;
     procedure CheckNilPartitionListIssue;
-    procedure TrimPartition(PartitionPathToTrim: String);
+    procedure TrimPartition(const PartitionPathToTrim: String);
     procedure CheckEntryAndTrimPartition(PartitionToTrim: TTrimListEntry);
     function GetTrimSynchronization: TTrimSynchronization;
     procedure IfNeedUICreateModelController;
@@ -146,7 +146,7 @@ var
   CurrentPartition: Integer;
 begin
   IfNeedUICreateModelController;
-  for CurrentPartition := 0 to PartitionsToTrim.Count - 1 do
+  for CurrentPartition := 0 to PartitionsToTrim.Count - 1 do //FI:W528
     CheckEntryAndTrimPartition(PartitionsToTrim.GetNextPartition);
   IfNeedUIFreeModelController;
 end;
@@ -194,7 +194,7 @@ begin
     IsBelowWindows8(VersionHelper.Version) or IsExternal(PartitionPathToTrim);
 end;
 
-procedure TListTrimmer.TrimPartition(PartitionPathToTrim: String);
+procedure TListTrimmer.TrimPartition(const PartitionPathToTrim: String);
 var
   PartitionTrimmer: TPartitionTrimmer;
   TrimSynchronization: TTrimSynchronization;

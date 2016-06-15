@@ -8,7 +8,7 @@ uses
 type
   TStringHelper = class
   public
-    function IsAscii(PathToValidate: String): Boolean;
+    function IsAscii(const PathToValidate: String): Boolean;
   end;
 
 var
@@ -18,7 +18,7 @@ implementation
 
 {$R-}
 
-function TStringHelper.IsAscii(PathToValidate: String): Boolean;
+function TStringHelper.IsAscii(const PathToValidate: String): Boolean;
 var
   CurrentCharacter: Char;
 begin

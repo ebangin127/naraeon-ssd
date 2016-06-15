@@ -60,7 +60,7 @@ begin
     Constraints.MaxHeight := 0;
     Constraints.MinHeight := 0;
     Constraints.MaxWidth := 0;
-    Constraints.MaxWidth := 0;
+    Constraints.MinWidth := 0;
 
     ClientHeight := MaxHeight;
     ClientWidth := MaxWidth;
@@ -68,7 +68,7 @@ begin
     Constraints.MaxHeight := Height;
     Constraints.MinHeight := Height;
     Constraints.MaxWidth := Width;
-    Constraints.MaxWidth := Width;
+    Constraints.MinWidth := Width;
   end;
 end;
 
@@ -82,7 +82,7 @@ begin
     Constraints.MaxHeight := 0;
     Constraints.MinHeight := 0;
     Constraints.MaxWidth := 0;
-    Constraints.MaxWidth := 0;
+    Constraints.MinWidth := 0;
 
     ClientHeight := MinHeight;
     ClientWidth := MinWidth;
@@ -90,7 +90,7 @@ begin
     Constraints.MaxHeight := Height;
     Constraints.MinHeight := Height;
     Constraints.MaxWidth := Width;
-    Constraints.MaxWidth := Width;
+    Constraints.MinWidth := Width;
   end;
 end;
 

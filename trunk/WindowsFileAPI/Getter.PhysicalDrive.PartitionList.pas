@@ -37,7 +37,7 @@ type
     procedure IfPartitionOfThisDriveAddToList(CurrentDrive: Integer);
     function IsThisExtentDriveOfThisDriveNumber(
       CurrentExtent: Cardinal): Boolean;
-    function DeleteLastBackslash(Source: String): String;
+    function DeleteLastBackslash(const Source: String): String;
     function CreateAndReturnThisDrivesPartitionList: TPartitionList;
     function TryToGetPartitionList: TPartitionList;
     function FindPhysicalDriveNumberInPartitionExtentEntry:
@@ -53,9 +53,9 @@ function TPartitionListGetter.GetFixedDrives: TDriveList;
 var
   FixedDriveListGetter: TFixedDriveListGetter;
 begin
+  FixedDriveListGetter := TFixedDriveListGetter.Create(
+    GetPathOfFileAccessing);
   try
-    FixedDriveListGetter := TFixedDriveListGetter.Create(
-      GetPathOfFileAccessing);
     result := FixedDriveListGetter.GetDriveList;
   finally
     FreeAndNil(FixedDriveListGetter);
@@ -99,7 +99,7 @@ begin
 end;
 
 function TPartitionListGetter.DeleteLastBackslash
-  (Source: String): String;
+  (const Source: String): String;
 begin
   result := Source;
   if Source[Length(Source)] = '\' then

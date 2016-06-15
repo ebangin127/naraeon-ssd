@@ -12,7 +12,7 @@ type
     type
       TPartitionPosition = (First, Last, Mid);
     procedure AppendCurrentPartitionToCaption(Position: TPartitionPosition;
-      Letter: String);
+      const Letter: String);
     procedure AppendPartitionListToCaption(PartitionList: TPartitionList);
     procedure SetCaption;
     procedure SetCaptionAsModelAndDiskSizeInMB;
@@ -116,7 +116,7 @@ begin
 end;
 
 procedure TSSDLabel.AppendCurrentPartitionToCaption(
-  Position: TPartitionPosition; Letter: String);
+  Position: TPartitionPosition; const Letter: String);
 begin
   Caption := Caption + Letter;
 

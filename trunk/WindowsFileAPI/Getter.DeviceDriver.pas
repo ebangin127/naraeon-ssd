@@ -24,11 +24,11 @@ type
     function GetStorageDeviceID(WMIObject: IDispatch): String;
     procedure TryToGetDeviceDriver;
     function GetSCSIControllerDeviceID(WMIObject: IDispatch;
-      StorageDeviceID: String): String;
+      const StorageDeviceID: String): String;
     function GetDeviceDriverInformation(WMIObject: IDispatch;
-      ControllerDeviceID: String): TDeviceDriver;
+      const ControllerDeviceID: String): TDeviceDriver;
     function GetIDEControllerDeviceID(WMIObject: IDispatch;
-      StorageDeviceID: String): String;
+      const StorageDeviceID: String): String;
   end;
 
 implementation
@@ -88,7 +88,7 @@ begin
 end;
 
 function TDeviceDriverGetter.GetSCSIControllerDeviceID(WMIObject: IDispatch;
-  StorageDeviceID: String): String;
+  const StorageDeviceID: String): String;
 const
   PreQuery = 'ASSOCIATORS OF {Win32_PnPEntity.DeviceID=''';
   PostQuery = '''} WHERE AssocClass=Win32_SCSIControllerDevice';
@@ -110,7 +110,7 @@ begin
 end;
 
 function TDeviceDriverGetter.GetIDEControllerDeviceID(WMIObject: IDispatch;
-  StorageDeviceID: String): String;
+  const StorageDeviceID: String): String;
 const
   PreQuery = 'ASSOCIATORS OF {Win32_PnPEntity.DeviceID=''';
   PostQuery = '''} WHERE AssocClass=Win32_IDEControllerDevice';
@@ -132,7 +132,7 @@ begin
 end;
 
 function TDeviceDriverGetter.GetDeviceDriverInformation(WMIObject: IDispatch;
-  ControllerDeviceID: String): TDeviceDriver;
+  const ControllerDeviceID: String): TDeviceDriver;
 const
   PreQuery = 'SELECT * FROM Win32_PnPSignedDriver WHERE DeviceID=''';
   PostQuery = '''';
@@ -143,10 +143,11 @@ var
   CurrentDevice: OleVariant;
   DeviceReturned: Cardinal;
   Query: String;
+  UnescapedControllerDeviceID: String;
 begin
-  ControllerDeviceID := StringReplace(ControllerDeviceID, '\', '\\',
+  UnescapedControllerDeviceID := StringReplace(ControllerDeviceID, '\', '\\',
     [rfReplaceAll]);
-  Query := PreQuery + ControllerDeviceID + PostQuery;
+  Query := PreQuery + UnescapedControllerDeviceID + PostQuery;
   ResultAsOleVariant := OleVariant(WMIObject).ExecQuery(Query);
   EnumVariant :=
     IUnknown(ResultAsOleVariant._NewEnum) as IEnumVARIANT;

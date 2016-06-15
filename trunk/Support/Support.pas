@@ -58,9 +58,9 @@ type
     property Firmware: String read FFirmware;
   public
     constructor Create; overload;
-    constructor Create(ModelToCheck, FirmwareToCheck: String); overload;
+    constructor Create(const ModelToCheck, FirmwareToCheck: String); overload;
 
-    procedure SetModelAndFirmware(ModelToCheck, FirmwareToCheck: String);
+    procedure SetModelAndFirmware(const ModelToCheck, FirmwareToCheck: String);
 
     function GetSupportStatus: TSupportStatus; virtual; abstract;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -71,16 +71,17 @@ implementation
 
 { TNSTSupport }
 
-constructor TNSTSupport.Create;
-begin
-end;
-
-constructor TNSTSupport.Create(ModelToCheck, FirmwareToCheck: String);
+constructor TNSTSupport.Create(const ModelToCheck, FirmwareToCheck: String);
 begin
   SetModelAndFirmware(ModelToCheck, FirmwareToCheck);
 end;
 
-procedure TNSTSupport.SetModelAndFirmware(ModelToCheck,
+constructor TNSTSupport.Create;
+begin
+  ;// Intended to empty because of overloading rule
+end;
+
+procedure TNSTSupport.SetModelAndFirmware(const ModelToCheck,
   FirmwareToCheck: String);
 begin
   FModel := UpperCase(ModelToCheck);

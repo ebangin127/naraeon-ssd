@@ -25,11 +25,11 @@ procedure CheckEssentialDir;
 begin
   if FileExists(EnvironmentVariable.AppPath + 'Setup.exe') then
     SysUtils.DeleteFile(EnvironmentVariable.AppPath + 'Setup.exe');
-  if DirectoryExists(EnvironmentVariable.AppPath + 'Image') = false then
+  if not DirectoryExists(EnvironmentVariable.AppPath + 'Image') then
     CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Image'), nil);
-  if DirectoryExists(EnvironmentVariable.AppPath + 'Erase') = false then
+  if not DirectoryExists(EnvironmentVariable.AppPath + 'Erase') then
     CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Erase'), nil);
-  if DirectoryExists(EnvironmentVariable.AppPath + 'Rufus') = false then
+  if not DirectoryExists(EnvironmentVariable.AppPath + 'Rufus') then
     CreateDirectory(PChar(EnvironmentVariable.AppPath + 'Rufus'), nil);
 end;
 

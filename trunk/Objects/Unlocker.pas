@@ -8,7 +8,7 @@ uses
   Getter.PhysicalDrive.PartitionList;
 
 type
-  IDriveHandleUnlocker = interface
+  IDriveHandleUnlocker = interface['{8BBD8DB6-A063-4982-8FBA-54051BE87A2A}']
 
   end;
   TOSFileUnlockList = TList<IOSFileUnlock>;

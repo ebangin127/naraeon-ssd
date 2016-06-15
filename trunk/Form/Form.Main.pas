@@ -203,7 +203,7 @@ implementation
 
 procedure TfMain.bEraseUSBStartClick(Sender: TObject);
 begin
-  if cEraseAgree.Checked = false then
+  if not cEraseAgree.Checked then
   begin
     AlertCreate(Self, AlrtNoCheck[CurrLang]);
     exit;
@@ -220,7 +220,7 @@ procedure TfMain.bFirmStartClick(Sender: TObject);
 var
   FirmwareDownloader: TFirmwareDownloader;
 begin
-  if fMain.cAgree.Checked = false then
+  if not fMain.cAgree.Checked then
   begin
     AlertCreate(Self, AlrtNoCheck[CurrLang]);
     exit;
@@ -281,7 +281,7 @@ end;
 
 procedure TfMain.CloseDriveList;
 begin
-  if GSSDSel.Visible = true then
+  if GSSDSel.Visible then
   begin
     GSSDSel.Visible := false;
     SSDSelLbl.Caption := CapSSDSelOpn[CurrLang];
@@ -581,19 +581,18 @@ end;
 
 procedure TfMain.lSerialClick(Sender: TObject);
 var
-  CurrNum: Integer;
+  CurrentIndex: Integer;
 begin
-  if ShowSerial then
+  ShowSerial := not ShowSerial;
+  if not ShowSerial then
   begin
-    ShowSerial := false;
     lSerial.Caption := CapSerial[CurrLang];
-    for CurrNum := 0 to
-      Length(SelectedDrive.IdentifyDeviceResult.Serial) - 1 do
+    for CurrentIndex := 1 to //FI:W528
+      SelectedDrive.IdentifyDeviceResult.Serial.Length do
         lSerial.Caption := lSerial.Caption + 'X';
   end
   else
   begin
-    ShowSerial := true;
     lSerial.Caption := CapSerial[CurrLang] +
       SelectedDrive.IdentifyDeviceResult.Serial;
   end;
@@ -627,7 +626,7 @@ end;
 
 procedure TfMain.SSDSelLblMouseEnter(Sender: TObject);
 begin
-  if gSSDSel.Visible = false then
+  if not gSSDSel.Visible then
   begin
     gSSDSel.Visible := true;
     gSSDSel.BringToFront;

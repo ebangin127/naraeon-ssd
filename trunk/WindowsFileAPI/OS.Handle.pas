@@ -10,7 +10,7 @@ type
   TCreateFileDesiredAccess =
     (DesiredNone, DesiredReadOnly, DesiredReadWrite);
   PTHandle = ^THandle;
-  IOSFileUnlock = interface
+  IOSFileUnlock = interface['{D572D64B-2F90-44EF-AE59-98415B186D8B}']
   end;
   TOSFileUnlock = class(TInterfacedObject, IOSFileUnlock)
   public

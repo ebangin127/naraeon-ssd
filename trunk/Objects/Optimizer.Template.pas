@@ -7,7 +7,7 @@ uses
   Getter.OS.Version, OS.Version.Helper;
 
 type
-  IOptimizationUnit = interface
+  IOptimizationUnit = interface['{4B334B0F-9AB0-4D12-8CCB-8307FA239698}']
     function IsOptional: Boolean;
     function IsCompatible: Boolean;
     function IsApplied: Boolean;

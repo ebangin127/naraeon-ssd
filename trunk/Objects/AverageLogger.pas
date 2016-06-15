@@ -25,13 +25,13 @@ type
     TimestampedValueList: TStringList;
     FileName: String;
     procedure ChangeLastRecordedPeriodToNow;
-    procedure AddNewRecordWithTimestamp(NewValue: String);
-    procedure ReadFileOrCreateNew(FileName: String);
-    function IsNewValueInvalid(NewValue: String): Boolean;
+    procedure AddNewRecordWithTimestamp(const NewValue: String);
+    procedure ReadFileOrCreateNew(const FileName: String);
+    function IsNewValueInvalid(const NewValue: String): Boolean;
     procedure InitializeAverageTodayDelta;
-    procedure ReadAndSetAverageTodayDelta(NewValue: String);
-    procedure SetAverage(NewValue: String);
-    procedure RefreshFile(NewValue: String);
+    procedure ReadAndSetAverageTodayDelta(const NewValue: String);
+    procedure SetAverage(const NewValue: String);
+    procedure RefreshFile(const NewValue: String);
     procedure DisposeExpiredRecords;
     procedure SaveToFile;
     function IsNewRecordNeeded: Boolean;
@@ -39,18 +39,18 @@ type
   protected
     function GetUnit: Double; virtual; abstract;
   public
-    constructor Create(FileName: String); overload;
+    constructor Create(const FileName: String); overload;
     constructor Create(FileContents: TStringList); overload;
-    procedure ReadAndRefresh(NewValue: String);
+    procedure ReadAndRefresh(const NewValue: String);
     function GetFormattedTodayDelta: String;
     function GetMaxPeriodFormattedAverage: TPeriodAverage;  
-    class function BuildFileName(Folder, Serial: String): String;
+    class function BuildFileName(const Folder, Serial: String): String;
     destructor Destroy; override;
   end;
 
 implementation
 
-procedure TAverageLogger.ReadFileOrCreateNew(FileName: String);
+procedure TAverageLogger.ReadFileOrCreateNew(const FileName: String);
 begin
   self.FileName := FileName;
   if not FileExists(FileName) then
@@ -59,7 +59,7 @@ begin
     TimestampedValueList.LoadFromFile(FileName);
 end;
 
-constructor TAverageLogger.Create(FileName: String);
+constructor TAverageLogger.Create(const FileName: String);
 begin
   TimestampedValueList := TStringList.Create;
   Create(TimestampedValueList);
@@ -69,9 +69,10 @@ end;
 destructor TAverageLogger.Destroy;
 begin
   FreeAndNil(TimestampedValueList);
+  inherited;
 end;
 
-function TAverageLogger.IsNewValueInvalid(NewValue: String): Boolean;
+function TAverageLogger.IsNewValueInvalid(const NewValue: String): Boolean;
 var
   NewValueInUInt64: UInt64;
 begin
@@ -90,7 +91,7 @@ begin
   TodayDelta := 0;
 end;
 
-procedure TAverageLogger.SetAverage(NewValue: String);
+procedure TAverageLogger.SetAverage(const NewValue: String);
 const
   AvgMax = 2;
   AveragePeriodInSet: Array[0..AvgMax] of Set of Byte =
@@ -132,7 +133,7 @@ begin
   result := MaxPeriodAverage;
 end;
 
-procedure TAverageLogger.ReadAndSetAverageTodayDelta(NewValue: String);
+procedure TAverageLogger.ReadAndSetAverageTodayDelta(const NewValue: String);
 begin
   if TimestampedValueList.Count = 0 then
     exit;
@@ -156,7 +157,7 @@ begin
     (TodayDelta > 0);
 end;
 
-procedure TAverageLogger.RefreshFile(NewValue: String);
+procedure TAverageLogger.RefreshFile(const NewValue: String);
 begin
   if LastDateInLog = FormatDateTime('yy/mm/dd', Now) then
     exit;
@@ -167,7 +168,7 @@ begin
   else ChangeLastRecordedPeriodToNow;
 end;
 
-procedure TAverageLogger.ReadAndRefresh(NewValue: String);
+procedure TAverageLogger.ReadAndRefresh(const NewValue: String);
 begin
   InitializeAverageTodayDelta;
   if IsNewValueInvalid(NewValue) then
@@ -213,7 +214,7 @@ begin
     DisposeExpiredRecords;
 end;
 
-procedure TAverageLogger.AddNewRecordWithTimestamp(NewValue: String);
+procedure TAverageLogger.AddNewRecordWithTimestamp(const NewValue: String);
 begin
   TimestampedValueList.Insert(0, NewValue);
   TimestampedValueList.Insert(0, FormatDateTime('yy/mm/dd', Now));
@@ -227,7 +228,8 @@ begin
   {$EndIf}
 end;
 
-class function TAverageLogger.BuildFileName(Folder, Serial: String): String;
+class function TAverageLogger.BuildFileName(const Folder, Serial: String):
+  String;
 begin
   result := Folder + 'WriteLog' + Serial + '.txt';
 end;

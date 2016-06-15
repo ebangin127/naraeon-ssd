@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ClipBrd;
 
-procedure AlertCreate(Sender: TForm; Msg: String);
+procedure AlertCreate(const Sender: TForm; const Msg: String);
 
 type
   TfAlert = class(TForm)
@@ -31,11 +31,11 @@ implementation
 
 {$R *.dfm}
 
-procedure AlertCreate(Sender: TForm; Msg: String);
+procedure AlertCreate(const Sender: TForm; const Msg: String);
 begin
   if fAlert <> Nil then FreeAndNil(fAlert);
+  fAlert := TfAlert.Create(Sender);
   try
-    fAlert := TfAlert.Create(Sender);
     fAlert.lMessage.Caption := Msg;
     fAlert.ShowModal;
   finally

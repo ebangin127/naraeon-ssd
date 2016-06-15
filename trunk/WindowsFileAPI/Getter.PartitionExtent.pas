@@ -55,6 +55,7 @@ implementation
 
 constructor TPartitionExtentGetter.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, DesiredReadWrite);
 end;
 

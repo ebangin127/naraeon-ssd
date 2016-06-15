@@ -98,6 +98,7 @@ destructor TServiceController.Destroy;
 begin
   CloseService;
   CloseSCManager;
+  inherited;
 end;
 
 end.

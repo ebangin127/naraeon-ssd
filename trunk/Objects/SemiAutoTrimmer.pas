@@ -11,17 +11,17 @@ uses
 type
   TSemiAutoTrimmer = class
   public
-    procedure SemiAutoTrim(Model, Serial: String);
+    procedure SemiAutoTrim(const Model, Serial: String);
 
   private
-    function GetDeviceEntry(Model, Serial: String): IPhysicalDrive;
+    function GetDeviceEntry(const Model, Serial: String): IPhysicalDrive;
     function GetTrimList(SSDEntry: IPhysicalDrive): TTrimList;
     procedure ExecuteTrim(TrimList: TTrimList);
   end;
 
 implementation
 
-procedure TSemiAutoTrimmer.SemiAutoTrim(Model, Serial: String);
+procedure TSemiAutoTrimmer.SemiAutoTrim(const Model, Serial: String);
 var
   SSDEntry: IPhysicalDrive;
   PartToTrim: TTrimList;
@@ -32,7 +32,7 @@ begin
   FreeAndNil(PartToTrim);
 end;
 
-function TSemiAutoTrimmer.GetDeviceEntry(Model, Serial: String):
+function TSemiAutoTrimmer.GetDeviceEntry(const Model, Serial: String):
   IPhysicalDrive;
 var
   SSDList: TPhysicalDriveList;

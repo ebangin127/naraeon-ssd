@@ -98,7 +98,7 @@ begin
       IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
     except
       on E: Exception do
-        raise E;
+        raise;
     end;
   end;
 end;
@@ -112,7 +112,7 @@ begin
       IfThisDriveAccessibleAddToList(DrivePathList[CurrentDrive]);
     except
       on E: Exception do
-        raise E;
+        raise;
     end;
   end);
 end;

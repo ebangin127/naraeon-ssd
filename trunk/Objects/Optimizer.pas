@@ -62,6 +62,7 @@ begin
 
   if Optimizers <> nil then
     FreeAndNil(Optimizers);
+  inherited;
 end;
 
 procedure TNSTOptimizer.Optimize(OptList: TList<Boolean>);

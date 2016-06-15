@@ -17,7 +17,7 @@ type
     WMIObject: OleVariant;
     ContextToBindMoniker: IBindCtx;
     DefaultMoniker: IMoniker;
-    function GetDefaultMonikerFromObjectPath(ObjectPath: String;
+    function GetDefaultMonikerFromObjectPath(const ObjectPath: String;
       BindableContext: IBindCtx): IMoniker;
     function GetMonikerBindableContext: IBindCtx;
     function GetLocalhostWMIRepositoryURI: String;
@@ -77,7 +77,7 @@ begin
 end;
 
 function TWMIConnection.GetDefaultMonikerFromObjectPath
-  (ObjectPath: String; BindableContext: IBindCtx): IMoniker;
+  (const ObjectPath: String; BindableContext: IBindCtx): IMoniker;
 var
   LengthOfURISuccessfullyParsed: Integer;
 begin

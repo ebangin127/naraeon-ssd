@@ -37,6 +37,7 @@ constructor THTTPWeb.Create;
 const
   Timeout = 1500;
 begin
+  inherited;
   InnerConnector := TIdHttp.Create(nil);
   InnerConnector.ReadTimeout := Timeout;
   InnerConnector.ConnectTimeout := Timeout;
@@ -90,7 +91,7 @@ end;
 
 function THTTPWeb.Head(const PathToGet: String): Boolean;
 begin
-  if IsWebAccessible = false then
+  if not IsWebAccessible then
     exit(false);
 
   SetEncodedURIByPath(PathToGet);
@@ -106,7 +107,7 @@ end;
 
 function THTTPWeb.GetToStringList(const PathToGet: String): TStringList;
 begin
-  if IsWebAccessible = false then
+  if not IsWebAccessible then
     exit(TStringList.Create);
 
   SetEncodedURIByPath(PathToGet);
@@ -116,7 +117,7 @@ end;
 
 function THTTPWeb.GetToStringStream(const PathToGet: String): TStringStream;
 begin
-  if IsWebAccessible = false then
+  if not IsWebAccessible then
     exit(TStringStream.Create);
 
   SetEncodedURIByPath(PathToGet);

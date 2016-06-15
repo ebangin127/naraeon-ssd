@@ -170,9 +170,9 @@ end;
 
 procedure TFirmwareDownloader.PostDownloadMethod;
 begin
-  if FileExists(Request.Destination.FBaseAddress +
+  if not FileExists(Request.Destination.FBaseAddress +
     Request.Destination.FFileAddress +
-    Request.Destination.FPostAddress) = false then
+    Request.Destination.FPostAddress) then
   begin
     AlertCreate(fMain, AlrtFirmCanc[CurrLang]);
     fMain.gFirmware.Visible := true;
@@ -191,7 +191,7 @@ begin
   end;
   ExpandAndSetFirmwarePath;
 
-  if FileExists(FirmwarePath) = false then
+  if not FileExists(FirmwarePath) then
   begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;
@@ -200,7 +200,7 @@ begin
     exit;
   end;
 
-  if Rufus.CheckRufus = false then
+  if not Rufus.CheckRufus then
   begin
     AlertCreate(fMain, AlrtFirmFail[CurrLang]);
     fMain.gFirmware.Visible := true;

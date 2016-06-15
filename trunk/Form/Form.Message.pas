@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Vcl.ExtCtrls;
 
-procedure MsgboxCreate(Sender: TForm; FileName: String);
+procedure MsgboxCreate(Sender: TForm; const FileName: String);
 
 type
   TfMessage = class(TForm)
@@ -25,11 +25,11 @@ implementation
 
 {$R *.dfm}
 
-procedure MsgboxCreate(Sender: TForm; FileName: String);
+procedure MsgboxCreate(Sender: TForm; const FileName: String);
 begin
+  fMessage := TfMessage.Create(Sender);
   if fMessage <> Nil then FreeAndNil(fMessage);
   try
-    fMessage := TfMessage.Create(Sender);
     fMessage.MMessage.Lines.LoadFromFile(FileName);
     DeleteFile(FileName);
     fMessage.ShowModal;

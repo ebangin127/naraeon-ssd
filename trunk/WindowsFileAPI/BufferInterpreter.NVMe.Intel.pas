@@ -83,6 +83,7 @@ end;
 destructor TIntelBufferInterpreter.Destroy;
 begin
   FreeAndNil(NVMeInterpreter);
+  inherited;
 end;
 
 function TIntelBufferInterpreter.LargeBufferToIdentifyDeviceResult(

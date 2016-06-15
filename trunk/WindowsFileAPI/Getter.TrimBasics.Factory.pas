@@ -12,7 +12,7 @@ type
 
   TTrimBasicsGetterFactory = class
   public
-    function GetSuitableTrimBasicsGetter(FileToGetAccess: String):
+    function GetSuitableTrimBasicsGetter(const FileToGetAccess: String):
       TTrimBasicsGetter;
     class function Create: TTrimBasicsGetterFactory;
 
@@ -39,7 +39,7 @@ begin
 end;
 
 function TTrimBasicsGetterFactory.GetSuitableTrimBasicsGetter(
-  FileToGetAccess: String): TTrimBasicsGetter;
+  const FileToGetAccess: String): TTrimBasicsGetter;
 begin
   FFileToGetAccess := FileToGetAccess;
   result := TryAndGetRightGetter;

@@ -37,8 +37,8 @@ implementation
 procedure BrowserCreate(Sender: TForm);
 begin
   if fBrowser <> Nil then FreeAndNil(fBrowser);
+  fBrowser := TfBrowser.Create(Sender);
   try
-    fBrowser := TfBrowser.Create(Sender);
     fBrowser.ShowModal;
   finally
     FreeAndNil(fBrowser);

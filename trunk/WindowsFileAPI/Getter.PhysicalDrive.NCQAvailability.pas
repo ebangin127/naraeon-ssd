@@ -67,6 +67,7 @@ implementation
 
 constructor TNCQAvailabilityGetter.Create(const FileToGetAccess: String);
 begin
+  inherited;
   CreateHandle(FileToGetAccess, GetMinimumPrivilege);
 end;
 

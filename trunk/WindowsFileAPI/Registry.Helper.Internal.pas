@@ -23,9 +23,9 @@ type
   public
     procedure SetRootKey(RegistryRootKey: TRegistryRootKey);
     procedure OpenKeyWithRootAndPath
-      (Root: TRegistryRootKey; Path: String);
+      (Root: TRegistryRootKey; const Path: String);
     procedure OpenKeyReadOnlyWithRootAndPath
-      (Root: TRegistryRootKey; Path: String);
+      (Root: TRegistryRootKey; const Path: String);
   private
     const
       TOSRegistryRootKey: Array[TRegistryRootKey] of HKEY =
@@ -56,7 +56,7 @@ begin
 end;
 
 procedure TRegistryHelper.OpenKeyWithRootAndPath
-  (Root: TRegistryRootKey; Path: String);
+  (Root: TRegistryRootKey; const Path: String);
 begin 
   SetRootKey(Root);
   if not KeyExists(Path) then
@@ -66,7 +66,7 @@ begin
 end;
 
 procedure TRegistryHelper.OpenKeyReadOnlyWithRootAndPath
-  (Root: TRegistryRootKey; Path: String);
+  (Root: TRegistryRootKey; const Path: String);
 begin
   SetRootKey(Root);
   if not KeyExists(Path) then
