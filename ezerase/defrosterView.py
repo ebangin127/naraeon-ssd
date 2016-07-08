@@ -1,5 +1,5 @@
 import tkinter
-class DriveSelector:
+class DefrosterView:
     __DESCRIPTIONBORDER = 10
     __DESCRIPTIONROW = 0
     __BUTTONPADDING = 5
@@ -8,12 +8,15 @@ class DriveSelector:
     __MODELCOLUMN = 2
     __SIZECOLUMN = 3
     __SERIALCOLUMN = 4
+
     def __initRadioFrame(self, frame):
         self.__radioFrame = tkinter.Frame(frame)
         self.__radioFrame.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=True)
+
     def __initButtonFrame(self, frame):
         self.__buttonFrame = tkinter.Frame(frame)
         self.__buttonFrame.pack(anchor='center', pady=self.__BUTTONPADDING)
+
     def __initGrid(self):
         tkinter.Label(self.__radioFrame, text='경로', borderwidth=self.__DESCRIPTIONBORDER)\
             .grid(row=self.__DESCRIPTIONROW, column=self.__NAMECOLUMN)
@@ -23,25 +26,39 @@ class DriveSelector:
             .grid(row=self.__DESCRIPTIONROW, column=self.__SIZECOLUMN)
         tkinter.Label(self.__radioFrame, text='시리얼 번호', borderwidth=self.__DESCRIPTIONBORDER)\
             .grid(row=self.__DESCRIPTIONROW, column=self.__SERIALCOLUMN)
+
+    def __okClick(self, event):
+        if self.__selected.get() != '':
+            self.__root.destroy()
+
+    def __cancelClick(self, event):
+        self.__selected = tkinter.StringVar()
+        self.__root.destroy()
+
     def __initButton(self):
         ok = tkinter.Button(self.__buttonFrame, text='확인')
         ok.pack(side=tkinter.LEFT, padx=self.__BUTTONPADDING)
+        ok.bind('<Button-1>', self.__okClick)
         cancel = tkinter.Button(self.__buttonFrame, text='취소')
         cancel.pack(side=tkinter.LEFT, padx=self.__BUTTONPADDING)
+        cancel.bind('<Button-1>', self.__cancelClick)
+
     def __init__(self):
-        root = tkinter.Tk()
-        root.wm_title('초기화')
-        self.__mainloop = (lambda: root.mainloop())
-        frame = tkinter.Frame(root)
+        self.__root = tkinter.Tk()
+        self.__root.wm_title('초기화')
+        self.__mainloop = self.__root.mainloop
+        frame = tkinter.Frame(self.__root)
         frame.pack(fill=tkinter.BOTH)
         self.__initRadioFrame(frame)
         self.__initButtonFrame(frame)
         self.__initGrid()
         self.__initButton()
+
     def select(self, findresult):
-        currentRow = 1;
+        currentRow = 1
+        self.__selected = tkinter.StringVar()
         for device in findresult:
-            radio = tkinter.Radiobutton(self.__radioFrame)
+            radio = tkinter.Radiobutton(self.__radioFrame, variable=self.__selected, value=device['kname'])
             radio.grid(row=currentRow, column=self.__RADIOCOLUMN)
             kname = tkinter.Label(self.__radioFrame, text=device['kname'])
             kname.grid(row=currentRow, column=self.__NAMECOLUMN)
@@ -52,4 +69,7 @@ class DriveSelector:
             serial = tkinter.Label(self.__radioFrame, text=device['serial'])
             serial.grid(row=currentRow, column=self.__SERIALCOLUMN)
             currentRow += 1
-            self.__mainloop()
+        self.__mainloop()
+
+    def selected(self):
+        return self.__selected.get()

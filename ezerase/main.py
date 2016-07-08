@@ -1,11 +1,11 @@
-import processRunner
-import fixedStorageFinder
-import driveSelector
-import json
-runner = processRunner.ProcessRunner()
-jsonoutput = runner.run('lsblk -Jo model,vendor,serial,size,kname,type')
-runresult = json.loads(jsonoutput.decode())
-finder = fixedStorageFinder.FixedStorageFinder()
-findresult = finder.find(runresult)
-selector = driveSelector.DriveSelector()
-selector.select(findresult)
+import selector
+import sudoChecker
+import ataeraser
+import nvmeeraser
+
+if sudoChecker.SudoChecker().checkSudo():
+    selected = selector.Selector().select()
+    if selected.find('sd') != -1:
+        ataeraser.ATAEraser().erase(selected)
+    elif selected.find('nvme') != -1:
+        nvmeeraser.NVMeEraser().erase(selected)

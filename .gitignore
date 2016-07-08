@@ -20,3 +20,4 @@ WriteLog*.txt
 /SignedFirmware
 /Images/Vector
 NSTAccount.php
+__pycache__

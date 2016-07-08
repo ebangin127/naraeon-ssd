@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ezerase.iml" filepath="$PROJECT_DIR$/.idea/ezerase.iml" />
-      <module fileurl="file://$USER_HOME$/PycharmProjects/ezerase/.idea/ezerase.iml" filepath="$USER_HOME$/PycharmProjects/ezerase/.idea/ezerase.iml" />
     </modules>
   </component>
 </project>
