@@ -5,7 +5,7 @@ class NVMeCLIEraser:
     def __isSuccessful(self, nvmecliresult):
         return nvmecliresult.find('Success formatting') != -1
 
-    def __getPollingFunction(selected):
+    def __getPollingFunction(self, selected):
         runner = processRunner.ProcessRunner()
         process = runner.asyncrun('nvme format /dev/' + selected)
         def pollfunc():

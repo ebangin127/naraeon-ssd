@@ -43,9 +43,17 @@ class SelectorView:
         cancel.pack(side=tkinter.LEFT, padx=self.__BUTTONPADDING)
         cancel.bind('<Button-1>', self.__cancelClick)
 
+    def __center(self):
+        self.__root.withdraw()
+        self.__root.update_idletasks()
+        x = (self.__root.winfo_screenwidth() - self.__root.winfo_reqwidth()) / 2
+        y = (self.__root.winfo_screenheight() - self.__root.winfo_reqheight()) / 2
+        self.__root.geometry("+%d+%d" % (x, y))
+        self.__root.deiconify()
+
     def __init__(self):
         self.__root = tkinter.Tk()
-        self.__root.wm_title('초기화')
+        self.__root.wm_title('Secure erase')
         self.__mainloop = self.__root.mainloop
         frame = tkinter.Frame(self.__root)
         frame.pack(fill=tkinter.BOTH)
@@ -53,6 +61,7 @@ class SelectorView:
         self.__initButtonFrame(frame)
         self.__initGrid()
         self.__initButton()
+        self.__center()
 
     def select(self, findresult):
         currentRow = 1

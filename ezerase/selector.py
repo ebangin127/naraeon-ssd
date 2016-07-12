@@ -11,4 +11,4 @@ class Selector:
         findresult = finder.find(runresult)
         selector = selectorView.SelectorView()
         selector.select(findresult)
-        return selector.selected()
+        return selector.selected(), findresult

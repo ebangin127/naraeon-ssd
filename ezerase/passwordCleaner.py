@@ -1,7 +1,7 @@
 import processRunner
 class PasswordCleaner:
     def __isSuccessful(self, hdparmresult):
-        return hdparmresult.find('not\tenabled') == -1
+        return hdparmresult.find('not\tenabled') != -1
     def clean(self, selected, erasestate):
         if erasestate:
             return True

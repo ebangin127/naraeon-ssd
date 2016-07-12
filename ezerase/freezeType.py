@@ -5,8 +5,8 @@ class FreezeType(Enum):
     notcapable = 2
     def getType(hdparmresult):
         if hdparmresult.find('not\tfrozen') != -1:
-            return FreezeType.frozen
+            return FreezeType.defrosted
         elif hdparmresult.find('frozen') == -1:
             return FreezeType.notcapable
         else:
-            return FreezeType.defrosted
+            return FreezeType.frozen

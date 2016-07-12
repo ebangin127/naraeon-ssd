@@ -4,7 +4,7 @@ class ATAHDParmEraser:
     def __isSuccessful(self, hdparmresult):
         return hdparmresult.find('not\tenabled') != -1
 
-    def __getPollingFunction(selected):
+    def __getPollingFunction(self, selected):
         runner = processRunner.ProcessRunner()
         process = runner.asyncrun('hdparm --user-master u --security-erase Passwd /dev/' + selected)
         def pollfunc():
@@ -14,8 +14,8 @@ class ATAHDParmEraser:
             return result
         return pollfunc
 
-    def erase(self, selected, passwordset):
-        if not passwordset:
+    def erase(self, selected, laststate):
+        if not laststate:
             return False
         runner = processRunner.ProcessRunner()
         eraserWaiterView.EraserWaiterView(self.__getPollingFunction(selected))
