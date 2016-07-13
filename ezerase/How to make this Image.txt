@@ -1,0 +1,90 @@
+만들기
+cd ~
+mkdir live_boot && cd live_boot
+sudo debootstrap --arch=amd64 --variant=minbase jessie chroot http://ftp.kr.debian.org/debian/
+
+들갈때
+cd ~/live_boot
+sudo mount -o bind /dev chroot/dev && sudo cp /etc/resolv.conf chroot/etc/resolv.conf
+sudo chroot chroot
+mount none -t proc /proc
+mount none -t sysfs /sys
+mount none -t devpts /dev/pts
+export HOME=/root
+export LC_ALL=C
+apt-get update
+apt-get install dialog dbus --yes --force-yes
+dbus-uuidgen > /var/lib/dbus/machine-id
+echo "naraeon-live" > /etc/hostname
+
+패키지설치
+echo deb http://ftp.debian.org/debian sid main >> /etc/apt/sources.list
+apt-get update
+apt-get -t sid install --no-install-recommends --yes "util-linux"
+apt-get install --no-install-recommends --yes \
+linux-image-amd64 live-boot fonts-nanum nano \
+blackbox xserver-xorg-core xserver-xorg xinit python3-tk hdparm nodm
+
+블랙박스 메뉴
+nano /etc/X11/blackbox/blackbox-menu
+
+블랙박스 배경
+nano /usr/share/blackbox/styles/Gray
+
+slim 오토로그인
+nano /etc/slim.conf
+
+나올때
+rm -f /var/lib/dbus/machine-id
+apt-get clean
+rm -rf /tmp/*
+rm /etc/resolv.conf
+umount -f /dev/pts
+umount -f /sys
+umount -f /proc
+exit
+sudo umount -lf chroot/dev
+
+부팅 파일 제작
+cd ~/live_boot/
+grub-mkimage --config=../embedded.cfg -O x86_64-efi -o './image/EFI/BOOT/bootx64.efi' part_gpt part_msdos ntfs \
+ntfscomp hfsplus fat ext2 normal chain boot configfile linux multiboot iso9660 gfxmenu gfxterm loadenv efi_gop \
+efi_uga loadbios fixvideo png ext2 ntfscomp loopback search minicmd cat cpuid appleldr elf usb videotest halt \
+help ls reboot echo test normal sleep memdisk tar font video_fb video gettext true  video_bochs video_cirrus \
+multiboot2 acpi gfxterm_background gfxterm_menu
+rm ~/live_boot/image/isolinux/efiboot.img
+mkdosfs -F12 -n "ISOIMAGE" -C ~/live_boot/image/isolinux/efiboot.img 2048
+mcopy -s -i ~/live_boot/image/isolinux/efiboot.img ~/live_boot/image/EFI ::
+
+부팅설정
+cd ~/live_boot/
+mkdir -p ~/live_boot/image/{live,isolinux}
+cp chroot/boot/vmlinuz-*-amd64 image/live/vmlinuz1 && \
+cp chroot/boot/initrd.img-*-amd64 image/live/initrd1
+cp /usr/lib/ISOLINUX/isolinux.bin image/isolinux/ && \
+cp /usr/lib/ISOLINUX/isohdpfx.bin image/isolinux/ && \
+cp /usr/share/misc/pci.ids image/isolinux/ && \
+cp /boot/memtest86+.bin image/live/memtest && \
+cp ~/isolinux.cfg image/isolinux && \
+cp /usr/lib/syslinux/modules/bios/*.c32 image/isolinux
+
+정리
+cd ~/live_boot
+sudo cp -r /mnt/windows/bg.jpg chroot/root/bg.jpg
+sudo cp -r /mnt/windows/source/*.py chroot/etc/ezerase/
+sudo cp ../nvme chroot/usr/local/sbin/
+rm -rf image/live/filesystem.squashfs
+sudo mksquashfs chroot image/live/filesystem.squashfs -e boot -b 1048576 -comp xz -Xdict-size 100%
+sudo rm -rf /mnt/windows/debian-live.iso
+cd ~/live_boot/image &&  xorriso -as mkisofs \
+   -o ../debian-live.iso \
+   -isohybrid-mbr isolinux/isohdpfx.bin \
+   -c isolinux/boot.cat \
+   -b isolinux/isolinux.bin \
+      -no-emul-boot -boot-load-size 4 -boot-info-table \
+   -eltorito-alt-boot \
+   -e isolinux/efiboot.img \
+      -no-emul-boot \
+      -isohybrid-gpt-basdat \
+   . && cd ..
+sudo cp /home/ebangin127/live_boot/debian-live.iso /mnt/windows/
