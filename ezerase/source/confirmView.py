@@ -17,7 +17,7 @@ class ConfirmView:
         self.__agree = False;
         if laststate:
             self.__root = tkinter.Tk()
-            self.__root.wm_title('Notice')
+            self.__root.wm_title('Naraeon SSD Tools - Secure Erase')
             self.__mainloop = self.__root.mainloop
             frame = tkinter.Frame(self.__root)
             frame.pack(fill=tkinter.BOTH)

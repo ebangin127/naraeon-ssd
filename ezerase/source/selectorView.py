@@ -31,17 +31,14 @@ class SelectorView:
         if self.__selected.get() != '':
             self.__root.destroy()
 
-    def __cancelClick(self, event):
-        self.__selected = tkinter.StringVar()
+    def __cancelClose(self):
+        self.__selected.set('')
         self.__root.destroy()
 
     def __initButton(self):
         ok = tkinter.Button(self.__buttonFrame, text='확인')
         ok.pack(side=tkinter.LEFT, padx=self.__BUTTONPADDING)
         ok.bind('<Button-1>', self.__okClick)
-        cancel = tkinter.Button(self.__buttonFrame, text='취소')
-        cancel.pack(side=tkinter.LEFT, padx=self.__BUTTONPADDING)
-        cancel.bind('<Button-1>', self.__cancelClick)
 
     def __center(self):
         self.__root.withdraw()
@@ -53,7 +50,7 @@ class SelectorView:
 
     def __init__(self):
         self.__root = tkinter.Tk()
-        self.__root.wm_title('Secure erase')
+        self.__root.wm_title('Naraeon SSD Tools - Secure Erase')
         self.__mainloop = self.__root.mainloop
         frame = tkinter.Frame(self.__root)
         frame.pack(fill=tkinter.BOTH)
@@ -61,7 +58,7 @@ class SelectorView:
         self.__initButtonFrame(frame)
         self.__initGrid()
         self.__initButton()
-        self.__center()
+        self.__root.protocol("WM_DELETE_WINDOW", self.__cancelClose)
 
     def select(self, findresult):
         currentRow = 1
@@ -78,6 +75,7 @@ class SelectorView:
             serial = tkinter.Label(self.__radioFrame, text=device['serial'])
             serial.grid(row=currentRow, column=self.__SERIALCOLUMN)
             currentRow += 1
+        self.__center()
         self.__mainloop()
 
     def selected(self):

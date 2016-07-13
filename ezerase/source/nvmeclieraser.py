@@ -15,6 +15,8 @@ class NVMeCLIEraser:
             return result
         return pollfunc
 
-    def erase(self, selected):
+    def erase(self, confirm, selected):
+        if not confirm:
+            return False;
         eraserWaiterView.EraserWaiterView(self.__getPollingFunction(selected))
         return self.__isSuccessful(nvmecliresult)

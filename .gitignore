@@ -21,3 +21,5 @@ WriteLog*.txt
 /Images/Vector
 NSTAccount.php
 __pycache__
+*.jpg
+*.iso

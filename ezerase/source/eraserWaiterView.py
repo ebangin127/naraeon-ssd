@@ -16,7 +16,7 @@ class EraserWaiterView:
     def __init__(self, thingtopoll):
         self.__agree = False;
         self.__root = tkinter.Tk()
-        self.__root.wm_title('Notice')
+        self.__root.wm_title('Naraeon SSD Tools - Secure Erase')
         self.__mainloop = self.__root.mainloop
         self.__thingtopoll = thingtopoll
         frame = tkinter.Frame(self.__root)
