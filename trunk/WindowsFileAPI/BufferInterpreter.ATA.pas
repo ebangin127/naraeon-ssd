@@ -119,6 +119,7 @@ begin
   SMARTValueEntry.Current := GetCurrentOfRow(CurrentRow);
   SMARTValueEntry.Worst := GetWorstOfRow(CurrentRow);
   SMARTValueEntry.RAW := GetRAWOfRow(CurrentRow);
+  SMARTValueEntry.Threshold := 0;
   SMARTValueList.Add(SMARTValueEntry);
   result := true;
 end;

@@ -37,8 +37,6 @@ uses
   Support.ADATA in '..\Support\Support.ADATA.pas',
   OSFile in '..\WindowsFileAPI\OSFile.pas',
   OS.WriteBufferSettingVerifier in '..\Objects\OS.WriteBufferSettingVerifier.pas',
-  Registry.Helper in '..\Objects\Registry.Helper.pas',
-  Registry.Helper.Internal in '..\Objects\Registry.Helper.Internal.pas',
   OS.ProcessOpener in '..\Objects\OS.ProcessOpener.pas',
   OS.Version.Helper in '..\Modules\OS.Version.Helper.pas',
   AsciiCheck in '..\Modules\AsciiCheck.pas',
@@ -90,7 +88,10 @@ uses
   OS.Partition.Lock in '..\Objects\OS.Partition.Lock.pas',
   Getter.Filesystem.Name in '..\Objects\Getter.Filesystem.Name.pas',
   OSFile.ForInternal in '..\WindowsFileAPI\OSFile.ForInternal.pas',
-  OS.Handle in '..\WindowsFileAPI\OS.Handle.pas';
+  OS.Handle in '..\WindowsFileAPI\OS.Handle.pas',
+  Support.Transcend in '..\Support\Support.Transcend.pas',
+  Registry.Helper.Internal in '..\WindowsFileAPI\Registry.Helper.Internal.pas',
+  Registry.Helper in '..\WindowsFileAPI\Registry.Helper.pas';
 
 {$R *.RES}
 

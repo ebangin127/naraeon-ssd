@@ -312,12 +312,7 @@ end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
-  result.Model := '';
-  if CurrentCommandSet = TCommandOrder.CommandOrderOfNVMeWithoutDriver then
-    result.Model := 'Right!'
-  else
-    exit;
-  Inc(CurrentCommandSet);
+  result.Model := 'Right!';
 end;
 
 function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;

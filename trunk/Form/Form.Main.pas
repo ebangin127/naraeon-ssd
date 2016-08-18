@@ -174,6 +174,7 @@ type
     function FirmwareUpdateNotReady: Boolean;
     procedure ReadyFirmwareUSBList;
     procedure CheckNewFirmware;
+    function GetEraseFilePath(const Filename: string): string;
   public
     IdentifiedDriveList: TPhysicalDriveList;
     SelectedDrive: IPhysicalDrive;
@@ -212,7 +213,9 @@ begin
     exit;
   end;
   tRefresh.Enabled := false;
-  if SelectedDrive.IdentifyDeviceResult.StorageInterface = NVMe then
+  if FileExists(GetEraseFilePath('all')) then
+    BurnEraseImage('all')
+  else if SelectedDrive.IdentifyDeviceResult.StorageInterface = NVMe then
     BurnEraseImage('nvme')
   else
     BurnEraseImage('pmagic');
@@ -362,6 +365,11 @@ end;
 function TfMain.GetOptimizer: TNSTOptimizer;
 begin
   result := Optimizer;
+end;
+
+function TfMain.GetEraseFilePath(const Filename: string): string;
+begin
+  result := EnvironmentVariable.AppPath + 'Erase\' + Filename + '.7z';
 end;
 
 procedure TfMain.ReadyFirmwareUSBList;
@@ -822,8 +830,7 @@ var
   CompressedFilePath: String;
   TempFolder: string;
 begin
-  CompressedFilePath :=
-    EnvironmentVariable.AppPath + 'Erase\' + Filename + '.7z';
+  CompressedFilePath := GetEraseFilePath(Filename);
   if (FileExists(CompressedFilePath)) and (Rufus.CheckRufus) then
   begin
     AlertCreate(Self, AlrtStartFormat[CurrLang]);

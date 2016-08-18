@@ -1,0 +1,4 @@
+[begin] (Naraeon SSD Tools - Secure Erase)
+  [exec] (Secure Erase) {python3 /etc/ezerase/main.py}
+  [exec] (Restart) {shutdown -r now}
+[end]

@@ -39,6 +39,7 @@ type
     procedure TestCrucialM550Support;
     procedure TestCrucialMX100Support;
     procedure TestCrucialMX200Support;
+    procedure TestCrucialMX300Support;
     procedure TestLiteonS100Support;
     procedure TestLiteonS200Support;
     procedure TestLiteonE200Support;
@@ -70,6 +71,7 @@ type
     procedure TestSamsung950ProSupport;
     procedure TestSamsungSM951Support;
     procedure TestSamsungPM951Support;
+    procedure TestTranscend220SSupport;
   end;
 
 implementation
@@ -150,6 +152,12 @@ procedure TestTNSTSupportFactory.TestCrucialMX200Support;
 begin
   TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD1', 'MU01');
   TestSupportStatusWithModelFirmware('Crucial_CT250MX200SSD3', 'MU01');
+end;
+
+procedure TestTNSTSupportFactory.TestCrucialMX300Support;
+begin
+  TestSupportStatusWithModelFirmware('Crucial_CT275MX300SSD1', 'M0CR021');
+  TestSupportStatusWithModelFirmware('Crucial_CT275MX300SSD3', 'M0CR021');
 end;
 
 procedure TestTNSTSupportFactory.TestLiteonE200Support;
@@ -290,6 +298,11 @@ end;
 procedure TestTNSTSupportFactory.TestToshibaQProSupport;
 begin
   TestSupportStatusWithModelFirmware('TOSHIBA THNSNJ128GCST', 'JTRA0102');
+end;
+
+procedure TestTNSTSupportFactory.TestTranscend220SSupport;
+begin
+  TestSupportStatusWithModelFirmware('TS240GSSD220S', 'P0330AA');
 end;
 
 procedure TestTNSTSupportFactory.TestPhisonCT7Support;

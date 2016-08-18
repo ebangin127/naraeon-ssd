@@ -1,0 +1,4 @@
+session.styleFile: /usr/share/blackbox/styles/Gray
+session.screen0.slit.autoHide: True
+session.screen0.workspaces: 1
+session.screen0.slit.onTop: False

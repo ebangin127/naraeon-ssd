@@ -88,7 +88,8 @@ uses
   Getter.PhysicalDriveList.OS.Path in '..\WindowsFileAPI\Getter.PhysicalDriveList.OS.Path.pas',
   Support.Sandisk.USB in '..\Support\Support.Sandisk.USB.pas',
   CommandSet.NVMe.OS in '..\WindowsFileAPI\CommandSet.NVMe.OS.pas',
-  OS.Handle in '..\WindowsFileAPI\OS.Handle.pas';
+  OS.Handle in '..\WindowsFileAPI\OS.Handle.pas',
+  Support.Transcend in '..\Support\Support.Transcend.pas';
 
 {$R *.RES}
 {$SETPEOPTFLAGS $140}

@@ -162,7 +162,8 @@ uses
   Support.Sandisk.USB in 'Support\Support.Sandisk.USB.pas',
   CommandSet.NVMe.OS in 'WindowsFileAPI\CommandSet.NVMe.OS.pas',
   OS.Handle in 'WindowsFileAPI\OS.Handle.pas',
-  Unlocker in 'Objects\Unlocker.pas';
+  Unlocker in 'Objects\Unlocker.pas',
+  Support.Transcend in 'Support\Support.Transcend.pas';
 
 {$R *.res}
 {$SETPEOPTFLAGS $140}

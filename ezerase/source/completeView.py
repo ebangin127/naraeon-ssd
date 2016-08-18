@@ -56,5 +56,5 @@ class CompleteView:
 
     def __okClick(self, event):
         runner = processRunner.ProcessRunner()
-        runner.run('shutdown -r -t 0')
+        runner.run('shutdown -r now')
         self.__root.destroy()

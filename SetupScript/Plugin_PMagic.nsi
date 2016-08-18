@@ -93,12 +93,12 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name)은 완전히 제거되었습니다."
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) is completely removed."
 FunctionEnd
 
 Function un.onInit
 !insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "$(^Name)을 제거하시겠습니까?" IDYES +2
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to uninstall $(^Name)?" IDYES +2
   Abort
 FunctionEnd
 

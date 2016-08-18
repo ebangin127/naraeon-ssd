@@ -17,6 +17,7 @@ type
     function IsModelHasCrucialString: Boolean;
     function IsMX100: Boolean;
     function IsMX200: Boolean;
+    function IsMX300: Boolean;
     function IsProductOfCrucial: Boolean;
 
   public
@@ -44,6 +45,11 @@ begin
   result := Pos('MX200', Model) > 0;
 end;
 
+function TCrucialNSTSupport.IsMX300: Boolean;
+begin
+  result := Pos('MX300', Model) > 0;
+end;
+
 function TCrucialNSTSupport.IsM550: Boolean;
 begin
   result := Pos('M550', Model) > 0;
@@ -57,7 +63,7 @@ end;
 function TCrucialNSTSupport.IsProductOfCrucial: Boolean;
 begin
   result := IsModelHasCrucialString and 
-    (IsMX100 or IsMX200 or
+    (IsMX100 or IsMX200 or IsMX300 or
      IsM500 or IsM550);
 end;
 

@@ -44,8 +44,8 @@ SetCompressor zlib
 
 ; MUI end ------
 
-Name "Naraeon SSD Tools - Eraser Pack(NVMe)"
-OutFile "..\Setup\NST(NVMe).exe"
+Name "Naraeon SSD Tools - Eraser Pack"
+OutFile "..\Setup\NST(ALL).exe"
 InstallDir "$PROGRAMFILES\Naraeon\SSDTools\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -74,18 +74,18 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOverwrite on
   SetOutPath "$INSTDIR\SSDTools\Erase"
-  File "..\exec_files\nvme.7z"
+  File "..\exec_files\all.7z"
 SectionEnd
 
 Section -AdditionalIcons
-  CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(NVMe).lnk" "$INSTDIR\SSDTools\uninst_plugin_nvme.exe"
+  CreateShortCut "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Eraser).lnk" "$INSTDIR\SSDTools\uninst_plugin_all.exe"
 SectionEnd
 
 Section -Post
-  WriteUninstaller "$INSTDIR\SSDTools\uninst_plugin_nvme.exe"
+  WriteUninstaller "$INSTDIR\SSDTools\uninst_plugin_all.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\SSDTools.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\SSDTools\uninst_plugin_nvme.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\SSDTools\uninst_plugin_all.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\SSDTools\SSDTools.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
@@ -130,11 +130,11 @@ Function GetParent
 FunctionEnd
 
 Section Uninstall
-  Delete "$INSTDIR\Erase\nvme.7z"
-  Delete "$INSTDIR\uninst_plugin_nvme.exe"
+  Delete "$INSTDIR\Erase\all.7z"
+  Delete "$INSTDIR\uninst_plugin_all.exe"
 
   SetShellVarContext all
-  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(NVMe).lnk"
+  Delete "$SMPROGRAMS\Naraeon SSD Tools\Uninstall(Eraser).lnk"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   SetAutoClose true

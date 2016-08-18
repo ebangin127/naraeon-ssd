@@ -8,7 +8,7 @@ uses
   //General//
   Support.Crucial, Support.Liteon, Support.Plextor, Support.Sandisk,
   Support.Seagate, Support.Toshiba, Support.Samsung, Support.Sandisk.USB,
-  Support.MachXtreme, Support.Phison, Support.ADATA,
+  Support.MachXtreme, Support.Phison, Support.ADATA, Support.Transcend,
   //Sandforce//
   Support.Sandforce.Toshiba, Support.Sandforce.Hynix,
   Support.Sandforce.OCZ, Support.Sandforce.Patriot,
@@ -52,6 +52,7 @@ begin
   result := TestNSTSupportCompatibility(TSandiskNSTSupport, result);
   result := TestNSTSupportCompatibility(TSeagateNSTSupport, result);
   result := TestNSTSupportCompatibility(TToshibaNSTSupport, result);
+  result := TestNSTSupportCompatibility(TTranscendNSTSupport, result);
   result := TestNSTSupportCompatibility(TSamsungNSTSupport, result);
   result := TestNSTSupportCompatibility(TMachXtremeNSTSupport, result);
   result := TestNSTSupportCompatibility(TPhisonNSTSupport, result);
