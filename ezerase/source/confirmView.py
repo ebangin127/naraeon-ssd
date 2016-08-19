@@ -34,11 +34,13 @@ class ConfirmView:
     def __initMessageFrame(self, frame, model, serial):
         self.__messageFrame = tkinter.Frame(frame)
         self.__messageFrame.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=True)
-        tkinter.Label(self.__messageFrame, text='여기서 확인을 누르면 절대 되돌릴 수 없습니다!! \n'
-                                                '다음 사항을 꼭 확인해주세요. \n\n'
-                                                '모델명: ' + model + '\n'
-                                                '시리얼 번호: ' + serial,
-                      borderwidth=self.__DESCRIPTIONBORDER)\
+        messageText = '여기서 확인을 누르면 절대 되돌릴 수 없습니다!! \n ' \
+                      '다음 사항을 꼭 확인해주세요. \n\n' \
+                      '모델명: ' + model + '\n'
+        if serial is not None:
+            messageText += '시리얼 번호: ' + serial
+
+        tkinter.Label(self.__messageFrame, text=messageText, borderwidth=self.__DESCRIPTIONBORDER)\
             .grid(row=self.__DESCRIPTIONROW, column=self.__NAMECOLUMN)
 
     def __initButton(self):

@@ -34,18 +34,20 @@ class CompleteView:
     def __initMessageFrame(self, frame, laststate, model, serial):
         self.__messageFrame = tkinter.Frame(frame)
         self.__messageFrame.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=True)
+        if serial is not None:
+            serial = '시리얼 번호: ' + serial
+        else:
+            serial = ''
         if laststate:
             tkinter.Label(self.__messageFrame, text='아래 제품의 초기화가 끝났습니다. \n'
                                                     '확인을 누르면 재시작합니다. \n\n'
-                                                    '모델명: ' + model + '\n'
-                                                    '시리얼 번호: ' + serial,
+                                                    '모델명: ' + model + '\n' + serial,
                           borderwidth=self.__DESCRIPTIONBORDER)\
                 .grid(row=self.__DESCRIPTIONROW, column=self.__NAMECOLUMN)
         else:
             tkinter.Label(self.__messageFrame, text='초기화가 실패했습니다. \n'
                                                     '확인을 누르면 재시작합니다. \n\n'
-                                                    '모델명: ' + model + '\n'
-                                                    '시리얼 번호: ' + serial,
+                                                    '모델명: ' + model + '\n' + serial,
                           borderwidth=self.__DESCRIPTIONBORDER)\
                 .grid(row=self.__DESCRIPTIONROW, column=self.__NAMECOLUMN)
 

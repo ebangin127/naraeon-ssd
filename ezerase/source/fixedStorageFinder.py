@@ -1,8 +1,9 @@
 class FixedStorageFinder:
     def __isFixed(self, device):
-        return (device['model'] is not None) & (device['vendor'] is not None) & (device['type'] == 'disk')
+        return (device['model'] is not None) & (device['type'] == 'disk')
     def __mergeVendorModel(self, device):
-        device['model'] = (device['vendor'] + device['model']).strip()
+        if (device['vendor'] is not None):
+            device['model'] = (device['vendor'] + device['model']).strip()
         del device['vendor']
         return device
     def find(self, objectoutput):

@@ -11,6 +11,8 @@ class NVMeCLIEraser:
         def pollfunc():
             result = True
             if runner.isProcessEnd(process):
+                self.__nvmecliresult, err = process.communicate()
+                self.__nvmecliresult = self.__nvmecliresult.decode('utf-8')
                 result = False
             return result
         return pollfunc
@@ -19,4 +21,4 @@ class NVMeCLIEraser:
         if not confirm:
             return False;
         eraserWaiterView.EraserWaiterView(self.__getPollingFunction(selected))
-        return self.__isSuccessful(nvmecliresult)
+        return self.__isSuccessful(self.__nvmecliresult)

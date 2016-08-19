@@ -22,7 +22,7 @@ type
       const Text: String): Boolean;
     function FindStartButton(const MWHandle: THandle): THandle;
     function ClickStartButton(const MWHandle, BTHandle: THandle): Boolean;
-    function FindSubWindow(const MWHandle: THandle): THandle;
+    function FindConfirmWindow: THandle;
     function FindOKButton(const SWHandle: THandle): THandle;
     function ClickOKButton(const SWHandle, BTHandle: THandle): Boolean;
     function FindCloseButton(const MWHandle: THandle): THandle;
@@ -30,21 +30,42 @@ type
     procedure SetRufusToHandle(const MWHandle: THandle;
       const DriveName: String);
     function IsValidHandle(const Handle: THandle): Boolean;
+    function FindISOHybridWindow: THandle;
+    function FindISOHybridOKButton(const SWHandle: THandle): THandle;
   end;
 
 var
   Rufus: TRufus;
+  GlobalISOHybridHandleResult: THandle;
 
 implementation
 
 { TRufus }
 
 const
-  RufusWinCap = 'Rufus 2.5.799';
-  RufusWinCap2 = 'Rufus 2.5.799 ';
+  RufusWinCap = 'Rufus 2.10.973';
+  RufusWinCap2 = 'Rufus 2.10.973 ';
+  ISOHybridStr = 'ISOHybrid';
   MAX_LENGTH = 1024;
-  ComboDefaultText = 'FreeDOS';
-  ComboISOText = 'ISO Image';
+  ISOPosition = 5;
+  StartPosition = 16;
+  ClosePosition = 17;
+
+var
+  EnumWindowsWC: Array of WideChar;
+
+function EnumWindowsCallback(Handle: THandle;
+  LParamAsParameter: DWORD): Boolean; stdcall;
+var
+  ReceivedCaptionStr: String;
+begin
+  SendMessage(Handle, WM_GETTEXT,
+    MAX_LENGTH, LParam(@EnumWindowsWC[0]));
+  ReceivedCaptionStr := PWideChar(EnumWindowsWC);
+  if Pos(ISOHybridStr, ReceivedCaptionStr, 1) > 0 then
+    GlobalISOHybridHandleResult := Handle;
+  result := true;
+end;
 
 function TRufus.CheckRufus: Boolean;
 var
@@ -90,20 +111,14 @@ end;
 
 function TRufus.FindFTCombo(const MWHandle: THandle): THandle;
 var
-  ReceivedCaptionWC: Array of WideChar;
-  ReceivedCaptionStr: String;
+  CurrentCount: Integer;
 begin
   result := 0;
-  SetLength(ReceivedCaptionWC, MAX_LENGTH);
-
-  repeat
+  for CurrentCount := 0 to ISOPosition do
+  begin
     result :=
       FindWindowEx(MWHandle, result, 'ComboBox', nil);
-    SendMessage(result, WM_GETTEXT,
-      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
-    ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
-  until (ReceivedCaptionStr = ComboDefaultText) or
-        (ReceivedCaptionStr = ComboISOText);
+  end;
 end;
 
 function TRufus.GetFTComboText(const EDTHandle: THandle): String;
@@ -174,19 +189,15 @@ end;
 
 function TRufus.FindStartButton(const MWHandle: THandle): THandle;
 var
-  ReceivedCaptionWC: Array of WideChar;
-  ReceivedCaptionStr: String;
+  CurrentCount: Integer;
 begin
   result := 0;
-  SetLength(ReceivedCaptionWC, MAX_LENGTH);
 
-  repeat
+  for CurrentCount := 0 to StartPosition do
+  begin
     result :=
       FindWindowEx(MWHandle, result, 'Button', nil);
-    SendMessage(result, WM_GETTEXT,
-      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
-    ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
-  until ReceivedCaptionStr = 'Start';
+  end;
 end;
 
 function TRufus.ClickStartButton(const MWHandle, BTHandle: THandle): Boolean;
@@ -204,13 +215,31 @@ begin
     result := Rufus;
 end;
 
-function TRufus.FindSubWindow(const MWHandle: THandle): THandle;
+function TRufus.FindConfirmWindow: THandle;
 begin
   repeat
     Sleep(100);
     result := FindWindow(Nil, 'Rufus');
   until (result <> INVALID_HANDLE_VALUE) and
         (result <> 0);
+end;
+
+function TRufus.FindISOHybridWindow: THandle;
+begin
+  GlobalISOHybridHandleResult := INVALID_HANDLE_VALUE;
+  SetLength(EnumWindowsWC, MAX_LENGTH);
+  ZeroMemory(EnumWindowsWC, MAX_LENGTH);
+  while GlobalISOHybridHandleResult = INVALID_HANDLE_VALUE do
+    EnumWindows(@EnumWindowsCallback, 0);
+  result := GlobalISOHybridHandleResult;
+end;
+
+function TRufus.FindISOHybridOKButton(const SWHandle: THandle): THandle;
+begin
+  result :=
+    FindWindowEx(SWHandle, 0, 'Button', nil);
+  result :=
+    FindWindowEx(SWHandle, result, 'Button', nil);
 end;
 
 function TRufus.FindOKButton(const SWHandle: THandle): THandle;
@@ -228,19 +257,15 @@ end;
 
 function TRufus.FindCloseButton(const MWHandle: THandle): THandle;
 var
-  ReceivedCaptionWC: Array of WideChar;
-  ReceivedCaptionStr: String;
+  CurrentCount: Integer;
 begin
   result := 0;
-  SetLength(ReceivedCaptionWC, MAX_LENGTH);
 
-  repeat
+  for CurrentCount := 0 to ClosePosition do
+  begin
     result :=
       FindWindowEx(MWHandle, result, 'Button', nil);
-    SendMessage(result, WM_GETTEXT,
-      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
-    ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
-  until ReceivedCaptionStr = 'Close';
+  end;
 end;
 
 function TRufus.ClickCloseButton(const MWHandle, BTHandle: THandle): Boolean;
@@ -259,18 +284,32 @@ var
   SWHandle: THandle;
   OKButtonHandle: THandle;
   CloseButtonHandle: THandle;
+  ISOHybridHandleResult: THandle;
 begin
-  FileTypeComboHandle := FindFTCombo(MWHandle);
   repeat
+    FileTypeComboHandle := FindFTCombo(MWHandle);
     Sleep(10);
-  until GetFTComboText(FileTypeComboHandle) = ComboISOText;
+  until Pos('ISO', GetFTComboText(FileTypeComboHandle), 1) > 0;
   DriveComboHandle := FindDriveCombo(MWHandle);
   EditDriveCombo(DriveComboHandle, DriveName);
   StartButtonHandle := FindStartButton(MWHandle);
   ClickStartButton(MWHandle, StartButtonHandle);
-  SWHandle := FindSubWindow(MWHandle);
-  OKButtonHandle := FindOKButton(SWHandle);
-  ClickOKButton(SWHandle, OKButtonHandle);
+  ISOHybridHandleResult := FindISOHybridWindow;
+  while ISOHybridHandleResult <> INVALID_HANDLE_VALUE do
+  begin
+    OKButtonHandle := FindISOHybridOKButton(ISOHybridHandleResult);
+    ClickOKButton(ISOHybridHandleResult, OKButtonHandle);
+    GlobalISOHybridHandleResult := INVALID_HANDLE_VALUE;
+    ZeroMemory(EnumWindowsWC, MAX_LENGTH);
+    EnumWindows(@EnumWindowsCallback, 0);
+    ISOHybridHandleResult := GlobalISOHybridHandleResult;
+  end;
+  repeat
+    SWHandle := FindConfirmWindow;
+    OKButtonHandle := FindOKButton(SWHandle);
+    ClickOKButton(SWHandle, OKButtonHandle);
+    Sleep(100);
+  until not IsWindowEnabled(DriveComboHandle);
   repeat
     Sleep(100);
   until IsWindowEnabled(DriveComboHandle);
@@ -289,7 +328,7 @@ begin
   ShellExecute(0, 'open',
     PChar(RufusPath),
     PChar('-l en_US --iso="' + ISOPath + '"'),
-    nil, SW_NORMAL);
+    PChar(ExtractFilePath(RufusPath)), SW_NORMAL);
 
   MWHandle := FindMainWindow;
   SetRufusToHandle(MWHandle, DriveName);

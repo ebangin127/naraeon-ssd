@@ -1,5 +1,6 @@
 import nvmeclieraser
 import confirmView
+import completeView
 class NVMeEraser:
     def erase(self, selected, model, serial):
         erased = False
