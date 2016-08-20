@@ -15,5 +15,5 @@ class ATAEraser:
             erasestate = atahdparmeraser.ATAHDParmEraser().erase(selected, confirm)
             passwordcleared = passwordCleaner.PasswordCleaner().clean(selected, erasestate)
         finally:
-            completeView.CompleteView(erasestate & passwordcleared, model, serial)
+            completeView.CompleteView(erasestate, model, serial)
         return passwordcleared

@@ -13,6 +13,7 @@ class Defroster:
             eraserview = eraserView.EraserView()
             if eraserview.agree():
                 os.system('systemctl suspend')
+                return freezeType.FreezeType.defrosting
             else:
                 return freezeType.FreezeType.frozen
         return freezetype
