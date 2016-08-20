@@ -3,7 +3,6 @@ class FreezeType(Enum):
     frozen = 0
     defrosted = 1
     notcapable = 2
-    defrosting = 3
     def getType(hdparmresult):
         if hdparmresult.find('not\tfrozen') != -1:
             return FreezeType.defrosted
