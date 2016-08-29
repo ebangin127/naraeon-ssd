@@ -23,3 +23,4 @@ NSTAccount.php
 __pycache__
 *.jpg
 *.iso
+/Images
