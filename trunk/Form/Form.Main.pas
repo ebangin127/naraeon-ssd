@@ -430,7 +430,7 @@ end;
 
 function TfMain.FirmwareUpdateNotReady: Boolean;
 begin
-  result := false;
+  result := true;
   if FirmwareUpdateNotAvailable then
   begin
     AlertCreate(Self, AlrtNoFirmSupport[CurrLang]);
@@ -449,7 +449,7 @@ begin
     AlertCreate(Self, AlrtNoInternet[CurrLang]);
     exit;
   end;
-  result := true;
+  result := false;
 end;
 
 procedure TfMain.iFirmUpClick(Sender: TObject);
