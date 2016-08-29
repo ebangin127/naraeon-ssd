@@ -69,10 +69,6 @@ Section "MainSection" SEC01
   File "..\Exe\Rufus\rufus.exe"
   File "..\Exe\Rufus\license.txt"
 
-  SetOutPath "$INSTDIR\SSDTools\Rufus\rufus_files\syslinux-6.03\20151222"
-  File "..\Exe\Rufus\syslinux-6.03\20151222\ldlinux.bss"
-  File "..\Exe\Rufus\syslinux-6.03\20151222\ldlinux.sys"
-
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
   File "..\Exe\7z\license.txt"

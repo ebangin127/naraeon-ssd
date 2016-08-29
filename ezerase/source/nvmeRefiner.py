@@ -12,7 +12,7 @@ class NVMeRefiner:
         nvmeresult = nvmeresult.split('\n')
         model, serial = self.__getModelSerial(nvmeresult)
         model = model.strip()
-        seiral = serial.strip()
+        serial = serial.strip()
         return (model, serial)
     def refine(self, findresult):
         fixedstorages = list()
