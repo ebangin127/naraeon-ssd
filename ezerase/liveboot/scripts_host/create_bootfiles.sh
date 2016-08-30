@@ -1,5 +1,5 @@
-cd ~/live_boot/
-mkdir -p ~/live_boot/image/{live,isolinux}
+cd ~/naraeon-ssd/ezerase/liveboot/
+mkdir -p ~/naraeon-ssd/ezerase/liveboot/image/{live,isolinux}
 sudo cp grubconfig/grub.cfg image/boot/grub.cfg
 sudo cp chroot/boot/vmlinuz-*-amd64 image/live/vmlinuz1 && \
 sudo cp chroot/boot/initrd.img-*-amd64 image/live/initrd1

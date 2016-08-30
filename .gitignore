@@ -35,3 +35,6 @@ __pycache__
 *.bin
 *.efi
 cifs5fc
+initrd*
+memtest
+vmlinuz*

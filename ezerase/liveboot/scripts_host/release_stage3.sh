@@ -1,6 +1,6 @@
 #!/bin/bash
 shopt -s extglob
-cd ~/live_boot/
+cd ~/naraeon-ssd/ezerase/liveboot/
 sudo umount -lf chroot_release/dev 
 sudo rm -rf chroot_release/usr/share/fonts/truetype/nanum/!(NanumG*)
 sudo rm -rf chroot_release/usr/share/fonts/truetype/dejavu &&
@@ -8,12 +8,12 @@ sudo rm -rf chroot_release/var/lib/apt &&
 sudo rm -rf chroot_release/var/lib/dpkg &&
 sudo rm -r chroot_release/usr/share/doc/*/!(copyright)
 sudo rm -rf chroot_release/usr/share/man &&
-cd ~/live_boot &&
+cd ~/naraeon-ssd/ezerase/liveboot &&
 sudo rm -rf image/live/filesystem.squashfs &&
 sudo mksquashfs chroot_release image/live/filesystem.squashfs -e boot -b 1048576 -comp xz -Xdict-size 100% &&
 sudo rm -rf /mnt/windows/naraeon-live.iso &&
-cd ~/live_boot/image && sudo rm ../iso/naraeon-live.iso &&
-sudo xorriso -as mkisofs \
+cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live.iso &&
+xorriso -as mkisofs \
    -o ../iso/naraeon-live.iso \
    -isohybrid-mbr isolinux/isohdpfx.bin \
    -c isolinux/boot.cat \
