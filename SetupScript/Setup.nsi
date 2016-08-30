@@ -70,8 +70,8 @@ Section "MainSection" SEC01
   File "..\Exe\Rufus\license.txt"
 
   SetOutPath "$INSTDIR\SSDTools\Rufus\rufus_files\syslinux-6.03\20151222"
-  File "..\Exe\Rufus\syslinux-6.03\20151222\ldlinux.bss"
-  File "..\Exe\Rufus\syslinux-6.03\20151222\ldlinux.sys"
+  File "..\Exe\Rufus\rufus_files\syslinux-6.03\20151222\ldlinux.bss"
+  File "..\Exe\Rufus\rufus_files\syslinux-6.03\20151222\ldlinux.sys"
 
   SetOutPath "$INSTDIR\SSDTools\7z"
   File "..\Exe\7z\7z.exe"
@@ -84,6 +84,12 @@ Section "MainSection" SEC01
   File "..\Exe\Image\logo.png"
   File "..\Exe\Image\bg.png"
   File "..\Exe\Image\warning.ico"
+  File "..\Exe\Image\analytics.png"
+  File "..\Exe\Image\erase.png"
+  File "..\Exe\Image\firmup.png"
+  File "..\Exe\Image\help.png"
+  File "..\Exe\Image\optimize.png"
+  File "..\Exe\Image\trim.png"
 
   SetOutPath "$INSTDIR\SSDTools"
   File "..\Exe\SSDTools.exe"

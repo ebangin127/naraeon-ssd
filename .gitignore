@@ -25,3 +25,8 @@ __pycache__
 *.iso
 /Images
 /Exe/Image
+/trunk/SSDOptimizer_Icon.ico
+/trunk/SSDTools.res
+/trunk/SSDTools.stat
+/trunk/Test/SSDToolsTests.stat
+/ezerase/cifs5fc

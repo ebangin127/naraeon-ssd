@@ -31,6 +31,7 @@ type
     Mainform: THackMainForm;
     procedure RefreshOptimizeList;
     procedure LoadBackground;
+    procedure LoadIcons;
     procedure SetFormSize;
     procedure SetIcon;
     procedure AddButtonsToButtonGroup;
@@ -76,6 +77,7 @@ begin
   AddButtonsToButtonGroup;
   LoadBackground;
   LoadLogoImage;
+  LoadIcons;
   SetFormSize;
   SetIcon;
   RefreshOptimizeList;
@@ -193,7 +195,8 @@ procedure TMainformInitializer.LoadAndProportionalStretchBackgroundXP;
 begin
   fMain.iBG.Proportional := true;
   if FileExists(EnvironmentVariable.AppPath + BackgroundPath) then
-    fMain.iBG.Picture.LoadFromFile(EnvironmentVariable.AppPath + BackgroundPath);
+    fMain.iBG.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + BackgroundPath);
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchBackground;
@@ -209,6 +212,35 @@ begin
     LoadAndProportionalStretchBackgroundXP
   else
     LoadAndProportionalStretchBackground;
+end;
+
+procedure TMainformInitializer.LoadIcons;
+const
+  FirmUpPath = 'Image\firmup.png';
+  ErasePath = 'Image\erase.png';
+  OptimizePath = 'Image\optimize.png';
+  TrimPath = 'Image\trim.png';
+  HelpPath = 'Image\help.png';
+  AnalyticsPath = 'Image\analytics.png';
+begin
+  if FileExists(EnvironmentVariable.AppPath + FirmUpPath) then
+    fMain.iFirmUp.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + FirmUpPath);
+  if FileExists(EnvironmentVariable.AppPath + ErasePath) then
+    fMain.iErase.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + ErasePath);
+  if FileExists(EnvironmentVariable.AppPath + OptimizePath) then
+    fMain.iOptimize.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + OptimizePath);
+  if FileExists(EnvironmentVariable.AppPath + TrimPath) then
+    fMain.iTrim.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + TrimPath);
+  if FileExists(EnvironmentVariable.AppPath + HelpPath) then
+    fMain.iHelp.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + HelpPath);
+  if FileExists(EnvironmentVariable.AppPath + AnalyticsPath) then
+    fMain.iAnalytics.Picture.LoadFromFile(
+      EnvironmentVariable.AppPath + AnalyticsPath);
 end;
 
 procedure TMainformInitializer.LoadAndProportionalStretchLogo;
