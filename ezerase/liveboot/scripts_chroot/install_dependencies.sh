@@ -1,8 +1,8 @@
 export HOME=/root
 export LC_ALL=C
 cd /
-apt-get install -t jessie --no-install-recommends --yes git wget ca-certificates && 
-apt-get install -t jessie --yes gcc make && git clone https://github.com/linux-nvme/nvme-cli.git && 
+apt-get -t jessie --no-install-recommends --yes install git wget ca-certificates && 
+apt-get -t jessie --yes install gcc make && git clone https://github.com/linux-nvme/nvme-cli.git && 
 cd nvme-cli && 
 make && make install && 
 cd .. && 
