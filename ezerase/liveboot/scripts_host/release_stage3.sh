@@ -12,7 +12,7 @@ cd ~/naraeon-ssd/ezerase/liveboot &&
 sudo rm -rf image/live/filesystem.squashfs &&
 sudo mksquashfs chroot_release image/live/filesystem.squashfs -e boot -b 1048576 -comp xz -Xdict-size 100% &&
 sudo rm -rf /mnt/windows/naraeon-live.iso &&
-cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live.iso &&
+cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live.iso 
 xorriso -as mkisofs \
    -o ../iso/naraeon-live.iso \
    -isohybrid-mbr isolinux/isohdpfx.bin \
