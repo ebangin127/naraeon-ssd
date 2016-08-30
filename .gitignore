@@ -31,4 +31,7 @@ __pycache__
 /ezerase/cifs5fc
 *.squashfs
 *.7z
+*.c32
+*.bin
+*.efi
 cifs5fc
