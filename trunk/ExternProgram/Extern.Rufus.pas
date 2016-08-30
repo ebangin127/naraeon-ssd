@@ -327,7 +327,7 @@ begin
 
   ShellExecute(0, 'open',
     PChar(RufusPath),
-    PChar('-l en_US --iso="' + ISOPath + '"'),
+    PChar('--iso="' + ISOPath + '"'),
     PChar(ExtractFilePath(RufusPath)), SW_NORMAL);
 
   MWHandle := FindMainWindow;
