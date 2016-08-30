@@ -10,7 +10,7 @@ sudo rm -r chroot_release/usr/share/doc/*/!(copyright)
 sudo rm -rf chroot_release/usr/share/man &&
 cd ~/naraeon-ssd/ezerase/liveboot &&
 sudo rm -rf image/live/filesystem.squashfs &&
-sudo mksquashfs chroot_release image/live/filesystem.squashfs -b 1048576 -comp lz4 -Xhc -e boot &&
+sudo mksquashfs chroot_release image/live/filesystem.squashfs -b 1048576 -comp xz -Xdict-size 100% -e boot &&
 sudo rm -rf /mnt/windows/naraeon-live.iso &&
 cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live.iso 
 xorriso -as mkisofs \
