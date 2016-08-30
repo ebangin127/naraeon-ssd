@@ -1,5 +1,5 @@
 cd ~/naraeon-ssd/ezerase/liveboot
-rm -rf chroot
+sudo rm -rf chroot
 sudo apt-get update
 sudo apt-get install --yes debootstrap debian-archive-keyring syslinux isolinux xorriso
 sudo apt-get dist-upgrade
