@@ -13,7 +13,6 @@ Win32
 /trunk/Win64
 __history
 WriteLog*.txt
-/Exe/Erase/*.7z
 /Exe/*.exe
 /Documents/*.pdf
 /Exe/*.rsm
@@ -30,3 +29,5 @@ __pycache__
 /trunk/SSDTools.stat
 /trunk/Test/SSDToolsTests.stat
 /ezerase/cifs5fc
+*.squashfs
+*.7z
