@@ -5,6 +5,6 @@ sudo cp chroot/boot/vmlinuz-*-amd64 image/live/vmlinuz1 && \
 sudo cp chroot/boot/initrd.img-*-amd64 image/live/initrd1
 sudo cp /usr/lib/ISOLINUX/isolinux.bin image/isolinux/ && \
 sudo cp /usr/lib/ISOLINUX/isohdpfx.bin image/isolinux/ && \
-sudo cp ~/isolinux.cfg image/isolinux && \
+sudo cp ~/naraeon-ssd/ezerase/liveboot/config/isolinux.cfg image/isolinux && \
 sudo cp /usr/lib/syslinux/modules/bios/*.c32 image/isolinux
 
