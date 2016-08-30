@@ -1,8 +1,8 @@
 export HOME=/root
 export LC_ALL=C
 cd /
-apt-get install --no-install-recommends --yes git wget ca-certificates && 
-apt-get install --yes gcc make && git clone https://github.com/linux-nvme/nvme-cli.git && 
+apt-get install -t stretch --no-install-recommends --yes git wget ca-certificates && 
+apt-get install -t stretch --yes gcc make && git clone https://github.com/linux-nvme/nvme-cli.git && 
 cd nvme-cli && 
 make && make install && 
 cd .. && 
