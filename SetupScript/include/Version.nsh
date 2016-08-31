@@ -1,5 +1,5 @@
-!define _VERSION "5.2.4.0"
-!define _VERSION_SHORTEN "5.2.4"
+!define _VERSION "5.3.0.0"
+!define _VERSION_SHORTEN "5.3.0"
 
 VIProductVersion "${_VERSION}"
 VIAddVersionKey "ProductName" "Naraeon SSD Tools"

@@ -392,7 +392,7 @@ var
 begin
   ExtractEraseImage(CompressedFilePath, TempFolder);
   ImageFilePath := TempFolder + Filename + '.iso';
-  Rufus.RunRufus(Letter, ImageFilePath);
+  Rufus.RunRufus(Letter, ImageFilePath, true);
 end;
 
 function TfMain.ExtractEraseImage(const FullPath: string;
