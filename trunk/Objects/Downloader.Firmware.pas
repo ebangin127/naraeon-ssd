@@ -105,7 +105,7 @@ end;
 procedure TFirmwareDownloader.UnlockedBurn(const Letter: string);
 begin
   AlertCreate(fMain, AlrtStartFormat[CurrLang]);
-  Rufus.RunRufus(Letter, FirmwarePath);
+  Rufus.RunRufus(Letter, FirmwarePath, false);
   AlertCreate(fMain, AlrtFirmEnd[CurrLang]);
   DeleteDirectory(ExtractFilePath(FirmwarePath));
   DeleteDirectory(TempFolder);

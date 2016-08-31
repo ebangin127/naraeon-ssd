@@ -28,58 +28,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 -----------------------------------------------------------------
-License of Seanau Icon Packs 2014:
-
-Not sure what license you need? You will most likely figure it out here.
-Updated on June 2nd, 2016
- 
-This is a legal agreement between you, the Purchaser, and the Licensor. Purchasing or downloading of any icon or icons set. You agree to abide by all the terms and conditions mentioned in this agreement.
- 
-All ownership and copyright of the licensed icons remain the property of Seanau.com. Seanau grants you a Royalty-free license for: non-exclusive, non-transferable, rights to use the icons.
- 
-You are allowed to use Seanau icons in your commercial products.You are free to sell and distribute your products that utilize Seanau.com's icons without further royalty due to Seanau.com.
-You can use Seanau icons in an unlimited number of products without any additional costs.
- 
- 
-Allowed Usage Examples:
- 
-* Printed Material
-* GUI design
-* Advertisements
-* Commercial projects
-* Graphic design projects
-* Blog
-* Video
-* Packaging
-* Presentations
-* On-line content
-* Computer games
-* Software applications
-* Mobile applications
-* Smartphone and desktop apps
-* Websites
-* T-shirts, coffee mugs, etc.
-* Book covers
-* Holiday and party decorations
-* Website Templates - like Wordpress templates
- 
- 
-The licensing agreement allows the licensee to:
- 
-Alter, crop and create derivative icons. So you may edit an individual icon's color, lines etc. or combine icons of one size with others of different sizes to create all new icons, they remain the property of the Seanau.com and no ownership in them is transferred to the customer.
- 
-This Agreement specifically does not permit licensee to:
- 
-* On any website in a complete or archived downloadable format
-* On any electronic bulletin board or downloadable format
-* In a way that enables it to be distributed in any other way
-* Incorporated into a logo or other trademark
- 
-All royalty-free icons are provided 'as is'. You agree not to hold Seanau.com/original author liable for any damage that may occur during the course of using the icons.
- 
-The License shall terminate automatically if you fail to comply with any of the terms of this agreement.
-
------------------------------------------------------------------
 License of 7zip:
 
   7-Zip

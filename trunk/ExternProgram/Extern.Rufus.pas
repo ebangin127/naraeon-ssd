@@ -10,8 +10,10 @@ type
   TRufus = class
   public
     function CheckRufus: Boolean;
-    procedure RunRufus(const DestDrive, FromISO: String);
-    procedure SetRufus(const RufusPath, DriveName, ISOPath: String);
+    procedure RunRufus(const DestDrive, FromISO: String;
+      const IsISOHybrid: Boolean);
+    procedure SetRufus(const RufusPath, DriveName, ISOPath: String;
+      const IsISOHybrid: Boolean);
     class function Create: TRufus;
   private
     function FindMainWindow: THandle;
@@ -28,10 +30,11 @@ type
     function FindCloseButton(const MWHandle: THandle): THandle;
     function ClickCloseButton(const MWHandle, BTHandle: THandle): Boolean;
     procedure SetRufusToHandle(const MWHandle: THandle;
-      const DriveName: String);
+      const DriveName: String; const IsISOHybrid: Boolean);
     function IsValidHandle(const Handle: THandle): Boolean;
     function FindISOHybridWindow: THandle;
     function FindISOHybridOKButton(const SWHandle: THandle): THandle;
+    procedure WaitForISOHybrid;
   end;
 
 var
@@ -58,12 +61,16 @@ function EnumWindowsCallback(Handle: THandle;
   LParamAsParameter: DWORD): Boolean; stdcall;
 var
   ReceivedCaptionStr: String;
+  SendMessageResult: DWORD;
 begin
-  SendMessage(Handle, WM_GETTEXT,
-    MAX_LENGTH, LParam(@EnumWindowsWC[0]));
-  ReceivedCaptionStr := PWideChar(EnumWindowsWC);
-  if Pos(ISOHybridStr, ReceivedCaptionStr, 1) > 0 then
-    GlobalISOHybridHandleResult := Handle;
+  if SendMessageTimeout(Handle, WM_GETTEXT,
+    MAX_LENGTH, LParam(@EnumWindowsWC[0]), SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult) > 0 then
+  begin
+    ReceivedCaptionStr := PWideChar(EnumWindowsWC);
+    if Pos(ISOHybridStr, ReceivedCaptionStr, 1) > 0 then
+      GlobalISOHybridHandleResult := Handle;
+  end;
   result := true;
 end;
 
@@ -81,7 +88,8 @@ begin
   FreeAndNil(CodesignVerifier);
 end;
 
-procedure TRufus.RunRufus(const DestDrive, FromISO: String);
+procedure TRufus.RunRufus(const DestDrive, FromISO: String;
+  const IsISOHybrid: Boolean);
 var
   CutDestDrive: String;
 begin
@@ -89,7 +97,7 @@ begin
 
   SetRufus(
     EnvironmentVariable.AppPath + '\Rufus\rufus.exe',
-    CutDestDrive, FromISO);
+    CutDestDrive, FromISO, IsISOHybrid);
 
   DeleteFile(FromISO);
 end;
@@ -124,10 +132,12 @@ end;
 function TRufus.GetFTComboText(const EDTHandle: THandle): String;
 var
   ReceivedCaptionWC: Array of WideChar;
+  SendMessageResult: DWORD;
 begin
   SetLength(ReceivedCaptionWC, MAX_LENGTH);
-  SendMessage(EDTHandle, WM_GETTEXT,
-    MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
+  SendMessageTimeout(EDTHandle, WM_GETTEXT,
+    MAX_LENGTH, LParam(@ReceivedCaptionWC[0]), SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult);
   result := PWideChar(ReceivedCaptionWC);
   SetLength(ReceivedCaptionWC, 0);
 end;
@@ -136,6 +146,7 @@ function TRufus.FindDriveCombo(const MWHandle: THandle): THandle;
 var
   ReceivedCaptionWC: Array of WideChar;
   ReceivedCaptionStr: String;
+  SendMessageResult: DWORD;
 begin
   result := 0;
   SetLength(ReceivedCaptionWC, MAX_LENGTH);
@@ -143,8 +154,9 @@ begin
   repeat
     result :=
       FindWindowEx(MWHandle, result, 'ComboBox', nil);
-    SendMessage(result, WM_GETTEXT,
-      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
+    SendMessageTimeout(result, WM_GETTEXT,
+      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]), SMTO_ABORTIFHUNG, 100,
+      @SendMessageResult);
     ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
   until Pos(':)', ReceivedCaptionStr) > 0;
 end;
@@ -156,33 +168,44 @@ var
   ReceivedCaptionStr: String;
   CurrItem, AllCount: Integer;
   UpperCaseText: String;
+  SendMessageResult: DWORD;
 begin
   UpperCaseText := UpperCase(Text);
 
-  SendMessage(EDTHandle, WM_LBUTTONDOWN, 0, 0);
+  SendMessageTimeout(EDTHandle, WM_LBUTTONDOWN, 0, 0, SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult);
   Sleep(0);
-  SendMessage(EDTHandle, WM_LBUTTONUP, 0, 0);
+  SendMessageTimeout(EDTHandle, WM_LBUTTONUP, 0, 0, SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult);
   Sleep(0);
-  SendMessage(EDTHandle, WM_LBUTTONDOWN, 0, 0);
+  SendMessageTimeout(EDTHandle, WM_LBUTTONDOWN, 0, 0, SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult);
   Sleep(0);
-  SendMessage(EDTHandle, WM_LBUTTONUP, 0, 0);
+  SendMessageTimeout(EDTHandle, WM_LBUTTONUP, 0, 0, SMTO_ABORTIFHUNG, 100,
+    @SendMessageResult);
 
-  AllCount := SendMessage(EDTHandle, CB_GETCOUNT, 0, 0);
+  AllCount := SendMessageTimeout(EDTHandle, CB_GETCOUNT, 0, 0, SMTO_ABORTIFHUNG,
+    100, @SendMessageResult);
   SetLength(ReceivedCaptionWC, MAX_LENGTH);
 
   for CurrItem := 0 to AllCount - 1 do
   begin
-    SendMessage(EDTHandle, CB_SETCURSEL, CurrItem, 0);
-    SendMessage(EDTHandle, CB_GETITEMDATA, CurrItem, 0);
-    SendMessage(EDTHandle, WM_GETTEXT,
-      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]));
+    SendMessageTimeout(EDTHandle, CB_SETCURSEL, CurrItem, 0, SMTO_ABORTIFHUNG,
+      100, @SendMessageResult);
+    SendMessageTimeout(EDTHandle, CB_GETITEMDATA, CurrItem, 0, SMTO_ABORTIFHUNG,
+      100, @SendMessageResult);
+    SendMessageTimeout(EDTHandle, WM_GETTEXT,
+      MAX_LENGTH, LParam(@ReceivedCaptionWC[0]), SMTO_ABORTIFHUNG,
+      100, @SendMessageResult);
     ReceivedCaptionStr := PWideChar(ReceivedCaptionWC);
 
     if Pos(UpperCaseText, ReceivedCaptionStr) > 0 then
       break;
 
-    SendMessage(EDTHandle, WM_KEYDOWN, VK_DOWN, 0);
-    SendMessage(EDTHandle, WM_KEYUP, VK_DOWN, 0);
+    SendMessageTimeout(EDTHandle, WM_KEYDOWN, VK_DOWN, 0, SMTO_ABORTIFHUNG,
+      100, @SendMessageResult);
+    SendMessageTimeout(EDTHandle, WM_KEYUP, VK_DOWN, 0, SMTO_ABORTIFHUNG,
+      100, @SendMessageResult);
   end;
   result := GetLastError = 0;
 end;
@@ -242,6 +265,23 @@ begin
     FindWindowEx(SWHandle, result, 'Button', nil);
 end;
 
+procedure TRufus.WaitForISOHybrid;
+var
+  ISOHybridHandleResult: THandle;
+  OKButtonHandle: THandle;
+begin
+  ISOHybridHandleResult := FindISOHybridWindow;
+  while ISOHybridHandleResult <> INVALID_HANDLE_VALUE do
+  begin
+    OKButtonHandle := FindISOHybridOKButton(ISOHybridHandleResult);
+    ClickOKButton(ISOHybridHandleResult, OKButtonHandle);
+    GlobalISOHybridHandleResult := INVALID_HANDLE_VALUE;
+    ZeroMemory(EnumWindowsWC, MAX_LENGTH);
+    EnumWindows(@EnumWindowsCallback, 0);
+    ISOHybridHandleResult := GlobalISOHybridHandleResult;
+  end;
+end;
+
 function TRufus.FindOKButton(const SWHandle: THandle): THandle;
 begin
   result :=
@@ -276,7 +316,7 @@ begin
 end;
 
 procedure TRufus.SetRufusToHandle(const MWHandle: THandle;
-  const DriveName: String);
+  const DriveName: String; const IsISOHybrid: Boolean);
 var
   FileTypeComboHandle: THandle;
   DriveComboHandle: THandle;
@@ -284,7 +324,6 @@ var
   SWHandle: THandle;
   OKButtonHandle: THandle;
   CloseButtonHandle: THandle;
-  ISOHybridHandleResult: THandle;
 begin
   repeat
     FileTypeComboHandle := FindFTCombo(MWHandle);
@@ -294,16 +333,8 @@ begin
   EditDriveCombo(DriveComboHandle, DriveName);
   StartButtonHandle := FindStartButton(MWHandle);
   ClickStartButton(MWHandle, StartButtonHandle);
-  ISOHybridHandleResult := FindISOHybridWindow;
-  while ISOHybridHandleResult <> INVALID_HANDLE_VALUE do
-  begin
-    OKButtonHandle := FindISOHybridOKButton(ISOHybridHandleResult);
-    ClickOKButton(ISOHybridHandleResult, OKButtonHandle);
-    GlobalISOHybridHandleResult := INVALID_HANDLE_VALUE;
-    ZeroMemory(EnumWindowsWC, MAX_LENGTH);
-    EnumWindows(@EnumWindowsCallback, 0);
-    ISOHybridHandleResult := GlobalISOHybridHandleResult;
-  end;
+  if IsISOHybrid then
+    WaitForISOHybrid;
   repeat
     SWHandle := FindConfirmWindow;
     OKButtonHandle := FindOKButton(SWHandle);
@@ -317,7 +348,8 @@ begin
   ClickCloseButton(MWHandle, CloseButtonHandle);
 end;
 
-procedure TRufus.SetRufus(const RufusPath, DriveName, ISOPath: String);
+procedure TRufus.SetRufus(const RufusPath, DriveName, ISOPath: String;
+  const IsISOHybrid: Boolean);
 var
   MWHandle: THandle;
 begin
@@ -331,7 +363,7 @@ begin
     PChar(ExtractFilePath(RufusPath)), SW_NORMAL);
 
   MWHandle := FindMainWindow;
-  SetRufusToHandle(MWHandle, DriveName);
+  SetRufusToHandle(MWHandle, DriveName, IsISOHybrid);
 end;
 
 initialization

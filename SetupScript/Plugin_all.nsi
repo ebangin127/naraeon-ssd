@@ -25,7 +25,7 @@ SetCompressor zlib
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE ".\license_gplv2.txt"
+!insertmacro MUI_PAGE_LICENSE ".\license_gplv3.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
@@ -41,6 +41,7 @@ SetCompressor zlib
 !insertmacro MUI_LANGUAGE "English"
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+!finalize 'signtool sign /a /fd sha256 /tr http://timestamp.comodoca.com/authenticode "%1"'
 
 ; MUI end ------
 
