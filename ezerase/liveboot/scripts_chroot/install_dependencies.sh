@@ -7,5 +7,4 @@ cd .. &&
 rm -rf nvme-cli && 
 cp /sedutil/Release_x86_64/GNU-Linux/sedutil-cli /usr/local/sbin && 
 rm -rf ./sedutil
-apt-get autoremove --yes gcc make && 
-apt-get autoremove --yes
+apt-get autoremove --yes gcc make
