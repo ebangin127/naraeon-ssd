@@ -97,7 +97,7 @@ begin
 
   SetRufus(
     EnvironmentVariable.AppPath + '\Rufus\rufus.exe',
-    CutDestDrive, FromISO, IsISOHybrid);
+    CutDestDrive, FromISO, Pos('all.iso', FromISO, 1) > 0);
 
   DeleteFile(FromISO);
 end;
