@@ -1,5 +1,6 @@
 import processRunner
 import eraserWaiterView
+import eraseType
 class ATAHDParmEraser:
     def __isSuccessful(self, hdparmresult):
         return hdparmresult.find('not\tenabled') != -1
@@ -14,10 +15,13 @@ class ATAHDParmEraser:
             return result
         return pollfunc
 
-    def erase(self, selected, laststate):
-        if not laststate:
-            return False
+    def erase(self, selected, confirm):
+        if not confirm:
+            return eraseType.EraseType.failed.closed
         runner = processRunner.ProcessRunner()
         eraserWaiterView.EraserWaiterView(self.__getPollingFunction(selected))
         hdparmresult = runner.run('hdparm -I /dev/' + selected).decode('utf-8')
-        return self.__isSuccessful(hdparmresult)
+        if self.__isSuccessful(hdparmresult):
+            return eraseType.EraseType.erased
+        else:
+            return eraseType.EraseType.failed

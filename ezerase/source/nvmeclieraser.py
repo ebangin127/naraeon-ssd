@@ -1,6 +1,7 @@
 import processRunner
 import freezeType
 import eraserWaiterView
+import eraseType
 class NVMeCLIEraser:
     def __isSuccessful(self, nvmecliresult):
         return nvmecliresult.find('Success formatting') != -1
@@ -19,6 +20,9 @@ class NVMeCLIEraser:
 
     def erase(self, confirm, selected):
         if not confirm:
-            return False;
+            return eraseType.EraseType.closed;
         eraserWaiterView.EraserWaiterView(self.__getPollingFunction(selected))
-        return self.__isSuccessful(self.__nvmecliresult)
+        if self.__isSuccessful(self.__nvmecliresult):
+            return eraseType.EraseType.erased
+        else:
+            return eraseType.EraseType.failed

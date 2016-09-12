@@ -1,5 +1,6 @@
 import tkinter
 import processRunner
+import eraseType
 class CompleteView:
     __DESCRIPTIONBORDER = 10
     __DESCRIPTIONROW = 0
@@ -15,6 +16,7 @@ class CompleteView:
         self.__root.deiconify()
 
     def __init__(self, laststate, model, serial):
+        if laststate != eraseType.EraseType.closed:
         self.__agree = False;
         self.__root = tkinter.Tk()
         self.__root.wm_title('Naraeon SSD Tools - Secure Erase')

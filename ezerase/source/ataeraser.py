@@ -4,12 +4,15 @@ import passwordCleaner
 import defroster
 import confirmView
 import completeView
+import eraseType
 class ATAEraser:
     def erase(self, selected, model, serial):
-        erasestate = False
+        erasestate = eraseType.EraseType.failed
         passwordcleared = False
+        laststate = defroster.Defroster().defrost(selected)
+        if freezeType.FreezeType.defrosting:
+            return True
         try:
-            laststate = defroster.Defroster().defrost(selected)
             passwordset = passwordSetter.PasswordSetter().set(selected, laststate)
             confirm = confirmView.ConfirmView(passwordset, model, serial).agree()
             erasestate = atahdparmeraser.ATAHDParmEraser().erase(selected, confirm)
