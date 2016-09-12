@@ -17,17 +17,17 @@ class CompleteView:
 
     def __init__(self, laststate, model, serial):
         if laststate != eraseType.EraseType.closed:
-        self.__agree = False;
-        self.__root = tkinter.Tk()
-        self.__root.wm_title('Naraeon SSD Tools - Secure Erase')
-        self.__mainloop = self.__root.mainloop
-        frame = tkinter.Frame(self.__root)
-        frame.pack(fill=tkinter.BOTH)
-        self.__initMessageFrame(frame, laststate, model, serial)
-        self.__initButtonFrame(frame)
-        self.__initButton()
-        self.__center()
-        self.__mainloop()
+            self.__agree = False;
+            self.__root = tkinter.Tk()
+            self.__root.wm_title('Naraeon SSD Tools - Secure Erase')
+            self.__mainloop = self.__root.mainloop
+            frame = tkinter.Frame(self.__root)
+            frame.pack(fill=tkinter.BOTH)
+            self.__initMessageFrame(frame, laststate, model, serial)
+            self.__initButtonFrame(frame)
+            self.__initButton()
+            self.__center()
+            self.__mainloop()
 
     def __initButtonFrame(self, frame):
         self.__buttonFrame = tkinter.Frame(frame)
