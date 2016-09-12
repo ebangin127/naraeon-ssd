@@ -3,8 +3,6 @@ shopt -s extglob
 cd ~/naraeon-ssd/ezerase/liveboot/
 sudo rm -rf chroot/usr/share/fonts/truetype/nanum/!(NanumG*)
 sudo rm -rf chroot/usr/share/fonts/truetype/dejavu &&
-sudo rm -rf chroot/var/lib/apt &&
-sudo rm -rf chroot/var/lib/dpkg &&
 sudo rm -r chroot/usr/share/doc/*/!(copyright)
 sudo rm -rf chroot/usr/share/man &&
 cd ~/naraeon-ssd/ezerase/liveboot &&
