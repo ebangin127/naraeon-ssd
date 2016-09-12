@@ -13,7 +13,7 @@ sudo mksquashfs chroot_nvidia image/live/filesystem.squashfs -b 1048576 -comp xz
 sudo rm -rf /mnt/windows/naraeon-live.iso &&
 cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live-nvidia.iso 
 xorriso -as mkisofs \
-   -o ../iso/naraeon-live.iso \
+   -o ../iso/naraeon-live-nvidia.iso \
    -isohybrid-mbr isolinux/isohdpfx.bin \
    -c isolinux/boot.cat \
    -b isolinux/isolinux.bin \
