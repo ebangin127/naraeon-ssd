@@ -12,7 +12,7 @@ class Defroster:
         if freezetype == freezeType.FreezeType.frozen:
             eraserview = eraserView.EraserView()
             if eraserview.agree():
-                os.system('systemctl suspend')
+                os.system('pm-suspend')
             else:
                 return freezeType.FreezeType.frozen
         return freezetype
