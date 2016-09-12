@@ -1,16 +1,15 @@
 #!/bin/bash
 shopt -s extglob
 cd ~/naraeon-ssd/ezerase/liveboot/
-sudo umount -lf chroot_release/dev 
-sudo rm -rf chroot_release/usr/share/fonts/truetype/nanum/!(NanumG*)
-sudo rm -rf chroot_release/usr/share/fonts/truetype/dejavu &&
-sudo rm -rf chroot_release/var/lib/apt &&
-sudo rm -rf chroot_release/var/lib/dpkg &&
-sudo rm -r chroot_release/usr/share/doc/*/!(copyright)
-sudo rm -rf chroot_release/usr/share/man &&
+sudo rm -rf chroot/usr/share/fonts/truetype/nanum/!(NanumG*)
+sudo rm -rf chroot/usr/share/fonts/truetype/dejavu &&
+sudo rm -rf chroot/var/lib/apt &&
+sudo rm -rf chroot/var/lib/dpkg &&
+sudo rm -r chroot/usr/share/doc/*/!(copyright)
+sudo rm -rf chroot/usr/share/man &&
 cd ~/naraeon-ssd/ezerase/liveboot &&
 sudo rm -rf image/live/filesystem.squashfs &&
-sudo mksquashfs chroot_release image/live/filesystem.squashfs -b 1048576 -comp xz -Xdict-size 100% -e boot &&
+sudo mksquashfs chroot image/live/filesystem.squashfs -b 1048576 -comp xz -Xdict-size 100% -e boot &&
 sudo rm -rf /mnt/windows/naraeon-live.iso &&
 cd ~/naraeon-ssd/ezerase/liveboot/image && rm ../iso/naraeon-live.iso 
 xorriso -as mkisofs \
@@ -24,5 +23,4 @@ xorriso -as mkisofs \
       -no-emul-boot \
       -isohybrid-gpt-basdat \
    . && cd .. &&
-sudo cp iso/naraeon-live.iso /mnt/windows/ &&
-sudo rm -rf chroot_release
+sudo cp iso/naraeon-live.iso /mnt/windows/
