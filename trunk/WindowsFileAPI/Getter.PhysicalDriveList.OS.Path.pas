@@ -12,7 +12,7 @@ type
     function GetPhysicalDriveNames: TDrivePathNumberList;
   private
     function IsPhysicalDrive(const Path: PChar): Boolean;
-    function ParseSeperatedName(const Path: PChar): Integer;
+    function ParseSeparatedName(const Path: PChar): Integer;
     type
       TVolumeNameBuffer = Array[0..65535] of Char;
       PTVolumeNameBuffer  = ^TVolumeNameBuffer;
@@ -41,7 +41,7 @@ begin
      PhysicalDrivePre;
 end;
 
-function TOSPhysicalDrivePathGetter.ParseSeperatedName(const Path: PChar):
+function TOSPhysicalDrivePathGetter.ParseSeparatedName(const Path: PChar):
   Integer;
 const
   PhysicalDrivePre = 'PHYSICALDRIVE';
@@ -65,7 +65,7 @@ begin
     if CurrentName = '' then
       break;
     if IsPhysicalDrive(CurrentName) then
-      result.Add(ParseSeperatedName(CurrentName));
+      result.Add(ParseSeparatedName(CurrentName));
     Inc(CurrentCharIndex, Length(CurrentName) + 1);
   end;
 end;

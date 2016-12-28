@@ -43,33 +43,33 @@ type
     function GetModelFromBuffer: String;
     function GetSerialFromBuffer: String;
     function GetLBASize(const Buffer: TSmallBuffer): Integer;
-    function SeperateCriticalWarningFrom(const Buffer: TSmallBuffer):
+    function SeparateCriticalWarningFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateTemperatureFrom(const Buffer: TSmallBuffer):
+    function SeparateTemperatureFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateAvailableSpareFrom(const Buffer: TSmallBuffer):
+    function SeparateAvailableSpareFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperatePercentageUsedFrom(const Buffer: TSmallBuffer):
+    function SeparatePercentageUsedFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateDataUnitsReadFrom(const Buffer: TSmallBuffer):
+    function SeparateDataUnitsReadFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateDataUnitsWrittenFrom(const Buffer: TSmallBuffer):
+    function SeparateDataUnitsWrittenFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateHostReadCommandsFrom(const Buffer: TSmallBuffer):
+    function SeparateHostReadCommandsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateHostWriteCommandsFrom(
+    function SeparateHostWriteCommandsFrom(
       const Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperateControllerBusyTimeFrom(
+    function SeparateControllerBusyTimeFrom(
       const Buffer: TSmallBuffer): TSMARTValueEntry;
-    function SeperatePowerCyclesFrom(const Buffer: TSmallBuffer):
+    function SeparatePowerCyclesFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperatePowerOnHoursFrom(const Buffer: TSmallBuffer):
+    function SeparatePowerOnHoursFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateUnsafeShutdownsFrom(const Buffer: TSmallBuffer):
+    function SeparateUnsafeShutdownsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateMediaErrorsFrom(const Buffer: TSmallBuffer):
+    function SeparateMediaErrorsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
-    function SeperateNumberOfErrorsFrom(const Buffer: TSmallBuffer):
+    function SeparateNumberOfErrorsFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
   end;
 
@@ -81,23 +81,23 @@ function TNVMeBufferInterpreter.BufferToSMARTValueList(
   const Buffer: TSmallBuffer): TSMARTValueList;
 begin
   result := TSMARTValueList.Create;
-  result.Add(SeperateCriticalWarningFrom(Buffer));
-  result.Add(SeperateTemperatureFrom(Buffer));
-  result.Add(SeperateAvailableSpareFrom(Buffer));
-  result.Add(SeperatePercentageUsedFrom(Buffer));
-  result.Add(SeperateDataUnitsReadFrom(Buffer));
-  result.Add(SeperateDataUnitsWrittenFrom(Buffer));
-  result.Add(SeperateHostReadCommandsFrom(Buffer));
-  result.Add(SeperateHostWriteCommandsFrom(Buffer));
-  result.Add(SeperateControllerBusyTimeFrom(Buffer));
-  result.Add(SeperatePowerCyclesFrom(Buffer));
-  result.Add(SeperatePowerOnHoursFrom(Buffer));
-  result.Add(SeperateUnsafeShutdownsFrom(Buffer));
-  result.Add(SeperateMediaErrorsFrom(Buffer));
-  result.Add(SeperateNumberOfErrorsFrom(Buffer));
+  result.Add(SeparateCriticalWarningFrom(Buffer));
+  result.Add(SeparateTemperatureFrom(Buffer));
+  result.Add(SeparateAvailableSpareFrom(Buffer));
+  result.Add(SeparatePercentageUsedFrom(Buffer));
+  result.Add(SeparateDataUnitsReadFrom(Buffer));
+  result.Add(SeparateDataUnitsWrittenFrom(Buffer));
+  result.Add(SeparateHostReadCommandsFrom(Buffer));
+  result.Add(SeparateHostWriteCommandsFrom(Buffer));
+  result.Add(SeparateControllerBusyTimeFrom(Buffer));
+  result.Add(SeparatePowerCyclesFrom(Buffer));
+  result.Add(SeparatePowerOnHoursFrom(Buffer));
+  result.Add(SeparateUnsafeShutdownsFrom(Buffer));
+  result.Add(SeparateMediaErrorsFrom(Buffer));
+  result.Add(SeparateNumberOfErrorsFrom(Buffer));
 end;
 
-function TNVMeBufferInterpreter.SeperateCriticalWarningFrom(
+function TNVMeBufferInterpreter.SeparateCriticalWarningFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
@@ -105,7 +105,7 @@ begin
   result.RAW := Buffer[0];
 end;
 
-function TNVMeBufferInterpreter.SeperateTemperatureFrom(
+function TNVMeBufferInterpreter.SeparateTemperatureFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateAvailableSpareFrom(
+function TNVMeBufferInterpreter.SeparateAvailableSpareFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
@@ -132,7 +132,7 @@ begin
   result.Threshold := Buffer[4];
 end;
 
-function TNVMeBufferInterpreter.SeperatePercentageUsedFrom(
+function TNVMeBufferInterpreter.SeparatePercentageUsedFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 begin
   FillChar(result, SizeOf(result), 0);
@@ -140,7 +140,7 @@ begin
   result.RAW := Buffer[5];
 end;
 
-function TNVMeBufferInterpreter.SeperateDataUnitsReadFrom(
+function TNVMeBufferInterpreter.SeparateDataUnitsReadFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -158,7 +158,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateDataUnitsWrittenFrom(
+function TNVMeBufferInterpreter.SeparateDataUnitsWrittenFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -176,7 +176,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateHostReadCommandsFrom(
+function TNVMeBufferInterpreter.SeparateHostReadCommandsFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -194,7 +194,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateHostWriteCommandsFrom(
+function TNVMeBufferInterpreter.SeparateHostWriteCommandsFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -212,7 +212,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateControllerBusyTimeFrom(
+function TNVMeBufferInterpreter.SeparateControllerBusyTimeFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -230,7 +230,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperatePowerCyclesFrom(
+function TNVMeBufferInterpreter.SeparatePowerCyclesFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -248,7 +248,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperatePowerOnHoursFrom(
+function TNVMeBufferInterpreter.SeparatePowerOnHoursFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -266,7 +266,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateUnsafeShutdownsFrom(
+function TNVMeBufferInterpreter.SeparateUnsafeShutdownsFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -284,7 +284,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateMediaErrorsFrom(
+function TNVMeBufferInterpreter.SeparateMediaErrorsFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
@@ -302,7 +302,7 @@ begin
   end;
 end;
 
-function TNVMeBufferInterpreter.SeperateNumberOfErrorsFrom(
+function TNVMeBufferInterpreter.SeparateNumberOfErrorsFrom(
   const Buffer: TSmallBuffer): TSMARTValueEntry;
 var
   CurrentByte: Integer;
