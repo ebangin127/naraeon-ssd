@@ -13,9 +13,9 @@ sudo mkdir ~/naraeon-ssd/ezerase/liveboot/chroot/sedutil/
 sudo cp -r ~/naraeon-ssd/ezerase/liveboot/sedutil/* ~/naraeon-ssd/ezerase/liveboot/chroot/sedutil/
 sudo mkdir -p ~/naraeon-ssd/ezerase/liveboot/chroot/usr/lib/pm-utils/sleep.d/
 sudo cp ~/naraeon-ssd/ezerase/liveboot/config/99_resume.sh ~/naraeon-ssd/ezerase/liveboot/chroot/usr/lib/pm-utils/sleep.d/
-rm -rf ~/naraeon-ssd/ezerase/liveboot/chroot_init/
-mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_init/
-cp -r ~/naraeon-ssd/ezerase/liveboot/chroot/* ~/naraeon-ssd/ezerase/liveboot/chroot_init/
+sudo rm -rf ~/naraeon-ssd/ezerase/liveboot/chroot_init/
+sudo mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_init/
+sudo cp -r ~/naraeon-ssd/ezerase/liveboot/chroot/* ~/naraeon-ssd/ezerase/liveboot/chroot_init/
 
 sudo mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/scripts
 sudo cp ~/naraeon-ssd/ezerase/liveboot/scripts_chroot/*.sh ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/scripts/
@@ -25,6 +25,6 @@ sudo mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/sedutil/
 sudo cp -r ~/naraeon-ssd/ezerase/liveboot/sedutil/* ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/sedutil/
 sudo mkdir -p ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/usr/lib/pm-utils/sleep.d/
 sudo cp ~/naraeon-ssd/ezerase/liveboot/config/99_resume.sh ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/usr/lib/pm-utils/sleep.d/
-rm -rf ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
-mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
-cp -r ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/* ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
+sudo rm -rf ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
+sudo mkdir ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
+sudo cp -r ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia/* ~/naraeon-ssd/ezerase/liveboot/chroot_nvidia_init/
