@@ -10,3 +10,4 @@ apt-get install dialog dbus -t stretch --yes &&
 dbus-uuidgen > /var/lib/dbus/machine-id && 
 echo "naraeon-live" > /etc/hostname
 chmod 755 /usr/lib/pm-utils/sleep.d/*.sh
+chmod 777 /tmp
