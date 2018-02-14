@@ -34,15 +34,16 @@ type
       const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
     function LargeBufferToSMARTValueList(
       const Buffer: TLargeBuffer): TSMARTValueList; override;
-    function BufferToCapacityAndLBA(const Buffer: TSmallBuffer):
+    function BufferToCapacityAndLBA(const Buffer: TLargeBuffer):
       TIdentifyDeviceResult;
   private
-    BufferInterpreting: TSmallBuffer;
+    BufferInterpreting: TLargeBuffer;
     function GetFirmwareFromBuffer: String;
     function GetLBASizeFromBuffer: Cardinal;
     function GetModelFromBuffer: String;
     function GetSerialFromBuffer: String;
-    function GetLBASize(const Buffer: TSmallBuffer): Integer;
+    function GetLBASize(const Buffer: TLargeBuffer): Integer;
+    function GetDataSetManagementSupported: Boolean;
     function SeparateCriticalWarningFrom(const Buffer: TSmallBuffer):
       TSMARTValueEntry;
     function SeparateTemperatureFrom(const Buffer: TSmallBuffer):
@@ -333,6 +334,13 @@ begin
   result := Trim(result);
 end;
 
+function TNVMeBufferInterpreter.GetDataSetManagementSupported: Boolean;
+const
+  DataSetManagementStart = 520;
+begin
+  result := (BufferInterpreting[DataSetManagementStart] and 4) = 4;
+end;
+
 function TNVMeBufferInterpreter.GetFirmwareFromBuffer: String;
 const
   FirmwareStart = 64;
@@ -361,11 +369,19 @@ end;
 
 function TNVMeBufferInterpreter.LargeBufferToIdentifyDeviceResult(
   const Buffer: TLargeBuffer): TIdentifyDeviceResult;
-var
-  SmallBuffer: TSmallBuffer;
+const
+  SSDRate = 1;
 begin
-  Move(Buffer, SmallBuffer, SizeOf(SmallBuffer));
-  result := BufferToIdentifyDeviceResult(SmallBuffer);
+  BufferInterpreting := Buffer;
+  result.Model := GetModelFromBuffer;
+  result.Firmware := GetFirmwareFromBuffer;
+  result.Serial := GetSerialFromBuffer;
+  result.UserSizeInKB := 0;
+  result.SATASpeed := TSATASpeed.NotSATA;
+  result.LBASize := GetLBASizeFromBuffer;
+  result.RotationRate.Supported := true;
+  result.RotationRate.Value := SSDRate;
+  result.IsDataSetManagementSupported := GetDataSetManagementSupported;
 end;
 
 function TNVMeBufferInterpreter.LargeBufferToSMARTValueList(
@@ -384,7 +400,7 @@ begin
   result := ATA_LBA_SIZE;
 end;
 
-function TNVMeBufferInterpreter.GetLBASize(const Buffer: TSmallBuffer): Integer;
+function TNVMeBufferInterpreter.GetLBASize(const Buffer: TLargeBuffer): Integer;
 var
   CurrentByte: Integer;
 const
@@ -400,7 +416,7 @@ begin
 end;
 
 function TNVMeBufferInterpreter.BufferToCapacityAndLBA(
-  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
   function ByteToDenaryKB: TDatasizeUnitChangeSetting;
   begin
     result.FNumeralSystem := Denary;
@@ -427,18 +443,11 @@ end;
 
 function TNVMeBufferInterpreter.BufferToIdentifyDeviceResult(
   const Buffer: TSmallBuffer): TIdentifyDeviceResult;
-const
-  SSDRate = 1;
+var
+  LargeBuffer: TLargeBuffer;
 begin
-  BufferInterpreting := Buffer;
-  result.Model := GetModelFromBuffer;
-  result.Firmware := GetFirmwareFromBuffer;
-  result.Serial := GetSerialFromBuffer;
-  result.UserSizeInKB := 0;
-  result.SATASpeed := TSATASpeed.NotSATA;
-  result.LBASize := GetLBASizeFromBuffer;
-  result.RotationRate.Supported := true;
-  result.RotationRate.Value := SSDRate;
+  Move(Buffer, LargeBuffer, SizeOf(Buffer));
+  result := LargeBufferToIdentifyDeviceResult(LargeBuffer);
 end;
 
 end.

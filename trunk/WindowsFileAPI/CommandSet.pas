@@ -23,6 +23,7 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal;
       virtual; abstract;
     function IsExternal: Boolean; virtual; abstract;
+    procedure Flush; virtual; abstract;
   protected
     const
       IdentifyDevicePrefix = 'IdentifyDevice';

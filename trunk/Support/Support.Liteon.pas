@@ -30,27 +30,27 @@ implementation
 
 function TLiteonNSTSupport.IsModelHasLiteonString: Boolean;
 begin
-  result := (Pos('LITEONIT', Model) > 0);
+  result := (Pos('LITEONIT', Identify.Model) > 0);
 end;
 
 function TLiteonNSTSupport.IsS100: Boolean;
 begin
-  result := Pos('S100', Model) > 0;
+  result := Pos('S100', Identify.Model) > 0;
 end;
 
 function TLiteonNSTSupport.IsS200: Boolean;
 begin
-  result := Pos('M3S', Model) > 0;
+  result := Pos('M3S', Identify.Model) > 0;
 end;
 
 function TLiteonNSTSupport.IsE200: Boolean;
 begin
-  result := Pos('E200', Model) > 0;
+  result := Pos('E200', Identify.Model) > 0;
 end;
 
 function TLiteonNSTSupport.IsS100WithNewUnit: Boolean;
 begin
-  result := IsS100 and (Pos('85', Firmware) > 0);
+  result := IsS100 and (Pos('85', Identify.Firmware) > 0);
 end;
 
 function TLiteonNSTSupport.IsProductOfLiteON: Boolean;
@@ -60,14 +60,14 @@ end;
 
 function TLiteonNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TLiteonNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfLiteON then
     result := GetFullSupport;
 end;

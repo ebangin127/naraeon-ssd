@@ -29,8 +29,8 @@ end;
 function TToshibaSandforceNSTSupport.IsToshibaSandforceProduct: Boolean;
 begin
   result :=
-    (Pos('TOSHIBA', UpperCase(Model)) > 0) and
-    (Pos('THNSNS', UpperCase(Model)) > 0);
+    (Pos('TOSHIBA', UpperCase(Identify.Model)) > 0) and
+    (Pos('THNSNS', UpperCase(Identify.Model)) > 0);
 end;
 
 end.

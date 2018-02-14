@@ -30,12 +30,12 @@ end;
 
 function TOCZSandforceNSTSupport.IsVertex3: Boolean;
 begin
-  result := (Model = 'OCZ-VERTEX3') or (Model = 'OCZ-VERTEX3 MI');
+  result := (Identify.Model = 'OCZ-VERTEX3') or (Identify.Model = 'OCZ-VERTEX3 MI');
 end;
 
 function TOCZSandforceNSTSupport.IsAgility3: Boolean;
 begin
-  result := Model = 'OCZ-AGILITY3';
+  result := Identify.Model = 'OCZ-AGILITY3';
 end;
 
 function TOCZSandforceNSTSupport.IsOCZSandforceProduct: Boolean;

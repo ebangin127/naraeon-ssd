@@ -34,7 +34,7 @@ type
       const Buffer: TLargeBuffer): TIdentifyDeviceResult; override;
     function LargeBufferToSMARTValueList(
       const Buffer: TLargeBuffer): TSMARTValueList; override;
-    function BufferToCapacityAndLBA(const Buffer: TSmallBuffer):
+    function BufferToCapacityAndLBA(const Buffer: TLargeBuffer):
       TIdentifyDeviceResult;
     function VendorSpecificSMARTValueList(
       const Buffer: TLargeBuffer): TSMARTValueList;
@@ -223,7 +223,7 @@ begin
 end;
 
 function TIntelBufferInterpreter.BufferToCapacityAndLBA(
-  const Buffer: TSmallBuffer): TIdentifyDeviceResult;
+  const Buffer: TLargeBuffer): TIdentifyDeviceResult;
 begin
   result := NVMeInterpreter.BufferToCapacityAndLBA(Buffer);
 end;

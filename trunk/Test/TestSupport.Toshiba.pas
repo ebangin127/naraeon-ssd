@@ -130,9 +130,22 @@ const
     $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$A6);
 
 procedure TestTToshibaNSTSupport.SetUp;
+var
+  Identify: TIdentifyDeviceResult;
+  SMART: TSMARTValueList;
 begin
-  FToshibaNSTSupport := TToshibaNSTSupport.Create(
-    'TOSHIBA THNSNJ512GCST', 'JTRA0102');
+  SMART := TSMARTValueList.Create;
+  FillChar(Identify, SizeOf(Identify), 0);
+  Identify.Model := 'TOSHIBA THNSNJ512GCST';
+  Identify.Firmware := 'JTRA0102';
+  Identify.IsDataSetManagementSupported := true;
+  SMART := TSMARTValueList.Create;
+  try
+    FToshibaNSTSupport := TToshibaNSTSupport.Create(
+      Identify, SMART);
+  finally
+    SMART.Free;
+  end;
 end;
 
 procedure TestTToshibaNSTSupport.TearDown;
@@ -146,7 +159,7 @@ var
   ReturnValue: TSupportStatus;
 begin
   ReturnValue := FToshibaNSTSupport.GetSupportStatus;
-  CheckEquals(true, ReturnValue.Supported, 'Supported / Toshiba Q');
+  CheckEquals(true, ReturnValue.Supported = Supported, 'Supported / Toshiba Q');
   CheckEquals(true, ReturnValue.FirmwareUpdate,
     'Firmware update supported / Toshiba Q');
   CheckEquals(true,

@@ -34,9 +34,9 @@ begin
   if not IsAtLeastWindows10 then
     exit(false);
   result :=
-    NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
-      'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config',
-      'DODownloadMode')) = 0;
+    NSTRegistry.GetRegStr(NSTRegistry.LegacyPathToNew('LM',
+      'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Settings',
+      'DownloadMode')) <> '3';
 end;
 
 function TP2POptimizer.GetName: String;
@@ -46,22 +46,16 @@ end;
 
 procedure TP2POptimizer.Apply;
 begin
-  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
-    'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config',
-    'DODownloadMode'), 0);
-  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('CU',
-    'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization',
-    'SystemSettingsDownloadMode'), 3);
+  NSTRegistry.SetRegStr(NSTRegistry.LegacyPathToNew('LM',
+      'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Settings',
+      'DownloadMode'), '0');
 end;
 
 procedure TP2POptimizer.Undo;
 begin
-  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('LM',
-    'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config',
-    'DODownloadMode'), 3);
-  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew('CU',
-    'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization',
-    'DODownloadMode'), 1);
+  NSTRegistry.SetRegStr(NSTRegistry.LegacyPathToNew('LM',
+      'SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Settings',
+      'DownloadMode'), '3');
 end;
 
 end.

@@ -26,7 +26,7 @@ implementation
 
 function TSandiskNSTSupport.IsX110: Boolean;
 begin
-  result := (Pos('SANDISK', Model) > 0) and (Pos('SD6SB1', Model) > 0);
+  result := (Pos('SANDISK', Identify.Model) > 0) and (Pos('SD6SB1', Identify.Model) > 0);
 end;
 
 function TSandiskNSTSupport.IsProductOfSandisk: Boolean;
@@ -36,14 +36,14 @@ end;
 
 function TSandiskNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TSandiskNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfSandisk then
     result := GetFullSupport;
 end;

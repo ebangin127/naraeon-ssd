@@ -28,7 +28,7 @@ end;
 
 function TADATASandforceNSTSupport.IsADATASandforceProduct: Boolean;
 begin
-  result := 'ADATA SP900' = Model;
+  result := 'ADATA SP900' = Identify.Model;
 end;
 
 end.

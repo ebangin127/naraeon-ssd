@@ -33,7 +33,10 @@ end;
 
 procedure TMainformCriticalWarningApplier.ShowCriticalWarning;
 begin
-  if not fMain.SelectedDrive.SMARTInterpreted.SMARTAlert.CriticalError then
+  if fMain.SelectedDrive.SupportStatus.Supported = CDIInsufficient then
+    fMain.lSectors.Caption :=
+      CriticalWarning[CurrLang] + CapUnknown[CurrLang]
+  else if not fMain.SelectedDrive.SMARTInterpreted.SMARTAlert.CriticalError then
     fMain.lSectors.Caption :=
       CriticalWarning[CurrLang] + SafeWithoutDot[CurrLang]
   else

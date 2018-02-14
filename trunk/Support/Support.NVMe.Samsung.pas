@@ -3,14 +3,14 @@ unit Support.NVMe.Samsung;
 interface
 
 uses
-  SysUtils, Math,
+  SysUtils, Math, BufferInterpreter,
   Support, Device.SMART.List;
 
 type
   TSamsungNVMeSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
-    function GetSemiSupport: TSupportStatus;
+    function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSamsung: Boolean;
     function IsModelContainsSSD: Boolean;
@@ -33,19 +33,18 @@ implementation
 function TSamsungNVMeSupport.IsModelContainsSSD: Boolean;
 begin
   result :=
-    Pos('SSD', UpperCase(Model)) > 0;
+    Pos('SSD', UpperCase(Identify.Model)) > 0;
 end;
 
 function TSamsungNVMeSupport.IsModelContainsSamsung: Boolean;
 begin
   result :=
-    (Pos('SAMSUNG', UpperCase(Model)) > 0);
+    (Pos('SAMSUNG', UpperCase(Identify.Model)) > 0);
 end;
 
 function TSamsungNVMeSupport.IsSamsungNVMe: Boolean;
 begin
-  result :=
-    (Pos('BX', UpperCase(Firmware)) = 5);
+  result := Identify.StorageInterface = TStorageInterface.NVMe;
 end;
 
 function TSamsungNVMeSupport.IsRetailSamsungNVMeProduct: Boolean;
@@ -58,13 +57,13 @@ end;
 function TSamsungNVMeSupport.IsPM951: Boolean;
 begin
   result :=
-    (Pos('SAMSUNG MZVLV', UpperCase(Model)) = 1);
+    (Pos('SAMSUNG MZVLV', UpperCase(Identify.Model)) = 1);
 end;
 
 function TSamsungNVMeSupport.IsSM951: Boolean;
 begin
   result :=
-    (Pos('SAMSUNG MZVPV', UpperCase(Model)) = 1);
+    (Pos('SAMSUNG MZVPV', UpperCase(Identify.Model)) = 1);
 end;
 
 function TSamsungNVMeSupport.IsOEMSamsungNVMeProduct: Boolean;
@@ -80,18 +79,18 @@ begin
     IsRetailSamsungNVMeProduct or IsOEMSamsungNVMeProduct;
 end;
 
-function TSamsungNVMeSupport.GetSemiSupport: TSupportStatus;
+function TSamsungNVMeSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
-  result.FirmwareUpdate := false;
+  result.Supported := Supported;
+  result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TSamsungNVMeSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfSamsung then
-    result := GetSemiSupport;
+    result := GetFullSupport;
 end;
 
 function TSamsungNVMeSupport.GetTotalWrite: TTotalWrite;

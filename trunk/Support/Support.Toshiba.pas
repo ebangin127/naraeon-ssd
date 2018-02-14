@@ -29,22 +29,22 @@ implementation
 
 function TToshibaNSTSupport.IsModelHasToshibaString: Boolean;
 begin
-  result := Pos('TOSHIBA', Model) > 0;
+  result := Pos('TOSHIBA', Identify.Model) > 0;
 end;
 
 function TToshibaNSTSupport.IsTHNSNF: Boolean;
 begin
-  result := Pos('THNSNF', Model) > 0;
+  result := Pos('THNSNF', Identify.Model) > 0;
 end;
 
 function TToshibaNSTSupport.IsTHNSNH: Boolean;
 begin
-  result := Pos('THNSNH', Model) > 0;
+  result := Pos('THNSNH', Identify.Model) > 0;
 end;
 
 function TToshibaNSTSupport.IsTHNSNJ: Boolean;
 begin
-  result := Pos('THNSNJ', Model) > 0;
+  result := Pos('THNSNJ', Identify.Model) > 0;
 end;
 
 function TToshibaNSTSupport.IsProductOfToshiba: Boolean;
@@ -55,14 +55,14 @@ end;
 
 function TToshibaNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteNotSupported;
 end;
 
 function TToshibaNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfToshiba then
     result := GetFullSupport;
 end;

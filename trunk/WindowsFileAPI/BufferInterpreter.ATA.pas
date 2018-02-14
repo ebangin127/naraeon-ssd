@@ -36,6 +36,7 @@ type
     function IfValidSMARTAddToList(CurrentRow: Integer): Boolean;
     procedure IfValidSMARTThresholdAddToList(CurrentRow: Integer);
     function GetRotationRateFromBuffer: TRotationRate;
+    function GetDataSetManagementSupported: Boolean;
   end;
 
 implementation
@@ -282,6 +283,14 @@ begin
     BufferInterpreting[RotationRateStart * 2];
 end;
 
+
+function TATABufferInterpreter.GetDataSetManagementSupported: Boolean;
+const
+  DataSetManagementStart = 169;
+begin
+  result := (BufferInterpreting[DataSetManagementStart * 2] and 1) = 1;
+end;
+
 function TATABufferInterpreter.BufferToIdentifyDeviceResult(
   const Buffer: TSmallBuffer): TIdentifyDeviceResult;
 begin
@@ -293,6 +302,8 @@ begin
   result.SATASpeed := GetSATASpeedFromBuffer;
   result.LBASize := GetLBASizeFromBuffer;
   result.RotationRate := GetRotationRateFromBuffer;
+  result.IsDataSetManagementSupported :=
+    GetDataSetManagementSupported;
 end;
 
 end.

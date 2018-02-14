@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, ClipBrd, Windows,
   Device.PhysicalDrive.List, Device.PhysicalDrive, Global.LanguageString,
   Global.Constant, Getter.PhysicalDrive.ListChange, OS.Version.Helper,
-  Getter.DeviceDriver;
+  Getter.DeviceDriver, Support;
 
 type
   TIdentifyDiagnosis = class
@@ -85,7 +85,7 @@ begin
   begin
     Contents[Contents.Count - 1] := Contents[Contents.Count - 1] + 'Full';
   end
-  else if CurrEntry.SupportStatus.Supported then
+  else if CurrEntry.SupportStatus.Supported <> NotSupported then
   begin
     Contents[Contents.Count - 1] := Contents[Contents.Count - 1] + 'Semi';
   end

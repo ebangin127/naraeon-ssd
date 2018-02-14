@@ -10,7 +10,7 @@ type
   TSamsungNSTSupport = class sealed(TNSTSupport)
   private
     InterpretingSMARTValueList: TSMARTValueList;
-    function GetSemiSupport: TSupportStatus;
+    function GetFullSupport: TSupportStatus;
     function GetTotalWrite: TTotalWrite;
     function IsProductOfSamsung: Boolean;
     function IsSamsung470: Boolean;
@@ -29,41 +29,41 @@ implementation
 function TSamsungNSTSupport.IsSamsungOtherSSD: Boolean;
 begin
   result :=
-    Pos('SSD', UpperCase(Model)) > 0;
+    Pos('SSD', UpperCase(Identify.Model)) > 0;
 end;
 
 function TSamsungNSTSupport.IsSamsung470: Boolean;
 begin
   result :=
-    Pos('470', UpperCase(Model)) > 0;
+    Pos('470', UpperCase(Identify.Model)) > 0;
 end;
 
 function TSamsungNSTSupport.IsSamsungSATA: Boolean;
 begin
   result :=
-    Pos('BX', UpperCase(Firmware)) < 5;
+    Pos('BX', UpperCase(Identify.Firmware)) < 5;
 end;
 
 function TSamsungNSTSupport.IsProductOfSamsung: Boolean;
 begin
   result :=
-    (Pos('SAMSUNG', UpperCase(Model)) > 0) and
+    (Pos('SAMSUNG', UpperCase(Identify.Model)) > 0) and
     (IsSamsungOtherSSD or IsSamsung470) and
     IsSamsungSATA;
 end;
 
-function TSamsungNSTSupport.GetSemiSupport: TSupportStatus;
+function TSamsungNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
-  result.FirmwareUpdate := false;
+  result.Supported := Supported;
+  result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TSamsungNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfSamsung then
-    result := GetSemiSupport;
+    result := GetFullSupport;
 end;
 
 function TSamsungNSTSupport.GetTotalWrite: TTotalWrite;

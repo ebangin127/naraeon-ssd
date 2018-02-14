@@ -119,14 +119,13 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
-        <Icon_MainIcon>..\SSDOptimizer_Icon.ico</Icon_MainIcon>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <DCC_MapFile>3</DCC_MapFile>
-        <VerInfo_Release>6</VerInfo_Release>
         <VerInfo_MajorVer>5</VerInfo_MajorVer>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.0.6.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.6.0</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.4.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.6.0</VerInfo_Keys>
         <DCC_ExeOutput>..\..\Exe</DCC_ExeOutput>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -148,10 +147,8 @@
 $(PostBuildEvent)]]></PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win32)'!=''">
-        <VerInfo_Release>5</VerInfo_Release>
         <Manifest_File>..\GetAdmin.manifest</Manifest_File>
-        <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.2.5.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools Diagnosis Service;FileVersion=5.4.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=Naraeon SSD Tools;ProductVersion=5.0.0.0</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_3_Win64)'!=''">
@@ -196,7 +193,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\Support\Support.Sandforce.Patriot.pas"/>
         <DCCReference Include="..\Support\Support.Sandforce.Toshiba.pas"/>
         <DCCReference Include="..\Support\Support.Factory.pas"/>
-        <DCCReference Include="..\Objects\OS.WriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Modules\AsciiCheck.pas"/>
         <DCCReference Include="..\Modules\MeasureUnit.Time.pas"/>
         <DCCReference Include="..\Modules\OS.Version.Helper.pas"/>
@@ -253,6 +249,33 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="..\WindowsFileAPI\CommandSet.NVMe.OS.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OS.Handle.pas"/>
         <DCCReference Include="..\Support\Support.Transcend.pas"/>
+        <DCCReference Include="..\Support\Support.Fallback.CDI.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Corsair.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Factory.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Fallback.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Fallback.SSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Indilinx.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Intel.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.JMicron60x.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.JMicron61x.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Kingston.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Micron.New.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Micron.Old.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Mtron.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.NVMe.Intel.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.NVMe.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.OCZ.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.OCZ.Vector.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Plextor.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Samsung.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandforce.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandisk.GB.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandisk.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Seagate.NotSSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Seagate.SSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Toshiba.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.WD.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -663,9 +686,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <ProjectRoot Platform="iOSDevice" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>
                 <Platform value="Win32">True</Platform>

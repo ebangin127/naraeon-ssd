@@ -22,11 +22,11 @@ type
 
 implementation
 
-{ TSandiskNSTSupport }
+{ TTranscendNSTSupport }
 
 function TTranscendNSTSupport.Is220S: Boolean;
 begin
-  result := (Pos('TS', Model) > 0) and (Pos('GSSD220S', Model) > 0);
+  result := (Pos('TS', Identify.Model) > 0) and (Pos('GSSD220S', Identify.Model) > 0);
 end;
 
 function TTranscendNSTSupport.IsProductOfTranscend: Boolean;
@@ -36,14 +36,14 @@ end;
 
 function TTranscendNSTSupport.GetSemiSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TTranscendNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfTranscend then
     result := GetSemiSupport;
 end;

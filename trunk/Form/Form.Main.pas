@@ -19,7 +19,7 @@ uses
   Initializer.PhysicalDrive, Initializer.SSDLabelListRefresh,
   Downloader.Firmware, Getter.DriveList.Removable, Getter.DriveList,
   Getter.VolumeLabel, Getter.OS.Version, PrerequisiteChecker, BufferInterpreter,
-  Global.HelpPage, CommandSet.SAT, Unlocker;
+  Global.HelpPage, CommandSet.SAT, Unlocker, Support;
 
 const
   WM_AFTER_SHOW = WM_USER + 300;
@@ -419,6 +419,12 @@ end;
 procedure TfMain.iAnalyticsClick(Sender: TObject);
 begin
   CloseDriveList;
+
+  if SelectedDrive.SupportStatus.Supported = CDIInsufficient then
+  begin
+    AlertCreate(Self, CapNotSupported[CurrLang]);
+    exit;
+  end;
   ButtonGroup.Click(iAnalytics);
 end;
 

@@ -18,6 +18,7 @@ type
   public
     function GetIndexByID(ID: Byte): Integer;
     function GetRAWByID(ID: Byte): UInt64;
+    function ExceptionFreeGetRAWByID(ID: Byte): UInt64;
     procedure MergeThreshold(const ThresholdList: TSMARTValueList);
   end;
 
@@ -43,6 +44,16 @@ begin
     if Self[CurrentEntryNumber].ID = ID then
       exit(Self[CurrentEntryNumber].RAW);
   raise EEntryNotFound.Create('Entry not found with ID: ' + IntToStr(ID));
+end;
+
+function TSMARTValueList.ExceptionFreeGetRAWByID(ID: Byte): UInt64;
+var
+  CurrentEntryNumber: Integer;
+begin
+  for CurrentEntryNumber := 0 to (Self.Count - 1) do
+    if Self[CurrentEntryNumber].ID = ID then
+      exit(Self[CurrentEntryNumber].RAW);
+  result := 0;
 end;
 
 procedure TSMARTValueList.MergeThreshold(const ThresholdList: TSMARTValueList);

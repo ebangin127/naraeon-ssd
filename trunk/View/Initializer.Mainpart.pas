@@ -6,7 +6,8 @@ uses
   SysUtils, Graphics,
   Global.LanguageString, Device.PhysicalDrive,
   Getter.LatestFirmware, MeasureUnit.DataSize, BufferInterpreter,
-  Getter.PhysicalDrive.NCQAvailability, Device.SlotSpeed;
+  Getter.PhysicalDrive.NCQAvailability, Device.SlotSpeed,
+  Support;
 
 type
   TMainformMainpartApplier = class
@@ -64,6 +65,9 @@ begin
   fMain.lName.Caption :=
     fMain.SelectedDrive.IdentifyDeviceResult.Model + ' ' +
     FormatSizeInMBAsDenaryInteger(DiskSizeInMB);
+  if fMain.SelectedDrive.SupportStatus.Supported <> Supported then
+    fMain.lName.Caption := fMain.lName.Caption + ' (' +
+      CapUnsupported[CurrLang] + ')';
 end;
 
 procedure TMainformMainpartApplier.SetFirmwareLabel;

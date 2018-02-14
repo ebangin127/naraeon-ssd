@@ -166,10 +166,10 @@
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_MinorVer>1</VerInfo_MinorVer>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <DCC_MapFile>3</DCC_MapFile>
-        <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.1.2.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Release>0</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.4.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DebugDCUs>false</DCC_DebugDCUs>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
@@ -192,15 +192,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4_Win32)'!=''">
         <Manifest_File>GetAdmin.manifest</Manifest_File>
-        <VerInfo_Release>5</VerInfo_Release>
-        <VerInfo_MinorVer>2</VerInfo_MinorVer>
-        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.2.5.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+        <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=5.4.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=5.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4_Win64)'!=''">
         <Manifest_File>GetAdmin.manifest</Manifest_File>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Release>0</VerInfo_Release>
         <VerInfo_MajorVer>1</VerInfo_MajorVer>
         <VerInfo_Keys>CompanyName=Naraeon;FileDescription=Naraeon SSD Tools;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -378,6 +376,33 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="WindowsFileAPI\OS.Handle.pas"/>
         <DCCReference Include="Objects\Unlocker.pas"/>
         <DCCReference Include="Support\Support.Transcend.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Corsair.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Factory.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Fallback.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Fallback.SSD.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Indilinx.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Intel.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.JMicron60x.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.JMicron61x.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Kingston.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Micron.New.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Micron.Old.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Mtron.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.NVMe.Intel.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.NVMe.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.OCZ.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.OCZ.Vector.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Plextor.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Samsung.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Sandforce.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Sandisk.GB.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Sandisk.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Seagate.NotSSD.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Seagate.SSD.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.Toshiba.pas"/>
+        <DCCReference Include="SMARTSupport\SMARTSupport.WD.pas"/>
+        <DCCReference Include="Support\Support.Fallback.CDI.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -805,14 +830,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>
                 <Platform value="Win32">True</Platform>

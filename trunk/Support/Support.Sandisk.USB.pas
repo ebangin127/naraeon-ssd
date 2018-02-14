@@ -26,8 +26,8 @@ implementation
 
 function TSandiskUSBNSTSupport.IsU100: Boolean;
 begin
-  result := (Pos('SANDISK', Model) > 0) and
-    ((Pos('U100', Model) > 0) or (Pos('PSSD', Model) > 0));
+  result := (Pos('SANDISK', Identify.Model) > 0) and
+    ((Pos('U100', Identify.Model) > 0) or (Pos('PSSD', Identify.Model) > 0));
 end;
 
 function TSandiskUSBNSTSupport.IsProductOfSandisk: Boolean;
@@ -37,14 +37,14 @@ end;
 
 function TSandiskUSBNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TSandiskUSBNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfSandisk then
     result := GetFullSupport;
 end;

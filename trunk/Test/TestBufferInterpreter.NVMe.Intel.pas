@@ -292,9 +292,12 @@ procedure TestTIntelBufferInterpreter.TestBufferToCapacityAndLBA;
 var
   ReturnValue: TIdentifyDeviceResult;
   Buffer: TSmallBuffer;
+  LargeBuffer: TLargeBuffer;
 begin
   Buffer := Intel750Capacity;
-  ReturnValue := FIntelBufferInterpreter.BufferToCapacityAndLBA(Buffer);
+  FillChar(LargeBuffer, SizeOf(LargeBuffer), 0);
+  Move(Buffer, LargeBuffer, SizeOf(Buffer));
+  ReturnValue := FIntelBufferInterpreter.BufferToCapacityAndLBA(LargeBuffer);
   CheckEquals(ReturnValue.UserSizeInKB, 400088457);
   CheckEquals(ReturnValue.LBASize, 512);
 end;

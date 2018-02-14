@@ -35,6 +35,9 @@ begin
   result :=
     ((NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
+      'RPSessionInterval')) = 0)) or
+    ((NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
+      'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
       'DisableConfig')) = 1) and
      (NSTRegistry.GetRegInt(NSTRegistry.LegacyPathToNew('LM',
       'SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore',
@@ -55,6 +58,9 @@ begin
       EnvironmentVariable.WinDir + '\System32',
       'schtasks /change /TN "Microsoft\Windows\SystemRestore\SR" /disable'));
   NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
+    'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
+    'SystemRestore', 'RPSessionInterval'), 0);
+  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
     'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
       '\SystemRestore', 'DisableConfig'), 1);
   NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
@@ -70,6 +76,9 @@ begin
     string(ProcessOpener.OpenProcWithOutput(
       EnvironmentVariable.WinDir + '\System32',
       'schtasks /change /TN "Microsoft\Windows\SystemRestore\SR" /enable'));
+  NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
+    'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\' +
+    'SystemRestore', 'RPSessionInterval'), 1);
   NSTRegistry.SetRegInt(NSTRegistry.LegacyPathToNew(
     'LM', 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' +
       '\SystemRestore', 'DisableConfig'), 0);

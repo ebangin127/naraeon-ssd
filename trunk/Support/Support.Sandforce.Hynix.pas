@@ -28,7 +28,7 @@ end;
 
 function THynixSandforceNSTSupport.IsHynixSandforceProduct: Boolean;
 begin
-  result := (Pos('MNM', Model) > 0) and (Pos('HFS', Model) > 0);
+  result := (Pos('MNM', Identify.Model) > 0) and (Pos('HFS', Identify.Model) > 0);
 end;
 
 end.

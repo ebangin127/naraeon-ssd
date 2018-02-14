@@ -26,7 +26,7 @@ implementation
 
 function TSandforceNSTSupport.GetSemiSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;

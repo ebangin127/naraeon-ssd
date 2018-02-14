@@ -32,32 +32,32 @@ implementation
 
 function TCrucialNSTSupport.IsModelHasCrucialString: Boolean;
 begin
-  result := Pos('CRUCIAL', Model) > 0;
+  result := Pos('CRUCIAL', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsMX100: Boolean;
 begin
-  result := Pos('MX100', Model) > 0;
+  result := Pos('MX100', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsMX200: Boolean;
 begin
-  result := Pos('MX200', Model) > 0;
+  result := Pos('MX200', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsMX300: Boolean;
 begin
-  result := Pos('MX300', Model) > 0;
+  result := Pos('MX300', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsM550: Boolean;
 begin
-  result := Pos('M550', Model) > 0;
+  result := Pos('M550', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsM500: Boolean;
 begin
-  result := Pos('M500', Model) > 0;
+  result := Pos('M500', Identify.Model) > 0;
 end;
 
 function TCrucialNSTSupport.IsProductOfCrucial: Boolean;
@@ -69,14 +69,14 @@ end;
 
 function TCrucialNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TCrucialNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfCrucial then
     result := GetFullSupport;
 end;

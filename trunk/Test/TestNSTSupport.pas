@@ -12,7 +12,7 @@ unit TestNSTSupport;
 interface
 
 uses
-  TestFramework,
+  TestFramework, BufferInterpreter, Device.SMART.List,
   Support, Support.Factory;
 
 type
@@ -85,13 +85,18 @@ end;
 procedure TestTNSTSupportFactory.TestNonSupport;
 var
   NSTSupportFactory: TNSTSupportFactory;
+  Identify: TIdentifyDeviceResult;
+  SMART: TSMARTValueList;
 begin
   NSTSupportFactory := TNSTSupportFactory.Create;
+  SMART := TSMARTValueList.Create;
+  FillChar(Identify, SizeOf(Identify), 0);
   try
-    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport('', '');
+    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Identify, SMART);
     CheckTrue(FNSTSupport = nil, 'Model & Firmware: Blank');
   finally
     NSTSupportFactory.Free;
+    SMART.Free;
   end;
 end;
 
@@ -325,13 +330,20 @@ procedure TestTNSTSupportFactory.TestSupportStatusWithModelFirmware(Model,
   Firmware: String);
 var
   NSTSupportFactory: TNSTSupportFactory;
+  Identify: TIdentifyDeviceResult;
+  SMART: TSMARTValueList;
 begin
   NSTSupportFactory := TNSTSupportFactory.Create;
+  SMART := TSMARTValueList.Create;
   try
-    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Model, Firmware);
+    Identify.Model := Model;
+    Identify.Firmware := Firmware;
+    Identify.IsDataSetManagementSupported := true;
+    FNSTSupport := NSTSupportFactory.GetSuitableNSTSupport(Identify, SMART);
     CheckTrue(FNSTSupport <> nil, 'Model: ' + Model + ' Firmware: ' + Firmware);
   finally
     NSTSupportFactory.Free;
+    SMART.Free;
   end;
 end;
 

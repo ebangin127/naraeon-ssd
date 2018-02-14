@@ -31,19 +31,19 @@ implementation
 function TMachXtremeNSTSupport.IsJetUltra: Boolean;
 begin
   result :=
-    Pos('JT', UpperCase(Model)) > 0;
+    Pos('JT', UpperCase(Identify.Model)) > 0;
 end;
 
 function TMachXtremeNSTSupport.IsMyles: Boolean;
 begin
   result :=
-    Pos('MMY', UpperCase(Model)) > 0;
+    Pos('MMY', UpperCase(Identify.Model)) > 0;
 end;
 
 function TMachXtremeNSTSupport.IsHasMachXtremeString: Boolean;
 begin
   result :=
-    Pos('MXSSD', UpperCase(Model)) > 0;
+    Pos('MXSSD', UpperCase(Identify.Model)) > 0;
 end;
 
 function TMachXtremeNSTSupport.IsProductOfMachXtreme: Boolean;
@@ -56,21 +56,21 @@ end;
 function TMachXtremeNSTSupport.GetSemiSupportWithoutWriteSupport:
   TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteNotSupported;
 end;
 
 function TMachXtremeNSTSupport.GetSemiSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TMachXtremeNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfMachXtreme then
     if IsMyles then
       result := GetSemiSupportWithoutWriteSupport

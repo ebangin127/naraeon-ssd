@@ -50,8 +50,13 @@ end;
 procedure TMainformReplacedSectorApplier.SetReplacedSectors;
 begin
   ReplacedSectors := fMain.SelectedDrive.SMARTInterpreted.ReplacedSectors;
-  fMain.lSectors.Caption := CapRepSect[CurrLang] + UIntToStr(ReplacedSectors) +
-    CapCount[CurrLang];
+  fMain.lSectors.Caption := CapRepSect[CurrLang];
+  if fMain.SelectedDrive.SupportStatus.Supported = CDIInsufficient then
+    fMain.lSectors.Caption := fMain.lSectors.Caption +
+      CapUnsupported[CurrLang]
+  else
+    fMain.lSectors.Caption := fMain.lSectors.Caption +
+      UIntToStr(ReplacedSectors) + CapCount[CurrLang];
 end;
 
 procedure TMainformReplacedSectorApplier.CreateReplacedSectorLog;

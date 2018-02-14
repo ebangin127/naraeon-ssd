@@ -63,7 +63,7 @@ type
 
 implementation
 
-{ TDiskGeometry }
+{ TNCQAvailabilityGetter }
 
 constructor TNCQAvailabilityGetter.Create(const FileToGetAccess: String);
 begin

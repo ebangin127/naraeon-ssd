@@ -17,6 +17,7 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
     function IsExternal: Boolean; override;
+    procedure Flush; override;
   private
     type
       ATA_SINGLE_TASK_FILE = record
@@ -57,6 +58,7 @@ type
       ATA_FLAGS_48BIT_COMMAND = 1 shl 3;
       ATA_FLAGS_USE_DMA = 1 shl 4;
       ATA_FLAGS_NO_MULTIPLE = 1 shl 5;
+      ATA_FLAGS_NON_DATA = 0;
   private
     IoInnerBuffer: ATA_WITH_BUFFER;
     IoOSBuffer: TIoControlIOBuffer;
@@ -79,6 +81,7 @@ type
     procedure SetInnerBufferToSMARTReadThreshold;
     function InterpretSMARTThresholdBuffer(
       const OriginalResult: TSMARTValueList): TSMARTValueList;
+    procedure SetInnerBufferToFlush;
   end;
 
 implementation
@@ -150,7 +153,6 @@ begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
   result.StorageInterface := TStorageInterface.ATA;
-  result.IsDataSetManagementSupported := IsDataSetManagementSupported;
 end;
 
 procedure TATACommandSet.SetInnerBufferToSMARTReadData;
@@ -325,6 +327,25 @@ begin
   SetOSBufferByInnerBuffer;
   result := ExceptionFreeIoControl
     (TIoControlCode.ATAPassThroughDirect, IoOSBuffer);
+end;
+
+procedure TATACommandSet.SetInnerBufferToFlush;
+const
+  FlushCommand = $E7;
+var
+  IoTaskFile: ATA_TASK_FILES;
+begin
+  IoTaskFile := GetCommonTaskFile;
+  IoTaskFile.CurrentTaskFile.Command := FlushCommand;
+  SetInnerBufferAsFlagsAndTaskFile(ATA_FLAGS_NON_DATA, IoTaskFile);
+end;
+
+procedure TATACommandSet.Flush;
+begin
+  SetInnerBufferToFlush;
+  IoControl(TIoControlCode.ATAPassThroughDirect,
+    BuildOSBufferBy<ATA_WITH_BUFFER, ATA_WITH_BUFFER>(IoInnerBuffer,
+      IoInnerBuffer));
 end;
 
 end.

@@ -13,6 +13,7 @@ type
   end;
   TIntelNVMeCommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -22,6 +23,7 @@ type
   end;
   TSamsungNVMeCommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -31,6 +33,7 @@ type
   end;
   TOSNVMeCommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -40,6 +43,7 @@ type
   end;
   TATACommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -49,6 +53,7 @@ type
   end;
   TLegacyATACommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -58,6 +63,7 @@ type
   end;
   TSATCommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -67,6 +73,7 @@ type
   end;
   TNVMeWithoutDriverCommandSet = class sealed(TMockCommandSet)
   public
+    procedure Flush; override;
     function IdentifyDevice: TIdentifyDeviceResult; override;
     function SMARTReadData: TSMARTValueList; override;
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
@@ -94,6 +101,11 @@ var
 function GetCurrentCommandSet: TCommandOrder;
 begin
   result := CurrentCommandSet;
+end;
+
+procedure TIntelNVMeCommandSet.Flush;
+begin
+  inherited;
 end;
 
 function TIntelNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -132,6 +144,11 @@ begin
   result := 1;
 end;
 
+procedure TSamsungNVMeCommandSet.Flush;
+begin
+  inherited;
+end;
+
 function TSamsungNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -166,6 +183,11 @@ end;
 function TSamsungNVMeCommandSet.RAWSMARTReadData: String;
 begin
   result := '';
+end;
+
+procedure TOSNVMeCommandSet.Flush;
+begin
+  inherited;
 end;
 
 function TOSNVMeCommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -204,6 +226,11 @@ begin
   result := '';
 end;
 
+procedure TATACommandSet.Flush;
+begin
+  inherited;
+end;
+
 function TATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -237,6 +264,11 @@ end;
 function TATACommandSet.RAWSMARTReadData: String;
 begin
   result := '';
+end;
+
+procedure TLegacyATACommandSet.Flush;
+begin
+  inherited;
 end;
 
 function TLegacyATACommandSet.IdentifyDevice: TIdentifyDeviceResult;
@@ -275,6 +307,11 @@ begin
   result := '';
 end;
 
+procedure TSATCommandSet.Flush;
+begin
+  inherited;
+end;
+
 function TSATCommandSet.IdentifyDevice: TIdentifyDeviceResult;
 begin
   result.Model := '';
@@ -308,6 +345,11 @@ end;
 function TSATCommandSet.RAWSMARTReadData: String;
 begin
   result := '';
+end;
+
+procedure TNVMeWithoutDriverCommandSet.Flush;
+begin
+  inherited;
 end;
 
 function TNVMeWithoutDriverCommandSet.IdentifyDevice: TIdentifyDeviceResult;

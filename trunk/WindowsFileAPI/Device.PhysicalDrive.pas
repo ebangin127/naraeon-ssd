@@ -129,7 +129,7 @@ end;
 function TPhysicalDrive.GetSupportStatusOrRequestAndReturn:
   TSupportStatus;
 begin
-  if not SupportStatusReadWrite.Supported then
+  if SupportStatusReadWrite.Supported = NotSupported then
     RequestSupportStatus;
   result := SupportStatusReadWrite;
 end;
@@ -165,8 +165,8 @@ begin
   try
     NSTSupport :=
       NSTSupportFactory.GetSuitableNSTSupport(
-        IdentifyDeviceResult.Model,
-        IdentifyDeviceResult.Firmware);
+        IdentifyDeviceResult,
+        BusPhysicalDrive.SMARTValueList);
   except
     FreeAndNil(NSTSupport);
   end;
@@ -177,7 +177,7 @@ begin
   if NSTSupport = nil then
     TryToCreateAndSetNSTSupport;
   if NSTSupport = nil then
-    SupportStatusReadWrite.Supported := false
+    SupportStatusReadWrite.Supported := NotSupported
   else
     SupportStatusReadWrite := NSTSupport.GetSupportStatus;
 end;

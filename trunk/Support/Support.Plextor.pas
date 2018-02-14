@@ -37,17 +37,17 @@ implementation
 
 function TPlextorNSTSupport.IsM5Series: Boolean;
 begin
-  result := (Pos('PLEXTOR', Model) > 0) and (Pos('M5', Model) > 0);
+  result := (Pos('PLEXTOR', Identify.Model) > 0) and (Pos('M5', Identify.Model) > 0);
 end;
 
 function TPlextorNSTSupport.IsM3Series: Boolean;
 begin
-  result := (Pos('PLEXTOR', Model) > 0) and (Pos('M3', Model) > 0);
+  result := (Pos('PLEXTOR', Identify.Model) > 0) and (Pos('M3', Identify.Model) > 0);
 end;
 
 function TPlextorNSTSupport.IsM3AndNotM3P: Boolean;
 begin
-  result := (Copy(Model, Length(Model) - 2, 2) = 'M3');
+  result := (Copy(Identify.Model, Length(Identify.Model) - 2, 2) = 'M3');
 end;
 
 function TPlextorNSTSupport.IsM364WithOldUnit: Boolean;
@@ -55,21 +55,21 @@ const
   OldUnit = 1.06;
 begin
   result :=
-    (Pos('64', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
+    (Pos('64', Identify.Model) > 0) and (StrToFloat(Identify.Firmware) < OldUnit);
 end;
 function TPlextorNSTSupport.IsM3128WithOldUnit: Boolean;
 const
   OldUnit = 1.07;
 begin
   result :=
-    (Pos('128', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
+    (Pos('128', Identify.Model) > 0) and (StrToFloat(Identify.Firmware) < OldUnit);
 end;
 function TPlextorNSTSupport.IsM3256WithOldUnit: Boolean;
 const
   OldUnit = 1.07;
 begin
   result :=
-    (Pos('256', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
+    (Pos('256', Identify.Model) > 0) and (StrToFloat(Identify.Firmware) < OldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3512WithOldUnit: Boolean;
@@ -77,7 +77,7 @@ const
   OldUnit = 1.06;
 begin
   result :=
-    (Pos('512', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
+    (Pos('512', Identify.Model) > 0) and (StrToFloat(Identify.Firmware) < OldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3WithOldUnit: Boolean;
@@ -94,7 +94,7 @@ const
   OldUnit = 1.06;
 begin
   result :=
-    (Pos('M3P', Model) > 0) and (StrToFloat(Firmware) < OldUnit);
+    (Pos('M3P', Identify.Model) > 0) and (StrToFloat(Identify.Firmware) < OldUnit);
 end;
 
 function TPlextorNSTSupport.IsM3SeriesWithOldUnit: Boolean;
@@ -105,7 +105,7 @@ end;
 
 function TPlextorNSTSupport.IsNinja: Boolean;
 begin
-  result := Pos('NINJA', Model) > 0;
+  result := Pos('NINJA', Identify.Model) > 0;
 end;
 
 function TPlextorNSTSupport.IsProductOfPlextor: Boolean;
@@ -115,14 +115,14 @@ end;
 
 function TPlextorNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TPlextorNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfPlextor then
     result := GetFullSupport;
 end;

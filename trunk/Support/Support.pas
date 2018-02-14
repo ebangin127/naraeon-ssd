@@ -4,14 +4,18 @@ interface
 
 uses
   SysUtils,
-  Device.SMART.List;
+  Device.SMART.List,
+  BufferInterpreter;
 
 type
   TTotalWriteType =
     (WriteNotSupported, WriteSupportedAsCount, WriteSupportedAsValue);
 
+  TSupported =
+    (NotSupported, Supported, CDISupported, CDIInsufficient);
+
   TSupportStatus = record
-    Supported: Boolean;
+    Supported: TSupported;
     FirmwareUpdate: Boolean;
     TotalWriteType: TTotalWriteType;
   end;
@@ -52,15 +56,18 @@ type
 
   TNSTSupport = class abstract
   private
-    FModel, FFirmware: String;
+    FIdentify: TIdentifyDeviceResult;
+    FSMART: TSMARTValueList;
   protected
-    property Model: String read FModel;
-    property Firmware: String read FFirmware;
+    property Identify: TIdentifyDeviceResult read FIdentify;
+    property SMART: TSMARTValueList read FSMART;
   public
     constructor Create; overload;
-    constructor Create(const ModelToCheck, FirmwareToCheck: String); overload;
+    constructor Create(const Identify: TIdentifyDeviceResult;
+      const SMART: TSMARTValueList); overload;
 
-    procedure SetModelAndFirmware(const ModelToCheck, FirmwareToCheck: String);
+    procedure SetModelAndFirmware(const Identify: TIdentifyDeviceResult;
+      const SMART: TSMARTValueList);
 
     function GetSupportStatus: TSupportStatus; virtual; abstract;
     function GetSMARTInterpreted(SMARTValueList: TSMARTValueList):
@@ -71,9 +78,10 @@ implementation
 
 { TNSTSupport }
 
-constructor TNSTSupport.Create(const ModelToCheck, FirmwareToCheck: String);
+constructor TNSTSupport.Create(const Identify: TIdentifyDeviceResult;
+  const SMART: TSMARTValueList);
 begin
-  SetModelAndFirmware(ModelToCheck, FirmwareToCheck);
+  SetModelAndFirmware(Identify, SMART);
 end;
 
 constructor TNSTSupport.Create;
@@ -81,11 +89,13 @@ begin
   ;// Intended to empty because of overloading rule
 end;
 
-procedure TNSTSupport.SetModelAndFirmware(const ModelToCheck,
-  FirmwareToCheck: String);
+procedure TNSTSupport.SetModelAndFirmware(const Identify: TIdentifyDeviceResult;
+  const SMART: TSMARTValueList);
 begin
-  FModel := UpperCase(ModelToCheck);
-  FFirmware := UpperCase(FirmwareToCheck);
+  FIdentify := Identify;
+  FSMART := SMART;
+  FIdentify.Model := UpperCase(FIdentify.Model);
+  FIdentify.Firmware := UpperCase(FIdentify.Firmware);
 end;
 
 end.

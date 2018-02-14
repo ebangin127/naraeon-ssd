@@ -14,6 +14,7 @@ type
       override;
     function IsDataSetManagementSupported: Boolean; override;
     function IsExternal: Boolean; override;
+    procedure Flush; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -55,7 +56,7 @@ type
       SCSI_WITH_BUFFER = record
         Parameter: SCSI_PASS_THROUGH;
         SenseBuffer: SCSI_24B_SENSE_BUFFER;
-        Buffer: TSmallBuffer;
+        Buffer: TLargeBuffer;
       end;
     const
       SCSI_IOCTL_DATA_OUT = 0;
@@ -161,9 +162,9 @@ begin
   CommandDescriptorBlock.SCSICommand := ReadCapacityCommand;
   CommandDescriptorBlock.MiscellaneousCDBInformation := $10;
   CommandDescriptorBlock.TransferParameterListAllocationLength[
-    AllocationLowBit - 1] := (512 shr 8) and $FF;
+    AllocationLowBit - 1] := (SizeOf(IoInnerBuffer.Buffer) shr 8) and $FF;
   CommandDescriptorBlock.TransferParameterListAllocationLength[
-    AllocationLowBit] := 512 and $FF;
+    AllocationLowBit] := SizeOf(IoInnerBuffer.Buffer) and $FF;
   SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_IN, CommandDescriptorBlock);
 end;
 
@@ -239,6 +240,21 @@ function TNVMeCommandSet.DataSetManagement(StartLBA, LBACount: Int64):
 begin
   SetInnerBufferToUnmap(StartLBA, LBACount);
   result := ExceptionFreeIoControl(TIoControlCode.SCSIPassThrough,
+    BuildOSBufferBy<SCSI_WITH_BUFFER, SCSI_WITH_BUFFER>(IoInnerBuffer,
+      IoInnerBuffer));
+end;
+
+procedure TNVMeCommandSet.Flush;
+const
+  FlushCommand = $91;
+var
+  CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK;
+begin
+  CommandDescriptorBlock := GetCommonCommandDescriptorBlock;
+  CommandDescriptorBlock.SCSICommand := FlushCommand;
+  SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_UNSPECIFIED,
+    CommandDescriptorBlock);
+  IoControl(TIoControlCode.SCSIPassThrough,
     BuildOSBufferBy<SCSI_WITH_BUFFER, SCSI_WITH_BUFFER>(IoInnerBuffer,
       IoInnerBuffer));
 end;

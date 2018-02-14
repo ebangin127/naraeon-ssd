@@ -27,7 +27,7 @@ implementation
 
 function TSeagateNSTSupport.IsSeagate600: Boolean;
 begin
-  result := (Pos('ST', Model) > 0) and (Pos('HM000', Model) > 0);
+  result := (Pos('ST', Identify.Model) > 0) and (Pos('HM000', Identify.Model) > 0);
 end;
 
 function TSeagateNSTSupport.IsProductOfSeagate: Boolean;
@@ -37,14 +37,14 @@ end;
 
 function TSeagateNSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TSeagateNSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfSeagate then
     result := GetFullSupport;
 end;

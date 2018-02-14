@@ -26,19 +26,19 @@ implementation
 function TIntelNVMeSupport.IsProductOfIntel: Boolean;
 begin
   result :=
-    (Pos('INTEL SSDPE', UpperCase(Model)) = 1);
+    (Pos('INTEL SSDPE', UpperCase(Identify.Model)) = 1);
 end;
 
 function TIntelNVMeSupport.GetSemiSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TIntelNVMeSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfIntel then
     result := GetSemiSupport;
 end;

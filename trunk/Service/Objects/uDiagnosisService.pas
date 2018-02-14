@@ -6,8 +6,7 @@ uses
   Classes, SysUtils, ShlObj, Windows,
   Device.PhysicalDrive, Device.PhysicalDrive.List, Global.LanguageString,
   OS.EnvironmentVariable, Getter.PhysicalDrive.ListChange, MeasureUnit.Datasize, AverageLogger.Count,
-  AverageLogger.Write, Support, Getter.PhysicalDrive.PartitionList,
-  OS.WriteBufferSettingVerifier;
+  AverageLogger.Write, Support, Getter.PhysicalDrive.PartitionList;
 
 type
   TDiagnosisService = class
@@ -20,7 +19,6 @@ type
     procedure FreeLastChanges;
     function GetLogLine(Timestamp: TDateTime; const Content: String): String;
     function IsNeedDiagnosis: Boolean;
-    procedure WriteBufferCheck;
     procedure LogAndCheckSMART;
     procedure RefreshReplacedSectorLog(Entry: IPhysicalDrive);
     procedure RefreshTotalWriteLog(Entry: IPhysicalDrive);
@@ -95,16 +93,6 @@ begin
   result := IsFirstDiagnosis or (FormatDateTime('mm', Now) = '00');
   if not IsFirstDiagnosis then
     IsFirstDiagnosis := true;
-end;
-
-procedure TDiagnosisService.WriteBufferCheck;
-var
-  WriteBufferSettingVerifier: TWriteBufferSettingVerifier;
-begin
-  WriteBufferSettingVerifier := TWriteBufferSettingVerifier.Create;
-  SaveWriteBufferCheckResult(
-    WriteBufferSettingVerifier.CheckAndCorrect);
-  FreeAndNil(WriteBufferSettingVerifier);
 end;
 
 procedure TDiagnosisService.SaveWriteBufferCheckResult(
@@ -257,7 +245,6 @@ procedure TDiagnosisService.Diagnosis;
 begin
   if not IsNeedDiagnosis then
     exit;
-  WriteBufferCheck;
   LogAndCheckSMART;
 end;
 

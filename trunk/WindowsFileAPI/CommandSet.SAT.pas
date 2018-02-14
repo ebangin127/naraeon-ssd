@@ -17,6 +17,7 @@ type
     function DataSetManagement(StartLBA, LBACount: Int64): Cardinal; override;
     function IsDataSetManagementSupported: Boolean; override;
     function IsExternal: Boolean; override;
+    procedure Flush; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -268,7 +269,6 @@ begin
   SetBufferAndIdentifyDevice;
   result := InterpretIdentifyDeviceBuffer;
   result.StorageInterface := TStorageInterface.SAT;
-  result.IsDataSetManagementSupported := IsDataSetManagementSupported;
 end;
 
 procedure TSATCommandSet.SetInnerBufferToSMARTReadData;
@@ -445,5 +445,21 @@ begin
     BuildOSBufferBy<SCSI_WITH_BUFFER, SCSI_WITH_BUFFER>(IoInnerBuffer,
       IoInnerBuffer));
 end;
+
+procedure TSATCommandSet.Flush;
+const
+  FlushCommand = $91;
+var
+  CommandDescriptorBlock: SCSI_COMMAND_DESCRIPTOR_BLOCK;
+begin
+  CommandDescriptorBlock := GetCommonCommandDescriptorBlock;
+  CommandDescriptorBlock.SCSICommand := FlushCommand;
+  SetInnerBufferAsFlagsAndCdb(SCSI_IOCTL_DATA_UNSPECIFIED,
+    CommandDescriptorBlock);
+  IoControl(TIoControlCode.SCSIPassThrough,
+    BuildOSBufferBy<SCSI_WITH_BUFFER, SCSI_WITH_BUFFER>(IoInnerBuffer,
+      IoInnerBuffer));
+end;
+
 
 end.

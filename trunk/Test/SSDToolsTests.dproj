@@ -116,7 +116,6 @@
         <DCCReference Include="..\Support\Support.Sandforce.ADATA.pas"/>
         <DCCReference Include="..\Support\Support.ADATA.pas"/>
         <DCCReference Include="..\WindowsFileAPI\OSFile.pas"/>
-        <DCCReference Include="..\Objects\OS.WriteBufferSettingVerifier.pas"/>
         <DCCReference Include="..\Objects\OS.ProcessOpener.pas"/>
         <DCCReference Include="..\Modules\OS.Version.Helper.pas"/>
         <DCCReference Include="..\Modules\AsciiCheck.pas"/>
@@ -142,7 +141,6 @@
         <DCCReference Include="TestBufferInterpreter.SCSI.pas"/>
         <DCCReference Include="TestCommandSet.Factory.pas"/>
         <DCCReference Include="TestNSTSupport.pas"/>
-        <DCCReference Include="TestWriteBufferSettingVerifier.pas"/>
         <DCCReference Include="TestSecurityDescriptorManipulator.pas"/>
         <DCCReference Include="Mock\Mock.DeviceTrimmer.pas"/>
         <DCCReference Include="Mock\Mock.Getter.TrimBasics.Factory.pas"/>
@@ -172,6 +170,33 @@
         <DCCReference Include="..\Support\Support.Transcend.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.Internal.pas"/>
         <DCCReference Include="..\WindowsFileAPI\Registry.Helper.pas"/>
+        <DCCReference Include="..\Support\Support.Fallback.CDI.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Corsair.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Factory.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Fallback.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Fallback.SSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Indilinx.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Intel.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.JMicron60x.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.JMicron61x.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Kingston.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Micron.New.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Micron.Old.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Mtron.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.NVMe.Intel.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.NVMe.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.OCZ.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.OCZ.Vector.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Plextor.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Samsung.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandforce.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandisk.GB.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Sandisk.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Seagate.NotSSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Seagate.SSD.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.Toshiba.pas"/>
+        <DCCReference Include="..\SMARTSupport\SMARTSupport.WD.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -569,14 +594,14 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>
                 <Platform value="Win32">True</Platform>

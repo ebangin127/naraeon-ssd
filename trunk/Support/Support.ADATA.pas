@@ -28,12 +28,12 @@ implementation
 
 function TADATANSTSupport.IsModelHasADATAString: Boolean;
 begin
-  result := Pos('ADATA ', Model) = 1;
+  result := Pos('ADATA ', Identify.Model) = 1;
 end;
 
 function TADATANSTSupport.IsSP920: Boolean;
 begin
-  result := Pos('SP920', Model) > 0;
+  result := Pos('SP920', Identify.Model) > 0;
 end;
 
 function TADATANSTSupport.IsProductOfADATA: Boolean;
@@ -43,14 +43,14 @@ end;
 
 function TADATANSTSupport.GetFullSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := true;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;
 
 function TADATANSTSupport.GetSupportStatus: TSupportStatus;
 begin
-  result.Supported := false;
+  result.Supported := NotSupported;
   if IsProductOfADATA then
     result := GetFullSupport;
 end;

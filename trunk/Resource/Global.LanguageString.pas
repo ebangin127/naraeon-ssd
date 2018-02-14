@@ -23,6 +23,7 @@ const
     ErrCache: TLanguageString = ('다음 장치에서 잘못된 캐시 설정이 나타나 수정했습니다', 'Wrong cache setting');
 
   //메인
+    CapUnsupported: TLanguageString = ('미지원', 'Unsupported');
     CapConnState: TLanguageString = ('연결 상태 : ', 'Connected State : ');
     CapFirmware: TLanguageString = ('펌웨어 버전 : ', 'Firmware : ');
     CapSerial: TLanguageString = ('시리얼 번호 : ', 'Serial Number : ');

@@ -3,7 +3,8 @@ unit Support.Factory;
 interface
 
 uses
-  SysUtils, 
+  SysUtils,
+  BufferInterpreter, Device.SMART.List,
   Support,
   //General//
   Support.Crucial, Support.Liteon, Support.Plextor, Support.Sandisk,
@@ -14,6 +15,8 @@ uses
   Support.Sandforce.OCZ, Support.Sandforce.Patriot,
   Support.Sandforce.MachXtreme,
   Support.Sandforce.ADATA,
+  //CDI//
+  Support.Fallback.CDI,
   //NVMe//
   Support.NVMe.Samsung, Support.NVMe.Intel;
 
@@ -21,11 +24,12 @@ type
   TMetaNSTSupport = class of TNSTSupport;
   TNSTSupportFactory = class
   public
-    function GetSuitableNSTSupport(const Model, Firmware: String):
-      TNSTSupport;
+    function GetSuitableNSTSupport(
+      const IdentifyDevice: TIdentifyDeviceResult;
+      const SMARTList: TSMARTValueList): TNSTSupport;
   private
-    FModel: String;
-    FFirmware: String;
+    FIdentifyDevice: TIdentifyDeviceResult;
+    FSMARTList: TSMARTValueList;
     function TryNSTSupportAndGetRightNSTSupport: TNSTSupport;
     function TestNSTSupportCompatibility(
       TNSTSupportToTry: TMetaNSTSupport; LastResult: TNSTSupport): TNSTSupport;
@@ -36,10 +40,11 @@ implementation
 { TNSTSupportFactory }
 
 function TNSTSupportFactory.GetSuitableNSTSupport(
-  const Model, Firmware: String): TNSTSupport;
+  const IdentifyDevice: TIdentifyDeviceResult;
+  const SMARTList: TSMARTValueList): TNSTSupport;
 begin
-  FModel := Model;
-  FFirmware := Firmware;
+  FIdentifyDevice := IdentifyDevice;
+  FSMARTList := SMARTList;
   result := TryNSTSupportAndGetRightNSTSupport;
 end;
 
@@ -66,6 +71,7 @@ begin
   result := TestNSTSupportCompatibility(TADATASandforceNSTSupport, result);
   result := TestNSTSupportCompatibility(TSamsungNVMeSupport, result);
   result := TestNSTSupportCompatibility(TIntelNVMeSupport, result);
+  result := TestNSTSupportCompatibility(TFallbackCDISupport, result);
 end;
 
 function TNSTSupportFactory.TestNSTSupportCompatibility(
@@ -74,9 +80,9 @@ begin
   if LastResult <> nil then
     exit(LastResult);
   
-  result := TNSTSupportToTry.Create(FModel, FFirmware);
+  result := TNSTSupportToTry.Create(FIdentifyDevice, FSMARTList);
 
-  if not result.GetSupportStatus.Supported then
+  if result.GetSupportStatus.Supported = NotSupported then
     FreeAndNil(result);
 end;
 

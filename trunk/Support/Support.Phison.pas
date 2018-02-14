@@ -29,13 +29,13 @@ implementation
 function TPhisonNSTSupport.IsHasSATASSDString: Boolean;
 begin
   result :=
-    Pos('SATA SSD', UpperCase(Model)) = 1;
+    Pos('SATA SSD', UpperCase(Identify.Model)) = 1;
 end;
 
 function TPhisonNSTSupport.IsHasSAFM0String: Boolean;
 begin
   result :=
-    Pos('SAFM0', UpperCase(Firmware)) = 1;
+    Pos('SAFM0', UpperCase(Identify.Firmware)) = 1;
 end;
 
 function TPhisonNSTSupport.IsProductOfPhison: Boolean;
@@ -46,7 +46,7 @@ end;
 
 function TPhisonNSTSupport.GetSemiSupport: TSupportStatus;
 begin
-  result.Supported := true;
+  result.Supported := Supported;
   result.FirmwareUpdate := false;
   result.TotalWriteType := TTotalWriteType.WriteSupportedAsValue;
 end;

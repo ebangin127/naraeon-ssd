@@ -29,8 +29,8 @@ end;
 function TMachXtremeSandforceNSTSupport.IsMachXtremeSandforceProduct: Boolean;
 begin
   result :=
-    (Pos('MXSSD', UpperCase(Model)) > 0) and
-    (Pos('SF', UpperCase(Model)) > 0);
+    (Pos('MXSSD', UpperCase(Identify.Model)) > 0) and
+    (Pos('SF', UpperCase(Identify.Model)) > 0);
 end;
 
 end.

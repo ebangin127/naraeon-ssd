@@ -28,7 +28,7 @@ end;
 
 function TPatriotSandforceNSTSupport.IsPatriotSandforceProduct: Boolean;
 begin
-  result := 'PATRIOT PYRO' = Model;
+  result := 'PATRIOT PYRO' = Identify.Model;
 end;
 
 end.

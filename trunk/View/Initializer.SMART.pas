@@ -37,9 +37,13 @@ begin
     fMain.lPError.Caption := CapReadError[CurrLang]
   else
     fMain.lPError.Caption := CapWriteError[CurrLang];
-  fMain.lPError.Caption := fMain.lPError.Caption +
-    UIntToStr(ReadEraseError.Value) +
-    CapCount[CurrLang];
+  if fMain.SelectedDrive.SupportStatus.Supported = CDIInsufficient then
+    fMain.lPError.Caption := fMain.lPError.Caption +
+      CapUnsupported[CurrLang]
+  else
+    fMain.lPError.Caption := fMain.lPError.Caption +
+      UIntToStr(ReadEraseError.Value) +
+      CapCount[CurrLang];
 end;
 
 procedure TMainformSMARTApplier.ApplyReadEraseError;

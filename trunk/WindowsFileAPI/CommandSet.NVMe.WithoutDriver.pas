@@ -15,6 +15,7 @@ type
     function RAWIdentifyDevice: String; override;
     function RAWSMARTReadData: String; override;
     function IsExternal: Boolean; override;
+    procedure Flush; override;
   private
     type
       SCSI_COMMAND_DESCRIPTOR_BLOCK = record
@@ -188,5 +189,11 @@ function TNVMeWithoutDriverCommandSet.SMARTReadData: TSMARTValueList;
 begin
   raise ENotSupportedException.Create('Please install the driver');
 end;
+
+procedure TNVMeWithoutDriverCommandSet.Flush;
+begin
+  raise ENotSupportedException.Create('Please install the driver');
+end;
+
 
 end.

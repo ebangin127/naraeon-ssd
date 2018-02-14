@@ -4,7 +4,8 @@ interface
 
 uses
   SysUtils, Classes,
-  Device.PhysicalDrive, Device.PhysicalDrive.List;
+  Device.PhysicalDrive, Device.PhysicalDrive.List,
+  Support;
 
 type
   TChangesList = record
@@ -27,7 +28,7 @@ type
     function GetListChangeByCurrentPhysicalDriveList:
       TRefreshedListAndChanges;
     function IsSupportedOrNotNeededToCheck(
-      IsSupported: Boolean): Boolean;
+      IsSupported: TSupported): Boolean;
     function ReturnAddedListAndRefreshList(
       var NewList: TPhysicalDriveList): TPhysicalDriveList;
     function ReturnDeletedListAndRefreshList(
@@ -53,10 +54,10 @@ uses
   Getter.PhysicalDriveList.Auto;
 
 function TListChangeGetter.IsSupportedOrNotNeededToCheck(
-  IsSupported: Boolean): Boolean;
+  IsSupported: TSupported): Boolean;
 begin
   result :=
-    (IsSupported) or
+    (IsSupported <> NotSupported) or
     (not IsOnlyGetSupportedDrives);
 end;
   
